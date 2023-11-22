@@ -1,0 +1,20 @@
+C
+      FUNCTION MATCHS(I, IIRREP, ASPIN, INDEX, IRREP)
+C
+      IMPLICIT INTEGER (A - Z)
+      DIMENSION INDEX(2)
+      LOGICAL MATCHS
+C
+      MATCHS = .FALSE.
+C
+      IF (IIRREP. EQ. IRREP .AND. I .EQ. INDEX(ASPIN)) THEN
+         MATCHS = .TRUE.
+      ENDIF
+C     
+      RETURN
+      END
+
+
+
+
+

@@ -1,0 +1,120 @@
+C
+      SUBROUTINE MKDBLRNG1(ICORE, MAXCOR, LISTG, LISTT, CALMOD, MAXSIZ,
+     &                     INCREM, LSTSCR, IRREPX)
+C     
+      IMPLICIT INTEGER (A-Z)
+      LOGICAL SPINAD
+      CHARACTER*3 CALMOD
+C
+      DOUBLE PRECISION SDOT
+C
+      DIMENSION ICORE(MAXCOR)
+C
+      COMMON /FLAGS/ IFLAGS(100)
+      COMMON /FILES/ LUOUT, MOINTS
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPA(255),IRREPB(255),
+     &                DIRPRD(8,8)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+C
+C Common blocks used in the quadratic term
+C
+      COMMON /QADINTI/ INTIMI, INTIAE, INTIME
+      COMMON /QADINTG/ INGMNAA, INGMNBB, INGMNAB, INGABAA,
+     &                 INGABBB, INGABAB, INGMCAA, INGMCBB,
+     &                 INGMCABAB, INGMCBABA, INGMCBAAB,
+     &                 INGMCABBA
+      COMMON /APERTT1/ IAPRT1AA
+      COMMON /BPERTT1/ IBPRT1AA
+      COMMON /APERTT2/ IAPRT2AA1, IAPRT2BB1, IAPRT2AB1, IAPRT2AB2, 
+     &                 IAPRT2AB3, IAPRT2AB4, IAPRT2AA2, IAPRT2BB2,
+     &                 IAPRT2AB5 
+C
+C If RHF carry out spin adaptation.
+C
+      SPINAD = .FALSE.
+      IF (IFLAGS(11) .EQ. 0) SPINAD = .TRUE.
+      ISPIN = LSTSCR - 39
+C     
+C Loop over irreps
+C     
+      DO 100 IRREPEM = 1, NIRREP
+C
+         IRREPGEM = IRREPEM
+         IRREPGBJ = DIRPRD(IRREPGEM, IRREPX)
+         IRREPTEM = IRREPGEM
+         IRREPTAI = DIRPRD(IRREPTEM, IRREPX)
+         IRREPQBJ = IRREPGBJ
+         IRREPQAI = IRREPQBJ
+C
+         DISSYG = IRPDPD(IRREPGEM, ISYTYP(1, LISTG))
+         NUMSYG = IRPDPD(IRREPGBJ, ISYTYP(2, LISTG))
+         DISSYT = IRPDPD(IRREPTAI, ISYTYP(1, LISTT))
+         NUMSYT = IRPDPD(IRREPTEM, ISYTYP(2, LISTT))
+         DISSYQ = DISSYT
+         NUMSYQ = NUMSYG
+         MAXSIZ = MAX(NUMSYQ*DISSYQ, MAXSIZ)
+C     
+         I000 = 1
+         I010 = I000 + IINTFP*NUMSYQ*DISSYQ
+         I020 = I010 + IINTFP*NUMSYT*DISSYT
+         I030 = I020 + IINTFP*DISSYG*NUMSYG
+C     
+C Can we do it in core
+C     
+         IF(I030 .LT. MAXCOR) THEN
+C     
+C Form the symmetry packed vector
+C
+            CALL RNGCONTR(ICORE(I020), ICORE(I010), ICORE(I000),
+     &                    DISSYG, NUMSYG, DISSYT, NUMSYT, DISSYQ, 
+     &                    NUMSYQ, LISTG, LISTT, IRREPGBJ, IRREPTEM,
+     &                    CALMOD, SPINAD)
+C
+         ELSE
+            CALL INSMEM('MKDBLRNG1', I030, MAXCOR)
+         ENDIF
+C     
+         IF (CALMOD .EQ. 'GxT') THEN
+            CALL TRANSP(ICORE(I000), ICORE(I010), NUMSYQ, DISSYQ)
+c YAU : old
+c           CALL ICOPY(IINTFP*NUMSYQ*DISSYQ,ICORE(I010),1,ICORE(I000),1)
+c YAU : new
+            CALL DCOPY(NUMSYQ*DISSYQ,ICORE(I010),1,ICORE(I000),1)
+c YAU : end
+C
+            ITMP   = NUMSYQ
+            NUMSYQ = DISSYQ
+            DISSYQ = ITMP
+         ENDIF
+C
+C Store these contributions on the disk.
+C When (INCREM = 1) we calculate the contribution and update the disk.
+C When (INCREM = 2) we overwrite the whatever already on the disk.
+C
+         IF (INCREM .EQ. 1) THEN
+C
+            CALL GETLST(ICORE(I020), 1, NUMSYQ, 1, IRREPQBJ, LSTSCR)
+            CALL VADD(ICORE(I020), ICORE(I020), ICORE(I000), DISSYQ*
+     &                NUMSYQ, 1.0D+00)
+C
+            IF (SPINAD) CALL MPMT(ICORE(I020), NUMSYQ)
+
+            CALL PUTLST(ICORE(I020), 1, NUMSYQ, 1, IRREPQBJ, LSTSCR)
+c YAU : old
+c           CALL ICOPY(IINTFP*NUMSYQ*DISSYQ,ICORE(I020),1,ICORE(I000),1)
+c YAU : new
+            CALL DCOPY(NUMSYQ*DISSYQ,ICORE(I020),1,ICORE(I000),1)
+c YAU : end
+C
+         ELSE 
+C
+            IF (SPINAD) CALL MPMT(ICORE(I000), NUMSYQ)
+            CALL PUTLST(ICORE(I000), 1, NUMSYQ, 1, IRREPQBJ, LSTSCR)
+C 
+         ENDIF
+C
+ 100  CONTINUE
+C      
+      RETURN
+      END

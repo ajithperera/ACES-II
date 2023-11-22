@@ -1,0 +1,142 @@
+      SUBROUTINE PDCC_HRNGDRV(ICORE,MAXCOR,LISTW,LISTT,CALMOD,
+     &                  MAXSIZ,INCREM,LSTSCR,TAU,T1A,T1B,POP1,
+     &                  POP2,VRT1,VRT2,FACT,SPCASE,IUHF)
+C     
+C     THIS SUBROUTINE IS CALLED BY H4X2ALL
+C     
+CEND  
+C
+      IMPLICIT INTEGER (A-Z)
+      LOGICAL TAU
+      LOGICAL MBPT2,MBPT3,M4DQ,M4SDQ,M4SDTQ,CCD,QCISD,CCSD,UCC
+      LOGICAL bRedundant
+      CHARACTER*3 CALMOD
+      CHARACTER*4 SPCASE
+      DOUBLE PRECISION FACT,T1A(1),T1B(1)
+      DOUBLE PRECISION ONE,ONEM,HALF,Onem_Wmbej_scale
+      DOUBLE PRECISION BETA
+      DIMENSION ICORE(MAXCOR),VRT1(8),VRT2(8),POP1(8),POP2(8)
+      COMMON/METH/MBPT2,MBPT3,M4DQ,M4SDQ,M4SDTQ,CCD,QCISD,CCSD,UCC
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPA(255),IRREPB(255),
+     &DIRPRD(8,8)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /FLAGS2/IFLAGS2(500)
+C 
+#include "parcc.com"
+C
+      DATA ONE,ONEM,HALF /1.0D0,-1.D0,0.5D0/
+      bRedundant = iflags2(155).eq.0
+C
+C LOOP OVER IRREPS.
+C
+       DO 100 IRREP=1,NIRREP
+        DISSYW=IRPDPD(IRREP,ISYTYP(1,LISTW))
+        DISSYT=IRPDPD(IRREP,ISYTYP(1,LISTT))
+        NUMSYW=IRPDPD(IRREP,ISYTYP(2,LISTW))
+        NUMSYT=IRPDPD(IRREP,ISYTYP(2,LISTT))
+        DISSYQ=DISSYT
+        NUMSYQ=NUMSYW
+        MAXSIZ=MAX(NUMSYQ*DISSYQ,MAXSIZ)
+        I000=1
+        I010=I000+IINTFP*MAX(NUMSYQ*DISSYQ,NUMSYQ+DISSYQ)
+        I020=I010+IINTFP*NUMSYT*DISSYT
+        I030=I020+IINTFP*DISSYW*NUMSYW
+C
+C CAN WE DO IT IN CORE?
+C
+        IF(I030.LT.MAXCOR)THEN
+C
+C FORM THE SYMMETRY PACKED Q VECTOR.
+C
+         IF(bRedundant) THEN
+            CALL GETLST(ICORE(I010),1,NUMSYT,1,IRREP,LISTT)
+         ELSE
+            CALL GETLST_NR(ICORE(I010),ICORE(I020),MAXCOR-I020,
+     &                     LISTT,IRREP)
+         ENDIF
+CSSS#ifdef _DCC_FLAG 
+C What we are doing here is subtracting out the extra piece 
+C that was added in the previous H4X2ALL call. As a result
+C scalling factor is (1 - Wmbej_scale).  Notice that the 
+C Tau is false here. 
+  
+        If (Ispar) Then
+           Onem_Wmbej_scale = (1.0D0 - Wmbej_scale)
+           Write(6, "(a,F5.2)") " In PDCC_HRNGDR Scaling by (1-delta):", 
+     &                            Onem_Wmbej_scale 
+           Write(6,*)
+           CALL DSCAL(NUMSYT*DISSYT, Onem_Wmbej_scale, ICORE(I010), 1)
+        Endif 
+CSSS#endif 
+c         call chksums("HRNGDRV 1 ",icore(i010),numsyt*dissyt)
+
+         IF(TAU) THEN
+          CALL F2TAU(ICORE(I010),T1A,T1B,DISSYT,NUMSYT,POP1,POP2,
+     &               VRT1,VRT2,IRREP,FACT,SPCASE)
+         ENDIF
+C
+C This is T2 * L2 piece and it should not be here in this 
+C contraction. Instead set the location to zero.
+CSSS
+CSSS         CALL GETLST(ICORE(I020),1,NUMSYW,2,IRREP,LISTW)
+CSSS         CALL SSCAL(NUMSYW*DISSYW,HALF,ICORE(I020),1)
+C
+          CALL DZERO(ICORE(I020),NUMSYW*DISSYW)
+C
+C  FOR QCISD AND CCSD ADD L1*T1 TERM
+C
+C NOTE THE DIFFERENT CALLS FOR THE DIFFERENT H4 LISTS
+C
+         IF((QCISD.OR.CCSD).AND.IRREP.EQ.1) THEN
+          IF(MOD(LISTW,100).EQ.54) THEN
+           CALL L1T1H4(ICORE(I020),DISSYW,NUMSYW,ICORE(I000),
+     &                 ONEM,1,1,190,90)
+          ELSE IF(MOD(LISTW,100).EQ.55) THEN
+           CALL L1T1H4(ICORE(I020),DISSYW,NUMSYW,ICORE(I000),
+     &                 ONEM,2,2,190,90)
+          ELSE IF(MOD(LISTW,100).EQ.56) THEN
+           CALL L1T1H4(ICORE(I020),DISSYW,NUMSYW,ICORE(I000),
+     &                 ONE,1,1+IUHF,190,90)
+          ELSE IF(MOD(LISTW,100).EQ.57) THEN
+           CALL L1T1H4(ICORE(I020),DISSYW,NUMSYW,ICORE(I000),
+     &                 ONE,2,1,190,90)
+          ENDIF
+         ENDIF
+         IF(MIN(DISSYT,NUMSYT,NUMSYW).NE.0)THEN
+          CALL MXM(ICORE(I010),DISSYT,ICORE(I020),NUMSYT,ICORE(I000),
+     &             NUMSYW)
+         ENDIF
+        ELSE
+         CALL INSMEM('RNGDRV',I090,MAXCOR)
+        ENDIF
+        IF(CALMOD.EQ.'WxT')THEN
+         CALL TRANSP(ICORE(I000),ICORE(I010),NUMSYQ,DISSYQ)
+c YAU : old
+c        CALL ICOPY(IINTFP*NUMSYQ*DISSYQ,ICORE(I010),1,ICORE(I000),1)
+c YAU : new
+         CALL DCOPY(NUMSYQ*DISSYQ,ICORE(I010),1,ICORE(I000),1)
+c YAU : end
+         ITMP=NUMSYQ
+         NUMSYQ=DISSYQ
+         DISSYQ=ITMP
+        ENDIF
+C
+C AUGMENT Q(ABAB) AND DUMP IT TO DISK.
+C
+        IF(INCREM.EQ.1)THEN
+         CALL GETLST(ICORE(I020),1,NUMSYQ,1,IRREP,LSTSCR)
+         CALL VADD(ICORE(I020),ICORE(I020),ICORE(I000),
+     &             DISSYQ*NUMSYQ,1.D0)
+         CALL PUTLST(ICORE(I020),1,NUMSYQ,1,IRREP,LSTSCR)
+
+c         call chksums("HRNGDRVR PUTLST 1 ",icore(i020),numsyq*dissyq)
+
+         CALL DCOPY(DISSYQ*NUMSYQ,ICORE(I020),1,ICORE(I000),1)
+        ELSE
+         CALL PUTLST(ICORE(I000),1,NUMSYQ,1,IRREP,LSTSCR)
+c         call chksums("HRNGDRVR PUTLST 2 ",icore(i000),numsyq*dissyq)
+        ENDIF
+100    CONTINUE
+       RETURN
+       END

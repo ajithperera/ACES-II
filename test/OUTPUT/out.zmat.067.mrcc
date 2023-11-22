@@ -1,0 +1,3288 @@
+
+              ****************************************************
+              * ACES : Advanced Concepts in Electronic Structure *
+              *                    Ver. 2.6.0                    *
+              *               Release Candidate: 2               *
+              ****************************************************
+
+                             Quantum Theory Project
+                             University of Florida
+                             Gainesville, FL  32611
+ @ACES_INIT_RTE: Build-specific parameters:
+                 bytes per integer =  4
+                 bytes per double  =  8
+                 recls per integer =  4
+
+
+                      ACES STATE VARIABLE REGISTRATION LOG
+     ----------------------------------------------------------------------
+     The ACES State Variables were initialized.
+     Updating (PROGRAM,MN_A3): 'MN_A3' converts to 'MN_A3' -> 3
+     Updating (RESTART,OFF): 'OFF' converts to 'OFF' -> 0
+     Updating (BASIS,3-21G): String copy succeeded.
+     Updating (CALCLEVEL,CCSD): 'CCSD' converts to 'CCSD' -> 10
+     Updating (EXCITE,EOMEE): 'EOMEE' converts to 'EOMEE' -> 3
+     Updating (EE_SYM,0-0-0-0-1-0-0-0): String copy succeeded.
+     Updating (GRAD_CALC,NUMERICAL): 'NUMERICAL' converts to 'NUMERICAL' -> 1
+     ----------------------------------------------------------------------
+
+
+                       ACES STATE VARIABLE VALIDATION LOG
+     ----------------------------------------------------------------------
+     Updating (COORDINATES,INTERNAL): 'INTERNAL' converts to 'INTERNAL' -> 0
+     Updating (GEOM_OPT,partial): 'partial' converts to 'PARTIAL' -> 1
+     Updating (OPT_METHOD,manr): 'manr' converts to 'MANR' -> 3
+     Updating (DERIV_LEV,zero): 'zero' converts to 'OFF' -> 0
+     Updating (CC_MAXCYC,50): 0 -> 50
+     Updating (CC_EXPORDER,5): 0 -> 5
+     Updating (TAMP_SUM,5): 0 -> 5
+     Updating (ORBITALS,standard): 'standard' converts to 'STANDARD' -> 0
+     Updating (EOMREF,ccsd): 'ccsd' converts to 'CCSD' -> 1
+     Updating (DOHBAR,ON): 'ON' converts to 'ON' -> 1
+     Updating (ESTATE_TOL,7): -1 -> 7
+     Updating (VTRAN,full): 'full' converts to 'FULL' -> 1
+     Updating (FD_STEPSIZE,25): 0 -> 25
+     Updating (HBARABCD,OFF): 'OFF' converts to 'OFF' -> 1
+     Updating (HBARABCI,OFF): 'OFF' converts to 'OFF' -> 1
+     Updating (ABCDFULL,ON): 'ON' converts to 'ON' -> 1
+     Updating (CACHE_RECS,45): -1 -> 45
+     Updating (FILE_RECSIZ,16384): -1 -> 16384
+     ----------------------------------------------------------------------
+
+          ASV#   ASV KEY DEFINITION =    CURRENT [   DEFAULT] UNITS
+          ------------------------------------------------------------
+            1:                PRINT =          0 [         0] 
+            2:            CALCLEVEL =         10 [         0] 
+            3:            DERIV_LEV =          0 [        -1] 
+            4:              CC_CONV =          7 [         7] (tol)
+
+            5:             SCF_CONV =          7 [         7] (tol)
+            6:            XFORM_TOL =         11 [        11] (tol)
+            7:            CC_MAXCYC =         50 [         0] cycles
+            8:           LINDEP_TOL =          5 [         5] 
+
+            9:                  RDO =         -1 [        -1] 
+           10:           SCF_EXTRAP =          1 [         1] 
+           11:            REFERENCE =          0 [         0] 
+           12:          CC_EXPORDER =          5 [         0] 
+
+           13:             TAMP_SUM =          5 [         0] 
+           14:            NTOP_TAMP =         15 [        15] 
+           15:              DAMPSCF =         20 [        20] x 0.01
+           16:           SCF_MAXCYC =        150 [       150] cycles
+
+           18:                PROPS =          0 [         0] 
+           19:              DENSITY =          0 [         0] 
+           20:          SCF_EXPORDE =          6 [         6] 
+           21:          CC_EXTRAPOL =          1 [         1] 
+
+           22:            BRUECKNER =          0 [         0] 
+           23:               XFIELD =          0 [         0] x 10-6
+           24:               YFIELD =          0 [         0] x 10-6
+           25:               ZFIELD =          0 [         0] x 10-6
+
+           26:            SAVE_INTS =          0 [         0] 
+           28:               CHARGE =          0 [         0] 
+           29:          MULTIPLICTY =          1 [         1] 
+           30:          CPHF_CONVER =         12 [        12] (tol)
+
+           31:          CPHF_MAXCYC =         64 [        64] cycles
+           35:               INCORE =          0 [         0] 
+           36:          MEMORY_SIZE =   15000000 [  15000000] Words
+           37:          FILE_RECSIZ =      16384 [        -1] Words
+
+           38:                NONHF =          0 [         0] 
+           39:             ORBITALS =          0 [        -1] 
+           40:          SCF_EXPSTAR =          8 [         8] 
+           41:          LOCK_ORBOCC =          0 [         0] 
+
+           42:          FILE_STRIPE =          0 [         0] 
+           43:               DOHBAR =          1 [         0] 
+           44:           CACHE_RECS =         45 [        -1] 
+           45:                GUESS =          0 [         0] 
+
+           46:           JODA_PRINT =          0 [         0] 
+           47:           OPT_METHOD =          3 [         0] 
+           48:          CONVERGENCE =          4 [         4] H/bohr
+           49:          EIGENVECTOR =          1 [         1] 
+
+           50:              NEGEVAL =          2 [         2] 
+           51:          CURVILINEAR =          0 [         0] 
+           52:          STP_SIZ_CTL =          0 [         0] 
+           53:             MAX_STEP =        300 [       300] millibohr
+
+           54:            VIBRATION =          0 [         0] 
+           55:            EVAL_HESS =          0 [         0] # of cyc.
+           56:            INTEGRALS =          1 [         1] 
+           57:          FD_STEPSIZE =         25 [         0] 10-4 bohr
+
+           58:               POINTS =          0 [         0] 
+           59:          CONTRACTION =          1 [         1] 
+           60:             SYMMETRY =          0 [         0] 
+           62:            SPHERICAL =          0 [         0] 
+
+           63:          RESET_FLAGS =          0 [         0] 
+           64:             PERT_ORB =          2 [         2] 
+           65:             GENBAS_1 =          0 [         0] 
+           66:             GENBAS_2 =          0 [         0] 
+
+           67:             GENBAS_3 =          0 [         0] 
+           68:          COORDINATES =          0 [         3] 
+           69:            CHECK_SYM =          1 [         1] 
+           70:            SCF_PRINT =          0 [         0] 
+
+           71:                  ECP =          0 [         0] 
+           72:              RESTART =          0 [         1] 
+           73:            TRANS_INV =          0 [         0] 
+           74:          HFSTABILITY =          0 [         0] 
+
+           75:             ROT_EVEC =          0 [         0] 
+           76:           BRUCK_CONV =          4 [         4] (tol)
+           78:                UNITS =          0 [         0] 
+           79:          FD_USEGROUP =          0 [         0] 
+
+           80:           FD_PROJECT =          0 [         0] 
+           83:                VTRAN =          1 [         0] 
+           84:             HF2_FILE =          1 [         1] 
+           85:             SUBGROUP =          0 [         0] 
+
+           86:           SUBGRPAXIS =          0 [         0] 
+           87:               EXCITE =          3 [         0] 
+           88:            ZETA_CONV =         12 [        12] (tol)
+           90:           TREAT_PERT =          0 [         0] 
+
+           91:          ESTATE_PROP =          0 [         0] 
+           92:           OPT_MAXCYC =         50 [        50] 
+           93:             ABCDTYPE =          0 [         0] 
+           95:           AO_LADDERS =          1 [         1] 
+
+           96:                 FOCK =          0 [         0] 
+           97:          ESTATE_MAXC =         20 [        20] 
+           98:           ESTATE_TOL =          7 [        -1] (tol)
+           99:            TURBOMOLE =          0 [         0] 
+
+          100:           GAMMA_ABCD =          0 [         0] 
+          101:            ZETA_TYPE =          1 [         1] 
+          102:          ZETA_MAXCYC =         50 [        50] 
+          103:             RESRAMAN =          0 [         0] 
+
+          104:                  PSI =          0 [         0] 
+          105:             GEOM_OPT =          1 [         0] 
+          106:             EXTERNAL =          0 [         0] 
+          107:          HESS_UPDATE =          2 [         0] 
+
+          108:         INIT_HESSIAN =          0 [         0] 
+          109:          EXTRAPOLATE =          0 [         0] 
+          201:              EA_CALC =          0 [         0] 
+          203:                 TDHF =          0 [         0] 
+
+          204:           FUNCTIONAL =          4 [         4] 
+          205:           EOM_MAXCYC =         50 [        50] cycles
+          206:              EOMPROP =          0 [         0] 
+          207:             ABCDFULL =          1 [         0] 
+
+          208:           INTGRL_TOL =         14 [        14] (tol)
+          209:             DAMP_TYP =          0 [         0] 
+          210:             DAMP_TOL =         10 [        10] x 0.01
+          211:              LSHF_A1 =          0 [         0] x 0.01
+
+          212:              LSHF_B1 =          0 [         0] x 0.01
+          213:             POLYRATE =          0 [         0] 
+          214:              IP_CALC =          0 [         0] 
+          216:            IP_SEARCH =          0 [         0] 
+
+          217:               EOMREF =          1 [         0] 
+          218:              SOLVENT =          0 [         0] 
+          219:            EE_SEARCH =          0 [         0] 
+          220:            EOM_PRJCT =          0 [         0] 
+
+          221:               NEWVRT =          0 [         0] 
+          222:             HBARABCD =          1 [         0] 
+          223:             HBARABCI =          1 [         0] 
+          224:             NT3EOMEE =          0 [         0] 
+
+          225:              NOREORI =          0 [         0] 
+          227:               KS_POT =          0 [         0] 
+          228:             DIP_CALC =          0 [         0] 
+          230:             DEA_CALC =          0 [         0] 
+
+          232:              PROGRAM =          3 [         0] 
+          233:                CCR12 =          0 [         0] 
+          234:            EOMXFIELD =          0 [         0] x 10-6
+          235:            EOMYFIELD =          0 [         0] x 10-6
+
+          236:            EOMZFIELD =          0 [         0] x 10-6
+          237:              INSERTF =          0 [         0] 
+          238:            GRAD_CALC =          1 [         2] 
+          239:            IMEM_SIZE =    3000000 [   3000000] Words
+
+          240:              MAKERHF =          0 [         0] 
+          241:           GLOBAL_MEM =          0 [         0] Words
+          242:             PRP_INTS =          0 [         0] 
+          243:           TRUNC_ORBS =          0 [         0] 
+
+          244:             FNO_KEEP =          0 [         0] percent
+          245:             FNO_BSSE =          0 [         0] 
+          246:              NATURAL =          0 [         0] 
+          248:              UNO_REF =          0 [         0] 
+
+          249:           UNO_CHARGE =          0 [         0] 
+          250:             UNO_MULT =          1 [         1] 
+          251:                RAMAN =          0 [         0] 
+          252:            KUCHARSKI =          0 [         0] 
+
+          253:             SCF_TYPE =          0 [         0] 
+          254:               DIRECT =          0 [         0] 
+          255:         SINGLE_STORE =          0 [         0] 
+          ------------------------------------------------------------
+
+                         ACES STATE VARIABLES (STRINGS)
+          ------------------------------------------------------------
+          BASIS = 3-21G
+          OCCUPATION = [ESTIMATED BY SCF]
+          ------------------------------------------------------------
+   2 entries found in Z-matrix 
+
+ Job Title : EOMEE optimization CCSD, Aces3 program
+
+  There are  1 unique internal coordinates.
+  Of these,  1 will be optimized.
+   User supplied Z-matrix: 
+--------------------------------------------------------------------------------
+       SYMBOL    BOND      LENGTH    ANGLE     ANGLE     DIHED     ANGLE
+                  TO      (ANGST)    WRT      (DEG)      WRT      (DEG)
+--------------------------------------------------------------------------------
+        N    
+        N          1         R    
+                  *Initial values for internal coordinates* 
+                      Name             Value
+                        R               1.200000
+--------------------------------------------------------------------------------
+  @symmetry-i, Coordinates after  COM shift 
+      0.000000000000      0.000000000000     -1.133835593147
+      0.000000000000      0.000000000000      1.133835593147
+   Rotational constants (in cm-1): 
+     1.67197        1.67197
+   Principal axis orientation for molecule:
+        0.000000000000    0.000000000000    1.133835593147
+        0.000000000000    0.000000000000   -1.133835593147
+********************************************************************************
+   The full molecular point group is DXh .
+   The largest Abelian subgroup of the full molecular point group is D2h .
+   The computational point group is D2h .
+********************************************************************************
+--------------------------------------------------------------------------------
+   Analysis of internal coordinates specified by Z-matrix 
+--------------------------------------------------------------------------------
+   *The nuclear repulsion energy is   21.60807 a.u.
+   *There is   1 degree of freedom within the tot. symm. molecular subspace.
+   *Z-matrix requests optimization of   1 coordinates.
+   *The optimization is unconstrained and your Z-matrix is great.
+--------------------------------------------------------------------------------
+         -----------------------------------------------
+         Cartesian coordinates corresponding to internal 
+                 coordinate input (Bohr) 
+ ----------------------------------------------------------------
+ Z-matrix   Atomic            C o o r d i n a t e s
+  Symbol    Number           X              Y              Z
+ ----------------------------------------------------------------
+     N         7         0.00000000     0.00000000     1.13383559
+     N         7         0.00000000     0.00000000    -1.13383559
+ ----------------------------------------------------------------
+   Interatomic distance matrix (Angstroms) 
+
+                 N             N    
+                [ 1]        [ 2]
+  N    [ 1]     0.00000
+  N    [ 2]     1.20000     0.00000
+@ACES_MALLOC: allocated >= 57 MB of core memory
+  @CHRTABLE-I, There are  14 unique irreducible representations.
+  @CHRTABLE-I, There are   8 unique irreducible representations.
+  @VIBINF-I, Symmetries species for nuclear motions:
+  Irrep     Label    Total    Vibrations     Translations     Rotations
+    1        A1g      1.00       1.00            0.00            0.00
+    2        A1u      0.00       0.00            0.00            0.00
+    3        A2g      0.00       0.00            0.00            0.00
+    4        E1g      1.00       0.00            0.00            1.00
+    5        E1u      1.00       0.00            1.00            0.00
+    6        E2u      0.00       0.00            0.00            0.00
+    7        E2g      0.00       0.00            0.00            0.00
+    8        E3g      0.00       0.00            0.00            0.00
+    9        E3u      0.00       0.00            0.00            0.00
+   10        B1u      0.00       0.00            0.00            0.00
+   11        B2g      0.00       0.00            0.00            0.00
+   12        B2u      0.00       0.00            0.00            0.00
+   13        B1g      0.00       0.00            0.00            0.00
+   14        A2u      1.00       0.00            1.00            0.00
+  @SETPTS: FCM evaluation limited to the following symmetries :
+    1
+   Total number of calculations required      :     2
+   Number of single-point energy calculations :     2
+   Number of energy gradient     calculations :     0
+   JODA beginning optimization cycle #  1.
+  @symmetry-i, Coordinates after  COM shift 
+      0.000000000000      0.000000000000      1.134307996946
+      0.000000000000      0.000000000000     -1.134307996946
+   Rotational constants (in cm-1): 
+     1.67058        1.67058
+   Principal axis orientation for molecule:
+        0.000000000000    0.000000000000   -1.134307996946
+        0.000000000000    0.000000000000    1.134307996946
+********************************************************************************
+   The full molecular point group is DXh .
+   The largest Abelian subgroup of the full molecular point group is D2h .
+   The computational point group is D2h .
+********************************************************************************
+@ACES2: Executing "rm -f FILES"
+@ACES2: Executing "xjoda"
+ @ACES2: INITIALIZATION DUMP
+   mopac_guess =  F
+   direct =  F
+   plain_scf =  F
+   nddo_guess =  F
+   hf_scf =  T
+   dirmp2 =  F
+   fno =  F
+   geomopt =  T
+   raman =  F
+   vibfreq =  F
+   analytical_gradient =  F
+   mrcc =  T
+   integral command is "xvmol"
+   derivative-integral command is "xvdint"
+ @ACES2: END INITIALIZATION DUMP
+@ACES2: Executing "xvmol"
+ One- and two-electron integrals over symmetry-adapted AOs are calculated.
+
+ @READIN: Cartesian gaussians are used.
+NAMN: N #1  0.000000000  0.000000000 -1.134307997
+             18 SYMMETRY ADAPTED BASIS FUNCTIONS 
+  @READIN-I, Nuclear repulsion energy :   21.5990719152 a.u.
+  required memory for a1 array  8903380 words 
+  required memory for a2 array  18410 words 
+@ACES_MALLOC: allocated >= 34 MB of core memory
+  @TWOEL-I,        264 integrals of symmetry type  I I I I
+  @TWOEL-I,        825 integrals of symmetry type  I J I J
+  @TWOEL-I,        639 integrals of symmetry type  I I J J
+  @TWOEL-I,        648 integrals of symmetry type  I J K L
+  @TWOEL-I, Total number of 2-e integrals       2376.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.05 (      0.0)   0: 0: 0.21 (      0.2)   0: 0: 0.4 (      0.4)
+@ACES2: Executing "xvmol2ja"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144875520 204875775
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.01 (      0.0)   0: 0: 0.02 (      0.0)   0: 0: 0.0 (      0.0)
+@ACES2: Executing "xvprops"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142909440 202909695
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+   Property integrals will be calculated.
+
+    --------------------------------------------------------
+                                Property evaluated at 
+    Property type              X           Y           Z
+    --------------------------------------------------------
+    Dipole moment            ----        ----        ----   
+    Second moment          0.0000000   0.0000000   0.0000000
+    --------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.17 (      0.2)   0: 0: 0.55 (      0.5)   0: 0: 0.8 (      0.8)
+@ACES2: Executing "rm -f VPOUT"
+@ACES2: Executing "xvscf"
+@ACES_MALLOC: allocated >= 3 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Occupancies from core Hamiltonian:
+
+          Alpha population by irrep:   2    1    1    0    2    1    0    0
+           Beta population by irrep:   2    1    1    0    2    1    0    0
+
+
+  --------------------------------------------------------------------
+  Iteration         Total Energy            Largest Density Difference
+  --------------------------------------------------------------------
+       0           -99.5820778715              0.0000000000E+00
+       1          -107.1123427262              0.1134255801E+01
+       2          -108.2185935541              0.6473495461E+00
+       3          -108.2651629920              0.1574384846E+00
+       4          -108.2672482464              0.2060826334E-01
+       5          -108.2672545567              0.4331318418E-02
+       6          -108.2672547322              0.1186497425E-02
+       7          -108.2672547327              0.5479546164E-04
+       8          -108.2672547327              0.9408868044E-05
+       9          -108.2672547327              0.5159771452E-06
+ 
+@VSCF-I, SCF has converged.
+
+     E(SCF)=      -108.2672547327              0.2800122889E-07
+
+ 
+@VSCF-I, Final occupancies:
+
+          Alpha population by irrep:   3    1    1    0    2    0    0    0
+           Beta population by irrep:   3    1    1    0    2    0    0    0
+
+
+
+      Trace of projected alpha density matrix =   1.000000000
+
+      Alpha part of wavefunction is symmetric.
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.03 (      0.0)   0: 0: 0.11 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xvtran"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142860288 202860543
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Full RHF integral transformation
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.03 (      0.0)   0: 0: 0.06 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xintprc"
+
+
+ performing integral processing for standard CC
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144199680 204199935
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Processing integrals for CCSD calculation.
+  @GMOIAA-I, Processing MO integrals for spin case AA.
+  @GMOIAA-I, Generation of integral list completed.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP                361
+                      PPPH                732
+                      PPHH                493
+                      PHPH                328
+                      PHHH                356
+                      HHHH                106
+
+                     TOTAL               2376
+
+  @FORMT2-I, Second-order MBPT correlation energies:
+              ----------------------------------------------
+              E(SCF)                = -108.267254732721 a.u.
+              E2(AA)                =   -0.037389568440 a.u.
+              E2(AB)                =   -0.196021309610 a.u.
+              E2(TOT)               =   -0.270800446491 a.u.
+              Total MBPT(2) energy  = -108.538055179212 a.u.
+              ----------------------------------------------
+   Largest T2 amplitudes for spin case AB:
+       _       _                 _       _                 _       _
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   5  17  17]-0.11827 [  4   4  15  15]-0.11827 [  5   4  17  15]-0.09550
+[  4   5  15  17]-0.09550 [  7   7  17  17]-0.04167 [  7   7  15  15]-0.04167
+[  5   3  17  12]-0.03572 [  3   5  12  17]-0.03572 [  4   3  15  12]-0.03572
+[  3   4  12  15]-0.03572 [  5   3  17  13] 0.03112 [  3   5  13  17] 0.03112
+[  4   3  15  13] 0.03112 [  3   4  13  15] 0.03112 [  5   2  17  12]-0.03094
+-----------------------------------------------------------------------------
+   Norm of T2AB vector (      909 symmetry allowed elements):  0.2966797745.
+-----------------------------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.10 (      0.1)   0: 0: 0.01 (      0.0)   0: 0: 0.4 (      0.4)
+@ACES2: Executing "xmrcc"
+
+   *****************************************
+   *                                       *
+   *     ACES III Correlated Techniques    *
+   *                                       *
+   *              MBPT[2] / CCSD           *
+   *              EOMCC / STEOMCC          *
+   *                                       *
+   *                                       *
+   *           Authors:                    *
+   *                                       *
+   *         Marcel Nooijen                *
+   *         Sullivan Beck                 *
+   *         Steven R. Gwaltney            *
+   *                                       *
+   *****************************************
+
+  @aceslist: lvaaii .ne. lviiaa
+
+  one-electron H and S not read
+
+  All  virtual orbitals between      3.12 and     10.26 eV are considered CC-active
+  Coupled Cluster active virtual  orbitals
+     0 [1]   0 [2]   0 [3]   0 [4]   0 [5]   1 [6]   1 [7]   0 [8] 
+
+  All occupied orbitals between    -30.25 and    -15.36 eV are considered CC-active
+  Coupled Cluster active occupied orbitals 
+     1 [1]   1 [2]   1 [3]   0 [4]   1 [5]   0 [6]   0 [7]   0 [8] 
+
+  All  virtual orbitals between      3.12 and     10.26 eV are considered active
+  Number of active virtual  orbitals per irrep
+     0 [1]   0 [2]   0 [3]   0 [4]   0 [5]   1 [6]   1 [7]   0 [8] 
+
+  All occupied orbitals between    -21.35 and    -15.36 eV are considered active
+  Number of active occupied orbitals per irrep
+     1 [1]   1 [2]   1 [3]   0 [4]   0 [5]   0 [6]   0 [7]   0 [8] 
+
+ Final addresses in icore: i_int, iscr, ineeded-imax
+                754931             3754931                2026
+
+  Solve CCSD Equations 
+  singles   T
+  linear    F
+  do_gcc    F
+  do_apg    F
+  gcc_singles  F
+
+  Convergence reached after  12 cycles
+
+  Correlation energies (S, D, S+D)  0.00000000 -0.24900699 -0.24900699
+  Vacuum state energy            -108.2672547327213
+  Total correlated energy        -108.5162617184372
+  Maximum residuals     0.204E-07     0.406E-07
+
+  Single excitation coefficients
+      a  [irrep]     i  [irrep]  
+
+      2    [1],     -3    [1]   ;              0.000393
+      1    [1],     -2    [1]   ;             -0.003259
+      2    [1],     -2    [1]   ;              0.000881
+      1    [1],     -1    [1]   ;             -0.003939
+      2    [1],     -1    [1]   ;              0.004308
+      1    [2],     -1    [2]   ;              0.027396
+      1    [3],     -1    [3]   ;              0.027396
+      1    [5],     -1    [5]   ;              0.009493
+      2    [5],     -1    [5]   ;             -0.005952
+      3    [5],     -1    [5]   ;             -0.001858
+
+  Double excitation coefficients
+      a  [irrep]     a  [irrep]     i  [irrep]     i  [irrep]  
+
+      1    [6],      1    [6]   ;  -1    [2]      -1    [2]     -0.140378
+      1    [7],      1    [7]   ;  -1    [3]      -1    [3]     -0.140378
+      1    [6],      1    [6]   ;  -1    [5]      -1    [5]     -0.053034
+      1    [7],      1    [7]   ;  -1    [5]      -1    [5]     -0.053034
+      1    [5],      1    [7]   ;  -2    [1]      -1    [3]     -0.029137
+      1    [7],      1    [6]   ;  -1    [2]      -1    [3]     -0.040535
+      1    [6],      1    [7]   ;  -1    [2]      -1    [3]     -0.083989
+
+  Time needed in solveccsd
+  cpu time:   0 h  0 min  1.54 sec;  real time:   0 h  0 min  1 sec  (154.0%)
+
+  Hbar is calculated. 
+  Finished calculation of Hbar.
+  Time needed in calchbar
+  cpu time:   0 h  0 min  0.14 sec;  real time:   0 h  0 min  1 sec  ( 14.0%)
+
+  One-particle contributions to  exp(-T) O exp(T)  are calculated
+
+
+   *****************************************
+   *                                       *
+   *        TDA Excitation Energies        *
+   *          Spin State : Singlet         *
+   *                                       *
+   *****************************************
+
+
+  root #   1 [5], Active component 100.00  eigenvalue =        7.004 eV
+            -1    [2]   ->      1    [6]         0.498767      24.9 %
+            -1    [3]   ->      1    [7]        -0.498767      24.9 %
+
+           Summary of excitation energy TDA calculation
+
+    Multiplet  root   irrep   energy diff (eV) osc. strength % singles  total energy
+   --------------------------------------------------------------------------
+
+     Singlet     1     [5]       7.00428944     0.0000E+00   100.00    -108.00985193
+
+   --------------------------------------------------------------------------
+
+   Track state to follow in optimization
+
+
+  Selected state for gradient
+  Total energy of Singlet state  1 [5]   -108.0098519287
+  Use selected TDA state in EOM-CC gradient 
+
+  time spend in solvetda
+  cpu time:   0 h  0 min  0.06 sec;  real time:   0 h  0 min  0 sec  (100.0%)
+
+
+   *****************************************
+   *                                       *
+   *        EOM Excitation Energies        *
+   *          Spin State : Singlet         *
+   *          CCSD Reference state         *
+   *                                       *
+   *****************************************
+
+ @solveeom: modhbar is switched off
+
+  Solving for   1 roots in symmetry-block   5
+
+
+  Solving for right hand root #   1  [5]
+
+  Convergence reached after 10 cycles.
+  Eigenvalue:     0.351625 a.u.     9.568220 eV    77172.87 cm-1   129.5792 nm
+  Maximumum residual : .751E-07
+  Contribution from single excitations  97.30 %
+
+  Single excitation coefficients
+      a  [irrep]     i  [irrep]  
+
+      1    [6],     -1    [2]   ;              0.491578
+      2    [6],     -1    [2]   ;             -0.039968
+      1    [7],     -1    [3]   ;             -0.491578
+      2    [7],     -1    [3]   ;              0.039968
+
+  Double excitation coefficients
+      a  [irrep]     a  [irrep]     i  [irrep]     i  [irrep]  
+
+      1    [6],      1    [6]   ;  -1    [5]      -1    [1]     -0.047214
+      1    [7],      1    [7]   ;  -1    [5]      -1    [1]      0.047214
+      1    [6],      1    [6]   ;  -1    [1]      -1    [5]     -0.047214
+      1    [7],      1    [7]   ;  -1    [1]      -1    [5]      0.047214
+ @solveeom: modhbar is switched off
+ @solveeom: modhbar is switched off
+
+           Summary of excitation energy eom-cc calculation
+
+    Multiplet  root   irrep   energy diff (eV)    % singles     total energy
+   --------------------------------------------------------------------------
+
+     Singlet     1     [5]       9.56822037        97.30       -108.16463622
+
+   --------------------------------------------------------------------------
+
+  Selected state for gradient
+  Total energy of Singlet state  1 [5]   -108.1646362220
+
+  Time spend in solveeom
+  cpu time:   0 h  0 min  0.85 sec;  real time:   0 h  0 min  0 sec  (100.0%)
+
+  @CHECKOUT-I, Total execution time :       4.6500 seconds.
+ACES2: Total elapsed time is        7.2 seconds
+@ACES2: Executing "xjoda"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+   JODA beginning optimization cycle #  1.
+  @symmetry-i, Coordinates after  COM shift 
+      0.000000000000      0.000000000000      1.133363189349
+      0.000000000000      0.000000000000     -1.133363189349
+   Rotational constants (in cm-1): 
+     1.67336        1.67336
+   Principal axis orientation for molecule:
+        0.000000000000    0.000000000000   -1.133363189349
+        0.000000000000    0.000000000000    1.133363189349
+********************************************************************************
+   The full molecular point group is DXh .
+   The largest Abelian subgroup of the full molecular point group is D2h .
+   The computational point group is D2h .
+********************************************************************************
+@ACES2: Executing "xvmol"
+ One- and two-electron integrals over symmetry-adapted AOs are calculated.
+
+ @READIN: Cartesian gaussians are used.
+NAMN: N #1  0.000000000  0.000000000 -1.133363189
+             18 SYMMETRY ADAPTED BASIS FUNCTIONS 
+  @READIN-I, Nuclear repulsion energy :   21.6170775884 a.u.
+  required memory for a1 array  8903380 words 
+  required memory for a2 array  18410 words 
+@ACES_MALLOC: allocated >= 34 MB of core memory
+  @TWOEL-I,        264 integrals of symmetry type  I I I I
+  @TWOEL-I,        825 integrals of symmetry type  I J I J
+  @TWOEL-I,        639 integrals of symmetry type  I I J J
+  @TWOEL-I,        648 integrals of symmetry type  I J K L
+  @TWOEL-I, Total number of 2-e integrals       2376.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.04 (      0.0)   0: 0: 0.22 (      0.2)   0: 0: 0.4 (      0.4)
+@ACES2: Executing "xvmol2ja"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144875520 204875775
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.02 (      0.0)   0: 0: 0.01 (      0.0)   0: 0: 0.0 (      0.0)
+@ACES2: Executing "xvprops"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142909440 202909695
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+   Property integrals will be calculated.
+
+    --------------------------------------------------------
+                                Property evaluated at 
+    Property type              X           Y           Z
+    --------------------------------------------------------
+    Dipole moment            ----        ----        ----   
+    Second moment          0.0000000   0.0000000   0.0000000
+    --------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.46 (      0.5)   0: 0: 0.38 (      0.4)   0: 0: 0.9 (      0.9)
+@ACES2: Executing "rm -f VPOUT"
+@ACES2: Executing "xvscf"
+@ACES_MALLOC: allocated >= 3 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Occupancies from core Hamiltonian:
+
+          Alpha population by irrep:   2    1    1    0    2    1    0    0
+           Beta population by irrep:   2    1    1    0    2    1    0    0
+
+
+  --------------------------------------------------------------------
+  Iteration         Total Energy            Largest Density Difference
+  --------------------------------------------------------------------
+       0           -99.5781285666              0.0000000000E+00
+       1          -107.1112668707              0.1134507471E+01
+       2          -108.2189926274              0.6494942473E+00
+       3          -108.2656522146              0.1577869225E+00
+       4          -108.2677416154              0.2065012093E-01
+       5          -108.2677479271              0.4337908097E-02
+       6          -108.2677481021              0.1190162149E-02
+       7          -108.2677481026              0.5442905566E-04
+       8          -108.2677481026              0.9465631059E-05
+       9          -108.2677481026              0.5140528150E-06
+ 
+@VSCF-I, SCF has converged.
+
+     E(SCF)=      -108.2677481026              0.2797617016E-07
+
+ 
+@VSCF-I, Final occupancies:
+
+          Alpha population by irrep:   3    1    1    0    2    0    0    0
+           Beta population by irrep:   3    1    1    0    2    0    0    0
+
+
+
+      Trace of projected alpha density matrix =   1.000000000
+
+      Alpha part of wavefunction is symmetric.
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.06 (      0.1)   0: 0: 0.10 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xvtran"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142860288 202860543
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Full RHF integral transformation
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.06 (      0.1)   0: 0: 0.04 (      0.0)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xintprc"
+
+
+ performing integral processing for standard CC
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144199680 204199935
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Processing integrals for CCSD calculation.
+  @GMOIAA-I, Processing MO integrals for spin case AA.
+  @GMOIAA-I, Generation of integral list completed.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP                361
+                      PPPH                732
+                      PPHH                493
+                      PHPH                328
+                      PHHH                356
+                      HHHH                106
+
+                     TOTAL               2376
+
+  @FORMT2-I, Second-order MBPT correlation energies:
+              ----------------------------------------------
+              E(SCF)                = -108.267748102597 a.u.
+              E2(AA)                =   -0.037331447078 a.u.
+              E2(AB)                =   -0.195771685947 a.u.
+              E2(TOT)               =   -0.270434580103 a.u.
+              Total MBPT(2) energy  = -108.538182682700 a.u.
+              ----------------------------------------------
+   Largest T2 amplitudes for spin case AB:
+       _       _                 _       _                 _       _
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   5  17  17]-0.11808 [  4   4  15  15]-0.11808 [  5   4  17  15]-0.09534
+[  4   5  15  17]-0.09534 [  7   7  17  17]-0.04166 [  7   7  15  15]-0.04166
+[  5   3  17  12]-0.03555 [  3   5  12  17]-0.03555 [  4   3  15  12]-0.03555
+[  3   4  12  15]-0.03555 [  5   3  17  13] 0.03112 [  3   5  13  17] 0.03112
+[  3   4  13  15] 0.03112 [  4   3  15  13] 0.03112 [  5   2  17  12]-0.03089
+-----------------------------------------------------------------------------
+   Norm of T2AB vector (      909 symmetry allowed elements):  0.2962859999.
+-----------------------------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.08 (      0.1)   0: 0: 0.04 (      0.0)   0: 0: 0.4 (      0.4)
+@ACES2: Executing "xmrcc"
+
+   *****************************************
+   *                                       *
+   *     ACES III Correlated Techniques    *
+   *                                       *
+   *              MBPT[2] / CCSD           *
+   *              EOMCC / STEOMCC          *
+   *                                       *
+   *                                       *
+   *           Authors:                    *
+   *                                       *
+   *         Marcel Nooijen                *
+   *         Sullivan Beck                 *
+   *         Steven R. Gwaltney            *
+   *                                       *
+   *****************************************
+
+  @aceslist: lvaaii .ne. lviiaa
+
+  one-electron H and S not read
+
+  All  virtual orbitals between      3.13 and     10.29 eV are considered CC-active
+  Coupled Cluster active virtual  orbitals
+     0 [1]   0 [2]   0 [3]   0 [4]   0 [5]   1 [6]   1 [7]   0 [8] 
+
+  All occupied orbitals between    -30.26 and    -15.37 eV are considered CC-active
+  Coupled Cluster active occupied orbitals 
+     1 [1]   1 [2]   1 [3]   0 [4]   1 [5]   0 [6]   0 [7]   0 [8] 
+
+  All  virtual orbitals between      3.13 and     10.29 eV are considered active
+  Number of active virtual  orbitals per irrep
+     0 [1]   0 [2]   0 [3]   0 [4]   0 [5]   1 [6]   1 [7]   0 [8] 
+
+  All occupied orbitals between    -21.34 and    -15.37 eV are considered active
+  Number of active occupied orbitals per irrep
+     1 [1]   1 [2]   1 [3]   0 [4]   0 [5]   0 [6]   0 [7]   0 [8] 
+
+ Final addresses in icore: i_int, iscr, ineeded-imax
+                754931             3754931                2026
+
+  Solve CCSD Equations 
+  singles   T
+  linear    F
+  do_gcc    F
+  do_apg    F
+  gcc_singles  F
+
+  Convergence reached after  12 cycles
+
+  Correlation energies (S, D, S+D)  0.00000000 -0.24877713 -0.24877713
+  Vacuum state energy            -108.2677481025969
+  Total correlated energy        -108.5165252352861
+  Maximum residuals     0.204E-07     0.399E-07
+
+  Single excitation coefficients
+      a  [irrep]     i  [irrep]  
+
+      2    [1],     -3    [1]   ;              0.000393
+      1    [1],     -2    [1]   ;             -0.003242
+      2    [1],     -2    [1]   ;              0.000872
+      1    [1],     -1    [1]   ;             -0.003913
+      2    [1],     -1    [1]   ;              0.004289
+      1    [2],     -1    [2]   ;              0.027353
+      1    [3],     -1    [3]   ;              0.027353
+      1    [5],     -1    [5]   ;              0.009449
+      2    [5],     -1    [5]   ;             -0.005953
+      3    [5],     -1    [5]   ;             -0.001862
+
+  Double excitation coefficients
+      a  [irrep]     a  [irrep]     i  [irrep]     i  [irrep]  
+
+      1    [6],      1    [6]   ;  -1    [2]      -1    [2]     -0.140146
+      1    [7],      1    [7]   ;  -1    [3]      -1    [3]     -0.140146
+      1    [6],      1    [6]   ;  -1    [5]      -1    [5]     -0.053028
+      1    [7],      1    [7]   ;  -1    [5]      -1    [5]     -0.053028
+      1    [5],      1    [7]   ;  -2    [1]      -1    [3]     -0.029099
+      1    [7],      1    [6]   ;  -1    [2]      -1    [3]     -0.040426
+      1    [6],      1    [7]   ;  -1    [2]      -1    [3]     -0.083892
+
+  Time needed in solveccsd
+  cpu time:   0 h  0 min  1.52 sec;  real time:   0 h  0 min  2 sec  ( 76.0%)
+
+  Hbar is calculated. 
+  Finished calculation of Hbar.
+  Time needed in calchbar
+  cpu time:   0 h  0 min  0.14 sec;  real time:   0 h  0 min  0 sec  (100.0%)
+
+  One-particle contributions to  exp(-T) O exp(T)  are calculated
+
+
+   *****************************************
+   *                                       *
+   *        TDA Excitation Energies        *
+   *          Spin State : Singlet         *
+   *                                       *
+   *****************************************
+
+
+  root #   1 [5], Active component 100.00  eigenvalue =        7.024 eV
+            -1    [2]   ->      1    [6]         0.498765      24.9 %
+            -1    [3]   ->      1    [7]        -0.498765      24.9 %
+
+           Summary of excitation energy TDA calculation
+
+    Multiplet  root   irrep   energy diff (eV) osc. strength % singles  total energy
+   --------------------------------------------------------------------------
+
+     Singlet     1     [5]       7.02421086     0.0000E+00   100.00    -108.00961320
+
+   --------------------------------------------------------------------------
+
+   Track state to follow in optimization
+
+
+  Selected state for gradient
+  Total energy of Singlet state  1 [5]   -108.0096132002
+  Use selected TDA state in EOM-CC gradient 
+
+  time spend in solvetda
+  cpu time:   0 h  0 min  0.05 sec;  real time:   0 h  0 min  0 sec  (100.0%)
+
+
+   *****************************************
+   *                                       *
+   *        EOM Excitation Energies        *
+   *          Spin State : Singlet         *
+   *          CCSD Reference state         *
+   *                                       *
+   *****************************************
+
+ @solveeom: modhbar is switched off
+
+  Solving for   1 roots in symmetry-block   5
+
+
+  Solving for right hand root #   1  [5]
+
+  Convergence reached after 10 cycles.
+  Eigenvalue:     0.352194 a.u.     9.583702 eV    77297.74 cm-1   129.3699 nm
+  Maximumum residual : .751E-07
+  Contribution from single excitations  97.30 %
+
+  Single excitation coefficients
+      a  [irrep]     i  [irrep]  
+
+      1    [6],     -1    [2]   ;              0.491580
+      2    [6],     -1    [2]   ;             -0.039981
+      1    [7],     -1    [3]   ;             -0.491580
+      2    [7],     -1    [3]   ;              0.039981
+
+  Double excitation coefficients
+      a  [irrep]     a  [irrep]     i  [irrep]     i  [irrep]  
+
+      1    [6],      1    [6]   ;  -1    [5]      -1    [1]     -0.047252
+      1    [7],      1    [7]   ;  -1    [5]      -1    [1]      0.047252
+      1    [6],      1    [6]   ;  -1    [1]      -1    [5]     -0.047252
+      1    [7],      1    [7]   ;  -1    [1]      -1    [5]      0.047252
+ @solveeom: modhbar is switched off
+ @solveeom: modhbar is switched off
+
+           Summary of excitation energy eom-cc calculation
+
+    Multiplet  root   irrep   energy diff (eV)    % singles     total energy
+   --------------------------------------------------------------------------
+
+     Singlet     1     [5]       9.58370160        97.30       -108.16433081
+
+   --------------------------------------------------------------------------
+
+  Selected state for gradient
+  Total energy of Singlet state  1 [5]   -108.1643308142
+
+  Time spend in solveeom
+  cpu time:   0 h  0 min  0.85 sec;  real time:   0 h  0 min  1 sec  ( 85.0%)
+
+  @CHECKOUT-I, Total execution time :       4.6100 seconds.
+ACES2: Total elapsed time is       14.2 seconds
+@ACES2: Executing "xjoda"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+   JODA beginning optimization cycle #  1.
+   Internal coordinate forces and energy gradients (atomic units): 
+           R       dV/dR             R       dV/dR             R       dV/dR
+ [R    ]  2.26767 -0.16162
+   There are  0 Negative Eigenvalues.
+   There are  0 Negative Eigenvalues.
+   MANR scale factor for NR step is 1.417 for R    .
+   Summary of Optimization Cycle: 
+   The maximum unscaled step is:    0.22900.
+   Scale factor set to:  1.00000.
+   Forces are in hartree/bohr and hartree/radian.
+   Parameter values are in Angstroms and degrees.
+--------------------------------------------------------------------------
+  Parameter     dV/dR           Step          Rold            Rnew
+--------------------------------------------------------------------------
+    R      -0.1616243627    0.1211828778    1.2000000000    1.3211828778
+--------------------------------------------------------------------------
+  Minimum force:  0.161624363 / RMS force:  0.161624363
+ Updating structure...
+  @symmetry-i, Coordinates after  COM shift 
+      0.000000000000      0.000000000000     -1.248336809913
+      0.000000000000      0.000000000000      1.248336809913
+   Rotational constants (in cm-1): 
+     1.37932        1.37932
+   Principal axis orientation for molecule:
+        0.000000000000    0.000000000000    1.248336809913
+        0.000000000000    0.000000000000   -1.248336809913
+         -----------------------------------------------
+         Cartesian coordinates corresponding to internal 
+                 coordinate input (Bohr) 
+ ----------------------------------------------------------------
+ Z-matrix   Atomic            C o o r d i n a t e s
+  Symbol    Number           X              Y              Z
+ ----------------------------------------------------------------
+     N         7         0.00000000     0.00000000     1.24833681
+     N         7         0.00000000     0.00000000    -1.24833681
+ ----------------------------------------------------------------
+   Interatomic distance matrix (Angstroms) 
+
+                 N             N    
+                [ 1]        [ 2]
+  N    [ 1]     0.00000
+  N    [ 2]     1.32118     0.00000
+  @CHRTABLE-I, There are  14 unique irreducible representations.
+  @CHRTABLE-I, There are   8 unique irreducible representations.
+  @VIBINF-I, Symmetries species for nuclear motions:
+  Irrep     Label    Total    Vibrations     Translations     Rotations
+    1        A1g      1.00       1.00            0.00            0.00
+    2        A1u      0.00       0.00            0.00            0.00
+    3        A2g      0.00       0.00            0.00            0.00
+    4        E1g      1.00       0.00            0.00            1.00
+    5        E1u      1.00       0.00            1.00            0.00
+    6        E2u      0.00       0.00            0.00            0.00
+    7        E2g      0.00       0.00            0.00            0.00
+    8        E3g      0.00       0.00            0.00            0.00
+    9        E3u      0.00       0.00            0.00            0.00
+   10        B1u      0.00       0.00            0.00            0.00
+   11        B2g      0.00       0.00            0.00            0.00
+   12        B2u      0.00       0.00            0.00            0.00
+   13        B1g      0.00       0.00            0.00            0.00
+   14        A2u      1.00       0.00            1.00            0.00
+  @SETPTS: FCM evaluation limited to the following symmetries :
+    1
+   Total number of calculations required      :     2
+   Number of single-point energy calculations :     2
+   Number of energy gradient     calculations :     0
+   JODA beginning optimization cycle #  2.
+  @symmetry-i, Coordinates after  COM shift 
+      0.000000000000      0.000000000000      1.248809213711
+      0.000000000000      0.000000000000     -1.248809213711
+   Rotational constants (in cm-1): 
+     1.37828        1.37828
+   Principal axis orientation for molecule:
+        0.000000000000    0.000000000000   -1.248809213711
+        0.000000000000    0.000000000000    1.248809213711
+@ACES2: Executing "xvmol"
+ One- and two-electron integrals over symmetry-adapted AOs are calculated.
+
+ @READIN: Cartesian gaussians are used.
+NAMN: N #1  0.000000000  0.000000000 -1.248809214
+             18 SYMMETRY ADAPTED BASIS FUNCTIONS 
+  @READIN-I, Nuclear repulsion energy :   19.6186893330 a.u.
+  required memory for a1 array  8903380 words 
+  required memory for a2 array  18410 words 
+@ACES_MALLOC: allocated >= 34 MB of core memory
+  @TWOEL-I,        264 integrals of symmetry type  I I I I
+  @TWOEL-I,        825 integrals of symmetry type  I J I J
+  @TWOEL-I,        639 integrals of symmetry type  I I J J
+  @TWOEL-I,        648 integrals of symmetry type  I J K L
+  @TWOEL-I, Total number of 2-e integrals       2376.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.04 (      0.0)   0: 0: 0.22 (      0.2)   0: 0: 0.4 (      0.4)
+@ACES2: Executing "xvmol2ja"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144875520 204875775
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.01 (      0.0)   0: 0: 0.02 (      0.0)   0: 0: 0.0 (      0.0)
+@ACES2: Executing "xvprops"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142909440 202909695
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+   Property integrals will be calculated.
+
+    --------------------------------------------------------
+                                Property evaluated at 
+    Property type              X           Y           Z
+    --------------------------------------------------------
+    Dipole moment            ----        ----        ----   
+    Second moment          0.0000000   0.0000000   0.0000000
+    --------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.45 (      0.4)   0: 0: 0.41 (      0.4)   0: 0: 0.9 (      0.9)
+@ACES2: Executing "rm -f VPOUT"
+@ACES2: Executing "xvscf"
+@ACES_MALLOC: allocated >= 3 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Occupancies from core Hamiltonian:
+
+          Alpha population by irrep:   2    1    1    0    2    1    0    0
+           Beta population by irrep:   2    1    1    0    2    1    0    0
+
+
+  --------------------------------------------------------------------
+  Iteration         Total Energy            Largest Density Difference
+  --------------------------------------------------------------------
+       0           -99.9793262611              0.0000000000E+00
+       1          -107.2083536782              0.1110459766E+01
+       2          -108.1553218442              0.4282763595E+00
+       3          -108.1929962596              0.1182440837E+00
+       4          -108.1946817057              0.1590823881E-01
+       5          -108.1946883141              0.3385070014E-02
+       6          -108.1946885292              0.7503549792E-03
+       7          -108.1946885298              0.5658939010E-04
+       8          -108.1946885298              0.3380215179E-05
+       9          -108.1946885298              0.5081315531E-06
+ 
+@VSCF-I, SCF has converged.
+
+     E(SCF)=      -108.1946885298              0.2739909277E-07
+
+ 
+@VSCF-I, Final occupancies:
+
+          Alpha population by irrep:   3    1    1    0    2    0    0    0
+           Beta population by irrep:   3    1    1    0    2    0    0    0
+
+
+
+      Trace of projected alpha density matrix =   1.000000000
+
+      Alpha part of wavefunction is symmetric.
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.07 (      0.1)   0: 0: 0.09 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xvtran"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142860288 202860543
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Full RHF integral transformation
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.04 (      0.0)   0: 0: 0.05 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xintprc"
+
+
+ performing integral processing for standard CC
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144199680 204199935
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Processing integrals for CCSD calculation.
+  @GMOIAA-I, Processing MO integrals for spin case AA.
+  @GMOIAA-I, Generation of integral list completed.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP                361
+                      PPPH                732
+                      PPHH                493
+                      PHPH                328
+                      PHHH                356
+                      HHHH                106
+
+                     TOTAL               2376
+
+  @FORMT2-I, Second-order MBPT correlation energies:
+              ----------------------------------------------
+              E(SCF)                = -108.194688529850 a.u.
+              E2(AA)                =   -0.045296694345 a.u.
+              E2(AB)                =   -0.229388303205 a.u.
+              E2(TOT)               =   -0.319981691895 a.u.
+              Total MBPT(2) energy  = -108.514670221744 a.u.
+              ----------------------------------------------
+   Largest T2 amplitudes for spin case AB:
+       _       _                 _       _                 _       _
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   5  17  17]-0.14302 [  4   4  15  15]-0.14302 [  5   4  17  15]-0.11647
+[  4   5  15  17]-0.11647 [  5   3  17  12]-0.05704 [  3   5  12  17]-0.05704
+[  4   3  15  12]-0.05704 [  3   4  12  15]-0.05704 [  3   3  12  12]-0.04569
+[  7   7  17  17]-0.04276 [  7   7  15  15]-0.04276 [  5   2  17  12]-0.03571
+[  2   5  12  17]-0.03571 [  4   2  15  12]-0.03571 [  2   4  12  15]-0.03571
+-----------------------------------------------------------------------------
+   Norm of T2AB vector (      909 symmetry allowed elements):  0.3490576938.
+-----------------------------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.04 (      0.0)   0: 0: 0.08 (      0.1)   0: 0: 0.4 (      0.4)
+@ACES2: Executing "xmrcc"
+
+   *****************************************
+   *                                       *
+   *     ACES III Correlated Techniques    *
+   *                                       *
+   *              MBPT[2] / CCSD           *
+   *              EOMCC / STEOMCC          *
+   *                                       *
+   *                                       *
+   *           Authors:                    *
+   *                                       *
+   *         Marcel Nooijen                *
+   *         Sullivan Beck                 *
+   *         Steven R. Gwaltney            *
+   *                                       *
+   *****************************************
+
+  @aceslist: lvaaii .ne. lviiaa
+
+  one-electron H and S not read
+
+  All  virtual orbitals between      1.74 and      7.59 eV are considered CC-active
+  Coupled Cluster active virtual  orbitals
+     0 [1]   0 [2]   0 [3]   0 [4]   0 [5]   1 [6]   1 [7]   0 [8] 
+
+  All occupied orbitals between    -29.57 and    -14.24 eV are considered CC-active
+  Coupled Cluster active occupied orbitals 
+     1 [1]   1 [2]   1 [3]   0 [4]   1 [5]   0 [6]   0 [7]   0 [8] 
+
+  All  virtual orbitals between      1.74 and      7.59 eV are considered active
+  Number of active virtual  orbitals per irrep
+     0 [1]   0 [2]   0 [3]   0 [4]   0 [5]   1 [6]   1 [7]   0 [8] 
+
+  All occupied orbitals between    -22.30 and    -14.24 eV are considered active
+  Number of active occupied orbitals per irrep
+     1 [1]   1 [2]   1 [3]   0 [4]   0 [5]   0 [6]   0 [7]   0 [8] 
+
+ Final addresses in icore: i_int, iscr, ineeded-imax
+                754931             3754931                2026
+
+  Solve CCSD Equations 
+  singles   T
+  linear    F
+  do_gcc    F
+  do_apg    F
+  gcc_singles  F
+
+  Convergence reached after  13 cycles
+
+  Correlation energies (S, D, S+D)  0.00000000 -0.27818991 -0.27818991
+  Vacuum state energy            -108.1946885298497
+  Total correlated energy        -108.4728784386172
+  Maximum residuals     0.153E-07     0.520E-07
+
+  Single excitation coefficients
+      a  [irrep]     i  [irrep]  
+
+      2    [1],     -3    [1]   ;              0.000404
+      1    [1],     -2    [1]   ;             -0.004913
+      2    [1],     -2    [1]   ;              0.001929
+      1    [1],     -1    [1]   ;             -0.007236
+      2    [1],     -1    [1]   ;              0.007116
+      1    [2],     -1    [2]   ;              0.032525
+      1    [3],     -1    [3]   ;              0.032525
+      1    [5],     -1    [5]   ;              0.014750
+      2    [5],     -1    [5]   ;             -0.005543
+      3    [5],     -1    [5]   ;             -0.001477
+
+  Double excitation coefficients
+      a  [irrep]     a  [irrep]     i  [irrep]     i  [irrep]  
+
+      1    [5],      1    [5]   ;  -1    [1]      -1    [1]     -0.043548
+      1    [6],      1    [6]   ;  -1    [2]      -1    [2]     -0.171180
+      1    [7],      1    [7]   ;  -1    [3]      -1    [3]     -0.171180
+      1    [6],      1    [6]   ;  -1    [5]      -1    [5]     -0.052960
+      1    [7],      1    [7]   ;  -1    [5]      -1    [5]     -0.052960
+      1    [5],      1    [7]   ;  -1    [1]      -1    [3]     -0.041158
+      1    [7],      1    [6]   ;  -1    [2]      -1    [3]     -0.056224
+      1    [6],      1    [7]   ;  -1    [2]      -1    [3]     -0.095758
+
+  Time needed in solveccsd
+  cpu time:   0 h  0 min  1.62 sec;  real time:   0 h  0 min  2 sec  ( 81.0%)
+
+  Hbar is calculated. 
+  Finished calculation of Hbar.
+  Time needed in calchbar
+  cpu time:   0 h  0 min  0.16 sec;  real time:   0 h  0 min  0 sec  (100.0%)
+
+  One-particle contributions to  exp(-T) O exp(T)  are calculated
+
+
+   *****************************************
+   *                                       *
+   *        TDA Excitation Energies        *
+   *          Spin State : Singlet         *
+   *                                       *
+   *****************************************
+
+
+  root #   1 [5], Active component 100.00  eigenvalue =        4.822 eV
+            -1    [2]   ->      1    [6]         0.498981      24.9 %
+            -1    [3]   ->      1    [7]        -0.498981      24.9 %
+
+           Summary of excitation energy TDA calculation
+
+    Multiplet  root   irrep   energy diff (eV) osc. strength % singles  total energy
+   --------------------------------------------------------------------------
+
+     Singlet     1     [5]       4.82202964     0.0000E+00   100.00    -108.01748227
+
+   --------------------------------------------------------------------------
+
+   Track state to follow in optimization
+
+
+  Selected state for gradient
+  Total energy of Singlet state  1 [5]   -108.0174822677
+  Use selected TDA state in EOM-CC gradient 
+
+  time spend in solvetda
+  cpu time:   0 h  0 min  0.05 sec;  real time:   0 h  0 min  0 sec  (100.0%)
+
+
+   *****************************************
+   *                                       *
+   *        EOM Excitation Energies        *
+   *          Spin State : Singlet         *
+   *          CCSD Reference state         *
+   *                                       *
+   *****************************************
+
+ @solveeom: modhbar is switched off
+
+  Solving for   1 roots in symmetry-block   5
+
+
+  Solving for right hand root #   1  [5]
+
+  Convergence reached after 10 cycles.
+  Eigenvalue:     0.293153 a.u.     7.977114 eV    64339.74 cm-1   155.4249 nm
+  Maximumum residual : .358E-07
+  Contribution from single excitations  97.16 %
+
+  Single excitation coefficients
+      a  [irrep]     i  [irrep]  
+
+      1    [6],     -1    [2]   ;              0.491351
+      2    [6],     -1    [2]   ;             -0.038545
+      1    [7],     -1    [3]   ;             -0.491351
+      2    [7],     -1    [3]   ;              0.038545
+
+  Double excitation coefficients
+      a  [irrep]     a  [irrep]     i  [irrep]     i  [irrep]  
+
+      1    [6],      1    [6]   ;  -1    [5]      -2    [1]      0.042795
+      1    [7],      1    [7]   ;  -1    [5]      -2    [1]     -0.042795
+      1    [6],      1    [6]   ;  -1    [5]      -1    [1]     -0.042290
+      1    [7],      1    [7]   ;  -1    [5]      -1    [1]      0.042290
+      1    [6],      1    [6]   ;  -2    [1]      -1    [5]      0.042795
+      1    [7],      1    [7]   ;  -2    [1]      -1    [5]     -0.042795
+      1    [6],      1    [6]   ;  -1    [1]      -1    [5]     -0.042290
+      1    [7],      1    [7]   ;  -1    [1]      -1    [5]      0.042290
+ @solveeom: modhbar is switched off
+ @solveeom: modhbar is switched off
+
+           Summary of excitation energy eom-cc calculation
+
+    Multiplet  root   irrep   energy diff (eV)    % singles     total energy
+   --------------------------------------------------------------------------
+
+     Singlet     1     [5]       7.97711365        97.16       -108.17972502
+
+   --------------------------------------------------------------------------
+
+  Selected state for gradient
+  Total energy of Singlet state  1 [5]   -108.1797250164
+
+  Time spend in solveeom
+  cpu time:   0 h  0 min  0.88 sec;  real time:   0 h  0 min  1 sec  ( 88.0%)
+
+  @CHECKOUT-I, Total execution time :       4.7000 seconds.
+ACES2: Total elapsed time is       21.5 seconds
+@ACES2: Executing "xjoda"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+   JODA beginning optimization cycle #  2.
+  @symmetry-i, Coordinates after  COM shift 
+      0.000000000000      0.000000000000      1.247864406115
+      0.000000000000      0.000000000000     -1.247864406115
+   Rotational constants (in cm-1): 
+     1.38037        1.38037
+   Principal axis orientation for molecule:
+        0.000000000000    0.000000000000   -1.247864406115
+        0.000000000000    0.000000000000    1.247864406115
+@ACES2: Executing "xvmol"
+ One- and two-electron integrals over symmetry-adapted AOs are calculated.
+
+ @READIN: Cartesian gaussians are used.
+NAMN: N #1  0.000000000  0.000000000 -1.247864406
+             18 SYMMETRY ADAPTED BASIS FUNCTIONS 
+  @READIN-I, Nuclear repulsion energy :   19.6335434202 a.u.
+  required memory for a1 array  8903380 words 
+  required memory for a2 array  18410 words 
+@ACES_MALLOC: allocated >= 34 MB of core memory
+  @TWOEL-I,        264 integrals of symmetry type  I I I I
+  @TWOEL-I,        825 integrals of symmetry type  I J I J
+  @TWOEL-I,        639 integrals of symmetry type  I I J J
+  @TWOEL-I,        648 integrals of symmetry type  I J K L
+  @TWOEL-I, Total number of 2-e integrals       2376.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.03 (      0.0)   0: 0: 0.23 (      0.2)   0: 0: 0.4 (      0.4)
+@ACES2: Executing "xvmol2ja"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144875520 204875775
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.02 (      0.0)   0: 0: 0.01 (      0.0)   0: 0: 0.0 (      0.0)
+@ACES2: Executing "xvprops"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142909440 202909695
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+   Property integrals will be calculated.
+
+    --------------------------------------------------------
+                                Property evaluated at 
+    Property type              X           Y           Z
+    --------------------------------------------------------
+    Dipole moment            ----        ----        ----   
+    Second moment          0.0000000   0.0000000   0.0000000
+    --------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.51 (      0.5)   0: 0: 0.35 (      0.4)   0: 0: 0.9 (      0.9)
+@ACES2: Executing "rm -f VPOUT"
+@ACES2: Executing "xvscf"
+@ACES_MALLOC: allocated >= 3 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Occupancies from core Hamiltonian:
+
+          Alpha population by irrep:   2    1    1    0    2    1    0    0
+           Beta population by irrep:   2    1    1    0    2    1    0    0
+
+
+  --------------------------------------------------------------------
+  Iteration         Total Energy            Largest Density Difference
+  --------------------------------------------------------------------
+       0           -99.9766685644              0.0000000000E+00
+       1          -107.2078130248              0.1110610589E+01
+       2          -108.1559288381              0.4297755117E+00
+       3          -108.1936616146              0.1185377158E+00
+       4          -108.1953496024              0.1594399609E-01
+       5          -108.1953562058              0.3392869006E-02
+       6          -108.1953564207              0.7535139916E-03
+       7          -108.1953564213              0.5672621413E-04
+       8          -108.1953564213              0.3417491564E-05
+       9          -108.1953564213              0.5091121635E-06
+ 
+@VSCF-I, SCF has converged.
+
+     E(SCF)=      -108.1953564213              0.2743397809E-07
+
+ 
+@VSCF-I, Final occupancies:
+
+          Alpha population by irrep:   3    1    1    0    2    0    0    0
+           Beta population by irrep:   3    1    1    0    2    0    0    0
+
+
+
+      Trace of projected alpha density matrix =   1.000000000
+
+      Alpha part of wavefunction is symmetric.
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.06 (      0.1)   0: 0: 0.10 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xvtran"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142860288 202860543
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Full RHF integral transformation
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.05 (      0.0)   0: 0: 0.05 (      0.0)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xintprc"
+
+
+ performing integral processing for standard CC
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144199680 204199935
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Processing integrals for CCSD calculation.
+  @GMOIAA-I, Processing MO integrals for spin case AA.
+  @GMOIAA-I, Generation of integral list completed.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP                361
+                      PPPH                732
+                      PPHH                493
+                      PHPH                328
+                      PHHH                356
+                      HHHH                106
+
+                     TOTAL               2376
+
+  @FORMT2-I, Second-order MBPT correlation energies:
+              ----------------------------------------------
+              E(SCF)                = -108.195356421330 a.u.
+              E2(AA)                =   -0.045224360567 a.u.
+              E2(AB)                =   -0.229086936966 a.u.
+              E2(TOT)               =   -0.319535658099 a.u.
+              Total MBPT(2) energy  = -108.514892079429 a.u.
+              ----------------------------------------------
+   Largest T2 amplitudes for spin case AB:
+       _       _                 _       _                 _       _
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   5  17  17]-0.14281 [  4   4  15  15]-0.14281 [  5   4  17  15]-0.11628
+[  4   5  15  17]-0.11628 [  5   3  17  12]-0.05686 [  3   5  12  17]-0.05686
+[  4   3  15  12]-0.05686 [  3   4  12  15]-0.05686 [  3   3  12  12]-0.04552
+[  7   7  17  17]-0.04275 [  7   7  15  15]-0.04275 [  5   2  17  12]-0.03568
+[  2   5  12  17]-0.03568 [  4   2  15  12]-0.03568 [  2   4  12  15]-0.03568
+-----------------------------------------------------------------------------
+   Norm of T2AB vector (      909 symmetry allowed elements):  0.3485875191.
+-----------------------------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.04 (      0.0)   0: 0: 0.08 (      0.1)   0: 0: 0.4 (      0.4)
+@ACES2: Executing "xmrcc"
+
+   *****************************************
+   *                                       *
+   *     ACES III Correlated Techniques    *
+   *                                       *
+   *              MBPT[2] / CCSD           *
+   *              EOMCC / STEOMCC          *
+   *                                       *
+   *                                       *
+   *           Authors:                    *
+   *                                       *
+   *         Marcel Nooijen                *
+   *         Sullivan Beck                 *
+   *         Steven R. Gwaltney            *
+   *                                       *
+   *****************************************
+
+  @aceslist: lvaaii .ne. lviiaa
+
+  one-electron H and S not read
+
+  All  virtual orbitals between      1.75 and      7.61 eV are considered CC-active
+  Coupled Cluster active virtual  orbitals
+     0 [1]   0 [2]   0 [3]   0 [4]   0 [5]   1 [6]   1 [7]   0 [8] 
+
+  All occupied orbitals between    -29.58 and    -14.25 eV are considered CC-active
+  Coupled Cluster active occupied orbitals 
+     1 [1]   1 [2]   1 [3]   0 [4]   1 [5]   0 [6]   0 [7]   0 [8] 
+
+  All  virtual orbitals between      1.75 and      7.61 eV are considered active
+  Number of active virtual  orbitals per irrep
+     0 [1]   0 [2]   0 [3]   0 [4]   0 [5]   1 [6]   1 [7]   0 [8] 
+
+  All occupied orbitals between    -22.30 and    -14.25 eV are considered active
+  Number of active occupied orbitals per irrep
+     1 [1]   1 [2]   1 [3]   0 [4]   0 [5]   0 [6]   0 [7]   0 [8] 
+
+ Final addresses in icore: i_int, iscr, ineeded-imax
+                754931             3754931                2026
+
+  Solve CCSD Equations 
+  singles   T
+  linear    F
+  do_gcc    F
+  do_apg    F
+  gcc_singles  F
+
+  Convergence reached after  13 cycles
+
+  Correlation energies (S, D, S+D)  0.00000000 -0.27793844 -0.27793844
+  Vacuum state energy            -108.1953564213299
+  Total correlated energy        -108.4732948604136
+  Maximum residuals     0.152E-07     0.516E-07
+
+  Single excitation coefficients
+      a  [irrep]     i  [irrep]  
+
+      2    [1],     -3    [1]   ;              0.000404
+      1    [1],     -2    [1]   ;             -0.004903
+      2    [1],     -2    [1]   ;              0.001921
+      1    [1],     -1    [1]   ;             -0.007208
+      2    [1],     -1    [1]   ;              0.007090
+      1    [2],     -1    [2]   ;              0.032483
+      1    [3],     -1    [3]   ;              0.032483
+      1    [5],     -1    [5]   ;              0.014708
+      2    [5],     -1    [5]   ;             -0.005547
+      3    [5],     -1    [5]   ;             -0.001480
+
+  Double excitation coefficients
+      a  [irrep]     a  [irrep]     i  [irrep]     i  [irrep]  
+
+      1    [5],      1    [5]   ;  -1    [1]      -1    [1]     -0.043394
+      1    [6],      1    [6]   ;  -1    [2]      -1    [2]     -0.170901
+      1    [7],      1    [7]   ;  -1    [3]      -1    [3]     -0.170901
+      1    [6],      1    [6]   ;  -1    [5]      -1    [5]     -0.052967
+      1    [7],      1    [7]   ;  -1    [5]      -1    [5]     -0.052967
+      1    [5],      1    [7]   ;  -1    [1]      -1    [3]     -0.041038
+      1    [7],      1    [6]   ;  -1    [2]      -1    [3]     -0.056071
+      1    [6],      1    [7]   ;  -1    [2]      -1    [3]     -0.095660
+
+  Time needed in solveccsd
+  cpu time:   0 h  0 min  1.61 sec;  real time:   0 h  0 min  1 sec  (161.0%)
+
+  Hbar is calculated. 
+  Finished calculation of Hbar.
+  Time needed in calchbar
+  cpu time:   0 h  0 min  0.16 sec;  real time:   0 h  0 min  0 sec  (100.0%)
+
+  One-particle contributions to  exp(-T) O exp(T)  are calculated
+
+
+   *****************************************
+   *                                       *
+   *        TDA Excitation Energies        *
+   *          Spin State : Singlet         *
+   *                                       *
+   *****************************************
+
+
+  root #   1 [5], Active component 100.00  eigenvalue =        4.838 eV
+            -1    [2]   ->      1    [6]         0.498979      24.9 %
+            -1    [3]   ->      1    [7]        -0.498979      24.9 %
+
+           Summary of excitation energy TDA calculation
+
+    Multiplet  root   irrep   energy diff (eV) osc. strength % singles  total energy
+   --------------------------------------------------------------------------
+
+     Singlet     1     [5]       4.83828353     0.0000E+00   100.00    -108.01755284
+
+   --------------------------------------------------------------------------
+
+   Track state to follow in optimization
+
+
+  Selected state for gradient
+  Total energy of Singlet state  1 [5]   -108.0175528402
+  Use selected TDA state in EOM-CC gradient 
+
+  time spend in solvetda
+  cpu time:   0 h  0 min  0.04 sec;  real time:   0 h  0 min  0 sec  (100.0%)
+
+
+   *****************************************
+   *                                       *
+   *        EOM Excitation Energies        *
+   *          Spin State : Singlet         *
+   *          CCSD Reference state         *
+   *                                       *
+   *****************************************
+
+ @solveeom: modhbar is switched off
+
+  Solving for   1 roots in symmetry-block   5
+
+
+  Solving for right hand root #   1  [5]
+
+  Convergence reached after 10 cycles.
+  Eigenvalue:     0.293554 a.u.     7.988023 eV    64427.73 cm-1   155.2127 nm
+  Maximumum residual : .382E-07
+  Contribution from single excitations  97.17 %
+
+  Single excitation coefficients
+      a  [irrep]     i  [irrep]  
+
+      1    [6],     -1    [2]   ;              0.491353
+      2    [6],     -1    [2]   ;             -0.038555
+      1    [7],     -1    [3]   ;             -0.491353
+      2    [7],     -1    [3]   ;              0.038555
+
+  Double excitation coefficients
+      a  [irrep]     a  [irrep]     i  [irrep]     i  [irrep]  
+
+      1    [6],      1    [6]   ;  -1    [5]      -2    [1]      0.042763
+      1    [7],      1    [7]   ;  -1    [5]      -2    [1]     -0.042763
+      1    [6],      1    [6]   ;  -1    [5]      -1    [1]     -0.042332
+      1    [7],      1    [7]   ;  -1    [5]      -1    [1]      0.042332
+      1    [6],      1    [6]   ;  -2    [1]      -1    [5]      0.042763
+      1    [7],      1    [7]   ;  -2    [1]      -1    [5]     -0.042763
+      1    [6],      1    [6]   ;  -1    [1]      -1    [5]     -0.042332
+      1    [7],      1    [7]   ;  -1    [1]      -1    [5]      0.042332
+ @solveeom: modhbar is switched off
+ @solveeom: modhbar is switched off
+
+           Summary of excitation energy eom-cc calculation
+
+    Multiplet  root   irrep   energy diff (eV)    % singles     total energy
+   --------------------------------------------------------------------------
+
+     Singlet     1     [5]       7.98802288        97.17       -108.17974053
+
+   --------------------------------------------------------------------------
+
+  Selected state for gradient
+  Total energy of Singlet state  1 [5]   -108.1797405315
+
+  Time spend in solveeom
+  cpu time:   0 h  0 min  0.85 sec;  real time:   0 h  0 min  1 sec  ( 85.0%)
+
+  @CHECKOUT-I, Total execution time :       4.6700 seconds.
+ACES2: Total elapsed time is       28.8 seconds
+@ACES2: Executing "xjoda"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+   JODA beginning optimization cycle #  2.
+   Retrieving information from last optimization cycle.
+   Internal coordinate forces and energy gradients (atomic units): 
+           R       dV/dR             R       dV/dR             R       dV/dR
+ [R    ]  2.49667  0.00821
+   Hessian from cycle  1 read.
+   BFGS update using last two gradients and previous step.
+   There are  0 Negative Eigenvalues.
+   There are  0 Negative Eigenvalues.
+   MANR scale factor for NR step is 0.979 for R    .
+   Summary of Optimization Cycle: 
+   The maximum unscaled step is:    0.01084.
+   Scale factor set to:  1.00000.
+   Forces are in hartree/bohr and hartree/radian.
+   Parameter values are in Angstroms and degrees.
+--------------------------------------------------------------------------
+  Parameter     dV/dR           Step          Rold            Rnew
+--------------------------------------------------------------------------
+    R       0.0082107374   -0.0057352800    1.3211828778    1.3154475978
+--------------------------------------------------------------------------
+  Minimum force:  0.008210737 / RMS force:  0.008210737
+ Updating structure...
+  @symmetry-i, Coordinates after  COM shift 
+      0.000000000000      0.000000000000     -1.242917756089
+      0.000000000000      0.000000000000      1.242917756089
+   Rotational constants (in cm-1): 
+     1.39137        1.39137
+   Principal axis orientation for molecule:
+        0.000000000000    0.000000000000    1.242917756089
+        0.000000000000    0.000000000000   -1.242917756089
+         -----------------------------------------------
+         Cartesian coordinates corresponding to internal 
+                 coordinate input (Bohr) 
+ ----------------------------------------------------------------
+ Z-matrix   Atomic            C o o r d i n a t e s
+  Symbol    Number           X              Y              Z
+ ----------------------------------------------------------------
+     N         7         0.00000000     0.00000000     1.24291776
+     N         7         0.00000000     0.00000000    -1.24291776
+ ----------------------------------------------------------------
+   Interatomic distance matrix (Angstroms) 
+
+                 N             N    
+                [ 1]        [ 2]
+  N    [ 1]     0.00000
+  N    [ 2]     1.31545     0.00000
+  @CHRTABLE-I, There are  14 unique irreducible representations.
+  @CHRTABLE-I, There are   8 unique irreducible representations.
+  @VIBINF-I, Symmetries species for nuclear motions:
+  Irrep     Label    Total    Vibrations     Translations     Rotations
+    1        A1g      1.00       1.00            0.00            0.00
+    2        A1u      0.00       0.00            0.00            0.00
+    3        A2g      0.00       0.00            0.00            0.00
+    4        E1g      1.00       0.00            0.00            1.00
+    5        E1u      1.00       0.00            1.00            0.00
+    6        E2u      0.00       0.00            0.00            0.00
+    7        E2g      0.00       0.00            0.00            0.00
+    8        E3g      0.00       0.00            0.00            0.00
+    9        E3u      0.00       0.00            0.00            0.00
+   10        B1u      0.00       0.00            0.00            0.00
+   11        B2g      0.00       0.00            0.00            0.00
+   12        B2u      0.00       0.00            0.00            0.00
+   13        B1g      0.00       0.00            0.00            0.00
+   14        A2u      1.00       0.00            1.00            0.00
+  @SETPTS: FCM evaluation limited to the following symmetries :
+    1
+   Total number of calculations required      :     2
+   Number of single-point energy calculations :     2
+   Number of energy gradient     calculations :     0
+   JODA beginning optimization cycle #  3.
+  @symmetry-i, Coordinates after  COM shift 
+      0.000000000000      0.000000000000      1.243390159888
+      0.000000000000      0.000000000000     -1.243390159888
+   Rotational constants (in cm-1): 
+     1.39032        1.39032
+   Principal axis orientation for molecule:
+        0.000000000000    0.000000000000   -1.243390159888
+        0.000000000000    0.000000000000    1.243390159888
+@ACES2: Executing "xvmol"
+ One- and two-electron integrals over symmetry-adapted AOs are calculated.
+
+ @READIN: Cartesian gaussians are used.
+NAMN: N #1  0.000000000  0.000000000 -1.243390160
+             18 SYMMETRY ADAPTED BASIS FUNCTIONS 
+  @READIN-I, Nuclear repulsion energy :   19.7041932536 a.u.
+  required memory for a1 array  8903380 words 
+  required memory for a2 array  18410 words 
+@ACES_MALLOC: allocated >= 34 MB of core memory
+  @TWOEL-I,        264 integrals of symmetry type  I I I I
+  @TWOEL-I,        825 integrals of symmetry type  I J I J
+  @TWOEL-I,        639 integrals of symmetry type  I I J J
+  @TWOEL-I,        648 integrals of symmetry type  I J K L
+  @TWOEL-I, Total number of 2-e integrals       2376.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.05 (      0.1)   0: 0: 0.21 (      0.2)   0: 0: 0.4 (      0.4)
+@ACES2: Executing "xvmol2ja"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144875520 204875775
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.02 (      0.0)   0: 0: 0.01 (      0.0)   0: 0: 0.0 (      0.0)
+@ACES2: Executing "xvprops"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142909440 202909695
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+   Property integrals will be calculated.
+
+    --------------------------------------------------------
+                                Property evaluated at 
+    Property type              X           Y           Z
+    --------------------------------------------------------
+    Dipole moment            ----        ----        ----   
+    Second moment          0.0000000   0.0000000   0.0000000
+    --------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.52 (      0.5)   0: 0: 0.32 (      0.3)   0: 0: 0.9 (      0.9)
+@ACES2: Executing "rm -f VPOUT"
+@ACES2: Executing "xvscf"
+@ACES_MALLOC: allocated >= 3 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Occupancies from core Hamiltonian:
+
+          Alpha population by irrep:   2    1    1    0    2    1    0    0
+           Beta population by irrep:   2    1    1    0    2    1    0    0
+
+
+  --------------------------------------------------------------------
+  Iteration         Total Energy            Largest Density Difference
+  --------------------------------------------------------------------
+       0           -99.9639532300              0.0000000000E+00
+       1          -107.2052019705              0.1111333413E+01
+       2          -108.1587902940              0.4369388324E+00
+       3          -108.1968024909              0.1199357175E+00
+       4          -108.1985026700              0.1611399722E-01
+       5          -108.1985092498              0.3429978458E-02
+       6          -108.1985094640              0.7686151792E-03
+       7          -108.1985094646              0.5736506132E-04
+       8          -108.1985094646              0.3597417885E-05
+       9          -108.1985094646              0.5136892747E-06
+ 
+@VSCF-I, SCF has converged.
+
+     E(SCF)=      -108.1985094646              0.2759347140E-07
+
+ 
+@VSCF-I, Final occupancies:
+
+          Alpha population by irrep:   3    1    1    0    2    0    0    0
+           Beta population by irrep:   3    1    1    0    2    0    0    0
+
+
+
+      Trace of projected alpha density matrix =   1.000000000
+
+      Alpha part of wavefunction is symmetric.
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.07 (      0.1)   0: 0: 0.09 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xvtran"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142860288 202860543
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Full RHF integral transformation
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.06 (      0.1)   0: 0: 0.04 (      0.0)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xintprc"
+
+
+ performing integral processing for standard CC
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144199680 204199935
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Processing integrals for CCSD calculation.
+  @GMOIAA-I, Processing MO integrals for spin case AA.
+  @GMOIAA-I, Generation of integral list completed.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP                361
+                      PPPH                732
+                      PPHH                493
+                      PHPH                328
+                      PHHH                356
+                      HHHH                106
+
+                     TOTAL               2376
+
+  @FORMT2-I, Second-order MBPT correlation energies:
+              ----------------------------------------------
+              E(SCF)                = -108.198509464578 a.u.
+              E2(AA)                =   -0.044883434313 a.u.
+              E2(AB)                =   -0.227665831379 a.u.
+              E2(TOT)               =   -0.317432700006 a.u.
+              Total MBPT(2) energy  = -108.515942164583 a.u.
+              ----------------------------------------------
+   Largest T2 amplitudes for spin case AB:
+       _       _                 _       _                 _       _
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   5  17  17]-0.14178 [  4   4  15  15]-0.14178 [  5   4  17  15]-0.11541
+[  4   5  15  17]-0.11541 [  5   3  17  12]-0.05600 [  3   5  12  17]-0.05600
+[  4   3  15  12]-0.05600 [  3   4  12  15]-0.05600 [  3   3  12  12]-0.04474
+[  7   7  17  17]-0.04272 [  7   7  15  15]-0.04272 [  5   2  17  12]-0.03555
+[  2   5  12  17]-0.03555 [  4   2  15  12]-0.03555 [  2   4  12  15]-0.03555
+-----------------------------------------------------------------------------
+   Norm of T2AB vector (      909 symmetry allowed elements):  0.3463695403.
+-----------------------------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.07 (      0.1)   0: 0: 0.05 (      0.0)   0: 0: 0.4 (      0.4)
+@ACES2: Executing "xmrcc"
+
+   *****************************************
+   *                                       *
+   *     ACES III Correlated Techniques    *
+   *                                       *
+   *              MBPT[2] / CCSD           *
+   *              EOMCC / STEOMCC          *
+   *                                       *
+   *                                       *
+   *           Authors:                    *
+   *                                       *
+   *         Marcel Nooijen                *
+   *         Sullivan Beck                 *
+   *         Steven R. Gwaltney            *
+   *                                       *
+   *****************************************
+
+  @aceslist: lvaaii .ne. lviiaa
+
+  one-electron H and S not read
+
+  All  virtual orbitals between      1.80 and      7.71 eV are considered CC-active
+  Coupled Cluster active virtual  orbitals
+     0 [1]   0 [2]   0 [3]   0 [4]   0 [5]   1 [6]   1 [7]   0 [8] 
+
+  All occupied orbitals between    -29.61 and    -14.29 eV are considered CC-active
+  Coupled Cluster active occupied orbitals 
+     1 [1]   1 [2]   1 [3]   0 [4]   1 [5]   0 [6]   0 [7]   0 [8] 
+
+  All  virtual orbitals between      1.80 and      7.71 eV are considered active
+  Number of active virtual  orbitals per irrep
+     0 [1]   0 [2]   0 [3]   0 [4]   0 [5]   1 [6]   1 [7]   0 [8] 
+
+  All occupied orbitals between    -22.26 and    -14.29 eV are considered active
+  Number of active occupied orbitals per irrep
+     1 [1]   1 [2]   1 [3]   0 [4]   0 [5]   0 [6]   0 [7]   0 [8] 
+
+ Final addresses in icore: i_int, iscr, ineeded-imax
+                754931             3754931                2026
+
+  Solve CCSD Equations 
+  singles   T
+  linear    F
+  do_gcc    F
+  do_apg    F
+  gcc_singles  F
+
+  Convergence reached after  13 cycles
+
+  Correlation energies (S, D, S+D)  0.00000000 -0.27675002 -0.27675002
+  Vacuum state energy            -108.1985094645776
+  Total correlated energy        -108.4752594827445
+  Maximum residuals     0.150E-07     0.495E-07
+
+  Single excitation coefficients
+      a  [irrep]     i  [irrep]  
+
+      2    [1],     -3    [1]   ;              0.000404
+      1    [1],     -2    [1]   ;             -0.004851
+      2    [1],     -2    [1]   ;              0.001884
+      1    [1],     -1    [1]   ;             -0.007077
+      2    [1],     -1    [1]   ;              0.006966
+      1    [2],     -1    [2]   ;              0.032285
+      1    [3],     -1    [3]   ;              0.032285
+      1    [5],     -1    [5]   ;              0.014509
+      2    [5],     -1    [5]   ;             -0.005565
+      3    [5],     -1    [5]   ;             -0.001492
+
+  Double excitation coefficients
+      a  [irrep]     a  [irrep]     i  [irrep]     i  [irrep]  
+
+      1    [5],      1    [5]   ;  -1    [1]      -1    [1]     -0.042670
+      1    [6],      1    [6]   ;  -1    [2]      -1    [2]     -0.169585
+      1    [7],      1    [7]   ;  -1    [3]      -1    [3]     -0.169585
+      1    [6],      1    [6]   ;  -1    [5]      -1    [5]     -0.052998
+      1    [7],      1    [7]   ;  -1    [5]      -1    [5]     -0.052998
+      1    [5],      1    [7]   ;  -1    [1]      -1    [3]     -0.040470
+      1    [7],      1    [6]   ;  -1    [2]      -1    [3]     -0.055351
+      1    [6],      1    [7]   ;  -1    [2]      -1    [3]     -0.095197
+
+  Time needed in solveccsd
+  cpu time:   0 h  0 min  1.63 sec;  real time:   0 h  0 min  1 sec  (163.0%)
+
+  Hbar is calculated. 
+  Finished calculation of Hbar.
+  Time needed in calchbar
+  cpu time:   0 h  0 min  0.14 sec;  real time:   0 h  0 min  0 sec  (100.0%)
+
+  One-particle contributions to  exp(-T) O exp(T)  are calculated
+
+
+   *****************************************
+   *                                       *
+   *        TDA Excitation Energies        *
+   *          Spin State : Singlet         *
+   *                                       *
+   *****************************************
+
+
+  root #   1 [5], Active component 100.00  eigenvalue =        4.916 eV
+            -1    [2]   ->      1    [6]         0.498972      24.9 %
+            -1    [3]   ->      1    [7]        -0.498972      24.9 %
+
+           Summary of excitation energy TDA calculation
+
+    Multiplet  root   irrep   energy diff (eV) osc. strength % singles  total energy
+   --------------------------------------------------------------------------
+
+     Singlet     1     [5]       4.91562641     0.0000E+00   100.00    -108.01786359
+
+   --------------------------------------------------------------------------
+
+   Track state to follow in optimization
+
+
+  Selected state for gradient
+  Total energy of Singlet state  1 [5]   -108.0178635856
+  Use selected TDA state in EOM-CC gradient 
+
+  time spend in solvetda
+  cpu time:   0 h  0 min  0.05 sec;  real time:   0 h  0 min  0 sec  (100.0%)
+
+
+   *****************************************
+   *                                       *
+   *        EOM Excitation Energies        *
+   *          Spin State : Singlet         *
+   *          CCSD Reference state         *
+   *                                       *
+   *****************************************
+
+ @solveeom: modhbar is switched off
+
+  Solving for   1 roots in symmetry-block   5
+
+
+  Solving for right hand root #   1  [5]
+
+  Convergence reached after 10 cycles.
+  Eigenvalue:     0.295471 a.u.     8.040170 eV    64848.32 cm-1   154.2060 nm
+  Maximumum residual : .489E-07
+  Contribution from single excitations  97.17 %
+
+  Single excitation coefficients
+      a  [irrep]     i  [irrep]  
+
+      1    [6],     -1    [2]   ;              0.491364
+      2    [6],     -1    [2]   ;             -0.038603
+      1    [7],     -1    [3]   ;             -0.491364
+      2    [7],     -1    [3]   ;              0.038603
+
+  Double excitation coefficients
+      a  [irrep]     a  [irrep]     i  [irrep]     i  [irrep]  
+
+      1    [6],      1    [6]   ;  -1    [5]      -2    [1]      0.042608
+      1    [7],      1    [7]   ;  -1    [5]      -2    [1]     -0.042608
+      1    [6],      1    [6]   ;  -1    [5]      -1    [1]     -0.042531
+      1    [7],      1    [7]   ;  -1    [5]      -1    [1]      0.042531
+      1    [6],      1    [6]   ;  -2    [1]      -1    [5]      0.042608
+      1    [7],      1    [7]   ;  -2    [1]      -1    [5]     -0.042608
+      1    [6],      1    [6]   ;  -1    [1]      -1    [5]     -0.042531
+      1    [7],      1    [7]   ;  -1    [1]      -1    [5]      0.042531
+ @solveeom: modhbar is switched off
+ @solveeom: modhbar is switched off
+
+           Summary of excitation energy eom-cc calculation
+
+    Multiplet  root   irrep   energy diff (eV)    % singles     total energy
+   --------------------------------------------------------------------------
+
+     Singlet     1     [5]       8.04016951        97.17       -108.17978880
+
+   --------------------------------------------------------------------------
+
+  Selected state for gradient
+  Total energy of Singlet state  1 [5]   -108.1797888009
+
+  Time spend in solveeom
+  cpu time:   0 h  0 min  0.85 sec;  real time:   0 h  0 min  0 sec  (100.0%)
+
+  @CHECKOUT-I, Total execution time :       4.6700 seconds.
+ACES2: Total elapsed time is       36.0 seconds
+@ACES2: Executing "xjoda"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+   JODA beginning optimization cycle #  3.
+  @symmetry-i, Coordinates after  COM shift 
+      0.000000000000      0.000000000000      1.242445352291
+      0.000000000000      0.000000000000     -1.242445352291
+   Rotational constants (in cm-1): 
+     1.39243        1.39243
+   Principal axis orientation for molecule:
+        0.000000000000    0.000000000000   -1.242445352291
+        0.000000000000    0.000000000000    1.242445352291
+@ACES2: Executing "xvmol"
+ One- and two-electron integrals over symmetry-adapted AOs are calculated.
+
+ @READIN: Cartesian gaussians are used.
+NAMN: N #1  0.000000000  0.000000000 -1.242445352
+             18 SYMMETRY ADAPTED BASIS FUNCTIONS 
+  @READIN-I, Nuclear repulsion energy :   19.7191771492 a.u.
+  required memory for a1 array  8903380 words 
+  required memory for a2 array  18410 words 
+@ACES_MALLOC: allocated >= 34 MB of core memory
+  @TWOEL-I,        264 integrals of symmetry type  I I I I
+  @TWOEL-I,        825 integrals of symmetry type  I J I J
+  @TWOEL-I,        639 integrals of symmetry type  I I J J
+  @TWOEL-I,        648 integrals of symmetry type  I J K L
+  @TWOEL-I, Total number of 2-e integrals       2376.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.03 (      0.0)   0: 0: 0.24 (      0.2)   0: 0: 0.4 (      0.4)
+@ACES2: Executing "xvmol2ja"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144875520 204875775
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.01 (      0.0)   0: 0: 0.02 (      0.0)   0: 0: 0.0 (      0.0)
+@ACES2: Executing "xvprops"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142909440 202909695
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+   Property integrals will be calculated.
+
+    --------------------------------------------------------
+                                Property evaluated at 
+    Property type              X           Y           Z
+    --------------------------------------------------------
+    Dipole moment            ----        ----        ----   
+    Second moment          0.0000000   0.0000000   0.0000000
+    --------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.50 (      0.5)   0: 0: 0.36 (      0.4)   0: 0: 0.9 (      0.9)
+@ACES2: Executing "rm -f VPOUT"
+@ACES2: Executing "xvscf"
+@ACES_MALLOC: allocated >= 3 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Occupancies from core Hamiltonian:
+
+          Alpha population by irrep:   2    1    1    0    2    1    0    0
+           Beta population by irrep:   2    1    1    0    2    1    0    0
+
+
+  --------------------------------------------------------------------
+  Iteration         Total Energy            Largest Density Difference
+  --------------------------------------------------------------------
+       0           -99.9612406964              0.0000000000E+00
+       1          -107.2046398187              0.1111487881E+01
+       2          -108.1593917240              0.4384650515E+00
+       3          -108.1974635725              0.1202324996E+00
+       4          -108.1991663589              0.1615003703E-01
+       5          -108.1991729338              0.3437850710E-02
+       6          -108.1991731478              0.7718337098E-03
+       7          -108.1991731484              0.5749787521E-04
+       8          -108.1991731484              0.3636129570E-05
+       9          -108.1991731484              0.5146405012E-06
+ 
+@VSCF-I, SCF has converged.
+
+     E(SCF)=      -108.1991731484              0.2762614104E-07
+
+ 
+@VSCF-I, Final occupancies:
+
+          Alpha population by irrep:   3    1    1    0    2    0    0    0
+           Beta population by irrep:   3    1    1    0    2    0    0    0
+
+
+
+      Trace of projected alpha density matrix =   1.000000000
+
+      Alpha part of wavefunction is symmetric.
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.09 (      0.1)   0: 0: 0.07 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xvtran"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142860288 202860543
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Full RHF integral transformation
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.03 (      0.0)   0: 0: 0.06 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xintprc"
+
+
+ performing integral processing for standard CC
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144199680 204199935
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Processing integrals for CCSD calculation.
+  @GMOIAA-I, Processing MO integrals for spin case AA.
+  @GMOIAA-I, Generation of integral list completed.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP                361
+                      PPPH                732
+                      PPHH                493
+                      PHPH                328
+                      PHHH                356
+                      HHHH                106
+
+                     TOTAL               2376
+
+  @FORMT2-I, Second-order MBPT correlation energies:
+              ----------------------------------------------
+              E(SCF)                = -108.199173148371 a.u.
+              E2(AA)                =   -0.044811783978 a.u.
+              E2(AB)                =   -0.227367017921 a.u.
+              E2(TOT)               =   -0.316990585878 a.u.
+              Total MBPT(2) energy  = -108.516163734249 a.u.
+              ----------------------------------------------
+   Largest T2 amplitudes for spin case AB:
+       _       _                 _       _                 _       _
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   5  17  17]-0.14157 [  4   4  15  15]-0.14157 [  5   4  17  15]-0.11523
+[  4   5  15  17]-0.11523 [  5   3  17  12]-0.05582 [  3   5  12  17]-0.05582
+[  4   3  15  12]-0.05582 [  3   4  12  15]-0.05582 [  3   3  12  12]-0.04458
+[  7   7  17  17]-0.04271 [  7   7  15  15]-0.04271 [  5   2  17  12]-0.03552
+[  2   5  12  17]-0.03552 [  4   2  15  12]-0.03552 [  2   4  12  15]-0.03552
+-----------------------------------------------------------------------------
+   Norm of T2AB vector (      909 symmetry allowed elements):  0.3459029930.
+-----------------------------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.06 (      0.1)   0: 0: 0.06 (      0.1)   0: 0: 0.4 (      0.4)
+@ACES2: Executing "xmrcc"
+
+   *****************************************
+   *                                       *
+   *     ACES III Correlated Techniques    *
+   *                                       *
+   *              MBPT[2] / CCSD           *
+   *              EOMCC / STEOMCC          *
+   *                                       *
+   *                                       *
+   *           Authors:                    *
+   *                                       *
+   *         Marcel Nooijen                *
+   *         Sullivan Beck                 *
+   *         Steven R. Gwaltney            *
+   *                                       *
+   *****************************************
+
+  @aceslist: lvaaii .ne. lviiaa
+
+  one-electron H and S not read
+
+  All  virtual orbitals between      1.81 and      7.73 eV are considered CC-active
+  Coupled Cluster active virtual  orbitals
+     0 [1]   0 [2]   0 [3]   0 [4]   0 [5]   1 [6]   1 [7]   0 [8] 
+
+  All occupied orbitals between    -29.61 and    -14.30 eV are considered CC-active
+  Coupled Cluster active occupied orbitals 
+     1 [1]   1 [2]   1 [3]   0 [4]   1 [5]   0 [6]   0 [7]   0 [8] 
+
+  All  virtual orbitals between      1.81 and      7.73 eV are considered active
+  Number of active virtual  orbitals per irrep
+     0 [1]   0 [2]   0 [3]   0 [4]   0 [5]   1 [6]   1 [7]   0 [8] 
+
+  All occupied orbitals between    -22.25 and    -14.30 eV are considered active
+  Number of active occupied orbitals per irrep
+     1 [1]   1 [2]   1 [3]   0 [4]   0 [5]   0 [6]   0 [7]   0 [8] 
+
+ Final addresses in icore: i_int, iscr, ineeded-imax
+                754931             3754931                2026
+
+  Solve CCSD Equations 
+  singles   T
+  linear    F
+  do_gcc    F
+  do_apg    F
+  gcc_singles  F
+
+  Convergence reached after  13 cycles
+
+  Correlation energies (S, D, S+D)  0.00000000 -0.27649958 -0.27649958
+  Vacuum state energy            -108.1991731483714
+  Total correlated energy        -108.4756727275080
+  Maximum residuals     0.149E-07     0.491E-07
+
+  Single excitation coefficients
+      a  [irrep]     i  [irrep]  
+
+      2    [1],     -3    [1]   ;              0.000404
+      1    [1],     -2    [1]   ;             -0.004840
+      2    [1],     -2    [1]   ;              0.001877
+      1    [1],     -1    [1]   ;             -0.007049
+      2    [1],     -1    [1]   ;              0.006939
+      1    [2],     -1    [2]   ;              0.032243
+      1    [3],     -1    [3]   ;              0.032243
+      1    [5],     -1    [5]   ;              0.014467
+      2    [5],     -1    [5]   ;             -0.005569
+      3    [5],     -1    [5]   ;             -0.001494
+
+  Double excitation coefficients
+      a  [irrep]     a  [irrep]     i  [irrep]     i  [irrep]  
+
+      1    [5],      1    [5]   ;  -1    [1]      -1    [1]     -0.042518
+      1    [6],      1    [6]   ;  -1    [2]      -1    [2]     -0.169308
+      1    [7],      1    [7]   ;  -1    [3]      -1    [3]     -0.169308
+      1    [6],      1    [6]   ;  -1    [5]      -1    [5]     -0.053004
+      1    [7],      1    [7]   ;  -1    [5]      -1    [5]     -0.053004
+      1    [5],      1    [7]   ;  -1    [1]      -1    [3]     -0.040351
+      1    [7],      1    [6]   ;  -1    [2]      -1    [3]     -0.055200
+      1    [6],      1    [7]   ;  -1    [2]      -1    [3]     -0.095100
+
+  Time needed in solveccsd
+  cpu time:   0 h  0 min  1.64 sec;  real time:   0 h  0 min  2 sec  ( 82.0%)
+
+  Hbar is calculated. 
+  Finished calculation of Hbar.
+  Time needed in calchbar
+  cpu time:   0 h  0 min  0.16 sec;  real time:   0 h  0 min  0 sec  (100.0%)
+
+  One-particle contributions to  exp(-T) O exp(T)  are calculated
+
+
+   *****************************************
+   *                                       *
+   *        TDA Excitation Energies        *
+   *          Spin State : Singlet         *
+   *                                       *
+   *****************************************
+
+
+  root #   1 [5], Active component 100.00  eigenvalue =        4.932 eV
+            -1    [2]   ->      1    [6]         0.498971      24.9 %
+            -1    [3]   ->      1    [7]        -0.498971      24.9 %
+
+           Summary of excitation energy TDA calculation
+
+    Multiplet  root   irrep   energy diff (eV) osc. strength % singles  total energy
+   --------------------------------------------------------------------------
+
+     Singlet     1     [5]       4.93203716     0.0000E+00   100.00    -108.01792419
+
+   --------------------------------------------------------------------------
+
+   Track state to follow in optimization
+
+
+  Selected state for gradient
+  Total energy of Singlet state  1 [5]   -108.0179241860
+  Use selected TDA state in EOM-CC gradient 
+
+  time spend in solvetda
+  cpu time:   0 h  0 min  0.05 sec;  real time:   0 h  0 min  0 sec  (100.0%)
+
+
+   *****************************************
+   *                                       *
+   *        EOM Excitation Energies        *
+   *          Spin State : Singlet         *
+   *          CCSD Reference state         *
+   *                                       *
+   *****************************************
+
+ @solveeom: modhbar is switched off
+
+  Solving for   1 roots in symmetry-block   5
+
+
+  Solving for right hand root #   1  [5]
+
+  Convergence reached after 10 cycles.
+  Eigenvalue:     0.295879 a.u.     8.051284 eV    64937.96 cm-1   153.9931 nm
+  Maximumum residual : .507E-07
+  Contribution from single excitations  97.17 %
+
+  Single excitation coefficients
+      a  [irrep]     i  [irrep]  
+
+      1    [6],     -1    [2]   ;              0.491366
+      2    [6],     -1    [2]   ;             -0.038613
+      1    [7],     -1    [3]   ;             -0.491366
+      2    [7],     -1    [3]   ;              0.038613
+
+  Double excitation coefficients
+      a  [irrep]     a  [irrep]     i  [irrep]     i  [irrep]  
+
+      1    [6],      1    [6]   ;  -1    [5]      -2    [1]      0.042575
+      1    [7],      1    [7]   ;  -1    [5]      -2    [1]     -0.042575
+      1    [6],      1    [6]   ;  -1    [5]      -1    [1]     -0.042573
+      1    [7],      1    [7]   ;  -1    [5]      -1    [1]      0.042573
+      1    [6],      1    [6]   ;  -2    [1]      -1    [5]      0.042575
+      1    [7],      1    [7]   ;  -2    [1]      -1    [5]     -0.042575
+      1    [6],      1    [6]   ;  -1    [1]      -1    [5]     -0.042573
+      1    [7],      1    [7]   ;  -1    [1]      -1    [5]      0.042573
+ @solveeom: modhbar is switched off
+ @solveeom: modhbar is switched off
+
+           Summary of excitation energy eom-cc calculation
+
+    Multiplet  root   irrep   energy diff (eV)    % singles     total energy
+   --------------------------------------------------------------------------
+
+     Singlet     1     [5]       8.05128362        97.17       -108.17979361
+
+   --------------------------------------------------------------------------
+
+  Selected state for gradient
+  Total energy of Singlet state  1 [5]   -108.1797936098
+
+  Time spend in solveeom
+  cpu time:   0 h  0 min  0.86 sec;  real time:   0 h  0 min  1 sec  ( 86.0%)
+
+  @CHECKOUT-I, Total execution time :       4.6900 seconds.
+ACES2: Total elapsed time is       43.3 seconds
+@ACES2: Executing "xjoda"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+   JODA beginning optimization cycle #  3.
+   Retrieving information from last optimization cycle.
+   Internal coordinate forces and energy gradients (atomic units): 
+           R       dV/dR             R       dV/dR             R       dV/dR
+ [R    ]  2.48584  0.00254
+   Hessian from cycle  2 read.
+   BFGS update using last two gradients and previous step.
+   There are  0 Negative Eigenvalues.
+   There are  0 Negative Eigenvalues.
+   MANR scale factor for NR step is 0.991 for R    .
+   Summary of Optimization Cycle: 
+   The maximum unscaled step is:    0.00482.
+   Scale factor set to:  1.00000.
+   Forces are in hartree/bohr and hartree/radian.
+   Parameter values are in Angstroms and degrees.
+--------------------------------------------------------------------------
+  Parameter     dV/dR           Step          Rold            Rnew
+--------------------------------------------------------------------------
+    R       0.0025449127   -0.0025519555    1.3154475978    1.3128956423
+--------------------------------------------------------------------------
+  Minimum force:  0.002544913 / RMS force:  0.002544913
+ Updating structure...
+  @symmetry-i, Coordinates after  COM shift 
+      0.000000000000      0.000000000000     -1.240506507752
+      0.000000000000      0.000000000000      1.240506507752
+   Rotational constants (in cm-1): 
+     1.39679        1.39679
+   Principal axis orientation for molecule:
+        0.000000000000    0.000000000000    1.240506507752
+        0.000000000000    0.000000000000   -1.240506507752
+         -----------------------------------------------
+         Cartesian coordinates corresponding to internal 
+                 coordinate input (Bohr) 
+ ----------------------------------------------------------------
+ Z-matrix   Atomic            C o o r d i n a t e s
+  Symbol    Number           X              Y              Z
+ ----------------------------------------------------------------
+     N         7         0.00000000     0.00000000     1.24050651
+     N         7         0.00000000     0.00000000    -1.24050651
+ ----------------------------------------------------------------
+   Interatomic distance matrix (Angstroms) 
+
+                 N             N    
+                [ 1]        [ 2]
+  N    [ 1]     0.00000
+  N    [ 2]     1.31290     0.00000
+  @CHRTABLE-I, There are  14 unique irreducible representations.
+  @CHRTABLE-I, There are   8 unique irreducible representations.
+  @VIBINF-I, Symmetries species for nuclear motions:
+  Irrep     Label    Total    Vibrations     Translations     Rotations
+    1        A1g      1.00       1.00            0.00            0.00
+    2        A1u      0.00       0.00            0.00            0.00
+    3        A2g      0.00       0.00            0.00            0.00
+    4        E1g      1.00       0.00            0.00            1.00
+    5        E1u      1.00       0.00            1.00            0.00
+    6        E2u      0.00       0.00            0.00            0.00
+    7        E2g      0.00       0.00            0.00            0.00
+    8        E3g      0.00       0.00            0.00            0.00
+    9        E3u      0.00       0.00            0.00            0.00
+   10        B1u      0.00       0.00            0.00            0.00
+   11        B2g      0.00       0.00            0.00            0.00
+   12        B2u      0.00       0.00            0.00            0.00
+   13        B1g      0.00       0.00            0.00            0.00
+   14        A2u      1.00       0.00            1.00            0.00
+  @SETPTS: FCM evaluation limited to the following symmetries :
+    1
+   Total number of calculations required      :     2
+   Number of single-point energy calculations :     2
+   Number of energy gradient     calculations :     0
+   JODA beginning optimization cycle #  4.
+  @symmetry-i, Coordinates after  COM shift 
+      0.000000000000      0.000000000000      1.240978911551
+      0.000000000000      0.000000000000     -1.240978911551
+   Rotational constants (in cm-1): 
+     1.39573        1.39573
+   Principal axis orientation for molecule:
+        0.000000000000    0.000000000000   -1.240978911551
+        0.000000000000    0.000000000000    1.240978911551
+@ACES2: Executing "xvmol"
+ One- and two-electron integrals over symmetry-adapted AOs are calculated.
+
+ @READIN: Cartesian gaussians are used.
+NAMN: N #1  0.000000000  0.000000000 -1.240978912
+             18 SYMMETRY ADAPTED BASIS FUNCTIONS 
+  @READIN-I, Nuclear repulsion energy :   19.7424789188 a.u.
+  required memory for a1 array  8903380 words 
+  required memory for a2 array  18410 words 
+@ACES_MALLOC: allocated >= 34 MB of core memory
+  @TWOEL-I,        264 integrals of symmetry type  I I I I
+  @TWOEL-I,        825 integrals of symmetry type  I J I J
+  @TWOEL-I,        639 integrals of symmetry type  I I J J
+  @TWOEL-I,        648 integrals of symmetry type  I J K L
+  @TWOEL-I, Total number of 2-e integrals       2376.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.04 (      0.0)   0: 0: 0.22 (      0.2)   0: 0: 0.4 (      0.4)
+@ACES2: Executing "xvmol2ja"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144875520 204875775
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.01 (      0.0)   0: 0: 0.02 (      0.0)   0: 0: 0.0 (      0.0)
+@ACES2: Executing "xvprops"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142909440 202909695
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+   Property integrals will be calculated.
+
+    --------------------------------------------------------
+                                Property evaluated at 
+    Property type              X           Y           Z
+    --------------------------------------------------------
+    Dipole moment            ----        ----        ----   
+    Second moment          0.0000000   0.0000000   0.0000000
+    --------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.52 (      0.5)   0: 0: 0.32 (      0.3)   0: 0: 0.9 (      0.9)
+@ACES2: Executing "rm -f VPOUT"
+@ACES2: Executing "xvscf"
+@ACES_MALLOC: allocated >= 3 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Occupancies from core Hamiltonian:
+
+          Alpha population by irrep:   2    1    1    0    2    1    0    0
+           Beta population by irrep:   2    1    1    0    2    1    0    0
+
+
+  --------------------------------------------------------------------
+  Iteration         Total Energy            Largest Density Difference
+  --------------------------------------------------------------------
+       0           -99.9570114665              0.0000000000E+00
+       1          -107.2037597948              0.1111728911E+01
+       2          -108.1603232203              0.4408433328E+00
+       3          -108.1984881049              0.1206942177E+00
+       4          -108.2001949607              0.1620607243E-01
+       5          -108.2002015281              0.3450093168E-02
+       6          -108.2002017418              0.7768495670E-03
+       7          -108.2002017424              0.5770244360E-04
+       8          -108.2002017424              0.3696709095E-05
+       9          -108.2002017424              0.5161072695E-06
+ 
+@VSCF-I, SCF has converged.
+
+     E(SCF)=      -108.2002017424              0.2767458396E-07
+
+ 
+@VSCF-I, Final occupancies:
+
+          Alpha population by irrep:   3    1    1    0    2    0    0    0
+           Beta population by irrep:   3    1    1    0    2    0    0    0
+
+
+
+      Trace of projected alpha density matrix =   1.000000000
+
+      Alpha part of wavefunction is symmetric.
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.05 (      0.0)   0: 0: 0.12 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xvtran"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142860288 202860543
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Full RHF integral transformation
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.04 (      0.0)   0: 0: 0.05 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xintprc"
+
+
+ performing integral processing for standard CC
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144199680 204199935
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Processing integrals for CCSD calculation.
+  @GMOIAA-I, Processing MO integrals for spin case AA.
+  @GMOIAA-I, Generation of integral list completed.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP                361
+                      PPPH                732
+                      PPHH                493
+                      PHPH                328
+                      PHHH                356
+                      HHHH                106
+
+                     TOTAL               2376
+
+  @FORMT2-I, Second-order MBPT correlation energies:
+              ----------------------------------------------
+              E(SCF)                = -108.200201742401 a.u.
+              E2(AA)                =   -0.044700810894 a.u.
+              E2(AB)                =   -0.226904107303 a.u.
+              E2(TOT)               =   -0.316305729090 a.u.
+              Total MBPT(2) energy  = -108.516507471491 a.u.
+              ----------------------------------------------
+   Largest T2 amplitudes for spin case AB:
+       _       _                 _       _                 _       _
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   5  17  17]-0.14123 [  4   4  15  15]-0.14123 [  4   5  15  17]-0.11494
+[  5   4  17  15]-0.11494 [  5   3  17  12]-0.05554 [  3   5  12  17]-0.05554
+[  4   3  15  12]-0.05554 [  3   4  12  15]-0.05554 [  3   3  12  12]-0.04433
+[  7   7  17  17]-0.04270 [  7   7  15  15]-0.04270 [  5   2  17  12]-0.03548
+[  2   5  12  17]-0.03548 [  2   4  12  15]-0.03548 [  4   2  15  12]-0.03548
+-----------------------------------------------------------------------------
+   Norm of T2AB vector (      909 symmetry allowed elements):  0.3451801155.
+-----------------------------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.08 (      0.1)   0: 0: 0.04 (      0.0)   0: 0: 0.4 (      0.4)
+@ACES2: Executing "xmrcc"
+
+   *****************************************
+   *                                       *
+   *     ACES III Correlated Techniques    *
+   *                                       *
+   *              MBPT[2] / CCSD           *
+   *              EOMCC / STEOMCC          *
+   *                                       *
+   *                                       *
+   *           Authors:                    *
+   *                                       *
+   *         Marcel Nooijen                *
+   *         Sullivan Beck                 *
+   *         Steven R. Gwaltney            *
+   *                                       *
+   *****************************************
+
+  @aceslist: lvaaii .ne. lviiaa
+
+  one-electron H and S not read
+
+  All  virtual orbitals between      1.82 and      7.76 eV are considered CC-active
+  Coupled Cluster active virtual  orbitals
+     0 [1]   0 [2]   0 [3]   0 [4]   0 [5]   1 [6]   1 [7]   0 [8] 
+
+  All occupied orbitals between    -29.62 and    -14.31 eV are considered CC-active
+  Coupled Cluster active occupied orbitals 
+     1 [1]   1 [2]   1 [3]   0 [4]   1 [5]   0 [6]   0 [7]   0 [8] 
+
+  All  virtual orbitals between      1.82 and      7.76 eV are considered active
+  Number of active virtual  orbitals per irrep
+     0 [1]   0 [2]   0 [3]   0 [4]   0 [5]   1 [6]   1 [7]   0 [8] 
+
+  All occupied orbitals between    -22.24 and    -14.31 eV are considered active
+  Number of active occupied orbitals per irrep
+     1 [1]   1 [2]   1 [3]   0 [4]   0 [5]   0 [6]   0 [7]   0 [8] 
+
+ Final addresses in icore: i_int, iscr, ineeded-imax
+                754931             3754931                2026
+
+  Solve CCSD Equations 
+  singles   T
+  linear    F
+  do_gcc    F
+  do_apg    F
+  gcc_singles  F
+
+  Convergence reached after  13 cycles
+
+  Correlation energies (S, D, S+D)  0.00000000 -0.27611123 -0.27611123
+  Vacuum state energy            -108.2002017424010
+  Total correlated energy        -108.4763129685544
+  Maximum residuals     0.149E-07     0.484E-07
+
+  Single excitation coefficients
+      a  [irrep]     i  [irrep]  
+
+      2    [1],     -3    [1]   ;              0.000404
+      1    [1],     -2    [1]   ;             -0.004823
+      2    [1],     -2    [1]   ;              0.001864
+      1    [1],     -1    [1]   ;             -0.007006
+      2    [1],     -1    [1]   ;              0.006899
+      1    [2],     -1    [2]   ;              0.032178
+      1    [3],     -1    [3]   ;              0.032178
+      1    [5],     -1    [5]   ;              0.014401
+      2    [5],     -1    [5]   ;             -0.005575
+      3    [5],     -1    [5]   ;             -0.001498
+
+  Double excitation coefficients
+      a  [irrep]     a  [irrep]     i  [irrep]     i  [irrep]  
+
+      1    [5],      1    [5]   ;  -1    [1]      -1    [1]     -0.042282
+      1    [6],      1    [6]   ;  -1    [2]      -1    [2]     -0.168880
+      1    [7],      1    [7]   ;  -1    [3]      -1    [3]     -0.168880
+      1    [6],      1    [6]   ;  -1    [5]      -1    [5]     -0.053014
+      1    [7],      1    [7]   ;  -1    [5]      -1    [5]     -0.053014
+      1    [5],      1    [7]   ;  -1    [1]      -1    [3]     -0.040164
+      1    [7],      1    [6]   ;  -1    [2]      -1    [3]     -0.054967
+      1    [6],      1    [7]   ;  -1    [2]      -1    [3]     -0.094948
+
+  Time needed in solveccsd
+  cpu time:   0 h  0 min  1.57 sec;  real time:   0 h  0 min  2 sec  ( 78.5%)
+
+  Hbar is calculated. 
+  Finished calculation of Hbar.
+  Time needed in calchbar
+  cpu time:   0 h  0 min  0.16 sec;  real time:   0 h  0 min  0 sec  (100.0%)
+
+  One-particle contributions to  exp(-T) O exp(T)  are calculated
+
+
+   *****************************************
+   *                                       *
+   *        TDA Excitation Energies        *
+   *          Spin State : Singlet         *
+   *                                       *
+   *****************************************
+
+
+  root #   1 [5], Active component 100.00  eigenvalue =        4.958 eV
+            -1    [2]   ->      1    [6]         0.498968      24.9 %
+            -1    [3]   ->      1    [7]        -0.498968      24.9 %
+
+           Summary of excitation energy TDA calculation
+
+    Multiplet  root   irrep   energy diff (eV) osc. strength % singles  total energy
+   --------------------------------------------------------------------------
+
+     Singlet     1     [5]       4.95756283     0.0000E+00   100.00    -108.01801473
+
+   --------------------------------------------------------------------------
+
+   Track state to follow in optimization
+
+
+  Selected state for gradient
+  Total energy of Singlet state  1 [5]   -108.0180147290
+  Use selected TDA state in EOM-CC gradient 
+
+  time spend in solvetda
+  cpu time:   0 h  0 min  0.05 sec;  real time:   0 h  0 min  0 sec  (100.0%)
+
+
+   *****************************************
+   *                                       *
+   *        EOM Excitation Energies        *
+   *          Spin State : Singlet         *
+   *          CCSD Reference state         *
+   *                                       *
+   *****************************************
+
+ @solveeom: modhbar is switched off
+
+  Solving for   1 roots in symmetry-block   5
+
+
+  Solving for right hand root #   1  [5]
+
+  Convergence reached after 10 cycles.
+  Eigenvalue:     0.296516 a.u.     8.068605 eV    65077.66 cm-1   153.6626 nm
+  Maximumum residual : .533E-07
+  Contribution from single excitations  97.17 %
+
+  Single excitation coefficients
+      a  [irrep]     i  [irrep]  
+
+      1    [6],     -1    [2]   ;              0.491369
+      2    [6],     -1    [2]   ;             -0.038629
+      1    [7],     -1    [3]   ;             -0.491369
+      2    [7],     -1    [3]   ;              0.038629
+
+  Double excitation coefficients
+      a  [irrep]     a  [irrep]     i  [irrep]     i  [irrep]  
+
+      1    [6],      1    [6]   ;  -1    [5]      -2    [1]      0.042523
+      1    [7],      1    [7]   ;  -1    [5]      -2    [1]     -0.042523
+      1    [6],      1    [6]   ;  -1    [5]      -1    [1]     -0.042638
+      1    [7],      1    [7]   ;  -1    [5]      -1    [1]      0.042638
+      1    [6],      1    [6]   ;  -2    [1]      -1    [5]      0.042523
+      1    [7],      1    [7]   ;  -2    [1]      -1    [5]     -0.042523
+      1    [6],      1    [6]   ;  -1    [1]      -1    [5]     -0.042638
+      1    [7],      1    [7]   ;  -1    [1]      -1    [5]      0.042638
+ @solveeom: modhbar is switched off
+ @solveeom: modhbar is switched off
+
+           Summary of excitation energy eom-cc calculation
+
+    Multiplet  root   irrep   energy diff (eV)    % singles     total energy
+   --------------------------------------------------------------------------
+
+     Singlet     1     [5]       8.06860483        97.17       -108.17979731
+
+   --------------------------------------------------------------------------
+
+  Selected state for gradient
+  Total energy of Singlet state  1 [5]   -108.1797973086
+
+  Time spend in solveeom
+  cpu time:   0 h  0 min  0.91 sec;  real time:   0 h  0 min  1 sec  ( 91.0%)
+
+  @CHECKOUT-I, Total execution time :       4.7500 seconds.
+ACES2: Total elapsed time is       50.6 seconds
+@ACES2: Executing "xjoda"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+   JODA beginning optimization cycle #  4.
+  @symmetry-i, Coordinates after  COM shift 
+      0.000000000000      0.000000000000      1.240034103954
+      0.000000000000      0.000000000000     -1.240034103954
+   Rotational constants (in cm-1): 
+     1.39785        1.39785
+   Principal axis orientation for molecule:
+        0.000000000000    0.000000000000   -1.240034103954
+        0.000000000000    0.000000000000    1.240034103954
+@ACES2: Executing "xvmol"
+ One- and two-electron integrals over symmetry-adapted AOs are calculated.
+
+ @READIN: Cartesian gaussians are used.
+NAMN: N #1  0.000000000  0.000000000 -1.240034104
+             18 SYMMETRY ADAPTED BASIS FUNCTIONS 
+  @READIN-I, Nuclear repulsion energy :   19.7575211213 a.u.
+  required memory for a1 array  8903380 words 
+  required memory for a2 array  18410 words 
+@ACES_MALLOC: allocated >= 34 MB of core memory
+  @TWOEL-I,        264 integrals of symmetry type  I I I I
+  @TWOEL-I,        825 integrals of symmetry type  I J I J
+  @TWOEL-I,        639 integrals of symmetry type  I I J J
+  @TWOEL-I,        648 integrals of symmetry type  I J K L
+  @TWOEL-I, Total number of 2-e integrals       2376.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.04 (      0.0)   0: 0: 0.23 (      0.2)   0: 0: 0.4 (      0.4)
+@ACES2: Executing "xvmol2ja"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144875520 204875775
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.02 (      0.0)   0: 0: 0.01 (      0.0)   0: 0: 0.0 (      0.0)
+@ACES2: Executing "xvprops"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142909440 202909695
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+   Property integrals will be calculated.
+
+    --------------------------------------------------------
+                                Property evaluated at 
+    Property type              X           Y           Z
+    --------------------------------------------------------
+    Dipole moment            ----        ----        ----   
+    Second moment          0.0000000   0.0000000   0.0000000
+    --------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.54 (      0.5)   0: 0: 0.32 (      0.3)   0: 0: 0.9 (      0.9)
+@ACES2: Executing "rm -f VPOUT"
+@ACES2: Executing "xvscf"
+@ACES_MALLOC: allocated >= 3 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Occupancies from core Hamiltonian:
+
+          Alpha population by irrep:   2    1    1    0    2    1    0    0
+           Beta population by irrep:   2    1    1    0    2    1    0    0
+
+
+  --------------------------------------------------------------------
+  Iteration         Total Energy            Largest Density Difference
+  --------------------------------------------------------------------
+       0           -99.9542742972              0.0000000000E+00
+       1          -107.2031879544              0.1111885032E+01
+       2          -108.1609220763              0.4423817192E+00
+       3          -108.1991471942              0.1209923914E+00
+       4          -108.2008566867              0.1624223836E-01
+       5          -108.2008632493              0.3457995891E-02
+       6          -108.2008634628              0.7800942847E-03
+       7          -108.2008634634              0.5783318841E-04
+       8          -108.2008634634              0.3736058158E-05
+       9          -108.2008634634              0.5170453586E-06
+ 
+@VSCF-I, SCF has converged.
+
+     E(SCF)=      -108.2008634634              0.2770478191E-07
+
+ 
+@VSCF-I, Final occupancies:
+
+          Alpha population by irrep:   3    1    1    0    2    0    0    0
+           Beta population by irrep:   3    1    1    0    2    0    0    0
+
+
+
+      Trace of projected alpha density matrix =   1.000000000
+
+      Alpha part of wavefunction is symmetric.
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.06 (      0.1)   0: 0: 0.10 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xvtran"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142860288 202860543
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Full RHF integral transformation
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.03 (      0.0)   0: 0: 0.06 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xintprc"
+
+
+ performing integral processing for standard CC
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144199680 204199935
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Processing integrals for CCSD calculation.
+  @GMOIAA-I, Processing MO integrals for spin case AA.
+  @GMOIAA-I, Generation of integral list completed.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP                361
+                      PPPH                732
+                      PPHH                493
+                      PHPH                328
+                      PHHH                356
+                      HHHH                106
+
+                     TOTAL               2376
+
+  @FORMT2-I, Second-order MBPT correlation energies:
+              ----------------------------------------------
+              E(SCF)                = -108.200863463359 a.u.
+              E2(AA)                =   -0.044629464315 a.u.
+              E2(AB)                =   -0.226606426400 a.u.
+              E2(TOT)               =   -0.315865355029 a.u.
+              Total MBPT(2) energy  = -108.516728818389 a.u.
+              ----------------------------------------------
+   Largest T2 amplitudes for spin case AB:
+       _       _                 _       _                 _       _
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   5  17  17]-0.14102 [  4   4  15  15]-0.14102 [  5   4  17  15]-0.11476
+[  4   5  15  17]-0.11476 [  5   3  17  12]-0.05536 [  3   5  12  17]-0.05536
+[  4   3  15  12]-0.05536 [  3   4  12  15]-0.05536 [  3   3  12  12]-0.04416
+[  7   7  17  17]-0.04269 [  7   7  15  15]-0.04269 [  2   5  12  17]-0.03545
+[  5   2  17  12]-0.03545 [  4   2  15  12]-0.03545 [  2   4  12  15]-0.03545
+-----------------------------------------------------------------------------
+   Norm of T2AB vector (      909 symmetry allowed elements):  0.3447151828.
+-----------------------------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.06 (      0.1)   0: 0: 0.06 (      0.1)   0: 0: 0.4 (      0.4)
+@ACES2: Executing "xmrcc"
+
+   *****************************************
+   *                                       *
+   *     ACES III Correlated Techniques    *
+   *                                       *
+   *              MBPT[2] / CCSD           *
+   *              EOMCC / STEOMCC          *
+   *                                       *
+   *                                       *
+   *           Authors:                    *
+   *                                       *
+   *         Marcel Nooijen                *
+   *         Sullivan Beck                 *
+   *         Steven R. Gwaltney            *
+   *                                       *
+   *****************************************
+
+  @aceslist: lvaaii .ne. lviiaa
+
+  one-electron H and S not read
+
+  All  virtual orbitals between      1.83 and      7.78 eV are considered CC-active
+  Coupled Cluster active virtual  orbitals
+     0 [1]   0 [2]   0 [3]   0 [4]   0 [5]   1 [6]   1 [7]   0 [8] 
+
+  All occupied orbitals between    -29.62 and    -14.32 eV are considered CC-active
+  Coupled Cluster active occupied orbitals 
+     1 [1]   1 [2]   1 [3]   0 [4]   1 [5]   0 [6]   0 [7]   0 [8] 
+
+  All  virtual orbitals between      1.83 and      7.78 eV are considered active
+  Number of active virtual  orbitals per irrep
+     0 [1]   0 [2]   0 [3]   0 [4]   0 [5]   1 [6]   1 [7]   0 [8] 
+
+  All occupied orbitals between    -22.23 and    -14.32 eV are considered active
+  Number of active occupied orbitals per irrep
+     1 [1]   1 [2]   1 [3]   0 [4]   0 [5]   0 [6]   0 [7]   0 [8] 
+
+ Final addresses in icore: i_int, iscr, ineeded-imax
+                754931             3754931                2026
+
+  Solve CCSD Equations 
+  singles   T
+  linear    F
+  do_gcc    F
+  do_apg    F
+  gcc_singles  F
+
+  Convergence reached after  13 cycles
+
+  Correlation energies (S, D, S+D)  0.00000000 -0.27586124 -0.27586124
+  Vacuum state energy            -108.2008634633592
+  Total correlated energy        -108.4767247073388
+  Maximum residuals     0.148E-07     0.480E-07
+
+  Single excitation coefficients
+      a  [irrep]     i  [irrep]  
+
+      2    [1],     -3    [1]   ;              0.000404
+      1    [1],     -2    [1]   ;             -0.004812
+      2    [1],     -2    [1]   ;              0.001856
+      1    [1],     -1    [1]   ;             -0.006978
+      2    [1],     -1    [1]   ;              0.006873
+      1    [2],     -1    [2]   ;              0.032136
+      1    [3],     -1    [3]   ;              0.032136
+      1    [5],     -1    [5]   ;              0.014359
+      2    [5],     -1    [5]   ;             -0.005579
+      3    [5],     -1    [5]   ;             -0.001501
+
+  Double excitation coefficients
+      a  [irrep]     a  [irrep]     i  [irrep]     i  [irrep]  
+
+      1    [5],      1    [5]   ;  -1    [1]      -1    [1]     -0.042130
+      1    [6],      1    [6]   ;  -1    [2]      -1    [2]     -0.168604
+      1    [7],      1    [7]   ;  -1    [3]      -1    [3]     -0.168604
+      1    [6],      1    [6]   ;  -1    [5]      -1    [5]     -0.053020
+      1    [7],      1    [7]   ;  -1    [5]      -1    [5]     -0.053020
+      1    [5],      1    [7]   ;  -1    [1]      -1    [3]     -0.040044
+      1    [7],      1    [6]   ;  -1    [2]      -1    [3]     -0.054817
+      1    [6],      1    [7]   ;  -1    [2]      -1    [3]     -0.094851
+
+  Time needed in solveccsd
+  cpu time:   0 h  0 min  1.61 sec;  real time:   0 h  0 min  1 sec  (161.0%)
+
+  Hbar is calculated. 
+  Finished calculation of Hbar.
+  Time needed in calchbar
+  cpu time:   0 h  0 min  0.16 sec;  real time:   0 h  0 min  0 sec  (100.0%)
+
+  One-particle contributions to  exp(-T) O exp(T)  are calculated
+
+
+   *****************************************
+   *                                       *
+   *        TDA Excitation Energies        *
+   *          Spin State : Singlet         *
+   *                                       *
+   *****************************************
+
+
+  root #   1 [5], Active component 100.00  eigenvalue =        4.974 eV
+            -1    [2]   ->      1    [6]         0.498967      24.9 %
+            -1    [3]   ->      1    [7]        -0.498967      24.9 %
+
+           Summary of excitation energy TDA calculation
+
+    Multiplet  root   irrep   energy diff (eV) osc. strength % singles  total energy
+   --------------------------------------------------------------------------
+
+     Singlet     1     [5]       4.97404385     0.0000E+00   100.00    -108.01807078
+
+   --------------------------------------------------------------------------
+
+   Track state to follow in optimization
+
+
+  Selected state for gradient
+  Total energy of Singlet state  1 [5]   -108.0180707842
+  Use selected TDA state in EOM-CC gradient 
+
+  time spend in solvetda
+  cpu time:   0 h  0 min  0.04 sec;  real time:   0 h  0 min  0 sec  (100.0%)
+
+
+   *****************************************
+   *                                       *
+   *        EOM Excitation Energies        *
+   *          Spin State : Singlet         *
+   *          CCSD Reference state         *
+   *                                       *
+   *****************************************
+
+ @solveeom: modhbar is switched off
+
+  Solving for   1 roots in symmetry-block   5
+
+
+  Solving for right hand root #   1  [5]
+
+  Convergence reached after 10 cycles.
+  Eigenvalue:     0.296927 a.u.     8.079810 eV    65168.04 cm-1   153.4494 nm
+  Maximumum residual : .548E-07
+  Contribution from single excitations  97.18 %
+
+  Single excitation coefficients
+      a  [irrep]     i  [irrep]  
+
+      1    [6],     -1    [2]   ;              0.491371
+      2    [6],     -1    [2]   ;             -0.038639
+      1    [7],     -1    [3]   ;             -0.491371
+      2    [7],     -1    [3]   ;              0.038639
+
+  Double excitation coefficients
+      a  [irrep]     a  [irrep]     i  [irrep]     i  [irrep]  
+
+      1    [6],      1    [6]   ;  -1    [5]      -2    [1]      0.042490
+      1    [7],      1    [7]   ;  -1    [5]      -2    [1]     -0.042490
+      1    [6],      1    [6]   ;  -1    [5]      -1    [1]     -0.042680
+      1    [7],      1    [7]   ;  -1    [5]      -1    [1]      0.042680
+      1    [6],      1    [6]   ;  -2    [1]      -1    [5]      0.042490
+      1    [7],      1    [7]   ;  -2    [1]      -1    [5]     -0.042490
+      1    [6],      1    [6]   ;  -1    [1]      -1    [5]     -0.042680
+      1    [7],      1    [7]   ;  -1    [1]      -1    [5]      0.042680
+ @solveeom: modhbar is switched off
+ @solveeom: modhbar is switched off
+
+           Summary of excitation energy eom-cc calculation
+
+    Multiplet  root   irrep   energy diff (eV)    % singles     total energy
+   --------------------------------------------------------------------------
+
+     Singlet     1     [5]       8.07981038        97.18       -108.17979725
+
+   --------------------------------------------------------------------------
+
+  Selected state for gradient
+  Total energy of Singlet state  1 [5]   -108.1797972509
+
+  Time spend in solveeom
+  cpu time:   0 h  0 min  0.86 sec;  real time:   0 h  0 min  1 sec  ( 86.0%)
+
+  @CHECKOUT-I, Total execution time :       4.7000 seconds.
+ACES2: Total elapsed time is       57.8 seconds
+@ACES2: Executing "xjoda"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+   JODA beginning optimization cycle #  4.
+   Retrieving information from last optimization cycle.
+   Internal coordinate forces and energy gradients (atomic units): 
+           R       dV/dR             R       dV/dR             R       dV/dR
+ [R    ]  2.48101 -0.00003
+   Hessian from cycle  3 read.
+   BFGS update using last two gradients and previous step.
+   There are  0 Negative Eigenvalues.
+   There are  0 Negative Eigenvalues.
+   MANR scale factor for NR step is 1.000 for R    .
+   Summary of Optimization Cycle: 
+   The maximum unscaled step is:    0.00006.
+   Scale factor set to:  1.00000.
+   Forces are in hartree/bohr and hartree/radian.
+   Parameter values are in Angstroms and degrees.
+--------------------------------------------------------------------------
+  Parameter     dV/dR           Step          Rold            Rnew
+--------------------------------------------------------------------------
+    R      -0.0000305176    0.0000302428    1.3128956423    1.3129258851
+--------------------------------------------------------------------------
+  Minimum force:  0.000030518 / RMS force:  0.000030518
+--------------------------------------------------------------------------------
+   RMS gradient is below .10000E-03.
+   Convergence criterion satisfied.  Optimization completed.
+--------------------------------------------------------------------------------
+   Interatomic distance matrix (Angstroms) 
+
+                 N             N    
+                [ 1]        [ 2]
+  N    [ 1]     0.00000
+  N    [ 2]     1.31290     0.00000
+
+   Summary of optimized internal coordinates
+   (Angstroms and degrees)
+
+R    =     1.3128956423
+
+   Frequencies of the updated Hessian at convergence:
+
+    0.i    0.i    0.     0.     0.  1420. 
+
+   Warning: Frequencies based on the updated Hessian are not very accurate.
+            A separate frequency calculation is required to get correct values.
+
+
+
+ @ACES2: The ACES2 program has completed successfully in  58 seconds.
+
+

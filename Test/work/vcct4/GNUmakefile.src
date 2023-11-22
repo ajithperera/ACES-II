@@ -1,0 +1,31 @@
+DEFINES_EXTRA += -D_ASSERT
+OPTIMIZE=1
+64BIT=1
+DEBUG=0
+LDFLAGS_NUMLIBS := -L/share/aces/ACESII-2.6.0-RELEASE/ -llinpack -leispack -llb
+#LDFLAGS_NUMLIBS:= -lscs_i8_mp
+#DIR_INSTBIN = /share/aces/ACESII-2.6.0-RELEASE/bin
+#DIR_INSTLIB = /share/aces/ACESII-2.6.0-RELEASE/lib
+#DIR_SRCLIB  = ${DIR_INSTLIB}
+
+###################################
+## AME and ASL specific settings ##
+###################################
+
+DIR_SRCINC := /share/aces/ACESII-2.6.0-RELEASE/include
+DIR_SRCLIB := /share/aces/ACESII-2.6.0-RELEASE/lib
+
+# vscf_ks quick hack to include the ACES top-level include directory
+ifeq (${CURR},vscf_ks)
+   DIR_SRCINC = ../../include
+endif
+
+ifeq (${CURR},asv)
+   LIST_DEF_LIBS :=
+   ACES_LINK_LISTS :=
+   LD := $(filter-out -c,${CC})
+   LDFLAGS := ${CFLAGS}
+   LDFLAGS_EXTRA := ../joda/asv_ctl.o
+   LDFLAGS_NUMLIBS :=
+endif
+

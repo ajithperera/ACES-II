@@ -1,0 +1,27 @@
+RHF/DZP CCSD SINGLE POINT ENERGY CALCULATION
+H
+O 1 R
+H 2 R 1 A
+
+R=1.0
+A=104.
+
+*ACES2
+BASIS=DZP,SPHERICAL=OFF
+CALC=CCSD,INCORE=NOABCD
+
+To check the incore option: when INCORE flags is set,
+depending on it's level, various lists (distributions)
+are held in file cache. Note that this is implemented
+in  vcc and vee only. The follwoing options for INCOR
+is available.
+
+NONE ALL T NOABIJ NOABCI NOABCD
+
+TEST.DAT
+d TOTENERG
+ -0.762697698466E+02   0.1E-08
+d NUCREP
+  0.880260376799E+01   0.1E-08
+d SCFENEG
+ -0.760407105174E+02   0.1E-08

@@ -1,0 +1,29 @@
+EOM-CCSD input to generate IP using a ghost atom basis set small exponent
+H    
+O   1  R    
+H   2  R   1  A    
+GH  2  S   1  B   3   C    
+
+R=               0.957000
+A=             104.500000
+S=               5.000000
+B=             127.750000
+C=             180.000000
+
+*ACES2
+BASIS=SPECIAL,cc_maxcyc=100
+CALC=CCSD,ESTATE_PROPS=EXPECTATION
+#EXCITE=EOMEE,ESTATE_SYM=1,SYM=OFF
+IP_CALC=IP_EOMCC,IP_SYM=1
+
+H:AUG-CC-PVDZ
+O:AUG-CC-PVDZ
+H:AUG-CC-PVDZ
+GH:AUG-CC-PVDZ
+
+%EXCITE*
+1
+1
+1 5 0 6 0 1.0
+
+

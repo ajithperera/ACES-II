@@ -1,0 +1,31 @@
+      FUNCTION BECKEF(ROA,ROB,GRDAA,GRDAB,GRDBB)
+C     
+C     Determine the value of the Becke functional.
+C     
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C     
+      COMMON /PAR/ PI,PIX4
+      COMMON /CNST/ X1,X2,X3,X4,X5,X6,X7,X8,X9,X10,X11,X12,X13,X14,X15
+      COMMON /FRAC/ F1,F2,F3,F4,F5,F6,F7,F8,F9,F10,F11,F12,F13,F14,F15
+C
+      ROA43=ROA**F1
+      ROB43=ROB**F1
+      XALPH=X9*(ROA43+ROB43)
+      IF(ROA.GT.1.D-20)THEN
+         XA=DSQRT(GRDAA)/ROA43
+      ELSE
+         XA=0.D+00
+      ENDIF
+      XA2=XA*XA
+      IF(ROB.GT.1.D-20)THEN
+         XB=DSQRT(GRDBB)/ROB43
+      ELSE
+         XB=0.D+00
+      ENDIF
+      XB2=XB*XB
+      DXA=1.D+00+X11*XA*DLOG(XA+DSQRT(XA2+1))
+      DXB=1.D+00+X11*XB*DLOG(XB+DSQRT(XB2+1))
+      BECKEF=XALPH-ROA43*X3*XA2/DXA-ROB43*X3*XB2/DXB
+C     
+      RETURN
+      END

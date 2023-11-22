@@ -1,0 +1,59 @@
+#!/bin/ksh
+alias g="egrep -i"
+lpp=60 # lines per printed page (since writing code is not writing Papers)
+ncss=0
+css=0
+
+printf "Fortran .F     lines: "
+g -h -v '(^$|^#|^[!*CD])' */*.F           | g '(^.{5} )' | wc -l | read itmp
+printf "${itmp}\n"
+let ncss+=$itmp
+
+printf "Fortran .F.src lines: "
+g -h -v '(^$|^#|^[!*CD])' */*.F.src       | g '(^.{5} )' | wc -l | read itmp
+printf "${itmp}\n"
+let ncss+=$itmp
+
+printf "Fortran .com   lines: "
+g -h -v '(^$|^#|^[!*CD])' */include/*.com | g '(^.{5} )' | wc -l | read itmp
+printf "${itmp}\n"
+let ncss+=$itmp
+
+printf "          Total NCSS: $ncss ($((ncss/lpp+1)) pages)\n\n"
+
+################################################################################
+
+printf "Fortran .F     lines: "
+g -h -v '(^$|^#)' */*.F           | g '(^.{5} )' | wc -l | read itmp
+printf "${itmp}\n"
+let css+=$itmp
+
+printf "Fortran .F.src lines: "
+g -h -v '(^$|^#)' */*.F.src       | g '(^.{5} )' | wc -l | read itmp
+printf "${itmp}\n"
+let css+=$itmp
+
+printf "Fortran .com   lines: "
+g -h -v '(^$|^#)' */include/*.com | g '(^.{5} )' | wc -l | read itmp
+printf "${itmp}\n"
+let css+=$itmp
+
+printf "          Total  CSS: $css ($((css/lpp+1)) pages)\n"
+
+let itmp=$css-$ncss
+let itmp*=100
+let itmp/=$css
+let itmp+=1
+printf "       comment ratio: \< $itmp\%\n\n"
+
+################################################################################
+
+printf "Fortran .f lines: "
+g -h -v '(^$|^\/\*|^[!*CD])' */*.f | g '(^.{5} )' | wc -l | read itmp
+printf "${itmp}\n"
+let itmp-=$ncss
+let itmp*=100
+let itmp/=$ncss
+let itmp+=1
+printf "   include ratio: \< $itmp\%\n\n"
+

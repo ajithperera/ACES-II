@@ -1,0 +1,2048 @@
+
+              ****************************************************
+              * ACES : Advanced Concepts in Electronic Structure *
+              *                    Ver. 2.6.0                    *
+              *               Release Candidate: 2               *
+              ****************************************************
+
+                             Quantum Theory Project
+                             University of Florida
+                             Gainesville, FL  32611
+ @ACES_INIT_RTE: Build-specific parameters:
+                 bytes per integer =  4
+                 bytes per double  =  8
+                 recls per integer =  4
+
+
+                      ACES STATE VARIABLE REGISTRATION LOG
+     ----------------------------------------------------------------------
+     The ACES State Variables were initialized.
+     Updating (BASIS,3-21G): String copy succeeded.
+     Updating (SPHERICAL,ON): 'ON' converts to 'ON' -> 1
+     Updating (CALCLEVEL,CCSD): 'CCSD' converts to 'CCSD' -> 10
+     Updating (EXCITE,EOMEE): 'EOMEE' converts to 'EOMEE' -> 3
+     Updating (EE_SYM,3-2-2-2): String copy succeeded.
+     Updating (ESTATE_TOL,7): -1 -> 7
+     Updating (ESTATE_PROP,EXPECTATION): 'EXPECTATION' converts to 'EXPECTATION' -> 1
+     ----------------------------------------------------------------------
+
+
+                       ACES STATE VARIABLE VALIDATION LOG
+     ----------------------------------------------------------------------
+     Updating (COORDINATES,INTERNAL): 'INTERNAL' converts to 'INTERNAL' -> 0
+     Updating (PROGRAM,aces2): 'aces2' converts to 'ACES2' -> 2
+     Updating (GRAD_CALC,analytical): 'analytical' converts to 'ANALYTICAL' -> 0
+     Updating (DERIV_LEV,zero): 'zero' converts to 'OFF' -> 0
+     Updating (CC_MAXCYC,50): 0 -> 50
+     Updating (CC_EXPORDER,5): 0 -> 5
+     Updating (TAMP_SUM,5): 0 -> 5
+     Updating (ORBITALS,standard): 'standard' converts to 'STANDARD' -> 0
+     Updating (EOMREF,ccsd): 'ccsd' converts to 'CCSD' -> 1
+     Updating (DOHBAR,ON): 'ON' converts to 'ON' -> 1
+     Updating (VTRAN,full): 'full' converts to 'FULL' -> 1
+     Updating (RESTART,0): '0' converts to 'OFF' -> 0
+     Updating (HBARABCD,OFF): 'OFF' converts to 'OFF' -> 1
+     Updating (HBARABCI,OFF): 'OFF' converts to 'OFF' -> 1
+     Updating (ABCDFULL,OFF): 'OFF' converts to 'OFF' -> 2
+     Updating (CACHE_RECS,45): -1 -> 45
+     Updating (FILE_RECSIZ,16384): -1 -> 16384
+     ----------------------------------------------------------------------
+
+          ASV#   ASV KEY DEFINITION =    CURRENT [   DEFAULT] UNITS
+          ------------------------------------------------------------
+            1:                PRINT =          0 [         0] 
+            2:            CALCLEVEL =         10 [         0] 
+            3:            DERIV_LEV =          0 [        -1] 
+            4:              CC_CONV =          7 [         7] (tol)
+
+            5:             SCF_CONV =          7 [         7] (tol)
+            6:            XFORM_TOL =         11 [        11] (tol)
+            7:            CC_MAXCYC =         50 [         0] cycles
+            8:           LINDEP_TOL =          5 [         5] 
+
+            9:                  RDO =         -1 [        -1] 
+           10:           SCF_EXTRAP =          1 [         1] 
+           11:            REFERENCE =          0 [         0] 
+           12:          CC_EXPORDER =          5 [         0] 
+
+           13:             TAMP_SUM =          5 [         0] 
+           14:            NTOP_TAMP =         15 [        15] 
+           15:              DAMPSCF =         20 [        20] x 0.01
+           16:           SCF_MAXCYC =        150 [       150] cycles
+
+           18:                PROPS =          0 [         0] 
+           19:              DENSITY =          0 [         0] 
+           20:          SCF_EXPORDE =          6 [         6] 
+           21:          CC_EXTRAPOL =          1 [         1] 
+
+           22:            BRUECKNER =          0 [         0] 
+           23:               XFIELD =          0 [         0] x 10-6
+           24:               YFIELD =          0 [         0] x 10-6
+           25:               ZFIELD =          0 [         0] x 10-6
+
+           26:            SAVE_INTS =          0 [         0] 
+           28:               CHARGE =          0 [         0] 
+           29:          MULTIPLICTY =          1 [         1] 
+           30:          CPHF_CONVER =         12 [        12] (tol)
+
+           31:          CPHF_MAXCYC =         64 [        64] cycles
+           35:               INCORE =          0 [         0] 
+           36:          MEMORY_SIZE =   15000000 [  15000000] Words
+           37:          FILE_RECSIZ =      16384 [        -1] Words
+
+           38:                NONHF =          0 [         0] 
+           39:             ORBITALS =          0 [        -1] 
+           40:          SCF_EXPSTAR =          8 [         8] 
+           41:          LOCK_ORBOCC =          0 [         0] 
+
+           42:          FILE_STRIPE =          0 [         0] 
+           43:               DOHBAR =          1 [         0] 
+           44:           CACHE_RECS =         45 [        -1] 
+           45:                GUESS =          0 [         0] 
+
+           46:           JODA_PRINT =          0 [         0] 
+           47:           OPT_METHOD =          0 [         0] 
+           48:          CONVERGENCE =          4 [         4] H/bohr
+           49:          EIGENVECTOR =          1 [         1] 
+
+           50:              NEGEVAL =          2 [         2] 
+           51:          CURVILINEAR =          0 [         0] 
+           52:          STP_SIZ_CTL =          0 [         0] 
+           53:             MAX_STEP =        300 [       300] millibohr
+
+           54:            VIBRATION =          0 [         0] 
+           55:            EVAL_HESS =          0 [         0] # of cyc.
+           56:            INTEGRALS =          1 [         1] 
+           57:          FD_STEPSIZE =          0 [         0] 10-4 bohr
+
+           58:               POINTS =          0 [         0] 
+           59:          CONTRACTION =          1 [         1] 
+           60:             SYMMETRY =          0 [         0] 
+           62:            SPHERICAL =          1 [         0] 
+
+           63:          RESET_FLAGS =          0 [         0] 
+           64:             PERT_ORB =          2 [         2] 
+           65:             GENBAS_1 =          0 [         0] 
+           66:             GENBAS_2 =          0 [         0] 
+
+           67:             GENBAS_3 =          0 [         0] 
+           68:          COORDINATES =          0 [         3] 
+           69:            CHECK_SYM =          1 [         1] 
+           70:            SCF_PRINT =          0 [         0] 
+
+           71:                  ECP =          0 [         0] 
+           72:              RESTART =          0 [         1] 
+           73:            TRANS_INV =          0 [         0] 
+           74:          HFSTABILITY =          0 [         0] 
+
+           75:             ROT_EVEC =          0 [         0] 
+           76:           BRUCK_CONV =          4 [         4] (tol)
+           78:                UNITS =          0 [         0] 
+           79:          FD_USEGROUP =          0 [         0] 
+
+           80:           FD_PROJECT =          0 [         0] 
+           83:                VTRAN =          1 [         0] 
+           84:             HF2_FILE =          1 [         1] 
+           85:             SUBGROUP =          0 [         0] 
+
+           86:           SUBGRPAXIS =          0 [         0] 
+           87:               EXCITE =          3 [         0] 
+           88:            ZETA_CONV =         12 [        12] (tol)
+           90:           TREAT_PERT =          0 [         0] 
+
+           91:          ESTATE_PROP =          1 [         0] 
+           92:           OPT_MAXCYC =         50 [        50] 
+           93:             ABCDTYPE =          0 [         0] 
+           95:           AO_LADDERS =          1 [         1] 
+
+           96:                 FOCK =          0 [         0] 
+           97:          ESTATE_MAXC =         20 [        20] 
+           98:           ESTATE_TOL =          7 [        -1] (tol)
+           99:            TURBOMOLE =          0 [         0] 
+
+          100:           GAMMA_ABCD =          0 [         0] 
+          101:            ZETA_TYPE =          1 [         1] 
+          102:          ZETA_MAXCYC =         50 [        50] 
+          103:             RESRAMAN =          0 [         0] 
+
+          104:                  PSI =          0 [         0] 
+          105:             GEOM_OPT =          0 [         0] 
+          106:             EXTERNAL =          0 [         0] 
+          107:          HESS_UPDATE =          0 [         0] 
+
+          108:         INIT_HESSIAN =          0 [         0] 
+          109:          EXTRAPOLATE =          0 [         0] 
+          201:              EA_CALC =          0 [         0] 
+          203:                 TDHF =          0 [         0] 
+
+          204:           FUNCTIONAL =          4 [         4] 
+          205:           EOM_MAXCYC =         50 [        50] cycles
+          206:              EOMPROP =          0 [         0] 
+          207:             ABCDFULL =          2 [         0] 
+
+          208:           INTGRL_TOL =         14 [        14] (tol)
+          209:             DAMP_TYP =          0 [         0] 
+          210:             DAMP_TOL =         10 [        10] x 0.01
+          211:              LSHF_A1 =          0 [         0] x 0.01
+
+          212:              LSHF_B1 =          0 [         0] x 0.01
+          213:             POLYRATE =          0 [         0] 
+          214:              IP_CALC =          0 [         0] 
+          216:            IP_SEARCH =          0 [         0] 
+
+          217:               EOMREF =          1 [         0] 
+          218:              SOLVENT =          0 [         0] 
+          219:            EE_SEARCH =          0 [         0] 
+          220:            EOM_PRJCT =          0 [         0] 
+
+          221:               NEWVRT =          0 [         0] 
+          222:             HBARABCD =          1 [         0] 
+          223:             HBARABCI =          1 [         0] 
+          224:             NT3EOMEE =          0 [         0] 
+
+          225:              NOREORI =          0 [         0] 
+          227:               KS_POT =          0 [         0] 
+          228:             DIP_CALC =          0 [         0] 
+          230:             DEA_CALC =          0 [         0] 
+
+          232:              PROGRAM =          2 [         0] 
+          233:                CCR12 =          0 [         0] 
+          234:            EOMXFIELD =          0 [         0] x 10-6
+          235:            EOMYFIELD =          0 [         0] x 10-6
+
+          236:            EOMZFIELD =          0 [         0] x 10-6
+          237:              INSERTF =          0 [         0] 
+          238:            GRAD_CALC =          0 [         2] 
+          239:            IMEM_SIZE =    3000000 [   3000000] Words
+
+          240:              MAKERHF =          0 [         0] 
+          241:           GLOBAL_MEM =          0 [         0] Words
+          242:             PRP_INTS =          0 [         0] 
+          243:           TRUNC_ORBS =          0 [         0] 
+
+          244:             FNO_KEEP =          0 [         0] percent
+          245:             FNO_BSSE =          0 [         0] 
+          246:              NATURAL =          0 [         0] 
+          248:              UNO_REF =          0 [         0] 
+
+          249:           UNO_CHARGE =          0 [         0] 
+          250:             UNO_MULT =          1 [         1] 
+          251:                RAMAN =          0 [         0] 
+          252:            KUCHARSKI =          0 [         0] 
+
+          253:             SCF_TYPE =          0 [         0] 
+          254:               DIRECT =          0 [         0] 
+          255:         SINGLE_STORE =          0 [         0] 
+          ------------------------------------------------------------
+
+                         ACES STATE VARIABLES (STRINGS)
+          ------------------------------------------------------------
+          BASIS = 3-21G
+          OCCUPATION = [ESTIMATED BY SCF]
+          ------------------------------------------------------------
+   4 entries found in Z-matrix 
+
+ Job Title : H2CO neutral Molecule
+
+  There are  4 unique internal coordinates.
+  Of these,  0 will be optimized.
+   User supplied Z-matrix: 
+--------------------------------------------------------------------------------
+       SYMBOL    BOND      LENGTH    ANGLE     ANGLE     DIHED     ANGLE
+                  TO      (ANGST)    WRT      (DEG)      WRT      (DEG)
+--------------------------------------------------------------------------------
+        O    
+        C          1         R    
+        H          2         HC         1        A    
+        H          2         HC         1        A          3        D    
+                  *Initial values for internal coordinates* 
+                      Name             Value
+                        R               1.207800
+                        HC              1.116100
+                        A             121.750000
+                        D             180.000000
+--------------------------------------------------------------------------------
+  @symmetry-i, Coordinates after  COM shift 
+      0.000000000000      0.000000000000     -1.140483334362
+      0.000000000000      0.000000000000      1.141927714644
+      1.793497585376      0.000000000000      2.251777696474
+     -1.793497585376      0.000000000000      2.251777696474
+   Rotational constants (in cm-1): 
+     1.13247        1.28978        9.28465
+   Principal axis orientation for molecule:
+       -1.140483334362    0.000000000000    0.000000000000
+        1.141927714644    0.000000000000    0.000000000000
+        2.251777696474    1.793497585376    0.000000000000
+        2.251777696474   -1.793497585376    0.000000000000
+********************************************************************************
+   The full molecular point group is C2v .
+   The largest Abelian subgroup of the full molecular point group is C2v .
+   The computational point group is C2v .
+********************************************************************************
+--------------------------------------------------------------------------------
+   Analysis of internal coordinates specified by Z-matrix 
+--------------------------------------------------------------------------------
+   *The nuclear repulsion energy is   31.16846 a.u.
+   *There are   3 degrees of freedom within the tot. symm. molecular subspace.
+   *Z-matrix requests optimization of   0 coordinates.
+   *The optimization is constrained.
+   *The following   3 parameters can have non-zero 
+    derivatives within the totally symmetric subspace:
+             A    [  5]  HC   [  4]  R    [  1]
+   *The following   0 parameters are to be optimized:
+
+   *The following coordinates must be varied in an  unconstrained optimization.
+             A    [  5]  HC   [  4]  R    [  1]
+--------------------------------------------------------------------------------
+         -----------------------------------------------
+         Cartesian coordinates corresponding to internal 
+                 coordinate input (Bohr) 
+ ----------------------------------------------------------------
+ Z-matrix   Atomic            C o o r d i n a t e s
+  Symbol    Number           X              Y              Z
+ ----------------------------------------------------------------
+     O         8         0.00000000     0.00000000    -1.14048333
+     C         6         0.00000000     0.00000000     1.14192771
+     H         1         1.79349759     0.00000000     2.25177770
+     H         1        -1.79349759     0.00000000     2.25177770
+ ----------------------------------------------------------------
+   Interatomic distance matrix (Angstroms) 
+
+                 O             C             H             H    
+                [ 1]        [ 2]        [ 3]        [ 4]
+  O    [ 1]     0.00000
+  C    [ 2]     1.20780     0.00000
+  H    [ 3]     2.03056     1.11610     0.00000
+  H    [ 4]     2.03056     1.11610     1.89816     0.00000
+ @GEOPT-W, Archive file not created for single-point calculation.
+@ACES2: Executing "rm -f FILES"
+@ACES2: Executing "xjoda"
+ @ACES2: INITIALIZATION DUMP
+   mopac_guess =  F
+   direct =  F
+   plain_scf =  F
+   nddo_guess =  F
+   hf_scf =  T
+   dirmp2 =  F
+   fno =  F
+   geomopt =  F
+   raman =  F
+   vibfreq =  F
+   analytical_gradient =  T
+   mrcc =  F
+   integral command is "xvmol"
+   derivative-integral command is "xvdint"
+ @ACES2: END INITIALIZATION DUMP
+@ACES2: Executing "xvmol"
+ One- and two-electron integrals over symmetry-adapted AOs are calculated.
+
+ @READIN: Spherical harmonics are used.
+NAMN: O #1  0.000000000  0.000000000 -1.140483334
+NAMN: C #2  0.000000000  0.000000000  1.141927715
+NAMN: H #3  1.793497585  0.000000000  2.251777696
+             22 SYMMETRY ADAPTED BASIS FUNCTIONS 
+  @READIN-I, Nuclear repulsion energy :   31.1684574960 a.u.
+  required memory for a1 array  8903380 words 
+  required memory for a2 array  18572 words 
+@ACES_MALLOC: allocated >= 34 MB of core memory
+  @TWOEL-I,       3258 integrals of symmetry type  I I I I
+  @TWOEL-I,       4008 integrals of symmetry type  I J I J
+  @TWOEL-I,       2556 integrals of symmetry type  I I J J
+  @TWOEL-I, Total number of 2-e integrals       9822.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.05 (      0.1)   0: 0: 1.51 (      1.5)   0: 0: 1.7 (      1.7)
+@ACES2: Executing "xvmol2ja"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144875520 204875775
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.03 (      0.0)   0: 0: 0.01 (      0.0)   0: 0: 0.0 (      0.0)
+@ACES2: Executing "xvprops"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142909440 202909695
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+   Property integrals will be calculated.
+
+    --------------------------------------------------------
+                                Property evaluated at 
+    Property type              X           Y           Z
+    --------------------------------------------------------
+    Dipole moment            ----        ----        ----   
+    Second moment          0.0000000   0.0000000   0.0000000
+    --------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.18 (      0.2)   0: 0: 0.57 (      0.6)   0: 0: 0.8 (      0.8)
+@ACES2: Executing "xvscf"
+ @VSCF-I, There are  22 functions in the AO basis.
+
+ @VSCF-I, There are  4 irreducible representations.
+
+
+       Irrep        # of functions
+         1                 12
+         2                  6
+         3                  4
+         4                  0
+
+  @VSCF-I, Parameters for SCF calculation: 
+             SCF reference function:  RHF
+       Maximum number of iterations:  150
+          Full symmetry point group: C2v 
+          Computational point group: C2v 
+             Initial density matrix: CORE                   
+          SCF convergence tolerance: 10**(- 7)
+           Convergence acceleration: RPP
+               Latest start for RPP:   8
+                          RPP order:   6
+
+  @SYMSIZ-I, Symmetry integral information:
+       There are   4 (aa|aa) symmetry combinations.
+       There are   6 (ab|ab) symmetry combinations.
+       There are   6 (aa|bb) symmetry combinations.
+ 
+       The (aa|aa) integrals require       6625 words.
+       The (ab|ab) integrals require       8064 words.
+       The (aa|bb) integrals require       2628 words.
+       The integrals require      17317 words.
+ 
+  @SYMSIZ-I, Memory information: 
+       Full in-core PK list formation:     777088
+             Maximum memory available:   15000000
+
+  @SYMSIZ-I, Selecting full in-core PK list formation.
+
+@ACES_MALLOC: allocated >= 3 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Occupancies from core Hamiltonian:
+
+          Alpha population by irrep:   5    2    1    0
+           Beta population by irrep:   5    2    1    0
+
+
+  --------------------------------------------------------------------
+  Iteration         Total Energy            Largest Density Difference
+  --------------------------------------------------------------------
+       0           -98.4187864787              0.0000000000E+00
+       1           -99.4240765548              0.9638324292E+01
+       2          -101.9529511753              0.8616895389E+01
+       3          -100.6047784787              0.4764537527E+01
+ @SCFIT: occupancy changed
+       4           -98.2502710078              0.3975620977E+01
+ @SCFIT: occupancy changed
+       5           -99.6574743239              0.3309539229E+01
+ @SCFIT: occupancy changed
+       6           -94.2856611897              0.3566659684E+01
+ @SCFIT: occupancy changed
+       7           -98.7683196508              0.3323464721E+01
+ @SCFIT: occupancy changed
+       8           -94.0498358777              0.3294839354E+01
+ @SCFIT: occupancy changed
+       9          -113.1640512585              0.2937792519E+01
+      10          -113.2057741176              0.2077410115E+00
+      11          -113.2132657234              0.5103167534E-01
+      12          -113.2199146217              0.3711071033E-01
+      13          -113.2202535835              0.1284175428E-01
+      14          -113.2203584106              0.6556918850E-02
+      15          -113.2203624512              0.1449346089E-02
+      16          -113.2203624696              0.1032364384E-03
+      17          -113.2203624699              0.2277275402E-04
+      18          -113.2203624700              0.1956379857E-05
+      19          -113.2203624700              0.2763597514E-06
+ 
+@VSCF-I, SCF has converged.
+
+     E(SCF)=      -113.2203624700              0.4448729007E-07
+
+
+
+      Trace of projected alpha density matrix =   1.000000000
+
+      Alpha part of wavefunction is symmetric.
+
+
+  ORBITAL EIGENVALUES (ALPHA)  (1H = 27.2113957 eV)
+
+       MO #        E(hartree)               E(eV)           FULLSYM    COMPSYM
+       ----   --------------------   --------------------   -------   ---------
+    1     1         -20.4849783884        -557.4248528340      A1        A1 (1)
+    2     2         -11.2885896223        -307.1782791068      A1        A1 (1)
+    3     3          -1.4185738981         -38.6013756714      A1        A1 (1)
+    4     4          -0.8579291558         -23.3454497416      A1        A1 (1)
+    5    13          -0.6935327548         -18.8719942213      B2        B2 (2)
+    6     5          -0.6350743318         -17.2812589416      A1        A1 (1)
+    7    19          -0.5274385419         -14.3523388698      B1        B1 (3)
+    8    14          -0.4305006879         -11.7145245677      B2        B2 (2)
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    9    20           0.1466535200           3.9906469646      B1        B1 (3)
+   10     6           0.2658860174           7.2351296311      A1        A1 (1)
+   11    15           0.3630125633           9.8780785027      B2        B2 (2)
+   12     7           0.4530570873          12.3283156761      A1        A1 (1)
+   13    21           0.9293638956          25.2892887127      B1        B1 (3)
+   14    16           1.0259721255          27.9181334839      B2        B2 (2)
+   15     8           1.0411490374          28.3311184396      A1        A1 (1)
+   16     9           1.1487041393          31.2578428755      A1        A1 (1)
+   17    17           1.2551695070          34.1549141256      B2        B2 (2)
+   18    10           1.5596809337          42.4410950532      A1        A1 (1)
+   19    22           1.8661292791          50.7799822410      B1        B1 (3)
+   20    11           1.9022167376          51.7619723536      A1        A1 (1)
+   21    18           1.9801753037          53.8833337449      B2        B2 (2)
+   22    12           3.3212776973          90.3766016516      A1        A1 (1)
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.09 (      0.1)   0: 0: 0.10 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xvtran"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142860288 202860543
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Full RHF integral transformation
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.04 (      0.0)   0: 0: 0.09 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xintprc"
+
+
+ performing integral processing for standard CC
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144199680 204199935
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Processing integrals for CCSD calculation.
+  @GMOIAA-I, Processing MO integrals for spin case AA.
+  @GMOIAA-I, Generation of integral list completed.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP               1705
+                      PPPH               3558
+                      PPHH               1984
+                      PHPH               1245
+                      PHHH               1344
+                      HHHH                263
+
+                     TOTAL              10099
+
+  @FORMT2-I, Second-order MBPT correlation energies:
+              ----------------------------------------------
+              E(SCF)                = -113.220362469952 a.u.
+              E2(AA)                =   -0.026393776968 a.u.
+              E2(AB)                =   -0.167187108805 a.u.
+              E2(TOT)               =   -0.219974662742 a.u.
+              Total MBPT(2) energy  = -113.440337132694 a.u.
+              ----------------------------------------------
+   Largest T2 amplitudes for spin case AB:
+       _       _                 _       _                 _       _
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  8   8  20  20]-0.11314 [  7   7  16  16]-0.02990 [  4   4  20  20]-0.02800
+[  6   6  16  16]-0.02548 [  8   6  20  16] 0.02460 [  6   8  16  20] 0.02460
+[  8   7  20  16] 0.02435 [  7   8  16  20] 0.02435 [  5   5  14  14]-0.02393
+[  4   4   9   9]-0.02285 [  8   5  20  10] 0.02247 [  5   8  10  20] 0.02247
+[  5   8  11  20] 0.02206 [  8   5  20  11] 0.02206 [  8   3  20  10] 0.02203
+-----------------------------------------------------------------------------
+   Norm of T2AB vector (     3856 symmetry allowed elements):  0.2421639524.
+-----------------------------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.10 (      0.1)   0: 0: 0.04 (      0.0)   0: 0: 0.5 (      0.5)
+@ACES2: Executing "xvcc"
+
+-----------------------------------------------------------------------------
+                                Entering xvcc
+-----------------------------------------------------------------------------
+
+
+
+  running standard cc program
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 151695360 211695615
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+   CCSD energy will be calculated.
+   The AA contribution to the correlation energy is:   -0.0263938 a.u.
+   The AB contribution to the correlation energy is:   -0.1671871 a.u.
+   The total correlation energy is -0.219974662742 a.u.
+   The AA contribution to the correlation energy is:   -0.0221184 a.u.
+   The AB contribution to the correlation energy is:   -0.1740675 a.u.
+   The total correlation energy is -0.218304330124 a.u.
+  Convergence information after     1 iterations: 
+  Largest element of residual vector : -0.23766129E-01.
+  Largest element of DIIS residual   : -0.23766129E-01.
+   The AA contribution to the correlation energy is:   -0.0221288 a.u.
+   The AB contribution to the correlation energy is:   -0.1834879 a.u.
+   The total correlation energy is -0.227745357491 a.u.
+  Convergence information after     2 iterations: 
+  Largest element of residual vector : -0.15518877E-01.
+  Largest element of DIIS residual   : -0.15463857E-01.
+   The AA contribution to the correlation energy is:   -0.0216077 a.u.
+   The AB contribution to the correlation energy is:   -0.1853500 a.u.
+   The total correlation energy is -0.228565457283 a.u.
+  Convergence information after     3 iterations: 
+  Largest element of residual vector : -0.63472968E-02.
+  Largest element of DIIS residual   : -0.31448909E-02.
+   The AA contribution to the correlation energy is:   -0.0213336 a.u.
+   The AB contribution to the correlation energy is:   -0.1876092 a.u.
+   The total correlation energy is -0.230276263074 a.u.
+  Convergence information after     4 iterations: 
+  Largest element of residual vector : -0.15263233E-02.
+  Largest element of DIIS residual   : -0.55996001E-03.
+   The AA contribution to the correlation energy is:   -0.0212827 a.u.
+   The AB contribution to the correlation energy is:   -0.1878326 a.u.
+   The total correlation energy is -0.230398118933 a.u.
+  Convergence information after     5 iterations: 
+  Largest element of residual vector : -0.58673669E-03.
+  Largest element of DIIS residual   : -0.15802780E-03.
+   The AA contribution to the correlation energy is:   -0.0212619 a.u.
+   The AB contribution to the correlation energy is:   -0.1878961 a.u.
+   The total correlation energy is -0.230419802665 a.u.
+  Convergence information after     6 iterations: 
+  Largest element of residual vector :  0.71405671E-04.
+  Largest element of DIIS residual   :  0.66511786E-04.
+   The AA contribution to the correlation energy is:   -0.0212618 a.u.
+   The AB contribution to the correlation energy is:   -0.1878960 a.u.
+   The total correlation energy is -0.230419680953 a.u.
+  Convergence information after     7 iterations: 
+  Largest element of residual vector :  0.36260578E-04.
+  Largest element of DIIS residual   :  0.29275447E-04.
+   The AA contribution to the correlation energy is:   -0.0212620 a.u.
+   The AB contribution to the correlation energy is:   -0.1878945 a.u.
+   The total correlation energy is -0.230418459916 a.u.
+  Convergence information after     8 iterations: 
+  Largest element of residual vector :  0.12929729E-04.
+  Largest element of DIIS residual   :  0.92809341E-05.
+   The AA contribution to the correlation energy is:   -0.0212620 a.u.
+   The AB contribution to the correlation energy is:   -0.1878949 a.u.
+   The total correlation energy is -0.230418951411 a.u.
+  Convergence information after     9 iterations: 
+  Largest element of residual vector :  0.48830687E-05.
+  Largest element of DIIS residual   :  0.33559669E-05.
+   The AA contribution to the correlation energy is:   -0.0212619 a.u.
+   The AB contribution to the correlation energy is:   -0.1878955 a.u.
+   The total correlation energy is -0.230419298311 a.u.
+  Convergence information after    10 iterations: 
+  Largest element of residual vector :  0.10115665E-05.
+  Largest element of DIIS residual   : -0.82693520E-06.
+   The AA contribution to the correlation energy is:   -0.0212619 a.u.
+   The AB contribution to the correlation energy is:   -0.1878957 a.u.
+   The total correlation energy is -0.230419455062 a.u.
+  Convergence information after    11 iterations: 
+  Largest element of residual vector : -0.50027268E-06.
+  Largest element of DIIS residual   : -0.48012944E-06.
+   The AA contribution to the correlation energy is:   -0.0212618 a.u.
+   The AB contribution to the correlation energy is:   -0.1878958 a.u.
+   The total correlation energy is -0.230419489363 a.u.
+  Convergence information after    12 iterations: 
+  Largest element of residual vector : -0.25819316E-06.
+  Largest element of DIIS residual   : -0.16242183E-06.
+   The AA contribution to the correlation energy is:   -0.0212618 a.u.
+   The AB contribution to the correlation energy is:   -0.1878959 a.u.
+   The total correlation energy is -0.230419519434 a.u.
+  Convergence information after    13 iterations: 
+  Largest element of residual vector : -0.92941975E-07.
+  Largest element of DIIS residual   : -0.56109857E-07.
+  Amplitude equations converged in    13 iterations.
+   The AA contribution to the correlation energy is:   -0.0212618 a.u.
+   The AB contribution to the correlation energy is:   -0.1878959 a.u.
+   The total correlation energy is -0.230419511131 a.u.
+   Largest T1 amplitudes for spin case AA:
+   i       a                 i       a                 i       a    
+-----------------------------------------------------------------------------
+[  7      16    ]-0.02959 [  8      20    ] 0.02806 [  8      21    ] 0.01862
+[  8      22    ]-0.01803 [  6      16    ]-0.01256 [  5       9    ] 0.00544
+[  5      14    ]-0.00538 [  7      19    ]-0.00537 [  7      17    ] 0.00534
+[  6      18    ] 0.00485 [  4      13    ]-0.00360 [  3      14    ]-0.00314
+[  3      15    ]-0.00307 [  7      18    ] 0.00295 [  3      10    ]-0.00262
+-----------------------------------------------------------------------------
+   Norm of T1AA vector (       46 symmetry allowed elements):  0.0521547739.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case AB:
+       _       _                 _       _                 _       _
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  8   8  20  20]-0.15658 [  7   7  16  16]-0.03663 [  4   4  20  20]-0.03190
+[  4   4   9   9]-0.02909 [  6   6  16  16]-0.02867 [  7   7   9   9]-0.02770
+[  5   5  14  14]-0.02598 [  8   6  20  16] 0.02425 [  6   8  16  20] 0.02425
+[  8   8  22  20]-0.02368 [  8   8  20  22]-0.02368 [  8   3  20  10] 0.02315
+[  3   8  10  20] 0.02315 [  7   7  19  19]-0.02294 [  8   7  20  16] 0.02221
+-----------------------------------------------------------------------------
+   Norm of T2AB vector (     3856 symmetry allowed elements):  0.2894640002.
+-----------------------------------------------------------------------------
+   The CC iterations have converged.
+
+       Summary of iterative solution of CC equations 
+      -----------------------------------------------------------
+                       Correlation           Total
+       Iteration         Energy              Energy
+      -----------------------------------------------------------
+            0        -0.219974662742    -113.440337132694  DIIS 
+            1        -0.218304330124    -113.438666800076  DIIS 
+            2        -0.227745357491    -113.448107827442  DIIS 
+            3        -0.228565457283    -113.448927927235  DIIS 
+            4        -0.230276263074    -113.450638733026  DIIS 
+            5        -0.230398118933    -113.450760588885  DIIS 
+            6        -0.230419802665    -113.450782272616  DIIS 
+            7        -0.230419680953    -113.450782150905  DIIS 
+            8        -0.230418459916    -113.450780929868  DIIS 
+            9        -0.230418951411    -113.450781421363  DIIS 
+           10        -0.230419298311    -113.450781768263  DIIS 
+           11        -0.230419455062    -113.450781925014  DIIS 
+           12        -0.230419489363    -113.450781959315  DIIS 
+           13        -0.230419511131    -113.450781981083  DIIS 
+      -----------------------------------------------------------
+
+               CCSD        energy is    -113.450781981083 a.u. 
+
+      A miracle has come to pass. The CC iterations have converged.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.09 (      0.1)   0: 0: 1.22 (      1.2)   0: 0: 1.4 (      1.4)
+
+-----------------------------------------------------------------------------
+                                Exiting xvcc
+-----------------------------------------------------------------------------
+
+ The ACES Member Executable has completed successfully.
+@ACES2: Executing "xlambda"
+
+-----------------------------------------------------------------------------
+                              Entering xlambda
+-----------------------------------------------------------------------------
+
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 145166336 205166591
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Hbar and lambda solutions will be evaluated.
+  Convergence information after     1 iterations: 
+  Largest element of residual vector : -0.14373144E-01.
+  Largest element of DIIS residual   : -0.14373144E-01.
+  Convergence information after     2 iterations: 
+  Largest element of residual vector :  0.27138946E-02.
+  Largest element of DIIS residual   :  0.28225776E-02.
+  Convergence information after     3 iterations: 
+  Largest element of residual vector :  0.13490745E-02.
+  Largest element of DIIS residual   :  0.86048894E-03.
+  Convergence information after     4 iterations: 
+  Largest element of residual vector :  0.33488469E-03.
+  Largest element of DIIS residual   : -0.12195062E-03.
+  Convergence information after     5 iterations: 
+  Largest element of residual vector :  0.78865410E-04.
+  Largest element of DIIS residual   :  0.43835641E-04.
+  Convergence information after     6 iterations: 
+  Largest element of residual vector :  0.17063963E-04.
+  Largest element of DIIS residual   :  0.97015382E-05.
+  Convergence information after     7 iterations: 
+  Largest element of residual vector : -0.43505427E-05.
+  Largest element of DIIS residual   :  0.28997414E-05.
+  Convergence information after     8 iterations: 
+  Largest element of residual vector :  0.15181787E-05.
+  Largest element of DIIS residual   :  0.11149481E-05.
+  Convergence information after     9 iterations: 
+  Largest element of residual vector : -0.41098292E-06.
+  Largest element of DIIS residual   : -0.35659679E-06.
+  Convergence information after    10 iterations: 
+  Largest element of residual vector : -0.20903013E-06.
+  Largest element of DIIS residual   : -0.15465708E-06.
+  Convergence information after    11 iterations: 
+  Largest element of residual vector : -0.90627303E-07.
+  Largest element of DIIS residual   : -0.54802743E-07.
+  Lambda equations converged in    11 iterations.
+  
+  @hbarijka: xnorm( 1) =   1.6861643
+  
+  @hbarijka: xnorm( 4) =   2.76675967
+
+-----------------------------------------------------------------------------
+                             Exiting xlambda
+-----------------------------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.14 (      0.1)   0: 0: 0.97 (      1.0)   0: 0: 1.1 (      1.1)
+@ACES2: Executing "xvee"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 145321984 205322239
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+
+       **********************************************
+       *                                            *
+       *     EXCITATION ENERGY EOMCC CALCULATION    *
+       *                                            *
+       *            CODED BY J. F. STANTON          *
+       *                                            *
+       *                                            *
+       *         PARTITIONED EOM-CC CODED BY        *
+       *                                            *
+       *        MARCEL NOOIJEN & STEVE GWALTNEY     *
+       *                                            *
+       **********************************************
+
+  EOMCC excitation energies will be evaluated.
+  @SETMET-I, VPROP property integrals are used.
+  @SETMET-I, A total of   9 final states will be studied.
+  Root following procedure: Minimum energy
+  Summary of active alpha molecular orbitals:
+------------------------------------------------------------------------------
+Orbital Symm. Eigenvalue  <xx>     <yy>     <zz>     <xy>     <xz>     <yz>
+------------------------------------------------------------------------------
+    1     1     -20.4850   0.018    0.018    1.317    0.000    0.000    0.000
+    2     1     -11.2886   0.033    0.033    1.336    0.000    0.000    0.000
+    3     1      -1.4186   0.539    0.530    0.945    0.000    0.000    0.000
+    4     1      -0.8579   1.423    0.747    4.285    0.000    0.000    0.000
+    5     1      -0.6351   0.630    0.414    3.479    0.000    0.000    0.000
+    6     2      -0.6935   2.174    0.547    2.494    0.000    0.000    0.000
+    7     2      -0.4305   2.133    0.470    3.173    0.000    0.000    0.000
+    8     3      -0.5274   0.523    1.569    1.597    0.000    0.000    0.000
+    9     1       0.2659   6.998    1.252    7.116    0.000    0.000    0.000
+   10     1       0.4531   2.075    1.927    4.163    0.000    0.000    0.000
+   11     1       1.0411   1.466    1.233    5.687    0.000    0.000    0.000
+   12     1       1.1487   2.595    0.707    3.552    0.000    0.000    0.000
+   13     1       1.5597   2.245    1.558    3.872    0.000    0.000    0.000
+   14     1       1.9022   0.659    0.617    4.388    0.000    0.000    0.000
+   15     1       3.3213   0.929    0.947    1.534    0.000    0.000    0.000
+   16     2       0.3630   6.068    1.125    7.612    0.000    0.000    0.000
+   17     2       1.0260   3.639    1.576    1.668    0.000    0.000    0.000
+   18     2       1.2552   4.374    0.675    5.781    0.000    0.000    0.000
+   19     2       1.9802   1.787    0.670    2.460    0.000    0.000    0.000
+   20     3       0.1467   0.696    2.089    2.556    0.000    0.000    0.000
+   21     3       0.9294   0.985    2.955    2.356    0.000    0.000    0.000
+   22     3       1.8661   0.518    1.553    2.120    0.000    0.000    0.000
+------------------------------------------------------------------------------
+__________________________________________________________________________
+    Tamm-Dancoff (CIS) Excitation Energies and Transition Moments
+
+                Excitation         Transition Dipole         Oscillator
+ Root  Symmetry  Energy(eV)     x           y           z     Strength
+__________________________________________________________________________
+   1       1   10.55999      0.0000      0.0000      0.6236  .20121933E+00
+  Total TDA electronic energy   -112.83229025 a.u.
+  Dominant contributions: 
+  [  8-> 20] (-.91830) ALPHA
+  [  7-> 16] (-.28752) ALPHA
+   2       1   15.25355      0.0000      0.0000     -0.8943  .59773160E+00
+  Total TDA electronic energy   -112.65980496 a.u.
+  Dominant contributions: 
+  [  7-> 16] (-.92318) ALPHA
+  [  8-> 20] (0.22645) ALPHA
+  [  5-> 10] (0.20653) ALPHA
+   3       1   17.74433      0.0000      0.0000      0.5558  .26860402E+00
+  Total TDA electronic energy   -112.56827061 a.u.
+  Dominant contributions: 
+  [  5->  9] (-.97028) ALPHA
+   1       2   12.16205      0.8870      0.0000      0.0000  .46885068E+00
+  Total TDA electronic energy   -112.77341561 a.u.
+  Dominant contributions: 
+  [  7->  9] (-.99137) ALPHA
+   2       2   14.21340      0.0035      0.0000      0.0000  .85664763E-05
+  Total TDA electronic energy   -112.69802980 a.u.
+  Dominant contributions: 
+  [  7-> 10] (-.98555) ALPHA
+   1       3    9.43553      0.0000      0.0923      0.0000  .39369426E-02
+  Total TDA electronic energy   -112.87361323 a.u.
+  Dominant contributions: 
+  [  5-> 20] (-.99086) ALPHA
+   2       3   14.32014      0.0000      0.0021      0.0000  .31668300E-05
+  Total TDA electronic energy   -112.69410735 a.u.
+  Dominant contributions: 
+  [  8->  9] (-.99039) ALPHA
+   1       4    4.30540      0.0000      0.0000      0.0000  .00000000E+00
+  Total TDA electronic energy   -113.06214190 a.u.
+  Dominant contributions: 
+  [  7-> 20] (-.98263) ALPHA
+   2       4   11.91603      0.0000      0.0000      0.0000  .00000000E+00
+  Total TDA electronic energy   -112.78245650 a.u.
+  Dominant contributions: 
+  [  6-> 20] (-.97994) ALPHA
+__________________________________________________________________________
+  @DOEOMEE-I, Excitation energies computed by the EOM-CCSD method.
+  @DOEOMEE-I, right-hand eigenvectors will be computed.
+
+  Beginning symmetry block   1.   3 roots requested.
+________________________________________________________________________
+            Subspace          Eigenvalue           
+ Iteration  Dimension   (a.u.)         (eV)       Overlap      Max diff
+________________________________________________________________________
+  @NEWGES-I, Using TDA initial guess.
+      1        1     0.4835469E+00  0.1315798E+02 .000000E+00 .104E+00
+      2        2     0.4157432E+00  0.1131295E+02 .958280E+00 .371E-01
+      3        3     0.4059585E+00  0.1104670E+02 .996430E+00 .142E-01
+      4        4     0.4046916E+00  0.1101222E+02 .995380E+00 .173E-01
+      5        5     0.4025398E+00  0.1095367E+02 .993607E+00 .673E-02
+      6        6     0.4015773E+00  0.1092748E+02 .998681E+00 .302E-02
+  L-O-C-K-I-N-G O-N R-O-O-T 
+      7        7     0.4015848E+00  0.1092768E+02 .999759E+00 .133E-02
+      8        8     0.4014519E+00  0.1092407E+02 .999955E+00 .354E-03
+      9        9     0.4014734E+00  0.1092465E+02 .999992E+00 .195E-03
+     10       10     0.4014747E+00  0.1092469E+02 .999998E+00 .912E-04
+     11       11     0.4014716E+00  0.1092460E+02 .100000E+01 .427E-04
+     12       12     0.4014705E+00  0.1092457E+02 .100000E+01 .109E-04
+     13       13     0.4014708E+00  0.1092458E+02 .100000E+01 .324E-05
+     14       14     0.4014707E+00  0.1092458E+02 .100000E+01 .143E-05
+     15       15     0.4014707E+00  0.1092458E+02 .100000E+01 .502E-06
+     16       16     0.4014707E+00  0.1092458E+02 .100000E+01 .336E-06
+     17       17     0.4014707E+00  0.1092458E+02 .100000E+01 .145E-06
+     18       18     0.4014707E+00  0.1092458E+02 .100000E+01 .421E-07
+  Converged eigenvalue:   0.401470726 a.u.
+                          10.9245788 eV
+   Total EOM-CCSD electronic energy    -113.049311255141 a.u.
+
+
+    SINGLE EXCITATION COEFFICIENTS AA
+      I  [I_SYM]     A  [A_SYM]  
+
+      5    [1],      2    [1]   ;              0.064171
+      1    [2],      1    [2]   ;              0.120297
+      2    [2],      1    [2]   ;              0.388435
+      1    [3],      1    [3]   ;              0.522881
+
+
+    AB DOUBLE EXCITATION COEFFICIENTS 
+      I  [I_SYM]     j  [j_SYM]     A  [A_SYM]     b  [b_SYM]  
+
+      2    [2],      2    [2]   ;   1    [1]       1    [1]      0.056299
+      2    [2],      2    [2]   ;   1    [2]       1    [2]      0.056943
+      2    [2],      2    [2]   ;   1    [3]       1    [3]     -0.114629
+      1    [3],      1    [3]   ;   1    [3]       1    [3]     -0.193362
+
+
+      1        1     0.4014707E+00  0.1092458E+02 .000000E+00 .173E-01
+      2        2     0.4014707E+00  0.1092458E+02 .996878E+00 .237E-01
+      3        3     0.4014707E+00  0.1092458E+02 .998851E+00 .844E-02
+      4        4     0.4014707E+00  0.1092458E+02 .999830E+00 .136E-02
+      5        5     0.4014707E+00  0.1092458E+02 .999958E+00 .769E-03
+      6        6     0.4014707E+00  0.1092458E+02 .999976E+00 .577E-03
+      7        7     0.4014707E+00  0.1092458E+02 .999996E+00 .157E-03
+      8        8     0.4014707E+00  0.1092458E+02 .100000E+01 .653E-04
+      9        9     0.4014707E+00  0.1092458E+02 .100000E+01 .306E-04
+     10       10     0.4014707E+00  0.1092458E+02 .100000E+01 .106E-04
+     11       11     0.4014707E+00  0.1092458E+02 .100000E+01 .640E-05
+     12       12     0.4014707E+00  0.1092458E+02 .100000E+01 .196E-05
+     13       13     0.4014707E+00  0.1092458E+02 .100000E+01 .657E-06
+     14       14     0.4014707E+00  0.1092458E+02 .100000E+01 .273E-06
+     15       15     0.4014707E+00  0.1092458E+02 .100000E+01 .593E-07
+  Converged eigenvalue:   0.401470726 a.u.
+                          10.9245788 eV
+   Total EOM-CCSD electronic energy    -113.049311255558 a.u.
+
+
+    SINGLE EXCITATION COEFFICIENTS AA
+      I  [I_SYM]     A  [A_SYM]  
+
+      5    [1],      2    [1]   ;              0.064589
+      1    [2],      1    [2]   ;              0.104784
+      2    [2],      1    [2]   ;              0.329898
+      1    [3],      1    [3]   ;              0.565804
+
+
+    AB DOUBLE EXCITATION COEFFICIENTS 
+      I  [I_SYM]     j  [j_SYM]     A  [A_SYM]     b  [b_SYM]  
+
+      2    [2],      2    [2]   ;   1    [3]       1    [3]     -0.113963
+      1    [3],      1    [3]   ;   1    [3]       1    [3]     -0.187248
+      2    [2],      1    [3]   ;   1    [2]       1    [3]     -0.056925
+
+
+----------------------------------------------------------------------
+                                 X             Y             Z
+----------------------------------------------------------------------
+  Right Transition Moment    0.00000000    0.00000000   -0.14663134
+  Left Transition Moment     0.00000000    0.00000000   -0.33410080
+  Dipole Strength            0.00000000    0.00000000    0.04898965
+  Oscillator Strength        0.00000000    0.00000000    0.01311194
+----------------------------------------------------------------------
+  Transition energy    10.9246 eV  ( 113.4911 nm;   88112.637 cm-1)
+  Total EOM-CCSD electronic energy    -113.049311255558 a.u.
+  Norm of oscillator strength :   0.01311194
+  Contribution to electric polarizability: 
+    XX:     0.000000000 YY:     0.000000000 ZZ:     0.244050911
+    XY:     0.000000000 XZ:     0.000000000 YZ:     0.000000000
+  Cumulative electric polarizability: 
+    XX:     0.000000000 YY:     0.000000000 ZZ:     0.244050911
+    XY:     0.000000000 XZ:     0.000000000 YZ:     0.000000000
+  <PSI|0><0|PSI> =  0.0006328
+  <PSI|S><S|PSI> =  0.9106661
+  <PSI|D><D|PSI> =  0.0887045
+  Spin case alpha natural difference orbitals:
+------------------------------------------------------------------------
+ Orbital  Occ. Major                      Second Moment
+          Num. Cont.
+                            xx      yy      zz      xy      xz      yz
+------------------------------------------------------------------------
+     1   0.725  20 [0.97]   0.537   1.611   2.351   0.000   0.000   0.000
+     2   0.304  16 [0.99]   5.268   1.006   6.570   0.000   0.000   0.000
+    21  -0.330   7 [0.95]   1.518   0.413   2.265   0.000   0.000   0.000
+    22  -0.694   8 [0.97]   0.563   1.689   1.657   0.000   0.000   0.000
+------------------------------------------------------------------------
+                    Approximate excitation level (AEL) :    1.08808.
+------------------------------------------------------------------------
+                         Ground state properties 
+------------------------------------------------------------------------
+  Dipole moment   0.000000000000   0.000000000000   0.778946350894
+  Second moment of charge distribution :
+  XX :    15.157923 YY :     8.598718 ZZ :    37.434832
+  XY :     0.000000 YZ :     0.000000 YZ :     0.000000
+  Spherical average :    20.397158
+------------------------------------------------------------------------
+                         Excited state properties 
+------------------------------------------------------------------------
+  Dipole moment   0.000000000000   0.000000000000   0.292776424674
+  Second moment of charge distribution :
+  XX :    16.195121 YY :     8.782484 ZZ :    39.008993
+  XY :     0.000000 YZ :     0.000000 YZ :     0.000000
+  Spherical average :    21.328866
+  Adding new vector to expansion space.
+  Guess for next eigenvalue   0.401470726
+      1       19     0.4973290E+00  0.1353302E+02 .128899E+01 .128E-01
+  @TRNSPACE-F, Using in-core truncation algorithm.
+  @TRNSPACE-F, Using in-core truncation algorithm.
+   Expansion vector space truncated to dimension  12.
+      2       13     0.4946459E+00  0.1346001E+02 .998558E+00 .291E-02
+      3       14     0.4941357E+00  0.1344612E+02 .999878E+00 .982E-03
+  L-O-C-K-I-N-G O-N R-O-O-T 
+      4       15     0.4942651E+00  0.1344964E+02 .999947E+00 .852E-03
+      5       16     0.4941725E+00  0.1344712E+02 .999945E+00 .336E-03
+      6       17     0.4941363E+00  0.1344614E+02 .999976E+00 .132E-03
+      7       18     0.4941349E+00  0.1344610E+02 .999994E+00 .688E-04
+      8       19     0.4941249E+00  0.1344583E+02 .999998E+00 .424E-04
+  @TRNSPACE-F, Using in-core truncation algorithm.
+  @TRNSPACE-F, Using in-core truncation algorithm.
+   Expansion vector space truncated to dimension  12.
+      9       13     0.4941258E+00  0.1344585E+02 .100000E+01 .243E-04
+     10       14     0.4941239E+00  0.1344580E+02 .100000E+01 .793E-05
+     11       15     0.4941256E+00  0.1344585E+02 .100000E+01 .437E-05
+ IMAGINARY EIGENVALUES FOUND 
+   14      2.0297434   0.0036313
+   15      2.0297434  -0.0036313
+     12       16     0.4941252E+00  0.1344584E+02 .100000E+01 .153E-05
+     13       17     0.4941252E+00  0.1344584E+02 .100000E+01 .463E-06
+     14       18     0.4941252E+00  0.1344584E+02 .100000E+01 .127E-06
+     15       19     0.4941252E+00  0.1344584E+02 .100000E+01 .454E-07
+  Converged eigenvalue:   0.494125234 a.u.
+                          13.4458373 eV
+   Total EOM-CCSD electronic energy    -112.956656746842 a.u.
+
+
+    SINGLE EXCITATION COEFFICIENTS AA
+      I  [I_SYM]     A  [A_SYM]  
+
+      5    [1],      1    [1]   ;              0.174183
+      5    [1],      2    [1]   ;             -0.135671
+      2    [2],      1    [2]   ;              0.543088
+      2    [2],      2    [2]   ;              0.059242
+      1    [3],      1    [3]   ;             -0.314738
+
+
+    AB DOUBLE EXCITATION COEFFICIENTS 
+      I  [I_SYM]     j  [j_SYM]     A  [A_SYM]     b  [b_SYM]  
+
+      2    [2],      2    [2]   ;   1    [1]       1    [1]      0.085212
+      2    [2],      2    [2]   ;   1    [2]       1    [2]      0.061273
+      1    [3],      1    [3]   ;   1    [3]       1    [3]      0.101593
+      2    [2],      1    [3]   ;   1    [2]       1    [3]     -0.078350
+
+
+      1        1     0.4941252E+00  0.1344584E+02 .000000E+00 .209E-01
+      2        2     0.4941252E+00  0.1344584E+02 .995710E+00 .108E-01
+      3        3     0.4941252E+00  0.1344584E+02 .999418E+00 .714E-02
+      4        4     0.4941252E+00  0.1344584E+02 .999958E+00 .731E-02
+      5        5     0.4941252E+00  0.1344584E+02 .999837E+00 .672E-02
+      6        6     0.4941252E+00  0.1344584E+02 .999726E+00 .295E-02
+      7        7     0.4941252E+00  0.1344584E+02 .999686E+00 .145E-02
+      8        8     0.4941252E+00  0.1344584E+02 .999292E+00 .147E-02
+      9        9     0.4941252E+00  0.1344584E+02 .998913E+00 .830E-03
+     10       10     0.4941252E+00  0.1344584E+02 .999634E+00 .580E-03
+     11       11     0.4941252E+00  0.1344584E+02 .999934E+00 .383E-03
+     12       12     0.4941252E+00  0.1344584E+02 .999994E+00 .127E-03
+     13       13     0.4941252E+00  0.1344584E+02 .999999E+00 .717E-04
+     14       14     0.4941252E+00  0.1344584E+02 .999999E+00 .449E-04
+     15       15     0.4941252E+00  0.1344584E+02 .100000E+01 .227E-04
+     16       16     0.4941252E+00  0.1344584E+02 .100000E+01 .126E-04
+     17       17     0.4941252E+00  0.1344584E+02 .100000E+01 .593E-05
+     18       18     0.4941252E+00  0.1344584E+02 .100000E+01 .120E-05
+     19       19     0.4941252E+00  0.1344584E+02 .100000E+01 .431E-06
+  @TRNSPACE-F, Using in-core truncation algorithm.
+  @TRNSPACE-F, Using in-core truncation algorithm.
+   Expansion vector space truncated to dimension  12.
+     20       13     0.4941252E+00  0.1344584E+02 .100000E+01 .132E-06
+     21       14     0.4941252E+00  0.1344584E+02 .100000E+01 .677E-07
+  Converged eigenvalue:   0.49412523 a.u.
+                          13.4458372 eV
+   Total EOM-CCSD electronic energy    -112.956656750732 a.u.
+
+
+    SINGLE EXCITATION COEFFICIENTS AA
+      I  [I_SYM]     A  [A_SYM]  
+
+      5    [1],      1    [1]   ;              0.153037
+      5    [1],      2    [1]   ;             -0.142719
+      2    [2],      1    [2]   ;              0.481456
+      2    [2],      2    [2]   ;              0.056768
+      1    [3],      1    [3]   ;             -0.370567
+
+
+    AB DOUBLE EXCITATION COEFFICIENTS 
+      I  [I_SYM]     j  [j_SYM]     A  [A_SYM]     b  [b_SYM]  
+
+      1    [2],      1    [2]   ;   1    [3]       1    [3]      0.056684
+      2    [2],      2    [2]   ;   1    [1]       1    [1]      0.076784
+      2    [2],      2    [2]   ;   1    [2]       1    [2]      0.054793
+      2    [2],      2    [2]   ;   1    [3]       1    [3]     -0.202855
+      1    [3],      1    [3]   ;   1    [3]       1    [3]      0.112919
+      1    [2],      1    [3]   ;   1    [2]       1    [3]     -0.050942
+      2    [2],      1    [3]   ;   1    [2]       1    [3]     -0.089388
+
+
+----------------------------------------------------------------------
+                                 X             Y             Z
+----------------------------------------------------------------------
+  Right Transition Moment    0.00000000    0.00000000    1.20910503
+  Left Transition Moment     0.00000000    0.00000000    1.31822058
+  Dipole Strength            0.00000000    0.00000000    1.59386713
+  Oscillator Strength        0.00000000    0.00000000    0.52504664
+----------------------------------------------------------------------
+  Transition energy    13.4458 eV  (  92.2101 nm;  108447.950 cm-1)
+  Total EOM-CCSD electronic energy    -112.956656750732 a.u.
+  Norm of oscillator strength :   0.52504664
+  Contribution to electric polarizability: 
+    XX:     0.000000000 YY:     0.000000000 ZZ:     6.451267961
+    XY:     0.000000000 XZ:     0.000000000 YZ:     0.000000000
+  Cumulative electric polarizability: 
+    XX:     0.000000000 YY:     0.000000000 ZZ:     6.695318872
+    XY:     0.000000000 XZ:     0.000000000 YZ:     0.000000000
+  <PSI|0><0|PSI> =  0.0051712
+  <PSI|S><S|PSI> =  0.9050640
+  <PSI|D><D|PSI> =  0.0897481
+  Spin case alpha natural difference orbitals:
+------------------------------------------------------------------------
+ Orbital  Occ. Major                      Second Moment
+          Num. Cont.
+                            xx      yy      zz      xy      xz      yz
+------------------------------------------------------------------------
+     1   0.619  16 [0.97]   5.346   1.005   6.845   0.000   0.000   0.000
+     2   0.380  20 [0.90]   0.461   1.382   2.199   0.000   0.000   0.000
+     3   0.142   9 [0.72]   2.952   1.308   4.522   0.000   0.000   0.000
+    20  -0.117   5 [0.92]   0.609   0.471   3.313   0.000   0.000   0.000
+    21  -0.352   8 [0.90]   0.658   1.975   1.798   0.000   0.000   0.000
+    22  -0.637   7 [0.98]   2.746   0.567   3.793   0.000   0.000   0.000
+------------------------------------------------------------------------
+                    Approximate excitation level (AEL) :    1.08456.
+------------------------------------------------------------------------
+                         Ground state properties 
+------------------------------------------------------------------------
+  Dipole moment   0.000000000000   0.000000000000   0.778946350894
+  Second moment of charge distribution :
+  XX :    15.157923 YY :     8.598718 ZZ :    37.434832
+  XY :     0.000000 YZ :     0.000000 YZ :     0.000000
+  Spherical average :    20.397158
+------------------------------------------------------------------------
+                         Excited state properties 
+------------------------------------------------------------------------
+  Dipole moment   0.000000000000   0.000000000000   0.033596403751
+  Second moment of charge distribution :
+  XX :    16.950029 YY :     8.794440 ZZ :    39.568708
+  XY :     0.000000 YZ :     0.000000 YZ :     0.000000
+  Spherical average :    21.771059
+  Adding new vector to expansion space.
+  Guess for next eigenvalue   0.49412523
+      1       20     0.5095159E+00  0.1386464E+02 .183085E-01 .872E-02
+  @TRNSPACE-F, Using in-core truncation algorithm.
+  @TRNSPACE-F, Using in-core truncation algorithm.
+   Expansion vector space truncated to dimension  12.
+      2       13     0.5085121E+00  0.1383732E+02 .999545E+00 .289E-02
+  L-O-C-K-I-N-G O-N R-O-O-T 
+      3       14     0.5083220E+00  0.1383215E+02 .999859E+00 .125E-02
+      4       15     0.5082720E+00  0.1383079E+02 .999914E+00 .646E-03
+      5       16     0.5082804E+00  0.1383102E+02 .999976E+00 .303E-03
+      6       17     0.5082771E+00  0.1383093E+02 .999999E+00 .487E-04
+      7       18     0.5082772E+00  0.1383093E+02 .100000E+01 .157E-04
+      8       19     0.5082771E+00  0.1383093E+02 .100000E+01 .642E-05
+  @TRNSPACE-F, Using in-core truncation algorithm.
+  @TRNSPACE-F, Using in-core truncation algorithm.
+   Expansion vector space truncated to dimension  12.
+      9       13     0.5082771E+00  0.1383093E+02 .100000E+01 .255E-05
+     10       14     0.5082771E+00  0.1383093E+02 .100000E+01 .822E-06
+     11       15     0.5082770E+00  0.1383093E+02 .100000E+01 .305E-06
+     12       16     0.5082771E+00  0.1383093E+02 .100000E+01 .144E-06
+     13       17     0.5082770E+00  0.1383093E+02 .100000E+01 .668E-07
+  Converged eigenvalue:   0.50827705 a.u.
+                          13.8309279 eV
+   Total EOM-CCSD electronic energy    -112.942504931385 a.u.
+
+
+    SINGLE EXCITATION COEFFICIENTS AA
+      I  [I_SYM]     A  [A_SYM]  
+
+      2    [2],      1    [2]   ;             -0.165095
+
+
+    AB DOUBLE EXCITATION COEFFICIENTS 
+      I  [I_SYM]     j  [j_SYM]     A  [A_SYM]     b  [b_SYM]  
+
+      1    [2],      1    [2]   ;   1    [3]       1    [3]      0.242170
+      1    [2],      2    [2]   ;   1    [3]       1    [3]      0.061940
+      2    [2],      2    [2]   ;   1    [3]       1    [3]     -0.920906
+      2    [2],      2    [2]   ;   1    [3]       3    [3]     -0.056613
+
+
+      1        1     0.5082770E+00  0.1383093E+02 .000000E+00 .756E-02
+      2        2     0.5082771E+00  0.1383093E+02 .999633E+00 .434E-02
+      3        3     0.5082771E+00  0.1383093E+02 .999408E+00 .296E-02
+      4        4     0.5082770E+00  0.1383093E+02 .981384E+00 .117E-01
+      5        5     0.5082770E+00  0.1383093E+02 .616382E+00 .250E-01
+      6        6     0.5082771E+00  0.1383093E+02 .434750E+00 .238E-01
+      7        7     0.5082770E+00  0.1383093E+02 .746628E-01 .194E-01
+      8        8     0.5082770E+00  0.1383093E+02 .687769E+00 .249E-02
+      9        9     0.5082770E+00  0.1383093E+02 .999404E+00 .960E-03
+     10       10     0.5082771E+00  0.1383093E+02 .999917E+00 .369E-03
+     11       11     0.5082770E+00  0.1383093E+02 .999950E+00 .563E-03
+     12       12     0.5082770E+00  0.1383093E+02 .999971E+00 .193E-03
+     13       13     0.5082770E+00  0.1383093E+02 .999997E+00 .777E-04
+     14       14     0.5082770E+00  0.1383093E+02 .100000E+01 .463E-04
+     15       15     0.5082770E+00  0.1383093E+02 .100000E+01 .180E-04
+     16       16     0.5082770E+00  0.1383093E+02 .100000E+01 .525E-05
+     17       17     0.5082770E+00  0.1383093E+02 .100000E+01 .208E-05
+     18       18     0.5082770E+00  0.1383093E+02 .100000E+01 .130E-05
+     19       19     0.5082770E+00  0.1383093E+02 .100000E+01 .236E-06
+  @TRNSPACE-F, Using in-core truncation algorithm.
+  @TRNSPACE-F, Using in-core truncation algorithm.
+   Expansion vector space truncated to dimension  12.
+     20       13     0.5082771E+00  0.1383093E+02 .100000E+01 .705E-07
+  Converged eigenvalue:   0.508277052 a.u.
+                          13.830928 eV
+   Total EOM-CCSD electronic energy    -112.942504929549 a.u.
+
+
+    SINGLE EXCITATION COEFFICIENTS AA
+      I  [I_SYM]     A  [A_SYM]  
+
+      2    [2],      1    [2]   ;              0.064800
+
+
+    AB DOUBLE EXCITATION COEFFICIENTS 
+      I  [I_SYM]     j  [j_SYM]     A  [A_SYM]     b  [b_SYM]  
+
+      1    [2],      1    [2]   ;   1    [3]       1    [3]     -0.246521
+      1    [2],      2    [2]   ;   1    [3]       1    [3]     -0.061038
+      2    [2],      2    [2]   ;   1    [3]       1    [3]      0.946827
+      2    [2],      2    [2]   ;   1    [3]       3    [3]      0.057646
+      1    [3],      1    [3]   ;   1    [3]       1    [3]     -0.051066
+
+
+----------------------------------------------------------------------
+                                 X             Y             Z
+----------------------------------------------------------------------
+  Right Transition Moment    0.00000000    0.00000000   -0.26193963
+  Left Transition Moment     0.00000000    0.00000000   -0.04553560
+  Dipole Strength            0.00000000    0.00000000    0.01192758
+  Oscillator Strength        0.00000000    0.00000000    0.00404168
+----------------------------------------------------------------------
+  Transition energy    13.8309 eV  (  89.6428 nm;  111553.916 cm-1)
+  Total EOM-CCSD electronic energy    -112.942504929549 a.u.
+  Norm of oscillator strength :   0.00404168
+  Contribution to electric polarizability: 
+    XX:     0.000000000 YY:     0.000000000 ZZ:     0.046933372
+    XY:     0.000000000 XZ:     0.000000000 YZ:     0.000000000
+  Cumulative electric polarizability: 
+    XX:     0.000000000 YY:     0.000000000 ZZ:     6.742252244
+    XY:     0.000000000 XZ:     0.000000000 YZ:     0.000000000
+  <PSI|0><0|PSI> =  0.0000197
+  <PSI|S><S|PSI> =  0.0221948
+  <PSI|D><D|PSI> =  0.9777848
+  Spin case alpha natural difference orbitals:
+------------------------------------------------------------------------
+ Orbital  Occ. Major                      Second Moment
+          Num. Cont.
+                            xx      yy      zz      xy      xz      yz
+------------------------------------------------------------------------
+     1   1.870  20 [1.00]   0.649   1.947   2.456   0.000   0.000   0.000
+     2   0.076   8 [0.97]   0.724   2.173   1.724   0.000   0.000   0.000
+    21  -0.110   6 [1.00]   1.959   0.541   2.149   0.000   0.000   0.000
+    22  -1.805   7 [1.00]   2.314   0.489   3.395   0.000   0.000   0.000
+------------------------------------------------------------------------
+                    Approximate excitation level (AEL) :    1.97776.
+------------------------------------------------------------------------
+                         Ground state properties 
+------------------------------------------------------------------------
+  Dipole moment   0.000000000000   0.000000000000   0.778946350894
+  Second moment of charge distribution :
+  XX :    15.157923 YY :     8.598718 ZZ :    37.434832
+  XY :     0.000000 YZ :     0.000000 YZ :     0.000000
+  Spherical average :    20.397158
+------------------------------------------------------------------------
+                         Excited state properties 
+------------------------------------------------------------------------
+  Dipole moment   0.000000000000   0.000000000000   0.632440185430
+  Second moment of charge distribution :
+  XX :    11.979745 YY :    11.444470 ZZ :    35.765530
+  XY :     0.000000 YZ :     0.000000 YZ :     0.000000
+  Spherical average :    19.729915
+  Solution of   3 roots required   96 iterations.
+  @DOEOMEE-I, right-hand eigenvectors will be computed.
+
+  Beginning symmetry block   2.   2 roots requested.
+________________________________________________________________________
+            Subspace          Eigenvalue           
+ Iteration  Dimension   (a.u.)         (eV)       Overlap      Max diff
+________________________________________________________________________
+  @NEWGES-I, Using TDA initial guess.
+      1        1     0.5022420E+00  0.1366671E+02 .000000E+00 .897E-01
+      2        2     0.3895569E+00  0.1060039E+02 .965738E+00 .488E-01
+      3        3     0.3690607E+00  0.1004266E+02 .976382E+00 .122E-01
+      4        4     0.3656745E+00  0.9950513E+01 .997778E+00 .296E-02
+      5        5     0.3652186E+00  0.9938107E+01 .999875E+00 .736E-03
+  L-O-C-K-I-N-G O-N R-O-O-T 
+      6        6     0.3651957E+00  0.9937484E+01 .999990E+00 .239E-03
+      7        7     0.3651852E+00  0.9937198E+01 .999998E+00 .976E-04
+      8        8     0.3651875E+00  0.9937261E+01 .100000E+01 .380E-04
+      9        9     0.3651872E+00  0.9937253E+01 .100000E+01 .167E-04
+     10       10     0.3651870E+00  0.9937249E+01 .100000E+01 .789E-05
+     11       11     0.3651870E+00  0.9937247E+01 .100000E+01 .291E-05
+     12       12     0.3651870E+00  0.9937248E+01 .100000E+01 .112E-05
+     13       13     0.3651870E+00  0.9937249E+01 .100000E+01 .430E-06
+     14       14     0.3651870E+00  0.9937249E+01 .100000E+01 .138E-06
+     15       15     0.3651870E+00  0.9937249E+01 .100000E+01 .382E-07
+  Converged eigenvalue:   0.365187034 a.u.
+                          9.9372489 eV
+   Total EOM-CCSD electronic energy    -113.085594946586 a.u.
+
+
+    SINGLE EXCITATION COEFFICIENTS AA
+      I  [I_SYM]     A  [A_SYM]  
+
+      1    [2],      1    [1]   ;              0.087822
+      2    [2],      1    [1]   ;              0.666967
+
+
+    AB DOUBLE EXCITATION COEFFICIENTS 
+      I  [I_SYM]     j  [j_SYM]     A  [A_SYM]     b  [b_SYM]  
+
+      2    [2],      2    [2]   ;   1    [1]       1    [2]      0.091751
+      2    [2],      1    [3]   ;   1    [1]       1    [3]     -0.104858
+
+
+      1        1     0.3651870E+00  0.9937249E+01 .000000E+00 .283E-01
+      2        2     0.3651870E+00  0.9937249E+01 .996986E+00 .103E-01
+      3        3     0.3651870E+00  0.9937249E+01 .999666E+00 .186E-02
+      4        4     0.3651870E+00  0.9937249E+01 .999972E+00 .476E-03
+      5        5     0.3651870E+00  0.9937249E+01 .999997E+00 .134E-03
+      6        6     0.3651870E+00  0.9937249E+01 .999999E+00 .485E-04
+      7        7     0.3651870E+00  0.9937249E+01 .100000E+01 .233E-04
+      8        8     0.3651870E+00  0.9937249E+01 .100000E+01 .690E-05
+      9        9     0.3651870E+00  0.9937249E+01 .100000E+01 .418E-05
+     10       10     0.3651870E+00  0.9937249E+01 .100000E+01 .157E-05
+     11       11     0.3651870E+00  0.9937249E+01 .100000E+01 .439E-06
+     12       12     0.3651870E+00  0.9937249E+01 .100000E+01 .205E-06
+     13       13     0.3651870E+00  0.9937249E+01 .100000E+01 .783E-07
+  Converged eigenvalue:   0.365187032 a.u.
+                          9.93724884 eV
+   Total EOM-CCSD electronic energy    -113.085594948899 a.u.
+
+
+    SINGLE EXCITATION COEFFICIENTS AA
+      I  [I_SYM]     A  [A_SYM]  
+
+      1    [2],      1    [1]   ;             -0.087700
+      2    [2],      1    [1]   ;             -0.651763
+
+
+    AB DOUBLE EXCITATION COEFFICIENTS 
+      I  [I_SYM]     j  [j_SYM]     A  [A_SYM]     b  [b_SYM]  
+
+      2    [2],      2    [2]   ;   1    [1]       1    [2]     -0.089014
+      1    [2],      1    [3]   ;   1    [1]       1    [3]      0.064589
+      2    [2],      1    [3]   ;   1    [1]       1    [3]      0.133141
+
+
+----------------------------------------------------------------------
+                                 X             Y             Z
+----------------------------------------------------------------------
+  Right Transition Moment   -0.94345784    0.00000000    0.00000000
+  Left Transition Moment    -0.97784118    0.00000000    0.00000000
+  Dipole Strength            0.92255192    0.00000000    0.00000000
+  Oscillator Strength        0.22460267    0.00000000    0.00000000
+----------------------------------------------------------------------
+  Transition energy     9.9372 eV  ( 124.7672 nm;   80149.287 cm-1)
+  Total EOM-CCSD electronic energy    -113.085594948899 a.u.
+  Norm of oscillator strength :   0.22460267
+  Contribution to electric polarizability: 
+    XX:     5.052490055 YY:     0.000000000 ZZ:     0.000000000
+    XY:     0.000000000 XZ:     0.000000000 YZ:     0.000000000
+  Cumulative electric polarizability: 
+    XX:     5.052490055 YY:     0.000000000 ZZ:     6.742252244
+    XY:     0.000000000 XZ:     0.000000000 YZ:     0.000000000
+  <PSI|0><0|PSI> =  0.0000000
+  <PSI|S><S|PSI> =  0.9018441
+  <PSI|D><D|PSI> =  0.0981559
+  Spin case alpha natural difference orbitals:
+------------------------------------------------------------------------
+ Orbital  Occ. Major                      Second Moment
+          Num. Cont.
+                            xx      yy      zz      xy      xz      yz
+------------------------------------------------------------------------
+     1   0.972   9 [1.00]   6.783   1.210   6.957   0.000   0.000   0.000
+     2   0.262   8 [0.74]   0.310   0.931   1.743   0.000   0.000   0.000
+     3   0.102   5 [0.63]   0.955   0.614   1.536   0.000   0.000   0.000
+    20  -0.099  10 [0.57]   0.975   0.654   3.093   0.000   0.000   0.000
+    21  -0.252  20 [0.72]   0.717   2.152   2.027   0.000   0.000   0.000
+    22  -0.998   7 [0.98]   2.445   0.530   3.406   0.000   0.000   0.000
+------------------------------------------------------------------------
+                    Approximate excitation level (AEL) :    1.09816.
+------------------------------------------------------------------------
+                         Ground state properties 
+------------------------------------------------------------------------
+  Dipole moment   0.000000000000   0.000000000000   0.778946350894
+  Second moment of charge distribution :
+  XX :    15.157923 YY :     8.598718 ZZ :    37.434832
+  XY :     0.000000 YZ :     0.000000 YZ :     0.000000
+  Spherical average :    20.397158
+------------------------------------------------------------------------
+                         Excited state properties 
+------------------------------------------------------------------------
+  Dipole moment   0.000000000000   0.000000000000  -0.762989082597
+  Second moment of charge distribution :
+  XX :    19.179383 YY :     8.947943 ZZ :    40.376054
+  XY :     0.000000 YZ :     0.000000 YZ :     0.000000
+  Spherical average :    22.834460
+  Adding new vector to expansion space.
+  Guess for next eigenvalue   0.365187032
+      1       16     0.4903493E+00  0.1334309E+02 .136899E+01 .178E-01
+      2       17     0.4852565E+00  0.1320451E+02 .997155E+00 .339E-02
+  L-O-C-K-I-N-G O-N R-O-O-T 
+      3       18     0.4848944E+00  0.1319465E+02 .999860E+00 .495E-02
+      4       19     0.4847452E+00  0.1319059E+02 .999934E+00 .362E-02
+  @TRNSPACE-F, Using in-core truncation algorithm.
+  @TRNSPACE-F, Using in-core truncation algorithm.
+   Expansion vector space truncated to dimension  12.
+      5       13     0.4846846E+00  0.1318894E+02 .999959E+00 .641E-03
+      6       14     0.4846926E+00  0.1318916E+02 .999997E+00 .168E-03
+      7       15     0.4846924E+00  0.1318916E+02 .100000E+01 .167E-03
+      8       16     0.4846803E+00  0.1318883E+02 .100000E+01 .702E-04
+      9       17     0.4846851E+00  0.1318896E+02 .100000E+01 .119E-04
+     10       18     0.4846839E+00  0.1318893E+02 .100000E+01 .442E-05
+     11       19     0.4846838E+00  0.1318892E+02 .100000E+01 .138E-05
+  @TRNSPACE-F, Using in-core truncation algorithm.
+  @TRNSPACE-F, Using in-core truncation algorithm.
+   Expansion vector space truncated to dimension  12.
+     12       13     0.4846839E+00  0.1318893E+02 .100000E+01 .637E-06
+     13       14     0.4846839E+00  0.1318893E+02 .100000E+01 .493E-06
+     14       15     0.4846838E+00  0.1318892E+02 .100000E+01 .370E-06
+     15       16     0.4846839E+00  0.1318893E+02 .100000E+01 .834E-07
+  Converged eigenvalue:   0.484683886 a.u.
+                          13.188925 eV
+   Total EOM-CCSD electronic energy    -112.966098095428 a.u.
+
+
+    SINGLE EXCITATION COEFFICIENTS AA
+      I  [I_SYM]     A  [A_SYM]  
+
+      1    [2],      2    [1]   ;             -0.092356
+      2    [2],      2    [1]   ;             -0.675707
+
+
+    AB DOUBLE EXCITATION COEFFICIENTS 
+      I  [I_SYM]     j  [j_SYM]     A  [A_SYM]     b  [b_SYM]  
+
+      1    [2],      1    [3]   ;   2    [1]       1    [3]      0.054776
+      2    [2],      1    [3]   ;   2    [1]       1    [3]      0.080355
+
+
+      1        1     0.4846839E+00  0.1318893E+02 .000000E+00 .181E-01
+      2        2     0.4846839E+00  0.1318892E+02 .993324E+00 .107E-01
+      3        3     0.4846839E+00  0.1318892E+02 .523970E+00 .783E-01
+      4        4     0.4846839E+00  0.1318892E+02 .574089E+00 .549E-02
+      5        5     0.4846839E+00  0.1318892E+02 .998944E+00 .115E-02
+      6        6     0.4846839E+00  0.1318892E+02 .999976E+00 .391E-03
+      7        7     0.4846839E+00  0.1318892E+02 .999997E+00 .168E-03
+      8        8     0.4846839E+00  0.1318892E+02 .999999E+00 .993E-04
+      9        9     0.4846839E+00  0.1318892E+02 .100000E+01 .442E-04
+     10       10     0.4846839E+00  0.1318892E+02 .100000E+01 .179E-04
+     11       11     0.4846839E+00  0.1318892E+02 .100000E+01 .523E-05
+     12       12     0.4846839E+00  0.1318892E+02 .100000E+01 .251E-05
+     13       13     0.4846839E+00  0.1318892E+02 .100000E+01 .590E-06
+     14       14     0.4846839E+00  0.1318892E+02 .100000E+01 .277E-06
+     15       15     0.4846839E+00  0.1318892E+02 .100000E+01 .107E-06
+     16       16     0.4846839E+00  0.1318892E+02 .100000E+01 .326E-07
+  Converged eigenvalue:   0.484683865 a.u.
+                          13.1889244 eV
+   Total EOM-CCSD electronic energy    -112.966098116141 a.u.
+
+
+    SINGLE EXCITATION COEFFICIENTS AA
+      I  [I_SYM]     A  [A_SYM]  
+
+      1    [2],      2    [1]   ;             -0.088134
+      2    [2],      2    [1]   ;             -0.667504
+
+
+    AB DOUBLE EXCITATION COEFFICIENTS 
+      I  [I_SYM]     j  [j_SYM]     A  [A_SYM]     b  [b_SYM]  
+
+      1    [2],      1    [3]   ;   2    [1]       1    [3]      0.070099
+      2    [2],      1    [3]   ;   2    [1]       1    [3]      0.100869
+
+
+----------------------------------------------------------------------
+                                 X             Y             Z
+----------------------------------------------------------------------
+  Right Transition Moment   -0.09642776    0.00000000    0.00000000
+  Left Transition Moment    -0.09806715    0.00000000    0.00000000
+  Dipole Strength            0.00945640    0.00000000    0.00000000
+  Oscillator Strength        0.00305557    0.00000000    0.00000000
+----------------------------------------------------------------------
+  Transition energy    13.1889 eV  (  94.0063 nm;  106375.810 cm-1)
+  Total EOM-CCSD electronic energy    -112.966098116141 a.u.
+  Norm of oscillator strength :   0.00305557
+  Contribution to electric polarizability: 
+    XX:     0.039020879 YY:     0.000000000 ZZ:     0.000000000
+    XY:     0.000000000 XZ:     0.000000000 YZ:     0.000000000
+  Cumulative electric polarizability: 
+    XX:     5.091510934 YY:     0.000000000 ZZ:     6.742252244
+    XY:     0.000000000 XZ:     0.000000000 YZ:     0.000000000
+  <PSI|0><0|PSI> =  0.0000000
+  <PSI|S><S|PSI> =  0.9368481
+  <PSI|D><D|PSI> =  0.0631519
+  Spin case alpha natural difference orbitals:
+------------------------------------------------------------------------
+ Orbital  Occ. Major                      Second Moment
+          Num. Cont.
+                            xx      yy      zz      xy      xz      yz
+------------------------------------------------------------------------
+     1   0.979  10 [1.00]   1.971   1.819   3.794   0.000   0.000   0.000
+     2   0.203   8 [0.77]   0.331   0.994   1.743   0.000   0.000   0.000
+    21  -0.193  20 [0.76]   0.680   2.041   2.037   0.000   0.000   0.000
+    22  -0.964   7 [0.98]   2.101   0.481   3.041   0.000   0.000   0.000
+------------------------------------------------------------------------
+                    Approximate excitation level (AEL) :    1.06315.
+------------------------------------------------------------------------
+                         Ground state properties 
+------------------------------------------------------------------------
+  Dipole moment   0.000000000000   0.000000000000   0.778946350894
+  Second moment of charge distribution :
+  XX :    15.157923 YY :     8.598718 ZZ :    37.434832
+  XY :     0.000000 YZ :     0.000000 YZ :     0.000000
+  Spherical average :    20.397158
+------------------------------------------------------------------------
+                         Excited state properties 
+------------------------------------------------------------------------
+  Dipole moment   0.000000000000   0.000000000000   0.396920747296
+  Second moment of charge distribution :
+  XX :    14.807643 YY :     9.685275 ZZ :    37.982818
+  XY :     0.000000 YZ :     0.000000 YZ :     0.000000
+  Spherical average :    20.825246
+  Solution of   2 roots required   55 iterations.
+  @DOEOMEE-I, right-hand eigenvectors will be computed.
+
+  Beginning symmetry block   3.   2 roots requested.
+________________________________________________________________________
+            Subspace          Eigenvalue           
+ Iteration  Dimension   (a.u.)         (eV)       Overlap      Max diff
+________________________________________________________________________
+  @NEWGES-I, Using TDA initial guess.
+      1        1     0.4422519E+00  0.1203429E+02 .000000E+00 .767E-01
+      2        2     0.3550324E+00  0.9660928E+01 .967291E+00 .365E-01
+      3        3     0.3464529E+00  0.9427467E+01 .996164E+00 .648E-02
+      4        4     0.3458974E+00  0.9412351E+01 .999675E+00 .203E-02
+  L-O-C-K-I-N-G O-N R-O-O-T 
+      5        5     0.3458464E+00  0.9410962E+01 .999964E+00 .455E-03
+      6        6     0.3458424E+00  0.9410854E+01 .999998E+00 .116E-03
+      7        7     0.3458382E+00  0.9410741E+01 .100000E+01 .401E-04
+      8        8     0.3458379E+00  0.9410733E+01 .100000E+01 .141E-04
+      9        9     0.3458381E+00  0.9410738E+01 .100000E+01 .587E-05
+     10       10     0.3458381E+00  0.9410738E+01 .100000E+01 .211E-05
+     11       11     0.3458381E+00  0.9410737E+01 .100000E+01 .113E-05
+     12       12     0.3458381E+00  0.9410737E+01 .100000E+01 .165E-06
+     13       13     0.3458381E+00  0.9410737E+01 .100000E+01 .598E-07
+  Converged eigenvalue:   0.345838075 a.u.
+                          9.41073671 eV
+   Total EOM-CCSD electronic energy    -113.104943905812 a.u.
+
+
+    SINGLE EXCITATION COEFFICIENTS AA
+      I  [I_SYM]     A  [A_SYM]  
+
+      5    [1],      1    [3]   ;             -0.674681
+      5    [1],      2    [3]   ;             -0.060310
+
+
+    AB DOUBLE EXCITATION COEFFICIENTS 
+      I  [I_SYM]     j  [j_SYM]     A  [A_SYM]     b  [b_SYM]  
+
+      4    [1],      1    [3]   ;   1    [3]       1    [3]      0.069822
+      5    [1],      1    [3]   ;   1    [3]       1    [3]      0.138640
+
+
+      1        1     0.3458381E+00  0.9410737E+01 .000000E+00 .169E-01
+      2        2     0.3458381E+00  0.9410737E+01 .999395E+00 .587E-02
+      3        3     0.3458381E+00  0.9410737E+01 .999774E+00 .143E-02
+      4        4     0.3458381E+00  0.9410737E+01 .999992E+00 .401E-03
+      5        5     0.3458381E+00  0.9410737E+01 .999999E+00 .854E-04
+      6        6     0.3458381E+00  0.9410737E+01 .100000E+01 .462E-04
+      7        7     0.3458381E+00  0.9410737E+01 .100000E+01 .208E-04
+      8        8     0.3458381E+00  0.9410737E+01 .100000E+01 .842E-05
+      9        9     0.3458381E+00  0.9410737E+01 .100000E+01 .159E-05
+     10       10     0.3458381E+00  0.9410737E+01 .100000E+01 .440E-06
+     11       11     0.3458381E+00  0.9410737E+01 .100000E+01 .168E-06
+     12       12     0.3458381E+00  0.9410737E+01 .100000E+01 .484E-07
+  Converged eigenvalue:   0.345838074 a.u.
+                          9.41073668 eV
+   Total EOM-CCSD electronic energy    -113.104943907024 a.u.
+
+
+    SINGLE EXCITATION COEFFICIENTS AA
+      I  [I_SYM]     A  [A_SYM]  
+
+      5    [1],      1    [3]   ;             -0.672610
+      5    [1],      2    [3]   ;             -0.053716
+
+
+    AB DOUBLE EXCITATION COEFFICIENTS 
+      I  [I_SYM]     j  [j_SYM]     A  [A_SYM]     b  [b_SYM]  
+
+      4    [1],      1    [3]   ;   1    [3]       1    [3]      0.078114
+      5    [1],      1    [3]   ;   1    [3]       1    [3]      0.137772
+
+
+----------------------------------------------------------------------
+                                 X             Y             Z
+----------------------------------------------------------------------
+  Right Transition Moment    0.00000000    0.17569707    0.00000000
+  Left Transition Moment     0.00000000    0.18968983    0.00000000
+  Dipole Strength            0.00000000    0.03332795    0.00000000
+  Oscillator Strength        0.00000000    0.00768405    0.00000000
+----------------------------------------------------------------------
+  Transition energy     9.4107 eV  ( 131.7477 nm;   75902.682 cm-1)
+  Total EOM-CCSD electronic energy    -113.104943907024 a.u.
+  Norm of oscillator strength :   0.00768405
+  Contribution to electric polarizability: 
+    XX:     0.000000000 YY:     0.192737293 ZZ:     0.000000000
+    XY:     0.000000000 XZ:     0.000000000 YZ:     0.000000000
+  Cumulative electric polarizability: 
+    XX:     5.091510934 YY:     0.192737293 ZZ:     6.742252244
+    XY:     0.000000000 XZ:     0.000000000 YZ:     0.000000000
+  <PSI|0><0|PSI> =  0.0000000
+  <PSI|S><S|PSI> =  0.9266163
+  <PSI|D><D|PSI> =  0.0733837
+  Spin case alpha natural difference orbitals:
+------------------------------------------------------------------------
+ Orbital  Occ. Major                      Second Moment
+          Num. Cont.
+                            xx      yy      zz      xy      xz      yz
+------------------------------------------------------------------------
+     1   1.015  20 [0.97]   0.515   1.546   2.300   0.000   0.000   0.000
+    22  -0.967   5 [0.99]   0.565   0.410   3.320   0.000   0.000   0.000
+------------------------------------------------------------------------
+                    Approximate excitation level (AEL) :    1.07338.
+------------------------------------------------------------------------
+                         Ground state properties 
+------------------------------------------------------------------------
+  Dipole moment   0.000000000000   0.000000000000   0.778946350894
+  Second moment of charge distribution :
+  XX :    15.157923 YY :     8.598718 ZZ :    37.434832
+  XY :     0.000000 YZ :     0.000000 YZ :     0.000000
+  Spherical average :    20.397158
+------------------------------------------------------------------------
+                         Excited state properties 
+------------------------------------------------------------------------
+  Dipole moment   0.000000000000   0.000000000000   0.295637910498
+  Second moment of charge distribution :
+  XX :    14.930027 YY :     9.702924 ZZ :    36.167240
+  XY :     0.000000 YZ :     0.000000 YZ :     0.000000
+  Spherical average :    20.266730
+  Adding new vector to expansion space.
+  Guess for next eigenvalue   0.345838074
+      1       14     0.5022517E+00  0.1366697E+02 .131619E+01 .168E-01
+      2       15     0.4975960E+00  0.1354028E+02 .997460E+00 .459E-02
+      3       16     0.4969781E+00  0.1352347E+02 .998984E+00 .194E-02
+  L-O-C-K-I-N-G O-N R-O-O-T 
+      4       17     0.4969454E+00  0.1352258E+02 .999798E+00 .683E-03
+      5       18     0.4969165E+00  0.1352179E+02 .999985E+00 .170E-03
+      6       19     0.4969165E+00  0.1352179E+02 .999999E+00 .436E-04
+  @TRNSPACE-F, Using in-core truncation algorithm.
+  @TRNSPACE-F, Using in-core truncation algorithm.
+   Expansion vector space truncated to dimension  12.
+      7       13     0.4969160E+00  0.1352178E+02 .100000E+01 .267E-04
+      8       14     0.4969156E+00  0.1352177E+02 .100000E+01 .814E-05
+      9       15     0.4969155E+00  0.1352177E+02 .100000E+01 .262E-05
+     10       16     0.4969156E+00  0.1352177E+02 .100000E+01 .740E-06
+     11       17     0.4969156E+00  0.1352177E+02 .100000E+01 .254E-06
+     12       18     0.4969156E+00  0.1352177E+02 .100000E+01 .780E-07
+  Converged eigenvalue:   0.496915556 a.u.
+                          13.5217658 eV
+   Total EOM-CCSD electronic energy    -112.953866424701 a.u.
+
+
+    SINGLE EXCITATION COEFFICIENTS AA
+      I  [I_SYM]     A  [A_SYM]  
+
+      4    [1],      1    [3]   ;              0.140872
+      1    [3],      1    [1]   ;             -0.650920
+
+
+    AB DOUBLE EXCITATION COEFFICIENTS 
+      I  [I_SYM]     j  [j_SYM]     A  [A_SYM]     b  [b_SYM]  
+
+      1    [3],      1    [3]   ;   1    [1]       1    [3]      0.157952
+      4    [1],      1    [3]   ;   1    [3]       1    [3]      0.055605
+      2    [2],      1    [3]   ;   1    [2]       1    [1]     -0.070894
+
+
+      1        1     0.4969156E+00  0.1352177E+02 .000000E+00 .186E-01
+      2        2     0.4969156E+00  0.1352177E+02 .999203E+00 .510E-02
+      3        3     0.4969156E+00  0.1352177E+02 .999859E+00 .937E-03
+      4        4     0.4969156E+00  0.1352177E+02 .893339E+00 .397E-01
+      5        5     0.4969156E+00  0.1352177E+02 .823913E+00 .988E-02
+      6        6     0.4969156E+00  0.1352177E+02 .990405E+00 .365E-03
+      7        7     0.4969156E+00  0.1352177E+02 .999997E+00 .157E-03
+      8        8     0.4969156E+00  0.1352177E+02 .999998E+00 .887E-04
+      9        9     0.4969156E+00  0.1352177E+02 .100000E+01 .379E-04
+     10       10     0.4969156E+00  0.1352177E+02 .100000E+01 .127E-04
+     11       11     0.4969156E+00  0.1352177E+02 .100000E+01 .301E-05
+     12       12     0.4969156E+00  0.1352177E+02 .100000E+01 .110E-05
+     13       13     0.4969156E+00  0.1352177E+02 .100000E+01 .422E-06
+     14       14     0.4969156E+00  0.1352177E+02 .100000E+01 .163E-06
+     15       15     0.4969156E+00  0.1352177E+02 .100000E+01 .595E-07
+  Converged eigenvalue:   0.496915558 a.u.
+                          13.5217659 eV
+   Total EOM-CCSD electronic energy    -112.953866423500 a.u.
+
+
+    SINGLE EXCITATION COEFFICIENTS AA
+      I  [I_SYM]     A  [A_SYM]  
+
+      4    [1],      1    [3]   ;              0.145648
+      1    [3],      1    [1]   ;             -0.643789
+
+
+    AB DOUBLE EXCITATION COEFFICIENTS 
+      I  [I_SYM]     j  [j_SYM]     A  [A_SYM]     b  [b_SYM]  
+
+      1    [3],      1    [3]   ;   1    [1]       1    [3]      0.166173
+      4    [1],      1    [3]   ;   1    [3]       1    [3]      0.062703
+      5    [1],      1    [3]   ;   1    [3]       1    [3]     -0.056761
+      2    [2],      1    [3]   ;   1    [2]       1    [1]     -0.070923
+
+
+----------------------------------------------------------------------
+                                 X             Y             Z
+----------------------------------------------------------------------
+  Right Transition Moment    0.00000000   -0.07701614    0.00000000
+  Left Transition Moment     0.00000000   -0.08257800    0.00000000
+  Dipole Strength            0.00000000    0.00635984    0.00000000
+  Oscillator Strength        0.00000000    0.00210687    0.00000000
+----------------------------------------------------------------------
+  Transition energy    13.5218 eV  (  91.6923 nm;  109060.356 cm-1)
+  Total EOM-CCSD electronic energy    -112.953866423500 a.u.
+  Norm of oscillator strength :   0.00210687
+  Contribution to electric polarizability: 
+    XX:     0.000000000 YY:     0.025597262 ZZ:     0.000000000
+    XY:     0.000000000 XZ:     0.000000000 YZ:     0.000000000
+  Cumulative electric polarizability: 
+    XX:     5.091510934 YY:     0.218334556 ZZ:     6.742252244
+    XY:     0.000000000 XZ:     0.000000000 YZ:     0.000000000
+  <PSI|0><0|PSI> =  0.0000000
+  <PSI|S><S|PSI> =  0.8922624
+  <PSI|D><D|PSI> =  0.1077376
+  Spin case alpha natural difference orbitals:
+------------------------------------------------------------------------
+ Orbital  Occ. Major                      Second Moment
+          Num. Cont.
+                            xx      yy      zz      xy      xz      yz
+------------------------------------------------------------------------
+     1   0.925   9 [1.00]   6.323   1.167   6.800   0.000   0.000   0.000
+     2   0.157   7 [0.71]   1.434   0.489   2.108   0.000   0.000   0.000
+     3   0.097  20 [0.98]   0.557   1.672   2.385   0.000   0.000   0.000
+     4   0.086  10 [0.63]   1.575   0.884   1.550   0.000   0.000   0.000
+    20  -0.109   4 [0.62]   1.615   0.744   5.353   0.000   0.000   0.000
+    21  -0.153   7 [0.67]   5.117   0.783   6.671   0.000   0.000   0.000
+    22  -0.972   8 [0.98]   0.588   1.765   1.666   0.000   0.000   0.000
+------------------------------------------------------------------------
+                    Approximate excitation level (AEL) :    1.10774.
+------------------------------------------------------------------------
+                         Ground state properties 
+------------------------------------------------------------------------
+  Dipole moment   0.000000000000   0.000000000000   0.778946350894
+  Second moment of charge distribution :
+  XX :    15.157923 YY :     8.598718 ZZ :    37.434832
+  XY :     0.000000 YZ :     0.000000 YZ :     0.000000
+  Spherical average :    20.397158
+------------------------------------------------------------------------
+                         Excited state properties 
+------------------------------------------------------------------------
+  Dipole moment   0.000000000000   0.000000000000  -0.626334205952
+  Second moment of charge distribution :
+  XX :    19.786736 YY :     8.001953 ZZ :    41.031561
+  XY :     0.000000 YZ :     0.000000 YZ :     0.000000
+  Spherical average :    22.940083
+  Solution of   2 roots required   48 iterations.
+  @DOEOMEE-I, right-hand eigenvectors will be computed.
+
+  Beginning symmetry block   4.   2 roots requested.
+________________________________________________________________________
+            Subspace          Eigenvalue           
+ Iteration  Dimension   (a.u.)         (eV)       Overlap      Max diff
+________________________________________________________________________
+  @NEWGES-I, Using TDA initial guess.
+      1        1     0.2485557E+00  0.6763547E+01 .000000E+00 .742E-01
+      2        2     0.1583382E+00  0.4308604E+01 .964230E+00 .402E-01
+      3        3     0.1492335E+00  0.4060851E+01 .996384E+00 .950E-02
+      4        4     0.1489466E+00  0.4053045E+01 .999789E+00 .242E-02
+  L-O-C-K-I-N-G O-N R-O-O-T 
+      5        5     0.1489098E+00  0.4052043E+01 .999952E+00 .610E-03
+      6        6     0.1488981E+00  0.4051726E+01 .999998E+00 .179E-03
+      7        7     0.1488988E+00  0.4051744E+01 .100000E+01 .651E-04
+      8        8     0.1488966E+00  0.4051685E+01 .100000E+01 .134E-04
+      9        9     0.1488962E+00  0.4051673E+01 .100000E+01 .268E-05
+     10       10     0.1488963E+00  0.4051676E+01 .100000E+01 .445E-06
+ IMAGINARY EIGENVALUES FOUND 
+    9      2.2722298   0.0056079
+   10      2.2722298  -0.0056079
+     11       11     0.1488963E+00  0.4051676E+01 .100000E+01 .930E-07
+  Converged eigenvalue:   0.148896283 a.u.
+                          4.05167567 eV
+   Total EOM-CCSD electronic energy    -113.301885698422 a.u.
+
+
+    SINGLE EXCITATION COEFFICIENTS AA
+      I  [I_SYM]     A  [A_SYM]  
+
+      1    [2],      1    [3]   ;              0.119188
+      2    [2],      1    [3]   ;              0.665281
+      2    [2],      2    [3]   ;              0.053104
+
+
+    AB DOUBLE EXCITATION COEFFICIENTS 
+      I  [I_SYM]     j  [j_SYM]     A  [A_SYM]     b  [b_SYM]  
+
+      1    [2],      1    [3]   ;   1    [3]       1    [3]     -0.082737
+      2    [2],      1    [3]   ;   1    [3]       1    [3]     -0.128347
+
+
+      1        1     0.1488963E+00  0.4051676E+01 .000000E+00 .152E-01
+      2        2     0.1488963E+00  0.4051676E+01 .999361E+00 .454E-02
+      3        3     0.1488963E+00  0.4051676E+01 .999815E+00 .112E-02
+      4        4     0.1488963E+00  0.4051676E+01 .999993E+00 .344E-03
+      5        5     0.1488963E+00  0.4051676E+01 .999999E+00 .738E-04
+      6        6     0.1488963E+00  0.4051676E+01 .100000E+01 .248E-04
+      7        7     0.1488963E+00  0.4051676E+01 .100000E+01 .374E-05
+      8        8     0.1488963E+00  0.4051676E+01 .100000E+01 .199E-05
+      9        9     0.1488963E+00  0.4051676E+01 .100000E+01 .449E-06
+     10       10     0.1488963E+00  0.4051676E+01 .100000E+01 .103E-06
+     11       11     0.1488963E+00  0.4051676E+01 .100000E+01 .226E-07
+  Converged eigenvalue:   0.148896284 a.u.
+                          4.05167571 eV
+   Total EOM-CCSD electronic energy    -113.301885696710 a.u.
+
+
+    SINGLE EXCITATION COEFFICIENTS AA
+      I  [I_SYM]     A  [A_SYM]  
+
+      1    [2],      1    [3]   ;              0.118144
+      2    [2],      1    [3]   ;              0.663711
+
+
+    AB DOUBLE EXCITATION COEFFICIENTS 
+      I  [I_SYM]     j  [j_SYM]     A  [A_SYM]     b  [b_SYM]  
+
+      1    [2],      1    [3]   ;   1    [3]       1    [3]     -0.091082
+      2    [2],      1    [3]   ;   1    [3]       1    [3]     -0.123827
+
+
+----------------------------------------------------------------------
+                                 X             Y             Z
+----------------------------------------------------------------------
+  Right Transition Moment    0.00000000    0.00000000    0.00000000
+  Left Transition Moment     0.00000000    0.00000000    0.00000000
+  Dipole Strength            0.00000000    0.00000000    0.00000000
+  Oscillator Strength        0.00000000    0.00000000    0.00000000
+----------------------------------------------------------------------
+  Transition energy     4.0517 eV  ( 306.0073 nm;   32678.956 cm-1)
+  Total EOM-CCSD electronic energy    -113.301885696710 a.u.
+  Norm of oscillator strength :   0.00000000
+  Contribution to electric polarizability: 
+    XX:     0.000000000 YY:     0.000000000 ZZ:     0.000000000
+    XY:     0.000000000 XZ:     0.000000000 YZ:     0.000000000
+  Cumulative electric polarizability: 
+    XX:     5.091510934 YY:     0.218334556 ZZ:     6.742252244
+    XY:     0.000000000 XZ:     0.000000000 YZ:     0.000000000
+  <PSI|0><0|PSI> =  0.0000000
+  <PSI|S><S|PSI> =  0.9235282
+  <PSI|D><D|PSI> =  0.0764718
+  Spin case alpha natural difference orbitals:
+------------------------------------------------------------------------
+ Orbital  Occ. Major                      Second Moment
+          Num. Cont.
+                            xx      yy      zz      xy      xz      yz
+------------------------------------------------------------------------
+     1   1.012  20 [0.97]   0.517   1.550   2.302   0.000   0.000   0.000
+    22  -0.964   7 [0.98]   1.908   0.456   2.809   0.000   0.000   0.000
+------------------------------------------------------------------------
+                    Approximate excitation level (AEL) :    1.07647.
+------------------------------------------------------------------------
+                         Ground state properties 
+------------------------------------------------------------------------
+  Dipole moment   0.000000000000   0.000000000000   0.778946350894
+  Second moment of charge distribution :
+  XX :    15.157923 YY :     8.598718 ZZ :    37.434832
+  XY :     0.000000 YZ :     0.000000 YZ :     0.000000
+  Spherical average :    20.397158
+------------------------------------------------------------------------
+                         Excited state properties 
+------------------------------------------------------------------------
+  Dipole moment   0.000000000000   0.000000000000   0.655594461472
+  Second moment of charge distribution :
+  XX :    13.955051 YY :     9.748573 ZZ :    37.043511
+  XY :     0.000000 YZ :     0.000000 YZ :     0.000000
+  Spherical average :    20.249045
+  Adding new vector to expansion space.
+  Guess for next eigenvalue   0.148896284
+      1       12     0.4185814E+00  0.1139018E+02 .133306E+01 .263E-01
+      2       13     0.4096343E+00  0.1114672E+02 .993970E+00 .473E-02
+      3       14     0.4091484E+00  0.1113350E+02 .999827E+00 .111E-02
+  L-O-C-K-I-N-G O-N R-O-O-T 
+      4       15     0.4090773E+00  0.1113156E+02 .999983E+00 .292E-03
+      5       16     0.4090743E+00  0.1113148E+02 .999999E+00 .684E-04
+      6       17     0.4090726E+00  0.1113144E+02 .100000E+01 .179E-04
+      7       18     0.4090724E+00  0.1113143E+02 .100000E+01 .340E-05
+      8       19     0.4090724E+00  0.1113143E+02 .100000E+01 .112E-05
+  @TRNSPACE-F, Using in-core truncation algorithm.
+  @TRNSPACE-F, Using in-core truncation algorithm.
+   Expansion vector space truncated to dimension  12.
+      9       13     0.4090724E+00  0.1113143E+02 .100000E+01 .664E-06
+     10       14     0.4090724E+00  0.1113143E+02 .100000E+01 .203E-06
+     11       15     0.4090724E+00  0.1113143E+02 .100000E+01 .825E-07
+  Converged eigenvalue:   0.409072388 a.u.
+                          11.1314306 eV
+   Total EOM-CCSD electronic energy    -113.041709593098 a.u.
+
+
+    SINGLE EXCITATION COEFFICIENTS AA
+      I  [I_SYM]     A  [A_SYM]  
+
+      1    [2],      1    [3]   ;              0.634850
+      1    [2],      2    [3]   ;              0.053571
+      2    [2],      1    [3]   ;             -0.138576
+
+
+    AB DOUBLE EXCITATION COEFFICIENTS 
+      I  [I_SYM]     j  [j_SYM]     A  [A_SYM]     b  [b_SYM]  
+
+      2    [2],      2    [2]   ;   1    [2]       1    [3]      0.069942
+      2    [2],      1    [3]   ;   1    [3]       1    [3]     -0.223154
+
+
+      1        1     0.4090724E+00  0.1113143E+02 .000000E+00 .118E-01
+      2        2     0.4090724E+00  0.1113143E+02 .998315E+00 .641E-02
+      3        3     0.4090724E+00  0.1113143E+02 .999804E+00 .134E-02
+      4        4     0.4090724E+00  0.1113143E+02 .999897E+00 .135E-02
+      5        5     0.4090724E+00  0.1113143E+02 .999999E+00 .129E-02
+      6        6     0.4090724E+00  0.1113143E+02 .999963E+00 .201E-03
+      7        7     0.4090724E+00  0.1113143E+02 .999999E+00 .643E-04
+      8        8     0.4090724E+00  0.1113143E+02 .100000E+01 .211E-04
+      9        9     0.4090724E+00  0.1113143E+02 .100000E+01 .469E-05
+     10       10     0.4090724E+00  0.1113143E+02 .100000E+01 .183E-05
+     11       11     0.4090724E+00  0.1113143E+02 .100000E+01 .513E-06
+     12       12     0.4090724E+00  0.1113143E+02 .100000E+01 .156E-06
+     13       13     0.4090724E+00  0.1113143E+02 .100000E+01 .375E-07
+  Converged eigenvalue:   0.409072385 a.u.
+                          11.1314305 eV
+   Total EOM-CCSD electronic energy    -113.041709596538 a.u.
+
+
+    SINGLE EXCITATION COEFFICIENTS AA
+      I  [I_SYM]     A  [A_SYM]  
+
+      1    [2],      1    [3]   ;              0.618866
+      2    [2],      1    [3]   ;             -0.142520
+
+
+    AB DOUBLE EXCITATION COEFFICIENTS 
+      I  [I_SYM]     j  [j_SYM]     A  [A_SYM]     b  [b_SYM]  
+
+      2    [2],      2    [2]   ;   1    [2]       1    [3]      0.071376
+      1    [2],      1    [3]   ;   1    [3]       1    [3]      0.064587
+      2    [2],      1    [3]   ;   1    [3]       1    [3]     -0.256533
+
+
+----------------------------------------------------------------------
+                                 X             Y             Z
+----------------------------------------------------------------------
+  Right Transition Moment    0.00000000    0.00000000    0.00000000
+  Left Transition Moment     0.00000000    0.00000000    0.00000000
+  Dipole Strength            0.00000000    0.00000000    0.00000000
+  Oscillator Strength        0.00000000    0.00000000    0.00000000
+----------------------------------------------------------------------
+  Transition energy    11.1314 eV  ( 111.3821 nm;   89781.009 cm-1)
+  Total EOM-CCSD electronic energy    -113.041709596538 a.u.
+  Norm of oscillator strength :   0.00000000
+  Contribution to electric polarizability: 
+    XX:     0.000000000 YY:     0.000000000 ZZ:     0.000000000
+    XY:     0.000000000 XZ:     0.000000000 YZ:     0.000000000
+  Cumulative electric polarizability: 
+    XX:     5.091510934 YY:     0.218334556 ZZ:     6.742252244
+    XY:     0.000000000 XZ:     0.000000000 YZ:     0.000000000
+  <PSI|0><0|PSI> =  0.0000000
+  <PSI|S><S|PSI> =  0.8278471
+  <PSI|D><D|PSI> =  0.1721529
+  Spin case alpha natural difference orbitals:
+------------------------------------------------------------------------
+ Orbital  Occ. Major                      Second Moment
+          Num. Cont.
+                            xx      yy      zz      xy      xz      yz
+------------------------------------------------------------------------
+     1   1.055  20 [0.99]   0.652   1.955   2.429   0.000   0.000   0.000
+    21  -0.128   7 [0.87]   0.797   0.278   1.735   0.000   0.000   0.000
+    22  -0.864   6 [0.95]   2.684   0.624   3.153   0.000   0.000   0.000
+------------------------------------------------------------------------
+                    Approximate excitation level (AEL) :    1.17215.
+------------------------------------------------------------------------
+                         Ground state properties 
+------------------------------------------------------------------------
+  Dipole moment   0.000000000000   0.000000000000   0.778946350894
+  Second moment of charge distribution :
+  XX :    15.157923 YY :     8.598718 ZZ :    37.434832
+  XY :     0.000000 YZ :     0.000000 YZ :     0.000000
+  Spherical average :    20.397158
+------------------------------------------------------------------------
+                         Excited state properties 
+------------------------------------------------------------------------
+  Dipole moment   0.000000000000   0.000000000000   1.078458637147
+  Second moment of charge distribution :
+  XX :    13.474431 YY :    10.041439 ZZ :    37.094344
+  XY :     0.000000 YZ :     0.000000 YZ :     0.000000
+  Spherical average :    20.203404
+  Solution of   2 roots required   42 iterations.
+
+  Summary of EOM-CCSD excitation energies
+
+
+  SYM.  ROOT #     EE(eV)     EE(cm-1)    OSC. STR.     TOTAL ENERGY
+   --------------------------------------------------------------------
+
+   1     1        10.9246    88112.64    .1311E-01      -113.04931126
+   1     2        13.4458   108447.95    .5250E+00      -112.95665675
+   1     3        13.8309   111553.92    .4042E-02      -112.94250493
+   2     1         9.9372    80149.29    .2246E+00      -113.08559495
+   2     2        13.1889   106375.81    .3056E-02      -112.96609812
+   3     1         9.4107    75902.68    .7684E-02      -113.10494391
+   3     2        13.5218   109060.36    .2107E-02      -112.95386642
+   4     1         4.0517    32678.96    .0000E+00      -113.30188570
+   4     2        11.1314    89781.01    .0000E+00      -113.04170960
+
+   --------------------------------------------------------------------
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.91 (      0.9)   0: 0:20.10 (     20.1)   0: 0:21.7 (     21.7)
+
+
+ @ACES2: The ACES2 program has completed successfully in  29 seconds.
+
+

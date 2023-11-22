@@ -1,0 +1,28 @@
+#just one point in cs
+cat <<! >ZMAT
+ozone
+O
+O 1 r1
+O 1 r2 2 th
+
+r1=1.29
+r2=1.32
+th=115.
+
+*ACES2(BASIS=DZP,CALC=CCSD,REFERENCE=UHF
+       SYMMETRY=OFF,NON-HF=ON
+       SPHERICAL=ON
+       DROPMO=1-3
+       UNITS=ANGSTROM
+       MULTIPLICITY=1,CHARGE=0)
+
+
+!
+
+cat <<! >bwdata
+2222222220
+2222222202
+!
+
+xaces2 || exit 1
+

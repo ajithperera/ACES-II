@@ -1,0 +1,50 @@
+BUILDBIN=YES
+BUILDLIB=YES
+64BIT=1
+DEBUG=1
+OPTIMIZE=0
+
+DEFINES_EXTRA += -D_STRINGENT_CHECK -D_ASSERT
+
+COMPARCH:=$(shell arch)
+COMPMACH:=$(shell uname -n)
+COMPOP:=$(shell uname)
+#Override preset ACES VERSION
+ACES_VERSION:=2.6.0-RELEASE
+ifeq (${COMPOP},Darwin)
+  HOME:=/Users/ataube
+  ACESLOC:=${HOME}/Code/ACES_Dev
+  SRCLOC:=${ACESLOC}
+  DIR_INSTBIN:=${ACESLOC}/bin
+  DIR_INSTLIB:=${ACESLOC}/lib
+  DIR_SRCLIB:=${DIR_INSTLIB}
+  LDFLAGS_NUMLIBS:=-framework accelerate
+else
+  HOME:=/ufl/qtp/kdi/at
+  SCRDISK:=/scr/crunch_5/taube
+  ACESLOC:=${SCRDISK}/ACES
+  SRCLOC:=${HOME}/routines/oep
+  DIR_INSTBIN:=${SCRDISK}/bin/${COMPARCH}/oep
+  DIR_INSTLIB:=${SCRDISK}/lib/${COMPARCH}/oep
+  DIR_RJBPROGS:=/ufl/qtp/rjb/progs
+  ifeq (${COMPMACH},ock)
+#    LDFLAGS_NUMLIBS:=-lscs_i8
+    LDFLAGS_MPILIBS:=
+    DIR_ACESLIB:=/share/aces/ACESII-${ACES_VERSION}/lib
+  else 
+    DIR_ACESLIB:=${DIR_RJBPROGS}/arch/${COMPARCH}/${ACES_VERSION}/lib
+  endif
+  DIR_SRCLIB:=${DIR_INSTLIB} ${DIR_ACESLIB}
+endif
+
+DIR_SRCINC:=${SRCLOC}/include ./
+
+###################################
+## AME and ASL specific settings ##
+###################################
+
+# vscf_ks quick hack to include the ACES top-level include directory
+ifeq (${CURR},vscf_ks)
+   DIR_SRCINC = ../../include
+endif
+

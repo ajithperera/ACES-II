@@ -1,0 +1,13 @@
+#ifndef _LWORK_PAR_
+#define _LWORK_PAR_
+
+c Dimensions of the WORK2 and WORK3 arrays of the VDINT AME. For
+c machines that have small stack space, these values must be small.
+c Marshall Cory, who has access to CRAY machines with large memory, uses
+c 900000 and 500000 is recommended for the others. Small values for
+c these arrays will crash the program for basis sets that have large
+c primitive spaces. For example the ANO basis sets. A. Perera, 03/2005. 
+
+      PARAMETER (LWORK2 = 300 0000)
+      PARAMETER (LWORK3 = 900 0000)
+#endif /* _LWORK_PAR_ */

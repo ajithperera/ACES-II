@@ -1,0 +1,126 @@
+      SUBROUTINE JPRI(J,NCOORD,NUCIND,MULT,NAMEX,NAMES,
+     &                PRINT,CONV)
+C
+C THIS ROUTINE PRINTS THE TENSOR FOR INDIRECT SPIN SPIN
+C COUPLINGS IN NMR THEORY
+C
+C NOTE THAT THIS ROUTINE MULTIPLIES THE GIVEN TENSOR (IN J)
+C WITH THE G-FACTORS FOR THE TWO INVOLVED NUCLEI
+C
+CEND
+C
+C 4/93 JG
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DOUBLE PRECISION J
+      LOGICAL PRINT,CONV
+C
+      DIMENSION NAMEX(3*NCOORD),MULT(1)
+      DIMENSION NAMES(3*NCOORD)
+      DIMENSION J(NCOORD,NCOORD)
+      DIMENSION GTAB(18),LABELS(18)
+      CHARACTER*6 NAMEX
+      CHARACTER*6 NAMES
+      CHARACTER*2 LABELS
+      CHARACTER*2 LAB1,LAB2
+C 
+      DATA AZERO/0.D0/
+C
+C GTAB CONTAINS THE G-VALUES FOR THE MOST COMMON ISOTOPES USED IN NMR
+C 1H,11B,13C,15C,17O,31P,29SI,27AL,19F 
+C
+C AND SHOULD BE UPDATED WHENEVER POSSIBLE
+C
+C  update and check ! No guarantee for correct results
+C
+C               1H          HE    LI    BE    B
+      DATA GTAB/5.58554D0,1.0D0,1.0D0,1.0D0,1.D0,
+C               13C        15N       17O       19F       NE
+     &          1.40432D0,-0.56596D0,-0.7572D0,5.2546D0,1.D0,
+C                NA      MG        AL     SI    P  S  CL    AR
+     &          1.0D0, 1.D0, 1.D0, 1.D0, 2.2632D0,1.D0,1.D0, 1.D0/
+C
+      DATA LABELS/'H ','HE','LI','BE','B ','C ','N ','O ','F ',
+     &            'NE','NA','MG','AL','SI','P ','S ','CL','AR'/
+      KCOL=6
+C
+C GET LABELS FOR THE NUCLEI, A LITTLE BIT TRICKY DUE TO SYMMETRY
+C
+      I=0
+      DO 10 IATOM=1,NUCIND
+       MULTI=MULT(IATOM)
+       ISTR=3*IATOM-3
+       IF(MULTI.EQ.1) THEN
+        DO 30 ICOOR=1,3
+         I=I+1
+         NAMES(I)=NAMEX(ISTR+ICOOR)(1:4)//' '//NAMEX(ISTR+ICOOR)(6:6)
+30      CONTINUE
+       ELSE
+        DO 40 JJ=1,MULTI
+         DO 50 ICOOR=1,3
+          I=I+1
+          NAMES(I)=NAMEX(ISTR+ICOOR)(1:4)//' '//NAMEX(ISTR+ICOOR)(6:6)
+50       CONTINUE
+40      CONTINUE
+       ENDIF
+10    CONTINUE  
+C
+C DETERMINE THE G-FACTORS FOR THE TWO NUCLEI 
+C
+      IF(CONV) THEN
+C
+       DO 11 IATOM=1,NCOORD
+        LAB1=NAMES(IATOM)(1:2)
+        DO 12 ILAB=1,18
+         JLAB=ILAB
+         IF(LAB1.EQ.LABELS(ILAB)) GO TO 13
+12      CONTINUE
+        write(*,*) ' no g-factor found for ',lab1
+13      FACT=gtab(jlab)
+        DO 11 JATOM=1,NCOORD
+         LAB2=NAMES(jATOM)(1:2)
+         DO 14 ILAB=1,18
+          JLAB=ILAB
+          IF(LAB2.EQ.LABELS(ILAB)) GO TO 15
+14      CONTINUE
+        write(*,*) ' no g-factor found for ',lab2
+        IF((IATOM-1)/3.EQ.(JATOM-1)/3) FACT=AZERO 
+15      FACT2=FACT*gtab(jlab)
+C
+        J(IATOM,JATOM)=FACT2*J(IATOM,JATOM)
+11     CONTINUE
+C
+      ENDIF
+C
+      IF(PRINT) THEN
+C
+       NROW=NCOORD
+       LAST=MIN(NROW,KCOL)
+       BEGIN=1 
+51     CONTINUE
+        WRITE (6,1000) (NAMES(I),I = BEGIN,LAST)
+        WRITE (6,'()')
+        NCOL = 1
+        DO 101 K = 1,NROW
+c         DO 201 I = 1,NCOL
+c          IF (J(K,(BEGIN-1)+I) .NE. AZERO) GO TO 401
+c201      CONTINUE
+c         GO TO 301
+401      WRITE (6,2000)' ',NAMES(K),
+     &         (J(K,JJ),JJ=BEGIN,LAST)
+         IF (MOD(K,3) .EQ. 0) WRITE (6,'()')
+301      CONTINUE
+101     CONTINUE
+        WRITE (6,'()')
+        LAST = MIN(LAST+KCOL,NROW)
+        BEGIN= BEGIN+KCOL
+       IF (BEGIN.LE.NROW) GO TO 51
+C
+      ENDIF
+C
+1000  FORMAT (8X,6(3X,A6,3X),(3X,A6,3X))
+2000  FORMAT (A1,A6,6F12.6)
+C
+      RETURN
+C
+      END

@@ -1,0 +1,112 @@
+#!/bin/sh
+
+f=0
+p=0
+c=0
+
+for arg in $@
+do case $arg in
+   -f) f=1 ;; # force
+   -p) p=1 ;; # make parallel directories
+   -c) c=1 ;; # remove case-sensitivity
+   esac
+done
+
+if test $c -ne 0
+then echo
+     printf "Moving .F files to .FPP . . . "
+     for F in `find . -name "*.F"`
+     do mv -i $F ${F}PP
+     done
+     echo done
+
+     printf "Adding extension settings to GNUmakefile.src . . . "
+     make=Makefiles/GNUmakefile.src
+     test 0 -eq `egrep -c 'EXT_F *.?= *FPP' $make` && echo "EXT_F=FPP" >> $make
+     echo done
+fi
+
+if test $p -ne 0
+then echo
+
+     # copy whole directories (minus makefiles) for parallel builds
+     for dir in mpw acescore gamess aces2
+     do if test -d $dir && test ! -d p_$dir
+        then printf "Copying $dir to p_$dir . . . "
+             cp -r $dir p_$dir && echo "done" || echo "failed"
+             rm -f p_$dir/GNUmakefile*
+        fi
+     done
+
+     # link single program files for parallel builds
+     for stub in vscf dirmp2 scfgrd
+     do dir=p_$stub
+        path=$stub/$stub.F
+        if test -d $stub && test ! -d $dir
+        then printf "Linking $path to $dir/main.F . . . "
+             mkdir $dir && \
+             ln -s ../$path $dir/main.F && echo "done" || echo "failed"
+        fi
+     done
+
+fi
+
+if test $f -eq 0
+then if test $p -eq 0
+     then printf "
+Usage: $0 -f [-p] [-c]
+
+ -f This flag is an attempt to avoid accidentally running the prep script
+    in the repository directory.
+
+ -p This flag creates directories for parallel objects.
+
+ -c This flag converts .F files to .FPP for case-sensitive ports.
+
+"
+          exit 1
+     else printf "$0 finished\n\n"
+          exit 0
+     fi
+fi
+
+# IBM's mpif.h explicitly casts integers as int*4. MPW corrects this.
+f=/usr/lpp/ppe.poe/include/thread64/mpif.h
+o=include/mpif.h
+if test -f $f && test ! -f $o
+then printf "Parsing $f -> $o . . . "
+     sed 's/integer\*4/integer/; s/INTEGER\*4/INTEGER/' $f > $o \
+         && echo "done" || echo "failed"
+fi
+
+echo
+
+printf "Adding write permission to the entire tree . . . "
+chmod -R u+w `pwd` && echo "done" || echo "failed"
+
+if test ! -f makefile && test -d Makefiles
+then printf "Linking makefile -> Makefiles/GNUmakefile.tl . . . "
+     ln -s Makefiles/GNUmakefile.tl makefile && echo "done" || echo "failed"
+fi
+
+for dir in lib bin bin/sio
+do if test ! -d $dir
+   then printf "Making $dir directory . . . "
+        mkdir $dir && echo "done" || echo "failed"
+   fi
+done
+
+for st in *.src void.src # void.src keeps st from expanding to ""
+do if test -d $st && cd $st
+   then for dir in lib bin
+        do if test ! -d $dir
+           then printf "Linking $st/$dir -> $dir . . . "
+                ln -s ../$dir . && echo "done" || echo "failed"
+           fi
+        done
+        cd ..
+   fi
+done
+
+printf "$0 finished\n\n"
+exit

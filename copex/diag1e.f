@@ -1,0 +1,21 @@
+      SUBROUTINE DIAG1E(EEA,FAB,F,NVIR,NOCC,NEA,NAO)
+C
+      IMPLICIT DOUBLE PRECISION (A-H, O-Z) 
+C
+      DIMENSION EEA(NEA,NEA)
+      DIMENSION FAB(NVIR,NVIR)
+      DIMENSION F(NAO)
+C
+C EEA(A,B) = FAB(A,B) + DELTA(A,B) F(A)
+C
+      DO 20 I1=1, NVIR
+         DO 30 I2=1, NVIR
+            EEA(I1,I2)=FAB(I1,I2)
+            IF (I1.EQ.I2) THEN
+               EEA(I1,I2)=EEA(I1,I2)+F(NOCC+I1)
+            ENDIF
+ 30      CONTINUE
+ 20   CONTINUE
+C
+      RETURN
+      END

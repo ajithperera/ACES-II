@@ -1,0 +1,86 @@
+      SUBROUTINE LRNGPRD2(W,T,Q,scr,DISSYW,NUMSYW,DISSYT,NUMSYT,
+     &                  DISSYQ,NUMSYQ,LISTW,LISTT,IRREP,SPINAD)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      LOGICAL SPINAD,MBPT4,bRedundant
+      LOGICAL MBPT2,MBPT3,M4DQ,M4SDQ,M4SDTQ,CCD,QCISD,CCSD,UCC
+      INTEGER DISSYT,DISSYW,DISSYQ
+      integer refsizt, numsizt, tarsizt, tarnumt, reflist
+      DIMENSION W(DISSYW,NUMSYW),T(DISSYT,NUMSYT),Q(DISSYQ,NUMSYQ)
+      dimension scr(dissyq,numsyq)
+C
+      COMMON/METH/MBPT2,MBPT3,M4DQ,M4SDQ,M4SDTQ,CCD,QCISD,CCSD,UCC
+      COMMON /FLAGS2/IFLAGS2(500)
+      COMMON /INFO/ NOCC(2),NVRTO(2)
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPA(255),IRREPB(255),
+     &DIRPRD(8,8)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+C
+      DATA TWO/2.D0/
+      DATA AZERO,HALFM,ONE,ONEM /0.D0,-0.5D0,1.D0,-1.D0/
+
+      bRedundant = iflags2(155).eq.0
+C
+C PICK UP THE RELEVANT T2 AND W PIECES.
+C
+      if(bRedundant)
+     $   CALL GETLST(T,1,NUMSYT,1,IRREP,LISTT)
+
+c
+c otherwise T is passed from the caller
+
+C 
+C FOR RHF SPIN ADAPT THE L2 AMPLITUDES
+C
+      bRedundant = .true.
+
+      FACT=ONE
+      IF(SPINAD) THEN
+       if(bRedundant) then
+          CALL GETLST(W,1,NUMSYT,1,IRREP,134)
+       else
+          REFLIST = 144
+          REFSIZT = IRPDPD(irrep,ISYTYP(1, REFLIST))
+          NUMSIZT = IRPDPD(irrep,isytyp(2, reflist))
+
+          TARSIZT = IRPDPD(irrep,ISYTYP(1, 134))
+          TARNUMT = IRPDPD(irrep,ISYTYP(2, 134))
+
+          ISCRSIZT = NOCC(1)*NOCC(2) + NVRTO(1)*NVRTO(2) +
+     &               NVRTO(1)*NOCC(1) + NVRTO(2)*NOCC(2)
+
+          CALL GETLST(Q,1,numsizt,1,irrep, REFLIST)
+          CALL SST003(Q, W, REFSIZT,
+     &                   TARSIZT, SCR, "AAAA", "AJBI")          
+       endif
+
+       CALL SAXPY(NUMSYT*DISSYT,ONEM,W,1,T,1)
+       MBPT4=M4DQ.OR.M4SDQ.OR.M4SDTQ
+       FACT=HALFM
+       IF(MBPT4) THEN
+        LISTW2=23
+        LISTW=18
+       ELSE
+        LISTW2=54
+        LISTW=56
+       ENDIF
+      ENDIF
+C
+      CALL GETLST(W,1,NUMSYW,2,IRREP,LISTW)
+
+C
+C SPIN ADAPT W INTERMEDIATES
+C
+      IF(SPINAD) THEN
+c       LISTW2=58
+       CALL GETLST(Q,1,NUMSYW,2,IRREP,LISTW2)
+c       CALL SSCAL(NUMSYW*DISSYW,TWO,W,1)
+       CALL SAXPY(NUMSYW*DISSYW,ONEM,Q,1,W,1)
+      ENDIF
+C
+      CALL XGEMM('N','T',DISSYT,DISSYW,NUMSYW,FACT,T,DISSYT,
+     &           W,DISSYW,AZERO,Q,DISSYQ)
+
+
+      RETURN
+      END

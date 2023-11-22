@@ -1,0 +1,27 @@
+      Subroutine Sympack_aoints_cols(W_in,W_out,Nbfns,Iuhf)
+
+      Implicit Double Precision(A-H,O-Z)
+ 
+      Dimension W_in(Nbfns*Nbfns,Nbfns*Nbfns), 
+     +          W_out(Nbfns*Nbfns,Nbfns*Nbfns)
+
+      COMMON/AOSYM/IAOPOP(8),IOFFAO(8),ioffv(8,2),ioffo(8,2),
+     &             IRPDPDAO(8),IRPDPDAOMO_OCCBK(8,2),
+     &             IRPDPDAOMO_VRTBK(8,2),IRPDPDAOMO_OCCKB(8,2),
+     &             IRPDPDAOMO_VRTKB(8,2),
+     &             IRPDPDAOS(8),
+     &             ISTART(8,8),ISTARTMO(8,3)
+#include "syminf.com"
+#include "sympop.com"
+#include "sym.com"
+
+      Ithru = 0
+      Do Irrepr = 1, Nirrep
+         Nitems = Dirprdao(Irrepr)
+         Do I = 1, Nbfns
+            If (Iarray(I) .eq. Irrep) 
+                Ithru = Ithru + 1
+                Iord(Ithru) = 1
+            Endif
+         Enddo
+      Enddo 

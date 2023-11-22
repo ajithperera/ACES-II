@@ -1,0 +1,93 @@
+test -n "$USERDIR" || exit 1
+OLDMOS=$USERDIR/tmp.OLDMOS
+
+# Part 1: generate MOs
+cat <<. >ZMAT
+Generate OLDMOS
+H
+N 1 R
+H 2 R 1 A
+
+R=1.013821
+A=104.65436
+
+*ACES2
+BASIS=DZP
+charge=-1,spherical=off
+
+.
+ln -s $GENBAS . || exit 1
+xaces2 || exit 1
+mv NEWMOS $OLDMOS || exit 1
+
+# clean
+for file in *
+do case $file in
+   GENBAS|ZMAT.BAS) ;;
+   *) rm -rf $file ;;
+   esac
+done
+
+# Part 2: optimize the geometry
+cat <<. >ZMAT
+Use OLDMOS(RHF->ROHF) for every step during the optimization
+H
+N 1 R*
+H 2 R* 1 A*
+
+R=1.013821
+A=104.65436
+
+*ACES2
+!restart
+BASIS=DZP
+multiplicity=2
+REF=ROHF,guess=read_so_mos
+CALC=CCSD,spherical=off
+
+.
+cat <<. >GUESS
+NH2. TEST.
+  3  1  1  0                 alpha occ
+  3  0  1  0                 beta occ
+  0  0  0  0                 alpha pairs to be swapped in each irrep
+  0  0  0  0
+  0  0  0  0
+  0  0  0  0
+  0  0  0  0                 beta pairs to be swapped in each irrep
+  0  0  0  0
+  0  0  0  0
+  0  0  0  0
+  0  0  0  0                 alpha locking within each irrep
+  0  0  0  0                 beta  locking within each irrep
+  0  0  0  0                 alpha printing of initial guess
+  0  0  0  0                 beta printing of initial guess
+  0  0                       stopping parameters
+  1  0                       reading and writing mos
+  1                          nonzero if a uhf wfn is to be got from rhf
+  0                          nonzero if GUESS is always to be read
+
+.
+mv $OLDMOS OLDMOS || exit 1
+xaces2 || exit 1
+
+exit 0
+TEST.DAT
+d TOTENERG
+ -0.557562400937E+02   0.1E-08
+d COORD
+  0.000000000000E+00   0.1E-08
+ -0.151915920721E+01   0.1E-08
+  0.107003315039E+01   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+ -0.154024247510E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.151915920721E+01   0.1E-08
+  0.107003315039E+01   0.1E-08
+d NUCREP
+  0.750516274164E+01   0.1E-08
+d SCFENEG
+ -0.555725744635E+02   0.1E-08
+d S2SCF
+  0.750000000000E+00   0.1E-08

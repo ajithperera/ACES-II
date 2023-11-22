@@ -1,0 +1,236 @@
+      SUBROUTINE TDHFMX(A,B,BUF,IBUF,IVO,IVOS,ISYMO,NINTMX,NIREP
+     X ,NSIZ1,NSIZO)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      CHARACTER*8 LABEL
+      DIMENSION LABEL(52)
+      DIMENSION IVOS(NSIZ1,NSIZO,NIREP),IVO(NSIZ1,NSIZO)
+      DIMENSION BUF(NINTMX),IBUF(NINTMX),ISYMO(1),A(1),B(1)
+      COMMON/MACHSP/IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON/INFOA/NBASIS,NUMSCF,NX,NMO2,NOC,NVT,NVO
+      COMMON/INFSYM/NSYMHF,NSO(8),NOCS(8),NVTS(8),IDPR(8,8),NVOS(8)
+     X ,NIJS(8),NIJS2(8),NRDS(8),NIJSR(8)
+      DATA ZERO,TWO/0.D0,2.D0/ 
+      WRITE(6,*) ' We are in TDHFMX'
+      NTAPE=10
+      NVOS2=0
+      DO 1 IREP=1,NIREP
+      NVOS2=NVOS2+NVOS(IREP)*NVOS(IREP)
+    1 CONTINUE
+      DO 2 IJ=1,NVOS2
+      A(IJ)=ZERO
+    2 B(IJ)=ZERO
+      OPEN(UNIT=NTAPE,FORM='UNFORMATTED',FILE='HF2',ACCESS='SEQUENTIAL')
+      READ(NTAPE) LABEL(1)
+      READ(NTAPE) LABEL(1)
+      READ(NTAPE) LABEL(1)
+      READ(NTAPE) LABEL(1)
+C     WRITE(6,*) LABEL
+C     WRITE(6,*) ' # , INTEGRAL I , J , K , L '
+      NTOT=0
+    5 READ(NTAPE,END=50) BUF,IBUF,NUT
+C     write(6,*) ' NUT = ',NUT
+      IF(NUT.LE.0) GO TO 30
+      DO 10 IX=1,NUT
+      NTOT = NTOT + 1
+      L = AND(IBUF(IX),IALONE)
+      K = AND(ISHFT(IBUF(IX),-IBITWD),IALONE)
+      J = AND(ISHFT(IBUF(IX),-2*IBITWD),IALONE)
+      I = AND(ISHFT(IBUF(IX),-3*IBITWD),IALONE)
+      IJS = IDPR(ISYMO(I),ISYMO(J))
+      KLS = IDPR(ISYMO(K),ISYMO(L))
+      IKS = IDPR(ISYMO(I),ISYMO(K))
+      JLS = IDPR(ISYMO(J),ISYMO(L))
+      ILS = IDPR(ISYMO(I),ISYMO(L))
+      JKS = IDPR(ISYMO(J),ISYMO(K))
+      VAL = BUF(IX)
+      VAL2 = VAL + VAL
+      VAL2 = VAL2 + VAL2
+      VALH = VAL
+C ..... VAL2  is twiced by occupation # = 2 for close shell ....
+      IF(I.GT.NOC.AND.J.LE.NOC.AND.K.GT.NOC.AND.L.LE.NOC) THEN
+      N1=IVO(I,J)
+      N2=IVO(K,L)
+      IF(N1.EQ.N2) THEN
+      VAL2= VAL2/TWO
+      VALH= VALH/TWO
+      END IF
+      N3=IVO(I,L)
+      N4=IVO(K,J)
+      IF(IJS.EQ.KLS) THEN
+      N1=IVOS(I,J,IJS)
+      N2=IVOS(K,L,KLS)
+      N12=(N2-1)*NVOS(IJS)+N1+NIJS2(IJS)
+      N21=(N1-1)*NVOS(IJS)+N2+NIJS2(IJS)
+      A(N12)=A(N12)+VAL2
+      A(N21)=A(N21)+VAL2
+      END IF
+      IF(ILS.EQ.JKS) THEN
+      N3=IVOS(I,L,ILS)
+      N4=IVOS(K,J,JKS)
+      N34=(N4-1)*NVOS(ILS)+N3+NIJS2(ILS)
+      N43=(N3-1)*NVOS(ILS)+N4+NIJS2(ILS)
+      A(N34)=A(N34)-VALH
+      A(N43)=A(N43)-VALH
+      B(N34)=B(N34)+VALH
+      B(N43)=B(N43)+VALH
+      END IF
+C     write(6,*) I,J,K,L,VAL,N1,N2,N3,N4
+      END IF
+      IF(I.GT.NOC.AND.J.LE.NOC.AND.K.LE.NOC.AND.L.GT.NOC) THEN
+      N1=IVO(I,J)
+      N2=IVO(L,K)
+      IF(N1.EQ.N2) THEN
+      VAL2= VAL2/TWO
+      VALH= VALH/TWO
+      END IF
+      N3=IVO(I,K)
+      N4=IVO(L,J)
+      IF(IJS.EQ.KLS) THEN
+      N1=IVOS(I,J,IJS)
+      N2=IVOS(L,K,KLS)
+      N12=(N2-1)*NVOS(IJS)+N1+NIJS2(IJS)
+      N21=(N1-1)*NVOS(IJS)+N2+NIJS2(IJS)
+      A(N12)=A(N12)+VAL2
+      A(N21)=A(N21)+VAL2
+      END IF
+      IF(IKS.EQ.JLS) THEN
+      N3=IVOS(I,K,IKS)
+      N4=IVOS(L,J,JLS)
+      N34=(N4-1)*NVOS(IKS)+N3+NIJS2(IKS)
+      N43=(N3-1)*NVOS(IKS)+N4+NIJS2(IKS)
+      A(N34)=A(N34)-VALH
+      A(N43)=A(N43)-VALH
+      B(N34)=B(N34)+VALH
+      B(N43)=B(N43)+VALH
+      END IF
+C     write(6,*) I,J,K,L,VAL,N1,N2,N3,N4
+      END IF
+      IF(I.LE.NOC.AND.J.GT.NOC.AND.K.GT.NOC.AND.L.LE.NOC) THEN
+      N1=IVO(J,I)
+      N2=IVO(K,L)
+      IF(N1.EQ.N2) THEN
+      VAL2= VAL2/TWO
+      VALH= VALH/TWO
+      END IF
+      N3=IVO(K,I)
+      N4=IVO(J,L)
+      IF(IJS.EQ.KLS) THEN
+      N1=IVOS(J,I,IJS)
+      N2=IVOS(K,L,KLS)
+      N12=(N2-1)*NVOS(IJS)+N1+NIJS2(IJS)
+      N21=(N1-1)*NVOS(IJS)+N2+NIJS2(IJS)
+      A(N12)=A(N12)+VAL2
+      A(N21)=A(N21)+VAL2
+      END IF
+      IF(IKS.EQ.JLS) THEN
+      N3=IVOS(K,I,IKS)
+      N4=IVOS(J,L,JLS)
+      N34=(N4-1)*NVOS(IKS)+N3+NIJS2(IKS)
+      N43=(N3-1)*NVOS(IKS)+N4+NIJS2(IKS)
+      A(N34)=A(N34)-VALH
+      A(N43)=A(N43)-VALH
+      B(N34)=B(N34)+VALH
+      B(N43)=B(N43)+VALH
+      END IF
+C     write(6,*) I,J,K,L,VAL,N1,N2,N3,N4
+      END IF 
+      IF(I.LE.NOC.AND.J.GT.NOC.AND.K.LE.NOC.AND.L.GT.NOC) THEN
+      N1=IVO(J,I)
+      N2=IVO(L,K)
+      IF(N1.EQ.N2) THEN
+      VAL2= VAL2/TWO
+      VALH= VALH/TWO
+      END IF
+      N3=IVO(L,I)
+      N4=IVO(J,K)
+      IF(IJS.EQ.KLS) THEN
+      N1=IVOS(J,I,IJS)
+      N2=IVOS(L,K,KLS)
+      N12=(N2-1)*NVOS(IJS)+N1+NIJS2(IJS)
+      N21=(N1-1)*NVOS(IJS)+N2+NIJS2(IJS)
+      A(N12)=A(N12)+VAL2
+      A(N21)=A(N21)+VAL2
+      END IF
+      IF(ILS.EQ.JKS) THEN
+      N3=IVOS(L,I,ILS)
+      N4=IVOS(J,K,JKS)
+      N34=(N4-1)*NVOS(ILS)+N3+NIJS2(ILS)
+      N43=(N3-1)*NVOS(ILS)+N4+NIJS2(ILS)
+      A(N34)=A(N34)-VALH
+      A(N43)=A(N43)-VALH
+      B(N34)=B(N34)+VALH
+      B(N43)=B(N43)+VALH
+      END IF
+C     write(6,*) I,J,K,L,VAL,N1,N2,N3,N4
+      END IF 
+      IF(I.GT.NOC.AND.J.GT.NOC.AND.K.LE.NOC.AND.L.LE.NOC) THEN
+      N1=IVO(I,K)
+      N2=IVO(J,L)
+      N3=IVO(I,L)
+      N4=IVO(J,K)
+      IF(I.EQ.J) VALH=VALH/TWO
+      IF(K.EQ.L) VALH=VALH/TWO
+      IF(IKS.EQ.JLS) THEN
+      N1=IVOS(I,K,IKS)
+      N2=IVOS(J,L,JLS)
+      N12=(N2-1)*NVOS(IKS)+N1+NIJS2(IKS)
+      N21=(N1-1)*NVOS(IKS)+N2+NIJS2(IKS)
+      A(N12)=A(N12)-VALH 
+      A(N21)=A(N21)-VALH 
+      B(N12)=B(N12)-VALH 
+      B(N21)=B(N21)-VALH 
+      END IF
+      IF(ILS.EQ.JKS) THEN
+      N3=IVOS(I,L,ILS)
+      N4=IVOS(J,K,JKS)
+      N34=(N4-1)*NVOS(ILS)+N3+NIJS2(ILS)
+      N43=(N3-1)*NVOS(ILS)+N4+NIJS2(ILS)
+      A(N34)=A(N34)-VALH
+      A(N43)=A(N43)-VALH
+      B(N34)=B(N34)-VALH
+      B(N43)=B(N43)-VALH
+      END IF
+C     write(6,*) I,J,K,L,VAL,N1,N2,N3,N4
+      END IF 
+      IF(I.LE.NOC.AND.J.LE.NOC.AND.K.GT.NOC.AND.L.GT.NOC) THEN
+      N1=IVO(K,I)
+      N2=IVO(L,J)
+      N3=IVO(L,I)
+      N4=IVO(K,J)
+      IF(I.EQ.J) VALH=VALH/TWO
+      IF(K.EQ.L) VALH=VALH/TWO
+      IF(IKS.EQ.JLS) THEN
+      N1=IVOS(K,I,IKS)
+      N2=IVOS(L,J,JLS)
+      N12=(N2-1)*NVOS(IKS)+N1+NIJS2(IKS)
+      N21=(N1-1)*NVOS(IKS)+N2+NIJS2(IKS)
+      A(N12)=A(N12)-VALH 
+      A(N21)=A(N21)-VALH 
+      B(N12)=B(N12)-VALH 
+      B(N21)=B(N21)-VALH 
+      END IF
+      IF(ILS.EQ.JKS) THEN
+      N3=IVOS(L,I,ILS)
+      N4=IVOS(K,J,JKS)
+      N34=(N4-1)*NVOS(ILS)+N3+NIJS2(ILS)
+      N43=(N3-1)*NVOS(ILS)+N4+NIJS2(ILS)
+      A(N34)=A(N34)-VALH
+      A(N43)=A(N43)-VALH
+      B(N34)=B(N34)-VALH
+      B(N43)=B(N43)-VALH
+      END IF
+C     write(6,*) I,J,K,L,VAL,N1,N2,N3,N4
+      END IF 
+   10 CONTINUE
+      GO TO  5
+   30 CONTINUE
+   50 CONTINUE 
+CSSS      WRITE(6,*) ' A+B matrix without denominator shift '
+CSSS     CALL OUTMXD(A,NSIZVO,NVO,NVO)          
+CSSS      CALL OUTPUT(A, 1, NVO, 1, NVO, NVO, NVO, 1)
+CSSS      WRITE(6,*) ' A-B matrix without denominator shift '
+CSSS      CALL OUTMXD(B,NSIZVO,NVO,NVO)          
+CSSS      CALL OUTPUT(B, 1, NVO, 1, NVO, NVO, NVO, 1)
+      CLOSE(NTAPE)     
+      RETURN 
+      END

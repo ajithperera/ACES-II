@@ -1,0 +1,46 @@
+c __FILE__ : begin
+
+c     dscr(ndx): the first T3(IJk,PQr) element for all P<Q
+
+c   o loop over virtual irreps of T3(IJk,PQr)
+      do irp_q = 1, nirrep
+         irp_p = dirprd(irp_q,irp_pq)
+         if (irp_p.eq.irp_q) then
+            max_p = vrt(irp_p,ispin1)
+            max_q = max_p
+            do_irp_q = (max_q.gt.1)
+         else
+            if (irp_p.lt.irp_q) then
+               max_p = vrt(irp_p,ispin1)
+               max_q = vrt(irp_q,ispin1)
+               do_irp_q = ((max_p.ne.0).and.(max_q.ne.0))
+            else
+               do_irp_q = .false.
+            end if
+         end if
+      if (do_irp_q) then
+
+c      o point to the irreps whose T3 amplitudes are in the buffer
+         itmp = -nirrep + nirrep*irp_r + irp_q
+         iadd = ndx_t3vrt(itmp)
+
+         if (irp_p.eq.irp_q) then
+            itmp = rshift(-max_q+max_q*max_q,1)
+         else
+            itmp = ( max_q * max_p )
+         end if
+         iadd = iadd + ( r * itmp )
+         do pq = 0, itmp-1
+c      write(*,*) 'modifying dcore(',iadd+pq,') at line ',__LINE__
+            dcore(iadd+pq) = dcore(iadd+pq) + dscr(ndx+pq)
+c      if (dcore(iadd+pq).gt.1.0d0) write(*,*) dcore(iadd+pq)
+         end do
+         ndx = ndx + itmp
+
+c   o close the loop over virtual irreps
+c     end if (do_irp_q)
+      end if
+c     end do irp_q = 1, nirrep
+      end do
+
+c __FILE__ : end

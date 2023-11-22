@@ -1,0 +1,45 @@
+      SUBROUTINE HERSWP(JMAX,NUCAB,NUCCD,IPRINT,WORK1,LWORK1)
+C
+C     TUH 87
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C
+      PARAMETER (LUCMD = 5, LUPRI = 6)
+      DIMENSION WORK1(LWORK1)
+      COMMON /INTADR/ IWKAO, IWKSO, IWKHHS, IWK1HH, IWK1HC, IWKLST
+      ISTEPT = NUCAB*NUCCD
+      NR     = (JMAX + 1)*(JMAX + 2)*(JMAX + 3)/6
+      ISTR10 = IWKLST + 1
+      ISTR2  = IWK1HH + 1
+      DO 100 I = 1, NUCAB
+         ISTR1 = ISTR10
+         DO 200 J = 1, NUCCD
+            IADD = 0
+*VOCL LOOP,NOVREC
+CDIR$ IVDEP
+            DO 300 K = 1, NR
+               WORK1(ISTR1 + IADD) = WORK1(ISTR2 + IADD)
+               IADD = IADD + ISTEPT
+  300       CONTINUE
+            ISTR1 = ISTR1 + NUCAB
+            ISTR2 = ISTR2 + 1
+  200    CONTINUE
+         ISTR10 = ISTR10 + 1
+  100 CONTINUE
+*VOCL LOOP,NOVREC
+CDIR$ IVDEP
+      DO 400 I = 1, NR*ISTEPT
+         WORK1(IWK1HH + I) = WORK1(IWKLST + I)
+  400 CONTINUE
+      IF (IPRINT .GE. 25) THEN
+         CALL HEADER('OUTPUT FROM HERSWP',-1)
+         IOFF = IWK1HH
+         DO 500 I = 1, NR
+            WRITE (LUPRI,'(A,I5/)') ' NR ',I
+            WRITE (LUPRI,'(6F12.8)') (WORK1(IOFF+J),J=1,ISTEPT)
+            WRITE (LUPRI,'()')
+            IOFF = IOFF + ISTEPT
+  500    CONTINUE
+      END IF
+      RETURN
+      END

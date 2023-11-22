@@ -1,0 +1,59 @@
+c __FILE__ : begin
+
+c This file is for adding in T3(*,PQr) contributions.
+
+c NOTE: ndx must point to the first T3(*,PQr) contribution in dscr().
+
+#define C_MOD c
+#define C_ONE c
+
+c   o loop over irreps of Q in T3(*,PQr)
+      do irp_q = 1, nirrep
+         irp_p = dirprd(irp_q,irp_pq)
+         if (irp_p.eq.irp_q) then
+            max_p = vrt(irp_p,ispin1)
+            max_q = max_p
+            do_irp_q = (max_q.gt.1)
+         else
+            if (irp_p.lt.irp_q) then
+               max_p = vrt(irp_p,ispin1)
+               max_q = vrt(irp_q,ispin1)
+               do_irp_q = ((max_p.ne.0).and.(max_q.ne.0))
+            else
+               do_irp_q = .false.
+            end if
+         end if
+      if (do_irp_q) then
+
+c      o point to the irreps whose T3 amplitudes are in the buffer
+         itmp = nirrep*(irp_r-1) + irp_q
+         iadd = ndx_t3vrt(itmp)
+
+c ----------------------------------------------------------------------
+
+c   o irp_p ? irp_q < irp_r
+      if (irp_p.eq.irp_q) then
+         itmp = rshift(max_q*(max_q-1),1)
+      else
+         itmp = ( max_p * max_q )
+      end if
+      iadd = iadd + ( itmp * r )
+      do pq = 0, itmp-1
+C_MOD   print *, 'modifying dcore(',iadd+pq,') at line ',__LINE__
+         dcore(iadd+pq) = dcore(iadd+pq) + dscr(ndx+pq)
+C_ONE   if (dcore(iadd+pq).gt.1.0d0) print *, dcore(iadd+pq)
+      end do
+      ndx = ndx + itmp
+
+c ----------------------------------------------------------------------
+
+c   o close the loop over irreps of Q in T3(*,PQr)
+c     end if (do_irp_q)
+      end if
+c     end do irp_q = 1, nirrep
+      end do
+
+#undef C_MOD
+#undef C_ONE
+
+c __FILE__ : end

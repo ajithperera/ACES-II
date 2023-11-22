@@ -1,0 +1,66 @@
+EOMEE optimization CCSD, Aces3, ANALYTICAL gradient, DROP core orbs
+O
+C 1 R*
+H 2 CH* 1 A*
+H 2 CH* 1 A* 3 D180
+
+R=1.3
+CH=1.1
+A=120.0
+D180=180.0
+
+*ACES2
+PROGRAM=MN_A3,!restart
+BASIS=3-21G
+DROPMO=1-2,CALC=CCSD
+EXCITE=EOMEE,EE_SYM=2-2-2-2
+
+*mrcc_gen
+ gradient_type=ee
+ igrad_state=1 igrad_sym=4
+ igrad_mult=1
+*end
+
+Comments:
+
+EOMEE optimization. Note that we specify a large number of roots.
+However these roots are first evaluated at the TDA (or CIS) level, and at this
+TDA-level do we select the root of interest for eomee calculations. Only one
+root is solved for in the EOMEE calculation.
+
+TEST.DAT
+d TOTENERG
+ -0.113326623475E+03   0.1E-08
+d COORD
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+ -0.129182798186E+01   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.133364389397E+01   0.1E-08
+  0.181220382571E+01   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.231138619195E+01   0.1E-08
+ -0.181220382571E+01   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.231138619195E+01   0.1E-08
+d E_AVG
+  0.366123537238E+00   0.1E-08
+d E_OPEN
+  0.119744074069E+00   0.1E-08
+d NUCDIPOL
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.229001189278E+01   0.1E-08
+d NUCREP
+  0.283530153488E+02   0.1E-08
+d PARENERG
+ -0.113429713496E+03   0.1E-08
+d REFDIPOL
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.125738821024E+01   0.1E-08
+d SCFENEG
+ -0.113182560275E+03   0.1E-08
+d TOTENER2
+ -0.113326623475E+03   0.1E-08

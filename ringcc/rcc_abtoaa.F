@@ -1,0 +1,36 @@
+      SUBROUTINE RCC_ABTOAA(ICORE, MAXCOR, IUHF, LISTT2)
+C 
+C Generate AA list from a AB list.
+C 
+      IMPLICIT INTEGER (A-Z)
+      DIMENSION ICORE(MAXCOR)     
+      LOGICAL MBPT2,MBPT3,M4DQ,M4SDQ,M4SDTQ,CCD,QCISD,CCSD,UCC,
+     &            CC2,RCCD,DRCCD,RLE
+      COMMON/METH/MBPT2,MBPT3,M4DQ,M4SDQ,M4SDTQ,CCD,QCISD,CCSD,UCC,
+     &            CC2,RCCD,DRCCD
+#include "machsp.com"
+#include "sympop.com"
+#include "syminf.com"
+#include "sym.com"
+C
+      DO IRREP=1, NIRREP
+         LISTAB   = LISTT2 + 2 
+         LISTAA   = LISTT2
+         NUMABCOL = IRPDPD(IRREP,ISYTYP(2,LISTAB))
+         NUMABROW = IRPDPD(IRREP,ISYTYP(1,LISTAB))
+C
+         NUMAACOL = IRPDPD(IRREP,ISYTYP(2,LISTAA))
+         NUMAAROW = IRPDPD(IRREP,ISYTYP(1,LISTAA))
+C
+         I000 = 1
+         I010 = I000 + IINTFP*NUMABCOL*NUMABROW
+         I020 = I010 + IINTFP*NUMAACOL*NUMAAROW 
+         IF (I020 .GE. MAXCOR) CALL INSMEM("@ABTOAA",
+     &                                     I020, MAXCOR)
+C
+         CALL GETLST(ICORE(I010), 1, NUMABCOL, 1, IRREP, LISTAB)
+         CALL PUTLST(ICORE(I010), 1, NUMAACOL, 1, IRREP, LISTAA)
+      ENDDO
+C
+      RETURN
+      END

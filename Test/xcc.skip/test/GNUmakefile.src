@@ -1,0 +1,41 @@
+#
+FAST=1
+OPTIMIZE=1
+PROFILE=0
+DEBUG=1
+64BIT=0
+DIR_SRCLIB=
+DIR_SRCINC=#/ufl/qtp/rjb/progs/ACES/include
+LDFLAGS_NUMLIBS = -llinpack -llb
+ifeq (${MACHNAME},crunch)
+   REDIRECT := 1>> ${MAKE_OUTPUT} 2>> ${MAKE_ERROR}
+   #DEFINES_EXTRA = -DOPEN_JOBARC_AS_NEEDED -DOPEN_LISTS_AS_NEEDED
+   FC = f77 -c #f95 -c
+   FFLAGS_EXTRA  = #-autopar -stackvar -loopinfo
+   LDFLAGS_EXTRA = #-autopar -stackvar -loopinfo
+   FLAG_OPTIMIZE := -fast -xtarget=ultra2 -xarch=native \
+                          -xcache=16/32/1:1024/64/1
+   DIR_ATLASLIB := /ufl/qtp/rjb/ay/camp/ATLAS/lib/SunOS_SunUSX
+   LDFLAGS_NUMLIBS := -L${DIR_ATLASLIB} -llapack -lf77blas -lcblas -latlas \
+                      #-R/usr/local/lib -L/usr/local/lib \
+                      #-lmpichfarg -lmpich -lsocket -lnsl -laio
+   LD = f77 #f95
+   LD = mpif77
+   LDFLAGS := -xildoff
+   #LDFLAGS_NUMLIBS := ${LDFLAGS_NUMLIBS} -lF77 -lmvec
+   #DIR_INSTBIN = /ufl/qtp/rjb/ay/camp/crunch_1/bin
+   #DIR_INSTLIB = /ufl/qtp/rjb/ay/camp/crunch_1/lib
+   #DIR_SRCLIB := ${DIR_INSTLIB}
+endif
+
+###################################
+## AME and ASL specific settings ##
+###################################
+
+# ecp quick hack
+ifeq (${CURR},ecp)
+   ifeq ($(shell arch),power2)
+      FLAG_OPTIMIZE = -O2 -qstrict -qmaxmem=-1 -Q -qfloat=hssngl # -qhot
+   endif
+endif
+

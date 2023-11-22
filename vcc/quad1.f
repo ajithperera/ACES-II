@@ -1,0 +1,213 @@
+
+
+       SUBROUTINE QUAD1(ICORE,MAXCOR,INTPCK0,IUHF,FACT)
+C
+C      ARGUMENTS IN SUBROUTINE CALL : ICORE,MAXCOR,ISPIN,IUHF
+C
+C THIS ROUTINE COMPUTES :
+C
+C       Z(MN,IJ) = 1/2 SUM E,F <MN//EF> T(IJ,EF)
+C
+C THE MULTIPLICATION IS CARRIED OUT USING SYMMETRY
+C AND THE RESULTING PRODUCT ARRAY IS STORED IN A 
+C SYMMETRY ADAPTED WAY
+C
+C NOTE  ISPIN = 1   .... Z(MN,EF) (UHF ONLY)
+C       ISPIN = 2   .... Z(mn,ef) (UHF ONLY)
+C       ISPIN = 3   .... Z(Mn,Ef) (RHF AND UHF)
+C
+C FOR CCSD METHODS THE T2 AMPLITUDES HAVE TO BE SUBSTITUTED
+C BY THE TAU AMPLITUDES
+C
+CEND
+C
+C CODED JG JUNE/90
+C 
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      INTEGER DIRPRD,DISSYW,DISSYT,POP1,POP2,VRT1,VRT2
+      LOGICAL MBPT3,MBPT4,CC,TRPEND,SNGEND,GRAD,MBPTT,SING1,QCISD,UCC
+      LOGICAL TAU, ADC2
+      DIMENSION ICORE(MAXCOR)
+      COMMON /INFO/ NOCCO(2),NVRTO(2)
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /FILES/ LUOUT,MOINTS
+      COMMON /SWITCH/ MBPT3,MBPT4,CC,TRPEND,SNGEND,GRAD,MBPTT,SING1,
+     &                QCISD,UCC
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPA(255),IRREPB(255),
+     &DIRPRD(8,8)
+      COMMON /SYM/ POP1(8),POP2(8),VRT1(8),VRT2(8),NTAA,NTBB,
+     &             NF1AA,NF1BB,NF2AA,NF2BB
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),NTOT(18)
+      COMMON /CONTROL/ IPRNT,IXXX,IXXX2
+      COMMON /FLAGS/ IFLAGS(100)
+      COMMON /FLAGS2/ IFLAGS2(500)
+C
+      EQUIVALENCE (IFLAGS(2),METHOD)
+C
+      INTPCK = INTPCK0
+      MXCOR=MAXCOR
+      TAU=.FALSE.
+      IF(METHOD.GT.9.AND.SING1.AND.(.NOT.QCISD)) THEN
+C
+C   ALLOCATE CORE MEMORY FOR T1 AMPLITUDES
+C
+      I0TA=MXCOR+1-NTAA*IINTFP
+      MXCOR=MXCOR-NTAA*IINTFP
+      IF(IUHF.EQ.0) THEN
+       I0TB=I0TA
+      ELSE
+       I0TB=I0TA-NTBB*IINTFP
+       MXCOR=MXCOR-NTBB*IINTFP
+      ENDIF
+      CALL GETLST(ICORE(I0TA),1,1,1,1,90)
+      IF(IUHF.EQ.1) CALL GETLST(ICORE(I0TB),1,1,1,2,90)
+      TAU=.TRUE.
+      ENDIF
+c
+c PCCSD logic from Ondrej Demel
+c
+      if (intpck .eq. 5) then
+c         write(6,*) ' @quad1: tau false, intpck = 5 '
+         tau = .false.
+         intpck = 1
+      endif
+C     
+      IF(IUHF.EQ.1) THEN
+C
+C      AAAA AND BBBB SPIN CASES
+C
+      DO 1000 ISPIN=1,2   
+C
+       IF(ISPIN.EQ.1) THEN
+        I0T=I0TA
+       ELSE
+        I0T=I0TB
+       ENDIF
+C
+       LISTT=ISPIN+43
+       LISTW=ISPIN+13
+C
+C LOOP OVER IRREPS.
+C
+       IRSTART=-1
+       DO 100 IRREP=1,NIRREP
+C
+C RETRIEVE INTEGRALS AND T2 AMPLITUDES.
+C
+        DISSYW=IRPDPD(IRREP,ISYTYP(1,LISTW))
+        DISSYT=IRPDPD(IRREP,ISYTYP(1,LISTT))
+        NUMSYW=IRPDPD(IRREP,ISYTYP(2,LISTW))
+        NUMSYT=IRPDPD(IRREP,ISYTYP(2,LISTT))
+        I001=1
+        I002=I001+IINTFP*NUMSYW*DISSYW
+        I003=I002+IINTFP*NUMSYT*DISSYT
+        IF(MIN(NUMSYT,NUMSYW,DISSYT,DISSYW).NE.0)THEN
+         I004=I003+IINTFP*NUMSYT*NUMSYW
+         I005=I004+IINTFP*MAX(DISSYT,DISSYW)
+         if (I005.LT.0) call trap_intovf('QUAD1',1)
+         IF(I005.LT.MXCOR) THEN
+C  
+C         IN CORE VERSION
+C
+          CALL Q1ALL(ICORE(I001),ICORE(I002),ICORE(I003),ICORE(I0T),
+     &               ICORE(I0T),ISPIN,TAU,DISSYW,DISSYT,NUMSYW,
+     &               NUMSYT,IRREP,ICORE(I004),IRSTART,INTPCK,FACT,UCC)
+         ELSE
+C
+C         OUT OF CORE VERSION
+C
+          STOP 'Q1ALL'
+         ENDIF
+C
+        ELSE
+
+cmn PCCSD induced modification. I think this was not correct originally.
+C Marcel is right; this was wrong originally. The LCCD and LCCSD could
+C have been able to handled here. Ajith Perera, 04/2014.
+
+           if (numsyw .gt. 0) then
+              if (intpck .ne. 1) then
+C     INITIALIZE Z BY THE INTEGRALS <IJ||MN>
+C
+                 NLIST1=ISPIN+10
+                 NLIST2=ISPIN+50
+                 CALL GETLST(ICORE(I001),1,NUMSYW,2,IRREP,NLIST1)
+              else
+                 call zero(icore(i001), numsyw*numsyt)
+              endif
+C
+C     SAVE THE RESULT ON FILE
+C
+              CALL PUTLST(ICORE(I001),1,NUMSYW,1,IRREP,NLIST2)
+C
+           endif
+        ENDIF
+       IRSTART=0
+100    CONTINUE
+1000   CONTINUE
+      ENDIF
+C
+C       AB SPIN CASE
+C
+       LISTT=46
+       LISTW=16
+C
+C      LOOP OVER IRREPS.
+C
+       IRSTART=0
+       DO 110 IRREP=1,NIRREP
+C
+C     RETRIEVE INTEGRALS AND T2 AMPLITUDES
+C
+        DISSYW=IRPDPD(IRREP,ISYTYP(1,LISTW))
+        DISSYT=IRPDPD(IRREP,ISYTYP(1,LISTT))
+        NUMSYW=IRPDPD(IRREP,ISYTYP(2,LISTW))
+        NUMSYT=IRPDPD(IRREP,ISYTYP(2,LISTT))
+        I001=1
+        I002=I001+IINTFP*NUMSYW*DISSYW
+        I003=I002+IINTFP*NUMSYT*DISSYT
+
+        IF(MIN(NUMSYT,NUMSYW,DISSYT,DISSYW).NE.0)THEN
+         I004=I003+IINTFP*NUMSYT*NUMSYW
+         I005=I004+IINTFP*MAX(DISSYT,DISSYW)
+         if (I005.LT.0) call trap_intovf('QUAD1',2)
+         IF(I005.LT.MXCOR) THEN
+C
+C         IN CORE VERSION
+C
+               CALL Q1ALL(ICORE(I001),ICORE(I002),ICORE(I003),
+     $              ICORE(I0TA),
+     &              ICORE(I0TB),3,TAU,DISSYW,DISSYT,NUMSYW,
+     &              NUMSYT,IRREP,ICORE(I005),IRSTART,INTPCK,FACT,UCC)
+c
+         ELSE
+          STOP 'Q1ALL'
+         ENDIF
+        ELSE
+C
+C     INITIALIZE Z BY THE INTEGRALS <IJ||MN>
+C
+C See above Marcel's comment.
+C
+
+        IF(NUMSYW.NE.0)THEN
+           if (intpck .ne. 1) then
+              NLIST1=13
+              NLIST2=53
+              CALL GETLST(ICORE(I001),1,NUMSYW,2,IRREP,NLIST1)
+           else
+              call zero(icore(i001), numsyw*numsyt)
+           endif
+C
+C     SAVE THE RESULT ON FILE
+C
+         CALL PUTLST(ICORE(I001),1,NUMSYW,1,IRREP,NLIST2)
+
+      ENDIF
+C
+        ENDIF
+       IRSTART=0
+110    CONTINUE
+C
+      RETURN
+      END

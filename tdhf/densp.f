@@ -1,0 +1,17 @@
+      SUBROUTINE DENSP(NBAS,N,IVRT,IOCC,C,BIA,PRS)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION C(NBAS,NBAS),BIA(N),PRS(NBAS,NBAS)
+      DIMENSION IVRT(N),IOCC(N)
+      DO 10 I=1,NBAS
+      DO 10 J=1,I
+      PRS(I,J)=0.D0
+      DO 15 K=1,N
+      KO=IOCC(K)
+      KV=IVRT(K)
+      PRS(I,J)=PRS(I,J)+(C(I,KV)*C(J,KO)+C(I,KO)*C(J,KV))
+     X *BIA(K)
+   15 CONTINUE
+      PRS(I,J)=PRS(I,J)*2.D0
+   10 PRS(J,I)=PRS(I,J)
+      RETURN
+      END

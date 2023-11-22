@@ -1,0 +1,185 @@
+      
+      SUBROUTINE T2INH01(ICORE,MAXCOR,IUHF)
+C     
+C     THIS SUBROUTINE CALCULATES THE CONTRIBUTION OF T2 TO
+C     HEFF (H<-T2) FOR THE 0,1 SECTOR OF FOCK SPACE.
+C     
+C     
+C     H(IJ) = SUM  T(MN,IE) * <MN||JE> + T(Mn,Ie) * <Mn|Je> [AA]
+C       AA    mne    NN AN     NN  AN      NN AN     NN AN
+C     
+C     H(ij) = SUM  T(mn,ie) * <mn||je> + T(mN,iE) * <mN|jE> [BB]
+C       AA    mne    NN AN     NN  AN      NN AN     NN AN
+C     
+C     H(IJ) = SUM  T(Mn,Ie) [2 <Mn|Je> - <Nm|Je>] [SPIN ADAPTED RHF] 
+C       AA    mne    NN AN      NN AN     NN AN
+C
+C  THE EXISTING Heff(0,1) SHOULD BE PASSED IN AT THE BOTTOM OF CORE
+C  AS THIS ROUTINE ACCUMULATES THE CONTRIBUTION
+C
+CEND  
+      IMPLICIT INTEGER (A-Z)
+      DOUBLE PRECISION ONE,ONEM,ZILCH
+      LOGICAL RHF
+      DIMENSION ICORE(MAXCOR)
+C
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPS(255,2),DIRPRD(8,8)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON /FSSYMPOP/ FSDPDAN(8,22),FSDPDNA(8,22),FSDPDAA(8,22),
+     &                  FSDPDIN(8,22),FSDPDNI(8,22),FSDPDII(8,22),
+     &                  FSDPDAI(8,22),FSDPDIA(8,22)
+      COMMON /SYM/ POP(8,2),VRT(8,2),NT(2),NFMI(2),NFEA(2)
+      COMMON /FSSYM/ POPA(8,2),POPI(8,2),VRTA(8,2),VRTI(8,2),
+     &               NTAN(2),NTNA(2),NTAA(2),
+     &               NTIN(2),NTNI(2),NTII(2),
+     &               NTAI(2),NTIA(2),
+     &               NF1AN(2),NF1AA(2),NF1IN(2),NF1II(2),NF1AI(2),
+     &               NF2AN(2),NF2AA(2),NF2IN(2),NF2II(2),NF2AI(2)
+C
+      DATA ONE  / 1.0/
+      DATA ONEM /-1.0/
+      DATA ZILCH/ 0.0/
+C
+      RHF=IUHF.EQ.0
+      LENTAR=(NF1AA(1)+MIN(IUHF,1)*NF1AA(2))*IINTFP
+      I000=1
+      I010=I000+LENTAR*IINTFP
+C     
+C ABAB AND BABA SPIN CASES
+C     
+      DO 50 ISPIN=1,1+IUHF
+C     
+C LOOP OVER IRREPS 
+C     
+       DO 100 IRREP=1,NIRREP
+        LISTW=11-ISPIN
+        LISTT=100-ISPIN
+        DISSYW=IRPDPD(IRREP,ISYTYP(1,LISTW))
+        DISSYT =IRPDPD(IRREP,ISYTYP(1,LISTT))
+        IF(ISPIN.EQ.1)THEN
+         NUMDSW=FSDPDAN(IRREP,ISYTYP(2,LISTW))
+         NUMDST=FSDPDAN(IRREP,ISYTYP(2,LISTT))
+        ELSE
+         NUMDSW=FSDPDNA(IRREP,ISYTYP(2,LISTW))
+         NUMDST=FSDPDNA(IRREP,ISYTYP(2,LISTT))
+        ENDIF
+        I020=I010+NUMDSW*DISSYW*IINTFP
+        I030=I020+NUMDST*DISSYT*IINTFP
+C     
+C FOR ISPIN=1:
+C
+C READ W INTO W(Mn,Je) AND T INTO T(Mn,Ie) TRANSPOSE KET INDICES
+C               NN AN               NN AN 
+C     
+C FOR ISPIN=2:
+C     
+C READ W INTO W(Mn,Ej) AND T INTO T(Mn,Ei)
+C               NN NA               NN NA
+C     
+        IF(ISPIN.EQ.1)THEN
+         CALL FSGET(ICORE(I010),1,NUMDSW,1,IRREP,LISTW,'NNAN')
+         CALL FSGET(ICORE(I020),1,NUMDST,1,IRREP,LISTT,'NNAN')
+         MAXW=MAX(NUMDSW,NUMDST,DISSYT,DISSYW)
+         ITMP1=I030
+         ITMP2=ITMP1+IINTFP*MAXW
+         ITMP3=ITMP2+IINTFP*MAXW
+         ITMP4=ITMP3+IINTFP*MAXW
+         IF(RHF)THEN
+          CALL SPINAD3(IRREP,POP(1,1),DISSYT,NUMDST,ICORE(I010),
+     &                 ICORE(ITMP1),ICORE(ITMP2))
+         ENDIF
+         CALL SYMTR1(IRREP,POPA(1,1),VRT(1,2),DISSYW,ICORE(I010),
+     &               ICORE(ITMP1),ICORE(ITMP2),ICORE(ITMP3)) 
+         CALL SYMTR1(IRREP,POPA(1,1),VRT(1,2),DISSYT,ICORE(I020),
+     &               ICORE(ITMP1),ICORE(ITMP2),ICORE(ITMP3)) 
+        ELSE
+         CALL FSGET(ICORE(I010),1,NUMDSW,1,IRREP,LISTW,'NNNA')
+         CALL FSGET(ICORE(I020),1,NUMDST,1,IRREP,LISTT,'NNNA')
+        ENDIF 
+C     
+C     PERFORM MATRIX MULTIPLICATION
+C     
+C                         +          
+C     H(IJ) = SUM T(Mne,I) * W(Mne,J)             [ISPIN=1]
+C       AA    Mne   NNN A      NNN A
+C                         +                                                    
+C     H(IJ) = SUM T(MnE,i) * W(MnE,j)             [ISPIN=2]
+C       AA    MnE   NNN A      NNN A
+C     
+        IZ=I000+(ISPIN-1)*NF1AA(1)*IINTFP
+        IW=I010
+        IT=I020
+        DO 120 IRREPI=1,NIRREP
+         IRREPE=DIRPRD(IRREPI,IRREP)
+         IRREPJ=IRREPI
+         NROW=POPA(IRREPI,ISPIN)
+         NCOL=POPA(IRREPJ,ISPIN)
+         NSUM=DISSYW*VRT(IRREPE,3-ISPIN)
+         CALL XGEMM('T','N',NROW,NCOL,NSUM,ONEM,ICORE(IT),NSUM,
+     &              ICORE(IW),NSUM,ONE,ICORE(IZ),NROW)
+         IZ=IZ+NROW*NCOL*IINTFP
+         IW=IW+NSUM*NCOL*IINTFP
+         IT=IT+NSUM*NROW*IINTFP
+120     CONTINUE
+C
+C NOW DO AAAA AND BBBB SPIN CASES FOR UHF REFERENCES
+C
+        IF(.NOT.RHF)THEN
+         LISTW=6+ISPIN
+         LISTT=95+ISPIN
+         DISSYW=IRPDPD(IRREP,ISYTYP(1,LISTW))
+         NUMDSW=FSDPDAN(IRREP,ISYTYP(2,LISTW))
+         DISSYT=IRPDPD(IRREP,ISYTYP(1,LISTT))
+         NUMDST=FSDPDAN(IRREP,ISYTYP(2,LISTT))
+         I020=I010+NUMDSW*DISSYW*IINTFP
+         I030=I020+NUMDST*DISSYT*IINTFP
+         MAXW=MAX(NUMDSW,NUMDST,DISSYT,DISSYW)
+         ITMP1=I030
+         ITMP2=ITMP1+IINTFP*MAXW
+         ITMP3=ITMP2+IINTFP*MAXW
+         ITMP4=ITMP3+IINTFP*MAXW
+C     
+C READ W INTO W(M<N,JE) AND T INTO T(M<N,IE) TRANSPOSE KET INDICES
+C               N N AN               N N AN 
+C     
+         CALL FSGET(ICORE(I010),1,NUMDSW,1,IRREP,LISTW,'NNAN')
+         CALL FSGET(ICORE(I020),1,NUMDST,1,IRREP,LISTT,'NNAN')
+         CALL SYMTR1(IRREP,POPA(1,ISPIN),VRT(1,ISPIN),DISSYW,
+     &               ICORE(I010),
+     &               ICORE(ITMP1),ICORE(ITMP2),ICORE(ITMP3)) 
+         CALL SYMTR1(IRREP,POPA(1,ISPIN),VRT(1,ISPIN),DISSYT,
+     &               ICORE(I020),
+     &               ICORE(ITMP1),ICORE(ITMP2),ICORE(ITMP3)) 
+C     
+C     PERFORM MATRIX MULTIPLICATION
+C     
+C                         +          
+C     H(IJ) = SUM T(M<NE,I) * W(M<NE,J)             [ISPIN=1]
+C       AA    MNE   N NN A      N NN A
+C                         +                                                    
+C     H(IJ) = SUM T(m<ne,i) * W(m<ne,j)             [ISPIN=2]
+C       AA    mne   N NN A      N NN A
+C     
+         IZ=I000+(ISPIN-1)*NF1AA(1)*IINTFP
+         IW=I010
+         IT=I020
+         DO 130 IRREPI=1,NIRREP
+          IRREPE=DIRPRD(IRREPI,IRREP)
+          IRREPJ=IRREPI
+          NROW=POPA(IRREPI,ISPIN)
+          NCOL=POPA(IRREPJ,ISPIN)
+          NSUM=DISSYW*VRT(IRREPE,ISPIN)
+          CALL XGEMM('T','N',NROW,NCOL,NSUM,ONEM,ICORE(IT),NSUM,
+     &               ICORE(IW),NSUM,ONE,ICORE(IZ),NROW)
+          IZ=IZ+NROW*NCOL*IINTFP
+          IW=IW+NSUM*NCOL*IINTFP
+          IT=IT+NSUM*NROW*IINTFP
+130      CONTINUE
+C    
+        ENDIF
+100    CONTINUE
+50    CONTINUE
+C
+      RETURN
+      END

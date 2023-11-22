@@ -1,0 +1,86 @@
+#################
+## QUICK BUILD ##
+#################
+
+If the code has been ported to this machine:
+
+> xprep -f # add "-p" if a parallel port has been established
+> gmake
+> # for parallel builds
+> cd gemini.skip
+> vi GNUmakefile # pick the correct C compiler and build string
+> vi gemini.c # (optional) edit the default temp directory name pattern
+> gmake install
+
+If the code has been ported to this architecture, operating system, and
+compiler but gmake complains about the machine name:
+
+> xprep -f # add "-p" if a parallel port has been established
+> gmake ARCH=[architecture] OPSYS=[os] CMPLR=[compiler]
+> # for parallel builds
+> cd gemini.skip
+> vi GNUmakefile # pick the correct C compiler and build string
+> vi gemini.c # (optional) edit the default temp directory name pattern
+> gmake install
+
+The procedure for figuring out which values of ARCH, OPSYS, and CMPLR are
+accepted lends a major simplification to building the code. Edit the
+GNUmakefile and search for MACHSTATS. This variable contains a condensed
+listing of machine names with their build specifications. Find the correct
+platform for this new machine and just append a new string for the machine
+name. After this is done, `gmake` will build the code natively without
+needing the platform variables specified on the command line. Alternatively,
+run `gmake MACHNAME=[name]`, in which "name" is the machine name of an
+identical platform.
+
+###############
+## MAKEFILES ##
+###############
+
+The directory Makefiles contains:
+   GNUmakefile
+   GNUmakefile.src
+   GNUmakefile.tl
+These should service the ENTIRE ACES II build environment. From the top-level,
+a symlink named "makefile" should point to Makefiles/GNUmakefile.tl. Typing
+"gmake" (or "make" provided it's GNU), should build the entire system.
+
+TOP-LEVEL MAKE
+--------------
+
+The top-level (tl) make will recognize Makefiles/ as the true location
+for GNUmakefile and GNUmakefile.src. It will create symlinks to these
+files in each ACES Member Executable (AME) and ACES Shared Library (ASL)
+directory. The build priority, i.e., the order in which ASLs and AMEs
+are treated, can be deduced from GNUmakefile.tl. Currently, only two AMEs,
+joda and vcc, provide functions to other AMEs; therefore, they are built
+in the midst of the other ASLs.
+
+Directories named *.skip will be ignored by tl make.
+
+Directories named *.src will be treated as mature subtrees, meaning
+a symlink to GNUmakefile.tl will be created and the directory will be
+built as another top level.
+
+A complete list of directory patterns can be gleaned from GNUmakefile.tl.
+A condensed list of patterns can be seen in FILES.
+
+A tl make takes different arguments than a sub-make. By default,
+it calls sub-make with the goals "all install". Top-level
+goals cannot be chained together, e.g., "gmake clean all install" is
+not allowed.
+
+Currently, tl make takes only two arguments: 64BIT={1|*} and TREES={dir.src}.
+If 64BIT is set to "1", then sub-make will also receive the string "64BIT=1".
+TREES controls which subtrees make builds (the default is *.src).
+> gmake "TREES=" # ignores all subtrees
+> gmake TREES=ks.src # builds only the Kohn-Sham subtree
+> gmake "TREES=ks.src mrcc.src" # builds both the KS and MRCC subtrees
+
+Again, this documentation is not a real substitute for reading the makefile.
+
+SUB-MAKE
+--------
+
+[Good luck...]
+

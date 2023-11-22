@@ -1,0 +1,10 @@
+
+
+      SUBROUTINE ZNRM(A,LEN,SUM)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION A(LEN)
+      DO 10 I=1,LEN
+       SUM=SUM+A(I)*A(I)
+10    CONTINUE
+       RETURN
+       END

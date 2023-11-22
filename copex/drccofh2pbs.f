@@ -1,0 +1,187 @@
+      SUBROUTINE DRCCOF(EA,HPP,HPQ,WORKEA,EIVELEA,EIVEREA,EIVAEA,WIEA,
+     &XQP,CP,CQ,LWORKEA,NEA,NVIR,NEASH,NIP)
+C
+      IMPLICIT DOUBLE PRECISION (A-H, O-Z) 
+C
+      DIMENSION EA(NEA,NEA)
+      DIMENSION HPP(NVIR,NVIR)
+      DIMENSION HPQ(NVIR,NEASH)
+      DIMENSION WORKEA(LWORKEA)
+      DIMENSION EIVELEA(NEA,NEA)
+      DIMENSION EIVEREA(NEA,NEA)
+      DIMENSION EIVAEA(NEA)
+      DIMENSION WIEA(NEA)
+      DIMENSION XQP(NEASH,NVIR)
+      DIMENSION CP(NVIR,NVIR)
+      DIMENSION CQ(NEASH,NVIR)
+C
+      DONE = 1.0D+0
+      DZERO = 0.D+0 
+C
+      DO 1 II=1, NVIR
+         DO 2 IJ=1, NVIR
+            HPP(II,IJ) = EA(II,IJ)
+ 2       CONTINUE
+ 1    CONTINUE 
+C
+      DO 3 II=1, NVIR
+         DO 4 IJ=1, NEASH
+            HPQ(II,IJ) = EA(II,IJ+NVIR)
+ 4       CONTINUE
+ 3    CONTINUE
+C
+C      WRITE(6,*) 
+C      WRITE(6,*) 'FULL HBAR'
+C      N=NVIR+NEASH
+C      CALL OUTPUT(EA,1,N,1,N,N,N,1)
+C
+      CALL DGEEV('V','V',NEA,EA,NEA,EIVAEA,WIEA,EIVELEA,NEA,EIVEREA,NEA,
+     &WORKEA,LWORKEA,INFO)
+C
+      IF (INFO.NE.0) THEN
+         WRITE(6,*) 'ERROR IN DIAGONALIZATION'
+         WRITE(6,*) 'INFO=',INFO
+      ENDIF
+C
+      WRITE(6,*)
+      WRITE(6,*) 'EIGENVALUES'
+      CALL OUTPUT(EIVAEA,1,NEA,1,1,NEA,1,1)
+C
+C      WRITE(6,*)
+C      WRITE(6,*) 'RIGHT EIGENVECTORS'
+C      CALL OUTPUT(EIVEREA,1,NEA,1,NEA,NEA,NEA,1)
+C
+      IF (NIP.EQ.0) THEN
+         DO 5 I1=1, NVIR
+            CP(I1,1)=EIVEREA(I1,44)
+ 5       CONTINUE
+         DO 6 I1=1, NVIR
+            CP(I1,2)=EIVEREA(I1,46)
+ 6       CONTINUE
+         DO 7 I1=1, NVIR
+            CP(I1,3)=EIVEREA(I1,65)
+ 7       CONTINUE
+         DO 8 I1=1, NVIR
+            CP(I1,4)=EIVEREA(I1,66)
+ 8       CONTINUE
+         DO 9 I1=1, NVIR
+            CP(I1,5)=EIVEREA(I1,61)
+ 9       CONTINUE
+         DO 10 I1=1, NVIR
+            CP(I1,6)=EIVEREA(I1,67)
+ 10      CONTINUE
+         DO 11 I1=1, NVIR
+            CP(I1,7)=EIVEREA(I1,71)
+ 11      CONTINUE
+         DO 12 I1=1, NVIR
+            CP(I1,8)=EIVEREA(I1,72)
+ 12      CONTINUE
+         DO 13 I1=1, NVIR
+            CP(I1,9)=EIVEREA(I1,73)
+ 13      CONTINUE
+         DO 14 I1=1, NVIR
+            CP(I1,10)=EIVEREA(I1,74)
+ 14      CONTINUE
+         DO 15 I1=1, NVIR
+            CP(I1,11)=EIVEREA(I1,169)
+ 15      CONTINUE
+         DO 16 I1=1, NVIR
+            CP(I1,12)=EIVEREA(I1,227)
+ 16      CONTINUE
+         DO 17 I1=1, NVIR
+            CP(I1,13)=EIVEREA(I1,231)
+ 17      CONTINUE
+         DO 18 I1=1, NVIR
+            CP(I1,14)=EIVEREA(I1,134)
+ 18      CONTINUE
+         DO 19 I1=1, NVIR
+            CP(I1,15)=EIVEREA(I1,101)
+ 19      CONTINUE
+         DO 20 I1=1, NVIR
+            CP(I1,16)=EIVEREA(I1,56)
+ 20      CONTINUE
+         DO 21 I1=1, NVIR
+            CP(I1,17)=EIVEREA(I1,21)
+ 21      CONTINUE
+C
+         DO 22 I1=1, NEASH
+            CQ(I1,1)=EIVEREA(I1+NVIR,44)
+ 22      CONTINUE
+         DO 23 I1=1, NEASH
+            CQ(I1,2)=EIVEREA(I1+NVIR,46)
+ 23      CONTINUE
+         DO 24 I1=1, NEASH
+            CQ(I1,3)=EIVEREA(I1+NVIR,65)
+ 24      CONTINUE
+         DO 25 I1=1, NEASH
+            CQ(I1,4)=EIVEREA(I1+NVIR,66)
+ 25      CONTINUE
+         DO 26 I1=1, NEASH
+            CQ(I1,5)=EIVEREA(I1+NVIR,61)
+ 26      CONTINUE
+         DO 27 I1=1, NEASH
+            CQ(I1,6)=EIVEREA(I1+NVIR,67)
+ 27      CONTINUE         
+         DO 28 I1=1, NEASH
+            CQ(I1,7)=EIVEREA(I1+NVIR,71)
+ 28      CONTINUE
+         DO 29 I1=1, NEASH
+            CQ(I1,8)=EIVEREA(I1+NVIR,72)
+ 29      CONTINUE
+         DO 30 I1=1, NEASH
+            CQ(I1,9)=EIVEREA(I1+NVIR,73)
+ 30      CONTINUE
+         DO 31 I1=1, NEASH
+            CQ(I1,10)=EIVEREA(I1+NVIR,74)
+ 31      CONTINUE
+         DO 32 I1=1, NEASH
+            CQ(I1,11)=EIVEREA(I1+NVIR,169)
+ 32      CONTINUE
+         DO 33 I1=1, NEASH
+            CQ(I1,12)=EIVEREA(I1+NVIR,227)
+ 33      CONTINUE
+         DO 34 I1=1, NEASH
+            CQ(I1,13)=EIVEREA(I1+NVIR,231)
+ 34      CONTINUE
+         DO 35 I1=1, NEASH
+            CQ(I1,14)=EIVEREA(I1+NVIR,134)
+ 35      CONTINUE         
+         DO 36 I1=1, NEASH
+            CQ(I1,15)=EIVEREA(I1+NVIR,101)
+ 36      CONTINUE
+         DO 37 I1=1, NEASH
+            CQ(I1,16)=EIVEREA(I1+NVIR,56)
+ 37      CONTINUE
+         DO 38 I1=1, NEASH
+            CQ(I1,17)=EIVEREA(I1+NVIR,21)
+ 38      CONTINUE
+      ELSE
+C         write(6,*) 'in alternative branch'
+         DO 39 I1=1, NVIR
+            CP(I1,1)=EIVEREA(I1,1)
+ 39      CONTINUE
+C
+         DO 40 I1=1, NEASH
+            CQ(I1,1)=EIVEREA(I1+NVIR,1)
+ 40      CONTINUE
+      ENDIF     
+C
+C      WRITE(6,*)
+C      WRITE(6,*) 'CP'
+C      CALL OUTPUT(CP,1,NVIR,1,NVIR,NVIR,NVIR,1)
+C
+C      WRITE(6,*)
+C      WRITE(6,*) 'CQ'
+C      CALL OUTPUT(CQ,1,NEASH,1,NVIR,NEASH,NVIR,1)
+C
+      CALL MINV(CP,NVIR,NVIR,WORKEA,DET,0,0)      
+C
+      CALL XGEMM('N','N',NEASH,NVIR,NVIR,DONE,CQ,NEASH,CP,NVIR,
+     &DZERO,XQP,NEASH)
+C
+C      WRITE(6,*)
+C      WRITE(6,*) 'XQP'
+C      CALL OUTPUT(XQP,1,NEASH,1,NVIR,NEASH,NVIR,1)
+C
+      RETURN
+      END

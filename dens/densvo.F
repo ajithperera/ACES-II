@@ -1,0 +1,418 @@
+
+      SUBROUTINE DENSVO(DVO,ICORE,MAXCOR,IUHF,bRedundant)
+C
+C THIS SUBROUTINE CALCULATES THE DIRECT CONTRIBUTION IN NON-HF CASES
+C TO THE VIRTUAL-OCCUPIED BLOCK OF THE DENSITY MATRIX.
+C
+C THE GENERAL FORMULA IS
+C
+C  D(A,I) = 1/2 T(A,I) + 1/2 SUM M,E [T(AE,IM)- T(A,M) T(E,I)] L(E,M)
+C          
+C   + 1/2 L(A,I) + 1/2 SUM E G(E,A) T(I,E)  - 1/2 SUM M G(I,M) T(M,A)
+C
+C TWO SPIN CASES HAVE TO BE CONSIDERED HERE FOR DVO
+C
+CEND
+C
+C  CODED SEPTEMBER/90  JG
+C
+C  EXTENDED FOR ROHF-MBPT(3), DECEMBER/92
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      LOGICAL MBPT2,MBPT3,M4DQ,M4SDQ,M4SDTQ,CCD,QCISD,CCSD,UCC
+      LOGICAL DENS,GRAD,QRHF,NONHF,ROHF,SEMI,CANON,TRIP1,TRIP2,
+     &        GABCD,RELAXED,TRULY_NONHF
+      logical bRedundant
+      INTEGER DIRPRD,POP,VRT
+      DIMENSION ICORE(MAXCOR),DVO(1)
+      DIMENSION I0T(2),I0L(2),I0GEA(2),I0GIM(2),I0D(2)
+      COMMON/FLAGS/IFLAGS(100)
+      COMMON/SYM/POP(8,2),VRT(8,2),NT(2),NF1(2),NF2(2)
+      COMMON/SYMINF/NSTART,NIRREP,IRREPA(255,2),DIRPRD(8,8)
+      COMMON/SYMPOP/IRPDPD(8,22),ISYTYP(2,500),NTOT(18)
+      COMMON/MACHSP/IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON/METH/MBPT2,MBPT3,M4DQ,M4SDQ,M4SDTQ,CCD,QCISD,CCSD,UCC
+      COMMON/DERIV/DENS,GRAD,QRHF,NONHF,ROHF,SEMI,CANON,TRIP1,TRIP2,
+     &             GABCD,RELAXED,TRULY_NONHF
+C
+      DATA AZERO,HALF,ONE,ONEM,HALFM/0.0D0,0.5D0,1.0D0,-1.D0,-0.5D0/
+C
+C ROHF-MBPT(2):
+C
+C D(A,I) = T[1](I,A)
+C
+      MXCOR=MAXCOR
+      IF(MBPT2) THEN
+       CALL GETLST(DVO(1),1,1,1,1,90)
+       IF (IUHF .NE. 0) CALL GETLST(DVO(1+NT(1)),1,1,1,2,90)
+      ELSE IF(MBPT3) THEN
+C
+C ROHF-MBPT(3):
+C
+C D(A,I) = T[1](I,A) + 1/2 T[2](I,A) + 1/2 L[2][I,A) + 1/2 SUM M,E
+C
+C         T[1](AE,IM) T[1](M,E)
+C 
+       I0T(1)=MXCOR+1-NT(1)*IINTFP
+       I0L(1)=I0T(1)-NT(1)*IINTFP
+       I0T(2)=I0L(1)-IINTFP*NT(2)
+       I0L(2)=I0T(2)-IINTFP*NT(2)
+       MXCOR=MXCOR-2*IINTFP*(NT(1)+NT(2))
+       CALL GETLST(ICORE(I0T(1)),1,1,1,3,90)
+       CALL GETLST(ICORE(I0L(1)),1,1,1,1,190)
+       CALL GETLST(ICORE(I0T(2)),1,1,1,4,90)
+       CALL GETLST(ICORE(I0L(2)),1,1,1,2,190)
+       I0D(1)=1
+       I0D(2)=1+NT(1)
+       CALL GETLST(DVO(I0D(1)),1,1,1,1,90)
+       CALL GETLST(DVO(I0D(2)),1,1,1,2,90)
+       CALL SAXPY(NT(1),HALF,ICORE(I0T(1)),1,DVO(I0D(1)),1)
+       CALL SAXPY(NT(2),HALF,ICORE(I0T(2)),1,DVO(I0D(2)),1)
+       CALL SAXPY(NT(1),HALF,ICORE(I0L(1)),1,DVO(I0D(1)),1)
+       CALL SAXPY(NT(2),HALF,ICORE(I0L(2)),1,DVO(I0D(2)),1)
+C
+C THIRD TERM
+C
+C GET FIRST T[1] AMPLITUDES FROM DISK
+C
+       CALL GETLST(ICORE(I0T(1)),1,1,1,1,90)
+       CALL GETLST(ICORE(I0T(2)),1,1,1,2,90)
+C
+C LOOP OVER SPIN CASES
+C
+       DO 2000 ISPIN=1,2
+C
+C SUM M SUM E T(AE,IM) T(E,M)      
+C
+C HERE WE HAVE TO CONSIDER TWO SPIN CASES
+C
+C  THE T AMPLITUDES ARE TAKEN FROM THE FOLLOWING LISTS
+C
+C   AAAA (BBBB ) SPIN CASE
+C
+C   LIST 33+ISPIN        ORDER E,M : A,I    WITH FACTOR ONEM
+C
+C   ABAB (BABA)  SPIN CASE
+C
+C   LIST 35+ISPIN        ORDER E,M : A,I  
+C
+        LISTT1=33+ISPIN
+        LISTT2=36+ISPIN-IUHF
+C
+C  WE NEED ONLY IRREP 1            
+C
+        NSIZE1=NT(ISPIN)*NT(ISPIN)
+        NSIZE2=NT(ISPIN)*NT(3-ISPIN)
+        I000 = 1
+        I010 = I000 + IINTFP*MAX(NSIZE1,NSIZE2)
+C
+        IF(MXCOR.LT.I010-1) CALL INSMEM('DENSVO',I010-1,MXCOR)
+C
+C   AAAA (BBBB) SPIN CASE
+C
+        IF(NT(ISPIN).NE.0) THEN
+C
+         IF (bRedundant) THEN
+            CALL GETLST(ICORE,1,NT(ISPIN),1,1,LISTT1)
+         ELSE
+            CALL GETLST_NR(ICORE,ICORE(I010),MXCOR-I010+1,
+     &                     LISTT1,1)
+         END IF
+C
+         CALL XGEMM('N','N',1,NT(ISPIN),NT(ISPIN),HALFM,
+     &              ICORE(I0T(ISPIN)),1,ICORE,NT(ISPIN),
+     &              ONE,DVO(I0D(ISPIN)),1)
+C
+        ENDIF
+C
+C   ABAB (BABA)  SPIN CASE
+C
+        IF(MIN(NT(1),NT(2)).NE.0) THEN
+C
+         IF (bRedundant) THEN
+            CALL GETLST(ICORE,1,NT(ISPIN),1,1,LISTT2)
+         ELSE
+            CALL GETLST_NR(ICORE,ICORE(I010),MXCOR-I010+1,
+     &                     LISTT2,1)
+         END IF
+C
+         CALL XGEMM('N','N',1,NT(ISPIN),NT(3-ISPIN),HALF,      
+     &              ICORE(I0T(3-ISPIN)),1,ICORE,NT(3-ISPIN),ONE,
+     &              DVO(I0D(ISPIN)),1)
+C
+        ENDIF
+C
+2000   CONTINUE
+C
+      ELSE
+C
+C ALL OTHER METHODS (ROHF-CCSD AND QRHF-CCSD ....)
+C
+C ALLOCATE MEMORY FOR T1, L1, G(e,a) AND G(i,m) AND GET THEM
+C
+       I0T(1)=MXCOR+1-NT(1)*IINTFP
+       I0L(1)=I0T(1)-NT(1)*IINTFP
+       I0GEA(1)=I0L(1)-NF2(1)*IINTFP
+       I0GIM(1)=I0GEA(1)-NF1(1)*IINTFP
+       I0D(1)=1
+       MXCOR=MXCOR-IINTFP*(2*NT(1)+NF1(1)+NF2(1))
+       CALL GETLST(ICORE(I0T(1)),1,1,1,1,90)
+       CALL GETLST(ICORE(I0L(1)),1,1,2,1,190)
+       CALL GETLST(ICORE(I0GIM(1)),1,1,2,1,191)
+       CALL GETLST(ICORE(I0GEA(1)),1,1,2,1,192)
+       IF(IUHF.EQ.0) THEN
+        I0T(2)=I0T(1)
+        I0L(2)=I0L(1)
+        I0GEA(2)=I0GEA(1)
+        I0GIM(2)=I0GIM(1)
+        I0D(2)=1
+       ELSE
+        I0T(2)=I0GIM(1)-IINTFP*NT(2)
+        I0L(2)=I0T(2)-IINTFP*NT(2)
+        I0GEA(2)=I0L(2)-NF2(2)*IINTFP
+        I0GIM(2)=I0GEA(2)-NF1(2)*IINTFP
+        I0D(2)=1+NT(1)
+        MXCOR=MXCOR-IINTFP*(2*NT(2)+NF1(2)+NF2(2))
+        CALL GETLST(ICORE(I0T(2)),1,1,1,2,90)
+        CALL GETLST(ICORE(I0L(2)),1,1,2,2,190)
+        CALL GETLST(ICORE(I0GIM(2)),1,1,2,2,191)
+        CALL GETLST(ICORE(I0GEA(2)),1,1,2,2,192)
+       ENDIF
+CSSS       Write(6,*) "The checksums of G-intms"
+CSSS       call checksum("GIMA   ", ICORE(I0GIM(1)), NF1(1)*IINTFP)
+CSSS       call checksum("GIMB   ", ICORE(I0GIM(2)), NF1(2)*IINTFP)
+CSSS       call checksum("GEAA   ", ICORE(I0GEA(1)), NF2(1)*IINTFP)
+CSSS       call checksum("GEBB   ", ICORE(I0GEA(2)), NF2(2)*IINTFP)
+C
+C LOOP OVER SPIN CASES
+C
+       DO 1000 ISPIN=1,IUHF+1
+C
+C COPY FIRST T(I,A) TO DVO
+C 
+c YAU : old
+c        CALL ICOPY(IINTFP*NT(ISPIN),ICORE(I0T(ISPIN)),1,DVO(I0D(ISPIN)),1)
+c YAU : new
+         CALL DCOPY(NT(ISPIN),ICORE(I0T(ISPIN)),1,DVO(I0D(ISPIN)),1)
+c YAU : end
+C 
+#ifdef _DEBUG_LVL0
+        Call checksum("T(a,i)->DOV                :",DVO(I0D(ISPIN)),
+     &                 NT(ISPIN))
+#endif 
+C AND ADD L(A,I) TO DVO. 
+C
+         CALL SAXPY(NT(ISPIN),ONE,ICORE(I0L(ISPIN)),1,DVO(I0D(ISPIN)),1)
+C
+#ifdef _DEBUG_LVL0
+        Call checksum("L(a,i)->DOV                :",DVO(I0D(ISPIN)),
+     &                 NT(ISPIN))
+#endif 
+C FIRST TERM :
+C
+C SUM E G(EA) T(I,E)
+C
+C THE G(EA) IS STORED AS A,E
+C
+        IOFFG=I0GEA(ISPIN)
+        IOFFT=I0T(ISPIN)
+        IOFFD=I0D(ISPIN)
+C
+        DO 100 IRREP=1,NIRREP
+C
+         NOCC=POP(IRREP,ISPIN)
+         NVRT=VRT(IRREP,ISPIN)
+C
+         IF(MIN(NOCC,NVRT).NE.0) THEN
+C
+          CALL XGEMM('N','N',NVRT,NOCC,NVRT,ONE,ICORE(IOFFG),NVRT,
+     &               ICORE(IOFFT),NVRT,ONE,DVO(IOFFD),NVRT)
+         ENDIF 
+C
+C UPDATE OFFSETS
+C
+         IOFFG=IOFFG+IINTFP*NVRT*NVRT
+         IOFFT=IOFFT+IINTFP*NVRT*NOCC
+         IOFFD=IOFFD+NOCC*NVRT
+C
+100     CONTINUE
+
+#ifdef _DEBUG_LVL0
+        call checksum("G(a,e)*T(I,E)->DOV         :",DVO(I0D(ISPIN)),
+     &                 NT(ISPIN))
+        Write(6,"(a)") "G(a,e)=T2(ef,mn)*T2(af,mn)"
+#endif 
+C
+C SECOND TERM
+C
+C   - SUM M T(A,M) G(I,M) 
+C
+C THE G(IM) ARE STORED AS I,M
+C
+        IOFFG=I0GIM(ISPIN)
+        IOFFT=I0T(ISPIN)
+        IOFFD=I0D(ISPIN)
+C  
+        DO 200 IRREP=1,NIRREP
+C
+         NOCC=POP(IRREP,ISPIN)
+         NVRT=VRT(IRREP,ISPIN)
+C
+         IF(MIN(NOCC,NVRT).NE.0) THEN
+C 
+          CALL XGEMM('N','T',NVRT,NOCC,NOCC,ONEM,ICORE(IOFFT),NVRT,
+     &               ICORE(IOFFG),NOCC,ONE,DVO(IOFFD),NVRT)
+         ENDIF
+C
+C UPDATE OFFSETS
+C
+         IOFFG=IOFFG+IINTFP*NOCC*NOCC
+         IOFFT=IOFFT+IINTFP*NOCC*NVRT
+         IOFFD=IOFFD+NOCC*NVRT
+C
+200     CONTINUE
+#ifdef _DEBUG_LVL0
+        call checksum("G(M,I)*T(A,M)->DOV         :",DVO(I0D(ISPIN)),
+     &                 NT(ISPIN))
+        Write(6,"(a)") "G(m,i)=T2(ef,mn)*T2(ef,in)"
+#endif 
+C
+C THIRD TERM
+C
+C SUM M SUM E T(AE,IM) L(E,M)      
+C
+C HERE WE HAVE TO CONSIDER TO SPIN CASES
+C
+C THE T AMPLITUDES ARE TAKEN FROM THE FOLLOWING LISTS
+C
+C AAAA (BBBB ) SPIN CASE
+C
+C LIST 33+ISPIN        ORDER E,M : A,I    WITH FACTOR ONEM
+C
+C ABAB (BABA)  SPIN CASE
+C
+C LIST 35+ISPIN        ORDER E,M : A,I  
+C
+         LISTT1=33+ISPIN
+         LISTT2=36+ISPIN-IUHF
+C
+C WE NEED ONLY IRREP 1            
+C
+         NSIZE1=NT(ISPIN)*NT(ISPIN)
+         NSIZE2=NT(ISPIN)*NT(3-ISPIN)
+         I000 = 1
+         I010 = I000 + IINTFP*MAX(NSIZE1,NSIZE2)
+C
+         IF(MXCOR.LT.I010-1) CALL INSMEM('DENSVO',I010-1,MXCOR)
+C
+C AAAA (BBBB) SPIN CASE
+C
+         IF(NT(ISPIN).NE.0) THEN
+C
+          IF (bRedundant) THEN
+             CALL GETLST(ICORE,1,NT(ISPIN),1,1,LISTT1)
+          ELSE
+             CALL GETLST_NR(ICORE,ICORE(I010),MXCOR-I010+1,
+     &                      LISTT1,1)
+          END IF
+C
+          CALL XGEMM('N','N',1,NT(ISPIN),NT(ISPIN),ONEM,
+     &               ICORE(I0L(ISPIN)),1,ICORE,NT(ISPIN),
+     &               ONE,DVO(I0D(ISPIN)),1)
+C
+         ENDIF
+CSSS         call checksum("L1      ", ICORE(I0L(ISPIN)), NT(ISPIN))
+CSSS         call checksum("T2aaaa  ", ICORE, NT(ISPIN)*NT(ISPIN))
+CSSS         call checksum("DAIABTL1", DVO(I0D(ISPIN)), NT(ISPIN))
+C
+C ABAB (BABA)  SPIN CASE
+C
+         IF(MIN(NT(1),NT(2)).NE.0) THEN
+C
+          IF (bRedundant) THEN
+             CALL GETLST(ICORE,1,NT(ISPIN),1,1,LISTT2)
+          ELSE
+             CALL GETLST_NR(ICORE,ICORE(I010),MXCOR-I010+1,
+     &                      LISTT2,1)
+          END IF
+C
+          CALL XGEMM('N','N',1,NT(ISPIN),NT(3-ISPIN),ONE,      
+     &               ICORE(I0L(3-ISPIN)),1,ICORE,NT(3-ISPIN),ONE,
+     &               DVO(I0D(ISPIN)),1)
+C
+         ENDIF
+
+#ifdef _DEBUG_LVL0
+        call checksum("T2(ae,im)*L(m,e)->DOV      :",DVO(I0D(ISPIN)),
+     &                 NT(ISPIN))
+#endif 
+C
+C THE FOURTH TERM
+C
+C - SUM M SUM E L(E,M) T(M,A) T(I,E)
+C
+C CALCULATE FIRST THE INTERMEDIATE
+C
+C  Z(M,I) = SUM E L(E,M) T(E,I)
+C
+C AND THEN
+C
+C DVO(A,I) <--  - SUM M T(M,A) Z(M,I)
+C
+        IOFFL=I0L(ISPIN)
+        IOFFT=I0T(ISPIN)
+        IOFFD=I0D(ISPIN)
+C 
+        DO 400 IRREP=1,NIRREP
+C
+         NOCC=POP(IRREP,ISPIN)
+         NVRT=VRT(IRREP,ISPIN)
+C 
+         IF(MIN(NOCC,NVRT).NE.0) THEN
+C
+          CALL XGEMM('T','N',NOCC,NOCC,NVRT,ONE,ICORE(IOFFL),NVRT,
+     &               ICORE(IOFFT),NVRT,AZERO,ICORE,NOCC)  
+C
+          CALL XGEMM('N','N',NVRT,NOCC,NOCC,ONEM,ICORE(IOFFT),NVRT,
+     &               ICORE,NOCC,ONE,DVO(IOFFD),NVRT)
+         ENDIF
+C
+C UPDATE OFFSETS
+C
+         IOFFD=IOFFD+NOCC*NVRT
+         IOFFT=IOFFT+IINTFP*NOCC*NVRT
+         IOFFL=IOFFL+IINTFP*NOCC*NVRT   
+C  
+400     CONTINUE
+#ifdef _DEBUG_LVL0
+        call checksum("T1(e,i)*T1(a.m)*L(m,e)->DOV:",DVO(I0D(ISPIN)),
+     &                 NT(ISPIN))
+#endif 
+C
+C SCALE THE DENSITY MATRIX WITH 1/2
+C
+        CALL SSCAL(NT(ISPIN),HALF,DVO(I0D(ISPIN)),1)
+C
+C ADD CONTRIBUTION DUE TO TRIPLE EXCITATION
+C
+        IF(TRIP1) THEN
+C
+         CALL GETLST(ICORE,1,1,1,4+ISPIN,160)
+         CALL SAXPY(NT(ISPIN),ONE,ICORE,1,DVO(I0D(ISPIN)),1)
+
+#ifdef _DEBUG_LVL0
+        call checksum("CCSD(T)->DOV               :",DVO(I0D(ISPIN)), 
+     &                 NT(ISPIN))
+#endif 
+C
+        ENDIF
+
+C
+1000   CONTINUE
+C
+      ENDIF
+C
+C ALL DONE 
+C
+      RETURN
+      END 

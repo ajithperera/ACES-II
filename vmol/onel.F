@@ -1,0 +1,271 @@
+      SUBROUTINE ONEL(I1,NXYZ,SVEKT,POWAB,JJRS,SBUF,JBUF,SINT,
+     &                LMN,PYA,MAKK,HLP1,TSFSTA,TSAV,NUC,NRC,PP,
+     &                TF,MNO,IG,NHL)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      CHARACTER*8 TEXT(2)
+C-----------------------------------------------------------------------
+C     Parameters
+C-----------------------------------------------------------------------
+#include "baslims.par"
+#include "mxatms.par"
+      PARAMETER (KWD=(NHT+1)*(NHT+2)*(NHT+3)/6)
+      parameter (nh4=4*NHT-3)
+C-----------------------------------------------------------------------
+      INTEGER AND,OR,EOR,XD(8),DSTRT
+      LOGICAL HARMT
+      COMMON /HARMON/ HARMT
+      COMMON /XA/ XAND(3,8,nh4)
+      COMMON /FLAGS/ IFLAGS(100)
+      DIMENSION I1(50),NXYZ(KWD,3),SVEKT(ig),POWAB(15,3),JJRS(2),
+     & SBUF(600),JBUF(600),SINT(ig),LMN(3),PYA(3),MAKK(3),HLP1(NHL),
+     & TSFSTA(ig),TSAV(ig),NUC(2),NRC(2),PP(3),TF(14),MNO(3)
+c      COMMON /W1/ I1(50),NXYZ(KWD,3),SVEKT(ig),POWAB(15,3),JJRS(2),
+c     & SBUF(600),JBUF(600),SINT(ig),LMN(3),PYA(3),MAKK(3),HLP1(NHL),
+c     & TSFSTA(ig),TSAV(ig),NUC(2),NRC(2),PP(3),TF(14),MNO(3)
+      COMMON/NULL_COM/FACT(nh4),RFACT(nh4),FACTM(nh4),RFACTM(nh4)
+     & ,MAA,IFD1,IFD2,KCD,KBCD,NHCD,NHBCD,NNC,IFPL(3),
+     & NN1,NN2,NHKTA,NHKTB,NHKTC,NHKTD,KHKTA,KHKTB,KHKTC,KHKTD,NNB
+c      COMMON/NULL_COM/FACT(nh4),RFACT(nh4),FACTM(nh4),RFACTM(nh4)
+      COMMON /REP/ NEWIND(MXCBF) , MSTOLD(8)
+      COMMON /INDX/ PC(512),DSTRT(8,MXCBF),NTAP,LU2,NRSS,NUCZ,ITAG,
+     1 MAXLOP,MAXLOT,KMAX,NMAX,KHKT(7),MULT(8),ISYTYP(3),ITYPE(7,28),
+     2 AND(8,8),OR(8,8),EOR(8,8),NPARSU(8),NPAR(8),MULNUC(Mxatms),
+     3 NHKT(MXTNSH),MUL(MXTNSH),NUCO(MXTNSH),NRCO(MXTNSH),
+     4 JSTRT(MXTNSH),NSTRT(MXTNSH),MST(MXTNSH),JRS(MXTNSH)
+      COMMON /DAT/ALPHA(MXTNPR),CONT(MXTNCC),CENT(3,MXTNSH),
+     1            CORD(Mxatms,3),CHARGE(MXatms),FMULT(8),TLA, TLC
+      DATA TEXT /'********','OVERLAP '/
+
+#ifdef _TRACE_VMOL
+      write(*,*) '@VMOL: Entered file ',__FILE__
+#endif
+
+      IPRINT = IFLAGS(1)
+C 
+CCDIR$ BOUNDS
+C
+      PI=2.0*DACOS(0.0D00)
+      WRITE (NTAP) TEXT(1)
+      WRITE (NTAP) TEXT(2)
+      MINUS1=-1
+      NUT=0
+C NOVECTOR DIRECTIVE REQUIRED FOR FPS ONLY
+CCDIR$ NOVECTOR
+      DO 1713 J=1,3
+      POWAB(1,J)=1.
+      DO 1713 I=1,MAXLOP
+      XAND(J,I,1)=1.
+      DO 1713 K=2,nh4-1,2
+      XAND(J,I,K+1)=1.
+ 1713 XAND(J,I,K)=PC(AND(ISYTYP(J),I))
+CCDIR$ NOVECTOR
+      FACT  (1)=1.0
+      RFACT (1)=1.0
+      FACTM (1)=1.0
+      RFACTM(1)=1.0
+      FF=1.0
+      DO 7451 I=2,nh4
+      FI=DFLOAT(I-1)
+      FACT(I)=FACT(I-1)*FI
+      FACTM(I)=-FACTM(I-1)*FI
+      RFACT(I)=RFACT(I-1)/FI
+      RFACTM(I)=RFACT(I)*FF
+ 7451 FF=FF*0.25
+      DO 2203 I=1,MAXLOP
+ 2203 XD(I)=0
+      DO 90 IA=1,KMAX
+      NHKTA=NHKT(IA)
+      KHKTA=KHKT(NHKTA)
+      DO 91 NA=1,KHKTA
+      IND=NSTRT(IA)+NA
+      DO 92 LA=1,MAXLOP
+      IF(AND(MUL(IA),EOR(LA,ITYPE(NHKTA,NA))) . NE . 1) GO TO 92
+      XD(LA) = XD(LA) + NRCO(IA)
+   92 CONTINUE
+      DO 102 I=1,MAXLOP
+  102 DSTRT(I,IND)=XD(I)
+   91 CONTINUE
+   90 CONTINUE
+      ISAB=0
+      IBSAB=0
+      MIA=0
+      DO 1 IA=1,KMAX
+      NHKTA=NHKT(IA)
+      NHKTAM=NHKTA-1
+      NANA=(NHKTAM*NHKTA*(NHKTA+1))/6
+      KHKTA=KHKT(NHKTA)
+      MULA=MUL(IA)
+      NUCA=NUCO(IA)
+      NUC(1) = NUCA
+      JSTA=JSTRT(IA)
+      MIB=0
+      DO 40 IB=1,IA
+      MRAF = NRCO(IA) * NRCO(IB)
+      NRC(1) = NRCO(IA)
+      NRC(2) = NRCO(IB)
+      NHKTB=NHKT(IB)
+      NHKTBP=NHKTB+1
+      NHKTBQ=NHKTB+2
+      INCR=(NHKTA*NHKTBQ*(NHKTA+NHKTBQ))/2
+      MAXALL=NHKTA+NHKTB
+      NBNB=((NHKTB-1)*NHKTB*NHKTBP)/6
+      KHKTB=KHKT(NHKTB)
+      MULB=MUL(IB)
+      NUCB=NUCO(IB)
+      NUCAB=NUCA*NUCB
+      NUC(2) = NUCB
+      JJRS(1) = JRS(IA)
+      JJRS(2) = JRS(IB)
+      JSTB=JSTRT(IB)
+      CALL EXCOEF(TSFSTA,NHKTA,NHKTB+2,NUCA,NUCB,JSTA,JSTB,FACTM)
+      MAA=KHKTA*KHKTB
+      MAB=OR(MULA,MULB)
+      KAB=AND(MULA,MULB)
+      CALL ZERO (SINT,MAA*MRAF*MULT(KAB))
+      HKAB=FMULT(KAB)
+      DO 5 KB=1,MAXLOT
+      IBSAB=IBSAB+1
+      IF(AND(KB,MAB).NE.1) GO TO 5
+      DISTAB=0.
+      DO 50 I=1,3
+      POWAB(2,I) = CENT(I,IA) - CENT(I,IB)*XAND(I,KB,2)
+      DO 1510 J=2,MAXALL
+ 1510 POWAB(J+1,I) = POWAB(J,I)*POWAB(2,I)
+   50 DISTAB = DISTAB+POWAB(3,I)
+      INDX=1
+      JAB= 0
+      DO 8 JA=1,NUCA
+      JJA=JA+JSTA
+      A=ALPHA(JJA)
+      DO 8 JB=1,NUCB
+      JAB = JAB + 1
+      JJB=JB+JSTB
+      B=ALPHA(JJB)
+      C=A+B
+      CINV=1.0/C
+      EPSJ=0.25*C
+      DEL=0.5*CINV
+      AT2=1.0
+      TF(1)=1.0
+      DO 121 N=2,MAXALL
+      TF(N)=TF(N-1)*AT2*DEL
+  121 AT2=AT2+2.0
+      PIC=PI*CINV
+      ROPIC=SQRT(PIC)
+      BCI=B*CINV
+      ABC=BCI*A*DISTAB
+      SAAB= PIC*ROPIC*EXP(-ABC)
+      JNDX=INDX
+      DO 12 MM=0,NHKTAM
+      DO 12 LL=0,NHKTBP
+      LM=(LL+MM)/2
+      DO 13 KK=0,LM
+      TSAV(JNDX+LL+MM-KK-KK)=TSFSTA(JNDX+KK+KK)*RFACT(KK+1)*EPSJ**KK
+   13 CONTINUE
+   12 JNDX=JNDX+LL+MM+1
+      NUM=0
+      DO 100 NA=1,KHKTA
+      NAN=NANA+NA
+      DO 5512 I=1,3
+ 5512 LMN(I)=NXYZ(NAN,I)
+      DO 100 NB=1,KHKTB
+      NUM=NUM+1
+      NAN=NBNB+NB
+      DO 5511 I=1,3
+      MNO(I)=NXYZ(NAN,I)
+ 5511 MAKK(I)=LMN(I)+MNO(I)+1
+      SUM=1.0
+      DO 140 IJK=1,3
+      MM = NXYZ(NANA+NA,IJK)
+      LL = NXYZ(NBNB+NB,IJK)
+      MMM=(LL+MM)/2+1
+      IML=INDX+(MM*NHKTBQ*(MM+NHKTBQ)+LL*(MM+MM+LL+1))/2
+      ANS=0.
+      DO 1101 KK=1,MMM
+      ANS=ANS+TSAV(IML+LL+MM-KK-KK+2)
+     ? *POWAB(3+LL+MM-2*KK,IJK)
+ 1101 CONTINUE
+      SUM=SUM*ANS
+  140 CONTINUE
+      SVEKT(JAB+(NUM-1)*2*NUCAB) = SAAB*SUM
+  100 CONTINUE
+    8 INDX=INDX+INCR
+      DO 150 I=1,MAA
+      CALL TRANS (2,CONT,JJRS,SVEKT(1+(I-1)*2*NUCAB),NUC,NRC,ISTO)
+      do 150 j=1,mraf
+      svekt((i-1)*mraf+j) = svekt((i-1)*2*nucab+j)
+  150 CONTINUE
+      IF (HARMT)
+     $ CALL HARM1(KHKTA,KHKTB,NHKTA,NHKTB,MAA,MRAF,SVEKT,HLP1)
+C
+C...  FORM SYMMETRY INTEGRALS ....
+      ISYM=0
+      DO 18 LA=1,MAXLOP
+      NUM=0
+      DO 19 NA=1,KHKTA
+      IF(AND(MULA,EOR(LA,ITYPE(NHKTA,NA))).NE.1) GO TO 19
+      DO 20 NB=1,KHKTB
+      IF(AND(MULB,EOR(LA,ITYPE(NHKTB,NB))).NE.1) GO TO 20
+      ISYM=ISYM+1
+      NUN=NUM+NB
+      SIGNE=PC(AND(KB,EOR(LA,ITYPE(NHKTB,NB))))
+      DO 21 KK=1,MRAF
+      SINT(KK+(ISYM-1)*MRAF)=SINT(KK+(ISYM-1)*MRAF)+
+     + SIGNE*SVEKT(KK+ISTO+(NUN-1)*mraf)
+  21  CONTINUE
+C      IF (IA .EQ. 3 .OR. IB .EQ. 3) THEN
+   20 CONTINUE
+   19 NUM=NUM+KHKTB
+   18 CONTINUE
+    5 ISAB=ISAB+NUCA*NUCB
+C
+C...  ORDER SYMMETRY INTEGRALS AND ACCOUNT FOR MULTIPLICITY
+      ISYM=0
+      DO 27 LA=1,MAXLOP
+      DO 37 NA=1,KHKTA
+      IF(AND(MULA,EOR(LA,ITYPE(NHKTA,NA))) . NE .1) GO TO 37
+      DO 38 NB=1,KHKTB
+      IF(AND(MULB,EOR(LA,ITYPE(NHKTB,NB))) . NE . 1) GO TO 38
+      ISYM=ISYM+1
+      IF(IA.EQ.IB. AND .NA.LT.NB) GO TO 38
+      KK=0
+      DO 39 K1=1,NRC(1)
+      DO 39 K2=1,NRC(2)
+      KK=KK+1
+      IF(IA.EQ.IB .AND. NA.EQ.NB .AND. K1.LT.K2) GO TO 39
+      LBU = DSTRT(LA,NSTRT(IA)+NA) - NRC(1) + K1 
+      MBU = DSTRT(LA,NSTRT(IB)+NB) - NRC(2) + K2 
+      LBU = NEWIND(LBU + MSTOLD(LA))
+      MBU = NEWIND(MBU + MSTOLD(LA))
+      IF(LBU*MBU  .EQ.  0) GO TO 39
+      LBU = LBU - MST(LA)
+      MBU = MBU - MST(LA)
+      NBU = MAX0(LBU,MBU) 
+      IBUF = NBU*(NBU-3)/2 + LBU + MBU + NPARSU(LA)
+      NUT=NUT+1
+      SBUF(NUT)=SINT(KK+(ISYM-1)*MRAF) *HKAB
+      JBUF(NUT)=IBUF
+      IF(IPRINT.GE.500)THEN
+       WRITE(6,5000)IBUF,SBUF(NUT)
+5000   FORMAT(T5,15X,I5,F20.12)
+      ENDIF
+      IF(NUT.LT.600) GO TO 39
+      WRITE (NTAP) SBUF,JBUF,NUT
+      NUT=0
+  39  CONTINUE
+   38 CONTINUE
+   37 CONTINUE
+   27 CONTINUE
+   40 MIB=MIB+KHKTB
+    1 MIA=MIA+KHKTA
+      IF (NUT.NE.0) WRITE (NTAP) SBUF,JBUF,NUT
+c     print 6655,(sbuf(k), k=1,nut)
+ 6655 format (10f7.4)
+      WRITE (NTAP) SBUF,JBUF,MINUS1
+
+#ifdef _TRACE_VMOL
+      write(*,*) '@VMOL: Leaving file ',__FILE__
+#endif
+
+      RETURN
+      END

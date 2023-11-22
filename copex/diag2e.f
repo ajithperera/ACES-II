@@ -1,0 +1,28 @@
+      SUBROUTINE DIAG2E(EEA,WBAR,NVIR,NEA,NOCC,NAO)
+C
+      IMPLICIT DOUBLE PRECISION (A-H, O-Z) 
+C
+      DIMENSION EEA(NEA,NEA)
+      DIMENSION WBAR(NAO,NAO,NAO,NAO)
+C
+C EEA = SUM_C <AB|CJ> 
+C GET ELEMENT <DC|BJ> AND TRANSPOSE TO <DC|JB>
+C
+      DO 10 IB=1, NVIR
+         DO 20 IJ=1, NOCC
+            DO 30 IC=1, NVIR
+               DO 40 ID=1, NVIR
+                  IF (MOD(ID,NVIR).EQ.0) THEN
+                     EEA(NVIR+NVIR+(IC-1)*NVIR+(IJ-1)*NVIR*NVIR,IB)
+     &=WBAR(ID+NOCC,IC+NOCC,IB+NOCC,IJ) 
+                  ELSE
+                     EEA(NVIR+MOD(ID,NVIR)+(IC-1)*NVIR+(IJ-1)
+     &*NVIR*NVIR,IB)=WBAR(ID+NOCC,IC+NOCC,IB+NOCC,IJ) 
+                  ENDIF
+ 40            CONTINUE
+ 30         CONTINUE
+ 20      CONTINUE
+ 10   CONTINUE
+C
+      RETURN
+      END

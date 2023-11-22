@@ -1,0 +1,64 @@
+      SUBROUTINE ASSYM4(IRREP,POPVRT,DSZA,DSZB,NDIS,A,B,IOFFA,IOFFB)
+C
+C     IOFFA --- location of I<J in ISYMOFF. Eg this is 1 or 2 for
+C               virtual-virtual, and 3 or 4 for occ-occ.
+C     IOFFB --- location of I,J in ISYMOFF. 19,20 for virtual,virtual;
+C               21,22 for occupied,occupied.
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      INTEGER DSZA,DSZB,POPVRT,DIRPRD
+      DIMENSION A(DSZA,NDIS),B(DSZB,NDIS)
+      DIMENSION POPVRT(8),IOFF(8,8,10)
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPA(255),IRREPB(255),
+     1                DIRPRD(8,8)
+      COMMON /SYMLOC/ ISYMOFF(8,8,25)
+C
+      INDEX(I) = I*(I-1)/2
+C
+      CALL ZERO(A,DSZA*NDIS)
+      DO   60 IDIS=1,NDIS
+C
+      DO   50 IRPJ=1,NIRREP
+C
+      IRPI = DIRPRD(IRPJ,IRREP)
+C
+      IF(IRPI.GT.IRPJ) GOTO 50
+C
+      IF(IRPI.EQ.IRPJ)THEN
+C
+      DO   20 J=2,POPVRT(IRPJ)
+      DO   10 I=1,J-1
+C
+c      ILTJ = IOFF(IRPJ,IRREP,ISPIN) + INDEX(J-1) + I
+c      IJ   = IOFF(IRPJ,IRREP,    5) + (J-1)*POPVRT(IRPI) + I
+c      JI   = IOFF(IRPI,IRREP,    5) + (I-1)*POPVRT(IRPJ) + J
+      ILTJ = ISYMOFF(IRPJ,IRREP,IOFFA) - 1 + INDEX(J-1) + I
+      IJ   = ISYMOFF(IRPJ,IRREP,IOFFB) - 1 + (J-1)*POPVRT(IRPI) + I
+      JI   = ISYMOFF(IRPI,IRREP,IOFFB) - 1 + (I-1)*POPVRT(IRPJ) + J
+C
+      A(ILTJ,IDIS) = B(IJ,IDIS) - B(JI,IDIS)
+   10 CONTINUE
+   20 CONTINUE
+C
+      ELSE
+C
+      DO   40 J=1,POPVRT(IRPJ)
+      DO   30 I=1,POPVRT(IRPI)
+C
+c      ILTJ = IOFF(IRPJ,IRREP,ISPIN) + (J-1)*POPVRT(IRPI) + I
+c      IJ   = IOFF(IRPJ,IRREP,    5) + (J-1)*POPVRT(IRPI) + I
+c      JI   = IOFF(IRPI,IRREP,    5) + (I-1)*POPVRT(IRPJ) + J
+      ILTJ = ISYMOFF(IRPJ,IRREP,IOFFA) - 1 + (J-1)*POPVRT(IRPI) + I
+      IJ   = ISYMOFF(IRPJ,IRREP,IOFFB) - 1 + (J-1)*POPVRT(IRPI) + I
+      JI   = ISYMOFF(IRPI,IRREP,IOFFB) - 1 + (I-1)*POPVRT(IRPJ) + J
+C
+      A(ILTJ,IDIS) = B(IJ,IDIS) - B(JI,IDIS)
+   30 CONTINUE
+   40 CONTINUE
+      ENDIF
+C
+   50 CONTINUE
+   60 CONTINUE
+C
+      RETURN
+      END

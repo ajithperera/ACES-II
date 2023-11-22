@@ -1,0 +1,116 @@
+EOMEE vib CCSD, Aces3, ANALYTICAL gradient, DROPMO
+O
+C 1 R
+H 2 CH 1 A
+H 2 CH 1 A 3 D180
+
+R    =     1.3892444966
+CH   =     1.0896696426
+A    =   118.3487318339
+D180=180.0
+
+*ACES2
+PROGRAM=MN_A3,!restart
+BASIS=3-21G,SPHERICAL=OFF
+DROPMO=1-2,CALC=CCSD
+EXCITE=EOMEE,EE_SYM=2-2-2-2
+VIB=FINDIF
+
+*mrcc_gen
+ gradient_type=ee_tda
+ grad_energ=-113.0628162012
+ igrad_mult=1
+*end
+
+Comments:
+
+EOMEE Vibrational frequencies. Note that we specify a large number of roots.
+This is necessary as the symmetry of the molecule is reduced upon distortion
+in force constant calculation.
+The roots are first evaluated at the TDA (or CIS) level, and at this
+TDA-level do we select the root of interest for eomee calculations. Only one
+root is solved for in the EOMEE calculation, of the proper symmetry.
+
+!!!!!!  The grad_energ specied is the energy of the TDA state at the
+optimized geometry. You can find it under "selected state for gradient" if you
+search backwards in out.test.087
+
+Upon inspecting the output, if you search for "selected" you find that the
+state is either found in block 4 or block 2. The program does it all for you.
+
+The optimized geometry in C2V symmetry is a transition state. The CH2O group
+pyramidalizes if this restriction is relieved.
+
+TEST.DAT
+d TOTENERG
+ -0.113326623554E+03   0.1E-08
+d FORCECON
+ -0.597408449300E-02   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.324544675660E-01   0.1E-08
+  0.449996878540E-01   0.1E-08
+  0.754371319930E-01   0.1E-08
+  0.358095605191E+00   0.1E-08
+  0.388238803320E+00   0.1E-08
+d INTR_HES
+  0.336253142708E+00   0.1E-08
+  0.138674972020E-01   0.1E-08
+  0.417082046070E-01   0.1E-08
+  0.138674972020E-01   0.1E-08
+  0.417082046070E-01   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.138674972020E-01   0.1E-08
+  0.349255825275E+00   0.1E-08
+  0.568196538000E-03   0.1E-08
+  0.588415979000E-03   0.1E-08
+ -0.196353166030E-01   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.417082046070E-01   0.1E-08
+  0.568196538000E-03   0.1E-08
+  0.201710607764E+00   0.1E-08
+ -0.196353166030E-01   0.1E-08
+  0.956647822770E-01   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.138674972020E-01   0.1E-08
+  0.588415979000E-03   0.1E-08
+ -0.196353166030E-01   0.1E-08
+  0.349255825275E+00   0.1E-08
+  0.568196538000E-03   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.417082046070E-01   0.1E-08
+ -0.196353166030E-01   0.1E-08
+  0.956647822770E-01   0.1E-08
+  0.568196538000E-03   0.1E-08
+  0.201710607764E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+ -0.741204988400E-02   0.1E-08
+d E_AVG
+  0.260547699511E+00   0.1E-08
+d E_OPEN
+  0.119759942861E+00   0.1E-08
+d NUCDIPOL
+  0.302584126500E-02   0.1E-08
+  0.228994534264E+01   0.1E-08
+  0.000000000000E+00   0.1E-08
+d NUCREP
+  0.283542761456E+02   0.1E-08
+d PARENERG
+ -0.113429734168E+03   0.1E-08
+d REFDIPOL
+  0.852541585000E-03   0.1E-08
+  0.125729175248E+01   0.1E-08
+  0.000000000000E+00   0.1E-08
+d SCFENEG
+ -0.113182591907E+03   0.1E-08
+d TOTENER2
+ -0.113326623554E+03   0.1E-08

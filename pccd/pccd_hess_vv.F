@@ -1,0 +1,127 @@
+#include "flags.h"
+      SUBROUTINE PCCD_HESS_VV(HESS,ICORE,NSIZE,MAXCOR,ISPIN,IUHF)
+C
+      IMPLICIT INTEGER (A-Z)
+      DIMENSION ICORE(MAXCOR),IOFFO(2),IOFFV(2)
+      DIMENSION HESS(NSIZE)
+      DOUBLE PRECISION ONE,ONEM,TWO,HALF
+      LOGICAL APPRX_HESS
+C
+      COMMON/FLAGS/IFLAGS(100)
+      COMMON/MACHSP/IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON/SYMINF/NSTART,NIRREP,IRREP0(255,2),DIRPRD(8,8)
+      COMMON/SYM/POP(8,2),VRT(8,2),NT(2),NFMI(2),NFEA(2)
+      COMMON/SYMPOP/IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON/INFO/NOCCO(2),NVRTO(2)
+C 
+      DATA ONE,ONEM /1.0D0,-1.0D0/
+      DATA TWO,HALF /2.0D0,0.50D0/
+
+      APPRX_HESS = .TRUE.
+      IRREPX    = 1
+
+      IF (APPRX_HESS) Then
+
+         NSIZE  = IDSYMSZ(IRREPX,19,19)
+         LIST_H = 234
+         IF (IEND .GT. MAXCOR) CALL INSMEM("@-PCCD_HESS_OV",IEND,MAXCOR)
+         CALL GETALL(HESS,NSIZE,IRREPX,LIST_H)
+
+C The Diagonal elements. First alpha occupied and followed by virtuals 
+
+       ELSE
+
+C Occ-OCc  block
+         NBAS=NOCCO(ISPIN)+NVRTO(ISPIN)
+         I000=1
+         I010=I000+NFMI(ISPIN)*IINTFP
+C Vrt-Vrt  block
+         I020=I010+NFEA(ISPIN)*IINTFP
+         I030=I020+NBAS*IINTFP
+
+         CALL IZERO(ICORE(I000),NFMI(ISPIN))
+         CALL IZERO(ICORE(I010),NFEA(ISPIN))
+
+         IF(ISPIN.EQ.1) CALL GETREC(20,'JOBARC','SCFEVALA',
+     +                              IINTFP*NBAS,ICORE(I020))
+
+         IF(ISPIN.EQ.2) CALL GETREC(20,'JOBARC','SCFEVALB',
+     +                              IINTFP*NBAS,ICORE(I020))
+
+         IOFFE =I020
+         IOFFTO=I000
+         IOFFTV=I010
+
+         DO 10 IRREP=1,NIRREP
+            NOCC=POP(IRREP,ISPIN)
+            CALL SAXPY(NOCC,ONE,ICORE(IOFFE),1,ICORE(IOFFTO),NOCC+1)
+            IOFFE =IOFFE +NOCC*IINTFP
+            IOFFTO=IOFFTO+NOCC*NOCC*IINTFP
+10       CONTINUE
+
+         DO 11 IRREP=1,NIRREP
+            NVRT=VRT(IRREP,ISPIN)
+            CALL SAXPY(NVRT,ONE,ICORE(IOFFE),1,ICORE(IOFFTV),NVRT+1)
+            IOFFE =IOFFE +NVRT*IINTFP
+            IOFFTV=IOFFTV+NVRT*NVRT*IINTFP
+11       CONTINUE
+C
+        IOFFO(1)=I000
+        IOFFO(2)=I000
+        IOFFV(1)=I010
+        IOFFV(2)=I010
+
+C Read in Hbar(ib,aj) elements; ordered as (bi,aj)
+
+        IF(IUHF.EQ.0)THEN
+           ISIZE=ISYMSZ(ISYTYP(1,56),ISYTYP(1,56))
+           I040=I030+ISIZE*IINTFP
+           I050=I040+ISIZE*IINTFP
+           I060=I050+ISIZE*IINTFP
+           IEND=I060
+           IF (IEND .GT. MAXCOR) CALL INSMEM("PCCD_HESS",
+     &                                       IEND,MAXCOR)
+           CALL GETALL(ICORE(I030),ISIZE,1,23)
+           CALL VMINUS(ICORE(I030),ISIZE)
+           CALL GETALL(ICORE(I040),ISIZE,1,18)
+           CALL SAXPY (ISIZE,ONE,ICORE(I040),1,ICORE(I030),1)
+        ELSE
+           LISTAA=22+ISPIN
+           ISIZE=ISYMSZ(ISYTYP(1,LISTAA),ISYTYP(1,LISTAA))
+           I040=I030+ISIZE*IINTFP
+           I050=I040+ISIZE*IINTFP
+           I060=I050+ISIZE*IINTFP
+           IEND=I060
+           IF (IEND .GT. MAXCOR) CALL INSMEM("PCCD_HESS",
+     &                                      IEND,MAXCOR)
+           CALL GETALL(ICORE(I030),ISIZE,1,LISTAA)
+           CALL VMINUS(ICORE(I030),ISIZE)
+        ENDIF
+
+C Reorder; (ai,bj) -> (ab,ij)
+
+        CALL SSTGEN(ICORE(I030),ICORE(I050),ISIZE,
+     &              VRT(1,ISPIN),POP(1,ISPIN),VRT(1,ISPIN),
+     &              POP(1,ISPIN),ICORE(I060),1,'1324')
+
+C Add the one particle contributions 
+
+        DISSZ1=IRPDPD(1,18+ISPIN)
+        NUMDS1=IRPDPD(1,20+ISPIN)
+        CALL PCCD_ADDONEH(ICORE(I050),ICORE(I040),ISIZE,
+     &                    ICORE(IOFFV(ISPIN)),ICORE(IOFFO(ISPIN)),
+     &                    DISSZ1,NUMDS1,ISPIN)
+
+C Reorder (ab,ij) -> (ai,bj)
+
+        CALL SSTGEN(ICORE(I050),HESS,ISIZE,
+     &              VRT(1,ISPIN),VRT(1,ISPIN),POP(1,ISPIN),
+     &              POP(1,ISPIN),ICORE(I060),1,'1324')
+     
+      ENDIF 
+      RETURN
+      END
+
+
+
+

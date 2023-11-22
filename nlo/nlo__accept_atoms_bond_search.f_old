@@ -1,0 +1,114 @@
+         LOGICAL FUNCTION  NLO__ACCEPT_ATOMS_BOND_SEARCH
+     +
+     +                    ( NATOM,
+     +                      NHCEN,NHA,
+     +                      ATHIDX,ATHVAL,
+     +                      NHYB,
+     +                      BOMAT )
+     +
+C------------------------------------------------------------------------
+C  OPERATION   : NLO__ACCEPT_ATOMS_BOND_SEARCH
+C  MODULE      : Natural Localized Orbitals
+C  MODULE-ID   : NLO
+C  DESCRIPTION : This routine checks, if a set of atomic indices will
+C                be accepted for further bond formation search. There
+C                are two resons why the present set of atomic indices
+C                might be rejected:
+C
+C                     1) At least one of the atoms has already a
+C                        complete pre-NHO set.
+C
+C                     2) The set contains isolated (not bonded) atoms,
+C                        as judged by the simplified bond order matrix.
+C
+C
+C                  Input:
+C
+C                    NATOM        =  total # of atomic centers
+C                    NHCEN        =  current # of atomic hybrid centers
+C                                    to be checked for NHCEN centered
+C                                    bond construction.
+C                    NHA          =  total # of hybrid atoms.
+C                    ATHIDX       =  contains the NHCEN atomic indices
+C                                    to be tested for bond formation.
+C                    ATHVAL (A)   =  # of Valence NAOs on hybrid atom A.
+C                    NHYB (A)     =  current total # of pre-NHO's on
+C                                    each hybrid atom A.
+C                    BOMAT (A,B)  =  simplified bond order matrix
+C                                    containing info if atoms A and B
+C                                    are considered to be bonded or not.
+C
+C
+C  AUTHOR      : Norbert Flocke
+C------------------------------------------------------------------------
+C
+C
+C             ...include files and declare variables.
+C
+C
+         IMPLICIT    NONE
+
+         LOGICAL     ACCEPT
+         LOGICAL     BONDED
+
+         INTEGER     ATOMI,ATOMJ
+         INTEGER     I,J
+         INTEGER     NATOM
+         INTEGER     NHCEN
+         INTEGER     NHA
+
+         INTEGER     ATHIDX  (1:NHCEN)
+         INTEGER     ATHVAL  (1:NHA  )
+         INTEGER     NHYB    (1:NHA  )
+
+         DOUBLE PRECISION  ONE
+
+         DOUBLE PRECISION  BOMAT (1:NATOM,1:NATOM)
+
+         DATA  ONE  /1.D0/
+C
+C
+C------------------------------------------------------------------------
+C
+C
+C             ...check for complete pre-NHO sets on all atoms
+C                involved.
+C
+C
+         ACCEPT = .TRUE.
+
+         DO 100 I = 1,NHCEN
+            ATOMI = ATHIDX (I)
+            IF (NHYB (ATOMI) .EQ. ATHVAL (ATOMI)) THEN
+                ACCEPT = .FALSE.
+            END IF
+  100    CONTINUE
+C
+C
+C             ...check for isolated nonbonded atoms.
+C
+C
+         IF (ACCEPT) THEN
+             DO 200 J = 1,NHCEN
+                ATOMJ = ATHIDX (J)
+                BONDED = .FALSE.
+                DO 210 I = 1,NHCEN
+                   ATOMI = ATHIDX (I)
+                   IF (BOMAT (ATOMI,ATOMJ) .EQ. ONE) THEN
+                       BONDED = .TRUE.
+                   END IF
+  210           CONTINUE
+                IF (.NOT.BONDED) THEN
+                    ACCEPT = .FALSE.
+                END IF
+  200        CONTINUE
+         END IF
+
+         NLO__ACCEPT_ATOMS_BOND_SEARCH = ACCEPT
+C
+C
+C             ...ready!
+C
+C
+         RETURN
+         END

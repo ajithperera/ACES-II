@@ -1,0 +1,66 @@
+      SUBROUTINE RCL_LRNGPRD(W,T,Q,SCR,DISSYW,NUMSYW,DISSYT,NUMSYT,
+     &                      DISSYQ,NUMSYQ,LISTW,LISTT,IRREP,SPINAD,
+     &                      MAXCOR)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      LOGICAL SPINAD,MBPT4,BREDUNDANT
+      INTEGER DISSYT,DISSYW,DISSYQ
+      DIMENSION W(numsyw*dissyw),T(numsyt*dissyt),Q(numsyq*dissyq)
+      DIMENSION SCR(MAXCOR)
+C
+      COMMON /FLAGS2/IFLAGS2(500)
+      COMMON /INFO/ NOCC(2),NVRTO(2)
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPA(255),IRREPB(255),
+     &DIRPRD(8,8)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+C
+      DATA TWO/2.D0/
+      DATA AZERO,HALFM,ONE,ONEM,HALF /0.D0,-0.5D0,1.D0,-1.D0,0.5D0/
+C
+C PICK UP THE RELEVANT T2 AND W PIECES.
+C
+      CALL GETLST(T,1,NUMSYT,1,IRREP,LISTT)
+      FACT=ONE
+
+C Spin adaptation is false for drCCD and or rCCD. Nevertheless
+C scale by two (and multiply by half) to keep consitency with the rest 
+C of the code.
+
+      IF(SPINAD) THEN
+       LISTL=134
+       CALL GETLST(W,1,NUMSYT,1,IRREP,LISTL)
+       CALL SAXPY(NUMSYT*DISSYT,ONEM,W,1,T,1)
+       FACT=HALFM
+       LISTW2=54
+       LISTW=56
+      ELSE
+       CALL DSCAL(NUMSYT*DISSYT,TWO,T,1)
+       FACT = HALF 
+      ENDIF
+      CALL GETLST(W,1,NUMSYW,2,IRREP,LISTW)
+
+#ifdef _DEBUG_LVLM
+      call checksum("@-lrngprd_w",w,NUMSYW*DISSYW)
+      call checksum("@-lrngprd_l",T,NUMSYT*DISSYT)
+#endif 
+C
+C SPIN ADAPT W INTERMEDIATES
+C
+      IF(SPINAD) THEN
+       CALL GETLST(Q,1,NUMSYW,2,IRREP,LISTW2)
+       CALL SAXPY(NUMSYW*DISSYW,ONEM,Q,1,W,1)
+      ENDIF
+C
+      IF (MIN(DISSYT,DISSYW,NUMSYW).NE.0) THEN
+      CALL XGEMM('N','T',DISSYT,DISSYW,NUMSYW,FACT,T,DISSYT,
+     &           W,DISSYW,AZERO,Q,DISSYQ)
+      ELSE
+       CALL ZERO(Q,NUMSYQ*DISSYQ)
+      ENDIF 
+
+#ifdef _DEBUG_LVLM
+      call checksum("@-lrngprd",q,NUMSYQ*DISSYQ)
+#endif 
+
+      RETURN
+      END

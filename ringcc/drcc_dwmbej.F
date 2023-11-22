@@ -1,0 +1,298 @@
+      SUBROUTINE DRCC_DWMBEJ(ICORE,MAXCOR,SPCASE,IUHF,C4)
+C
+C THIS ROUTINE AND DEPENDENTS COMPUTE THE RING-TYPE W(MBEJ)
+C INTERMEDIATE FOR ALL SIX POSSIBLE SPIN CASES FOR RING-CC CALCULATIONS.
+C
+C         W(mbej)=<mb||ej>-(1/2)*SUM T(jn,fb) <mn||ef>
+C                                n,f
+CEND
+      IMPLICIT INTEGER (A-Z)
+      DOUBLE PRECISION C4,X,TWO,ONE,ONEM,HALF,ZILCH,TWOM
+      LOGICAL MBPT2,MBPT3,M4DQ,M4SDQ,M4SDTQ,CCD,QCISD,CCSD,UCC,
+     &            CC2,RCCD,DRCCD
+      CHARACTER*4 SPCASE
+      CHARACTER*4 TAUTYP1
+      DIMENSION ICORE(MAXCOR),IOFFT1(8,2)
+
+      COMMON/METH/MBPT2,MBPT3,M4DQ,M4SDQ,M4SDTQ,CCD,QCISD,CCSD,UCC,
+     &            CC2,RCCD,DRCCD
+      COMMON /INFO/ NOCA,NOCB,NVRTA,NVRTB
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /FILES/ LUOUT,MOINTS
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPA(255),IRREPB(255),
+     &                DIRPRD(8,8)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),NTOT(18)
+      COMMON /SYM/ POP(8,2),VRT(8,2),NT1AA,NT1BB,NF1AA,NF1BB,NF2AA,
+     &             NF2BB
+      COMMON /FLAGS/  IFLAGS(100)
+      COMMON /FLAGS2/ IFLAGS2(500)
+c
+      DATA ZILCH /0.0/
+      DATA ONE /1.0/
+      DATA HALF/0.5/
+      DATA TWO /2.0/
+      DATA TWOM /-2.0/
+      DATA ONEM/-1.0/
+C
+      X=1.0D0
+
+C DO SPIN CASE AAAA AND BBBB (Antisymmetric).
+C
+C W(MBEJ)=(-)<BM||EJ>+(1/2)*SUM [(-)(-)T(JN,FB)<MN||EF>+(-)T(Jn,fB)<Mn|Ef>]
+C
+C W(mbej)=(-)<bm||ej>+(1/2)*SUM [(-)(-)T(jn,fb)<mn||ef>+(-)T(jN,Fb)<mN|eF>]
+C
+C As above expressions indicates for antisymmetric cases the fisrt term is 
+C with -C4 (C4 is negative) to account form (-) storage of T2 and the 
+C second terms is +C4 to account for the negatie sign. The Overall the 
+C terms is computed with negtive sign. 
+
+C For symmetric cases (both integrals and amplitudes), all the terms are 
+C positve and -C4 is used.
+C
+      IF(SPCASE.EQ.'AAAA'.OR.SPCASE.EQ.'BBBB')THEN
+       IF(SPCASE.EQ.'AAAA')THEN
+        ISPIN=1
+       ELSEIF(SPCASE.EQ.'BBBB')THEN
+        ISPIN=2
+       ENDIF
+       MAXSIZ=0
+       LSTINT=22+ISPIN
+       IF (DRCCD)  LSTINT = 118 + ISPIN
+       LISTQ =53+ISPIN
+       LISTWA=18+ISPIN
+       IF (DRCCD)  LISTWA = 118 + ISPIN
+       LISTTA=33+ISPIN
+       LISTWB=19-ISPIN  
+       LISTTB=35+ISPIN
+       IF(IUHF.EQ.0)LISTTB=37
+       DO 100 IRREP=1,NIRREP 
+        DSSYWA=IRPDPD(IRREP,ISYTYP(1,LISTWA))
+        DSSYTA=IRPDPD(IRREP,ISYTYP(1,LISTTA))
+        NMSYWA=IRPDPD(IRREP,ISYTYP(2,LISTWA))
+        NMSYTA=IRPDPD(IRREP,ISYTYP(2,LISTTA))
+        DSSYWB=IRPDPD(IRREP,ISYTYP(1,LISTWB))
+        DSSYTB=IRPDPD(IRREP,ISYTYP(1,LISTTB))
+        NMSYWB=IRPDPD(IRREP,ISYTYP(2,LISTWB))
+        NMSYTB=IRPDPD(IRREP,ISYTYP(2,LISTTB))
+        DISSYQ=IRPDPD(IRREP,ISYTYP(1,LISTQ))
+        NUMSYQ=IRPDPD(IRREP,ISYTYP(2,LISTQ))
+        I000=1
+        I010=I000+IINTFP*DISSYQ*NUMSYQ
+        I020=I010+IINTFP*NMSYWA*DSSYWA
+        I030=I020+IINTFP*NMSYTA*DSSYTA
+        I030=MAX(I030,I010+DISSYQ*NUMSYQ*IINTFP)
+
+        IF (i030+DISSYQ*NUMSYQ*IINTFP .ge. MAXCOR) then
+        write(6,*)'@DWMBEJ-E insufficient memory', 
+     &      i030+DISSYQ*NUMSYQ*IINTFP, MAXCOR
+        CALL ERREX
+        ENDIF 
+
+        CALL IZERO(ICORE(I000),DISSYQ*NUMSYQ*IINTFP)
+        NSIZE=DISSYQ*NUMSYQ
+        CALL GETLST(ICORE(I000),1,NUMSYQ,1,IRREP,LSTINT) 
+        CALL GETLST(ICORE(I020),1,NMSYTA,1,IRREP,LISTTA)
+        CALL CNTRCT(ICORE(I000),ICORE(I010),ICORE(I020),
+     &              DISSYQ,NUMSYQ,DSSYTA,NMSYTA,DSSYWA,NMSYWA,
+     &              IRREP,LISTWA,LISTWA,LISTTA,'WxT',X,-C4,0)
+        I020=I010+IINTFP*NMSYWB*DSSYWB
+        I030=I020+IINTFP*NMSYTB*DSSYTB
+
+        CALL GETLST(ICORE(I020),1,NMSYTB,1,IRREP,LISTTB)
+        CALL CNTRCT(ICORE(I000),ICORE(I010),ICORE(I020),
+     &              DISSYQ,NUMSYQ,DSSYTB,NMSYTB,DSSYWB,NMSYWB,
+     &              IRREP,LISTWB,LISTWB,LISTTB,'WxT',X,-C4,0)
+#ifdef _DEBUG_LVL0
+        Write(6,"(a,i4)") "AAAA and BBBB-the target list",listq
+        call checksum(SPCASE, ICORE(I000), NSIZE)
+#endif
+        CALL SUMSYM2(ICORE(I000),ICORE(I010),NSIZE,1,IRREP,LISTQ)
+
+100    CONTINUE
+C
+C DO SPIN CASES ABAB AND BABA (original)
+C
+C  W(MbEj)=<Mb|Ej>+(1/2)*SUM [(-)T(jn,fb)<Mn|Ef>+T(jN,bF)<MN||EF>]
+C
+C  W(mBeJ)=<mB|eJ>+(1/2)*SUM [(-)T(JN,FB)<mN|eF>+T(Jn,Bf)<mn||ef>]
+
+C As above expressions indicates for antisymmetric cases the second term is
+C with C4 (C4 is negative) to account form (-) storage of T2 and the
+C third term is with (-)C4. The overall term is positive. 
+C For symmetric cases, all the terms are positve and -C4 is used.
+C
+      ELSEIF(SPCASE.EQ.'ABAB'.OR.SPCASE.EQ.'BABA')THEN
+
+       IF(IUHF.NE.0)THEN
+       IF(SPCASE.EQ.'ABAB')THEN
+        LSTINT=18
+        LISTQ=56
+        LISTQ1=57
+        IF(IUHF.EQ.0)THEN
+         LISTTA=34
+        ELSE
+         LISTTA=35
+        ENDIF
+        LISTTB=37
+        LISTWA=18
+        LISTWB=19
+        IF (DRCCD)  LISTWB = 119
+       ELSEIF(SPCASE.EQ.'BABA')THEN 
+        LSTINT=17
+        LISTQ=57
+        LISTQ1=56
+        LISTTA=34
+        LISTWA=17
+        LISTTB=36
+        LISTWB=20
+        IF (DRCCD)  LISTWB = 120
+       ENDIF
+       DO 200 IRREP=1,NIRREP 
+        DSSYWA=IRPDPD(IRREP,ISYTYP(1,LISTWA))
+        DSSYTA=IRPDPD(IRREP,ISYTYP(1,LISTTA))
+        NMSYWA=IRPDPD(IRREP,ISYTYP(2,LISTWA))
+        NMSYTA=IRPDPD(IRREP,ISYTYP(2,LISTTA))
+        DSSYWB=IRPDPD(IRREP,ISYTYP(1,LISTWB))
+        DSSYTB=IRPDPD(IRREP,ISYTYP(1,LISTTB))
+        NMSYWB=IRPDPD(IRREP,ISYTYP(2,LISTWB))
+        NMSYTB=IRPDPD(IRREP,ISYTYP(2,LISTTB))
+        DISSYQ=IRPDPD(IRREP,ISYTYP(1,LISTQ))
+        NUMSYQ=IRPDPD(IRREP,ISYTYP(2,LISTQ))
+        I000=1
+        I010=I000+IINTFP*DISSYQ*NUMSYQ
+        I020=I010+IINTFP*NMSYWA*DSSYWA
+        I030=I020+IINTFP*NMSYTA*DSSYTA
+
+        IF (i030+DISSYQ*NUMSYQ*IINTFP .ge. MAXCOR) then
+        write(6,*)'@DWMBEJ-E insufficient memory', 
+     &      i030+DISSYQ*NUMSYQ*IINTFP, MAXCOR
+        CALL ERREX
+        ENDIF 
+
+        CALL IZERO(ICORE(I000),DISSYQ*NUMSYQ*IINTFP)
+        NSIZE=DISSYQ*NUMSYQ
+
+        CALL GETLST(ICORE(I000),1,NUMSYQ,1,IRREP,LSTINT)  
+        CALL GETLST(ICORE(I020),1,NMSYTA,1,IRREP,LISTTA)
+        CALL CNTRCT(ICORE(I000),ICORE(I010),ICORE(I020),
+     &              DISSYQ,NUMSYQ,DSSYTA,NMSYTA,DSSYWA,NMSYWA,
+     &              IRREP,LISTWA,LISTWA,LISTTA,'WxT',X,-C4,0) 
+        I020=I010+IINTFP*NMSYWB*DSSYWB
+        I030=I020+IINTFP*NMSYTB*DSSYTB
+        I030=MAX(I030,I010+DISSYQ*NUMSYQ*IINTFP)
+
+        IF (i030+DISSYQ*NUMSYQ*IINTFP .ge. MAXCOR) then
+        write(6,*)'@DWMBEJ-E insufficient memory', 
+     &      i030+DISSYQ*NUMSYQ*IINTFP, MAXCOR
+        CALL ERREX
+        ENDIF 
+
+        CALL GETLST(ICORE(I020),1,NMSYTB,1,IRREP,LISTTB)
+        CALL CNTRCT(ICORE(I000),ICORE(I010),ICORE(I020),
+     &              DISSYQ,NUMSYQ,DSSYTB,NMSYTB,DSSYWB,NMSYWB,
+     &              IRREP,LISTWB,LISTWB,LISTTB,'WxT',X,-C4,0)
+
+#ifdef _DEBUG_LVL0
+        Write(6,"(a,i4)") "The ABAB and BABA-target list",listq
+        call checksum(SPCASE, ICORE(I000), NSIZE)
+#endif
+        CALL SUMSYM2(ICORE(I000),ICORE(I010),NSIZE,1,IRREP,LISTQ)
+
+200    CONTINUE
+C
+C SPIN ADAPTED CODE FOR RHF "ABAB" SPIN CASE
+C
+       ELSE
+
+#ifdef _DEBUG_LVL0
+       write(*,"(a)") "Entering RHF only block"
+       write(*,*)
+#endif 
+       LSTINT=18
+       LSTINTB=25
+       LISTQ=56
+       LISTTA=37
+       LISTTB=39
+       LISTWA=18
+       LISTWB=21
+       TAUTYP1='ABAB'
+       DO 201 IRREP=1,NIRREP 
+        DSSYWA=IRPDPD(IRREP,ISYTYP(1,LISTWA))
+        DSSYTA=IRPDPD(IRREP,ISYTYP(1,LISTTA))
+        NMSYWA=IRPDPD(IRREP,ISYTYP(2,LISTWA))
+        NMSYTA=IRPDPD(IRREP,ISYTYP(2,LISTTA))
+        DSSYWB=IRPDPD(IRREP,ISYTYP(1,LISTWB))
+        DSSYTB=IRPDPD(IRREP,ISYTYP(1,LISTTB))
+        NMSYWB=IRPDPD(IRREP,ISYTYP(2,LISTWB))
+        NMSYTB=IRPDPD(IRREP,ISYTYP(2,LISTTB))
+        DISSYQ=IRPDPD(IRREP,ISYTYP(1,LISTQ))
+        NUMSYQ=IRPDPD(IRREP,ISYTYP(2,LISTQ))
+        I000=1
+        I010=I000+IINTFP*DISSYQ*NUMSYQ
+        I020=I010+IINTFP*NMSYWA*DSSYWA
+        I030=I020+IINTFP*NMSYTA*DSSYTA
+
+        IF(i030+DISSYQ*NUMSYQ*IINTFP .ge. MAXCOR) then
+        write(6,*)'@DWMBEJ-E insufficient memory', 
+     &      i030+DISSYQ*NUMSYQ*IINTFP, MAXCOR
+        CALL ERREX 
+        ENDIF 
+
+C  For both drCCD there are no antisymmetrized integrals.
+
+        CALL GETLST(ICORE(I020),1,NMSYTA,1,IRREP,LISTTA)
+        CALL GETLST(ICORE(I010),1,NMSYTA,1,IRREP,LISTTB)
+        CALL SSCAL (NMSYTA*NMSYTA,TWO,ICORE(I020),1)
+
+CSSS        IF (.NOT. DRCCD) THEN
+CSSS            CALL SAXPY (NMSYTA*NMSYTA,ONEM,ICORE(I010),1,ICORE(I020),1)
+CSSS        ENDIF 
+
+        IF (DRCCD) THEN
+         CALL RCC_CNTRCT(ICORE(I000),ICORE(I010),ICORE(I020),
+     &                   DISSYQ,NUMSYQ,DSSYTA,NMSYTA,DSSYWA,NMSYWA,
+     &                   IRREP,LISTWA,LISTWB,LISTTA,'WxT',ZILCH,-C4,1)
+
+        ELSE
+           CALL CNTRCT(ICORE(I000),ICORE(I010),ICORE(I020),
+     &                 DISSYQ,NUMSYQ,DSSYTA,NMSYTA,DSSYWA,NMSYWA,
+     &                 IRREP,LISTWA,LISTWB,LISTTA,'WxT',ZILCH,-C4,1)
+        ENDIF 
+
+        NSIZE=DISSYQ*NUMSYQ
+
+#ifdef _DEBUG_LVL0
+        Write(6,"(a,i4)") "The ABAB and BABA-target list",listq
+        call checksum(SPCASE, ICORE(I000), NSIZE)
+#endif 
+C
+C For drCCD, use only the Coulomb only piece. For rCCD we
+C have antisymmetric integrals. 
+C
+        CALL GETLST(ICORE(I010),1,NUMSYQ,1,IRREP,LSTINT)
+        CALL GETLST(ICORE(I020),1,NUMSYQ,1,IRREP,LSTINTB)
+        CALL SSCAL (DISSYQ*DISSYQ,TWO,ICORE(I010),1)
+
+        IF (DRCCD) THEN
+           CALL SAXPY (DISSYQ*DISSYQ,ONE,ICORE(I010),1,ICORE(I000),1)
+        ELSE
+           CALL SAXPY (DISSYQ*DISSYQ,ONEM,ICORE(I020),1,ICORE(I010),1) 
+           CALL SAXPY (DISSYQ*DISSYQ,ONE,ICORE(I010),1,ICORE(I000),1) 
+        ENDIF 
+
+        CALL SUMSYM2(ICORE(I000),ICORE(I010),NSIZE,1,IRREP,LISTQ)
+
+#ifdef _DEBUG_LVL0
+        Write(6,"(a,i4)") "The ABAB and BABA-target list",listq
+        call checksum(SPCASE, ICORE(I000), NSIZE)
+#endif
+
+201    CONTINUE
+
+       ENDIF
+    
+      ENDIF 
+C
+      RETURN
+      END

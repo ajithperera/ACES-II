@@ -1,0 +1,22 @@
+      SUBROUTINE OUTMXD(X,L,M,N)
+C     IMPLICIT REAL*8 (A-H,O-Z)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION X(L,N)
+      II=N-MOD(N,9)
+      IF(II.EQ.0) GO TO 10
+      DO 1 I0=1,II,9
+      I1=I0+8
+      WRITE(6,100) (J,J=I0,I1)
+      DO 1 I=1,M
+      WRITE(6,101) I,(X(I,J),J=I0,I1)
+    1 CONTINUE
+   10 K=II+1
+      IF(K.GT.N) RETURN
+      WRITE(6,100) (J,J=K,N)
+      DO 2 I=1,M
+      WRITE(6,101) I,(X(I,J),J=K,N)
+    2 CONTINUE
+      RETURN
+  100 FORMAT(/1X,9(I10,4X))
+  101 FORMAT(I5,9F14.8)
+      END

@@ -1,0 +1,142 @@
+EMPTY/REMOVE (To remove electrons; electrons are removed from beta)
+EMPTY/ADD    (To add electrons; electrons are added to Alpha)
+3    1    1    0    2    0    0    0
+3    1    1    0    2    0    0    0
+
+Above two set of numbers tells the program how many occupation
+entries to be read for each irrep. They appear like occupation
+numbers (and the are if no elecrons are removed or added or 
+fractional occupations are requested).
+
+30   16   16   7    30   16   16   7
+30   16   16   7    30   16   16   7 
+
+This is the total number of functions in each irrep. A trial scf
+calculation will print this info to the output. It is recommended that
+a standard SCF calculation is done prior to prepare the OCCNUM
+file. 
+
+1.0
+1.0
+1.0
+1.0
+1.0
+1.0
+1.0
+
+1.0
+1.0
+1.0
+1.0
+1.0
+1.0
+1.0
+
+These are occupation numbers for Alpha and beta (seperated by a blank line).
+RHF cases, beta block is not needed (ignored). 
+
+There is no blank line to seperate occupations of irreps. 
+--------------------------------------------------------------------
+Examples
+--------
+c
+c  1 cc2
+x  2 xxc3    1 xxcc3
+h  2 hc4     3 hcxx4         1 dih4
+x  1 xxc3    2 xxcc3         3 dih5
+h  1 hc4     5 hcxx4         2 dih4
+
+cc2  =     1.1998006955
+hc4  =     1.0561372832
+xxc3 =       1.000000
+xxcc3=       90.000
+hcxx4=       90.000
+dih4 =       180.000
+dih5 =       0.000
+
+*ACES2
+CALC=CCSD,BASIS=AUG-CC-PVTZ
+MEM_SIZE=3gb,DAMP_TYPE=DAVIDSON
+NON-HF=ON,REF=uhf
+
+Removing
+--------
+REMOVE
+EMPTY
+3    1    1    0    2    0    0    0
+3    1    1    0    2    0    0    0
+
+30   16   16   7    30   16   16   7
+30   16   16   7    30   16   16   7 
+
+1.0
+1.0
+1.0
+1.0
+1.0
+1.0
+1.0
+
+0.0
+1.0
+1.0
+1.0
+1.0
+1.0
+1.0
+
+Adding
+------
+REMOVE
+EMPTY
+4    1    1    0    2    0    0    0
+3    1    1    0    2    0    0    0
+
+30   16   16   7    30   16   16   7
+30   16   16   7    30   16   16   7 
+
+1.0
+1.0
+1.0
+1.0
+1.0
+1.0
+1.0
+1.0
+
+1.0
+1.0
+1.0
+1.0
+1.0
+1.0
+1.0
+
+Fractional (1 electron in irrep 4 is distributed over
+two orbitals
+------------
+EMPTY
+EMPTY
+3    1    1    0    3    0    0    0
+3    1    1    0    3    0    0    0
+
+30   16   16   7    30   16   16   7
+30   16   16   7    30   16   16   7 
+
+1.0
+1.0
+1.0
+1.0
+1.0
+1.0
+0.5
+0.5
+
+1.0
+1.0
+1.0
+1.0
+1.0
+0.5
+0.5
+

@@ -1,0 +1,115 @@
+      
+      SUBROUTINE SETMET(ALASKA)
+      IMPLICIT INTEGER(A-Z)
+      LOGICAL SPHHRM,MOEQAO,ALASKA
+      CHARACTER*7 NAME
+      CHARACTER*11 NAME1
+      CHARACTER*4 NAME2
+      CHARACTER*5 NAME3
+      CHARACTER*6 NAME4
+      LOGICAL MBPT2,MBPT3,M4DQ,M4SDQ,M4SDTQ,CCD,QCISD,CCSD
+      LOGICAL DENS,GRAD,NONHF
+      LOGICAL TDA
+      COMMON/EXCITE/TDA
+      COMMON/METH/MBPT2,MBPT3,M4DQ,M4SDQ,M4SDTQ,CCD,QCISD,CCSD
+      COMMON/DERIV/DENS,GRAD,NONHF
+      COMMON/FLAGS/IFLAGS(100)
+      COMMON/FLAGS2/IFLAGS2(500)
+      COMMON/BASTYP/SPHHRM,MOEQAO
+C
+      EQUIVALENCE(METHOD,IFLAGS(2))
+      IONE=1
+C
+3000  FORMAT(' ',A7,' MO gammas will be transformed to the AO basis.')
+3001  FORMAT(' ',A11,' MO gammas will be transformed to the AO basis.')
+3002  FORMAT(' ',A3,' MO gammas will be transformed to the AO basis.')
+3003  FORMAT(' ',A4,' MO gammas will be transformed to the AO basis.')
+3004  FORMAT(' ',A5,' MO gammas will be transformed to the AO basis.')
+3005  FORMAT(' The reference state is a non HF wave functions.')
+ 3006 FORMAT(' ACES3 MO gammas will be transformed to the AO basis.')
+C
+      TDA=.FALSE.
+      MBPT2=.FALSE.
+      MBPT3=.FALSE.
+      M4DQ=.FALSE.
+      M4SDQ=.FALSE.
+      M4SDTQ=.FALSE.
+      CCD=.FALSE.
+      QCISD=.FALSE.
+      CCSD=.FALSE.
+      NONHF=.FALSE.
+C
+      IF(METHOD.EQ.0) THEN
+       TDA=IFLAGS(87).EQ.1
+       NAME2='TDA'
+       write(6,3002)NAME2
+      ELSEIF (IFLAGS2(132) .eq. 3) THEN
+        CCSD=.TRUE.
+        write(6,3006)
+      ELSEIF (IFLAGS(87).EQ.3 .OR. IFLAGS(87).EQ.7) THEN
+        CCSD=.TRUE.
+        NAME3='CCSD'
+        write(6,3003)NAME3
+      ELSEIF(METHOD.EQ.1) THEN
+       MBPT2=.TRUE.
+       NAME='MBPT(2)'
+       write(6,3000)NAME
+      ELSE IF(METHOD.EQ.2) THEN
+       MBPT3=.TRUE.
+       NAME='MBPT(3)'
+       write(6,3000)NAME
+      ELSE IF(METHOD.EQ.3) THEN
+       M4SDQ=.TRUE.
+       NAME1='SDQ-MBPT(4)'
+       write(6,3001) NAME1   
+      ELSE IF(METHOD.EQ.4) THEN
+       M4SDTQ=.TRUE.
+       NAME='MBPT(4)'
+       write(6,3000)NAME
+      ELSE IF(METHOD.EQ.8) THEN
+       CCD=.TRUE.
+       NAME2='CCD'
+       write(6,3002)NAME2
+      ELSE IF(METHOD.EQ.10) THEN
+       CCSD=.TRUE.
+       NAME3='CCSD'
+       write(6,3003)NAME3
+      ELSE IF(METHOD.EQ.23) THEN
+       QCISD=.TRUE.
+       NAME4='QCISD'
+       write(6,3004)NAME4
+      ENDIF
+C
+C CHECK TO SEE IF A SPHERICAL HARMONIC BASIS IS USED
+C
+      SPHHRM=IFLAGS(62).EQ.1
+C
+C CHECK TO SEE IF THE NUMBER OF MOS AND AOS ARE EQUAL
+C
+      CALL GETREC(20,'JOBARC','NBASTOT ',IONE,NBAST)
+      CALL GETREC(20,'JOBARC','NAOBASFN',IONE,NBASAO)
+      MOEQAO=NBAST.EQ.NBASAO
+C
+C SET FLAGS FOR DERIVATIVE CALCULATION
+C
+C  CALCULATE DENSITY MATRIX
+C
+      DENS=.TRUE.
+C
+C  CALCULATE GRADIENTS WITh RESPECT TO NUCLEAR COORDINATES
+C  (THIS MEANS THE INTERMEDIATE I IS REQUIRED
+C
+      GRAD=.TRUE.
+C
+C CHECK IF WE ARE DEALING WITH A QRHF CASE
+C
+      IF(IFLAGS(77).NE.0)THEN
+C  
+       NONHF=.TRUE.
+C
+       WRITE(6,3005)
+C
+      ENDIF
+C
+      RETURN
+      END

@@ -1,0 +1,49 @@
+      SUBROUTINE PCCD_INIT(ICORE,MAXCOR,IUHF,SIDE)
+
+      IMPLICIT INTEGER (A-Z)
+      CHARACTER*1 SIDE 
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /INFO/ NOCCO(2),NVRTO(2)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON/SYM/POP(8,2),VRT(8,2),NT(2),NF1(2),NF2(2)
+
+      IMODE=0
+      ISPIN=3
+      CALL INIPCK(1,ISYTYP(1,43+ISPIN),ISYTYP(2,43+ISPIN),
+     &             60+ISPIN,IMODE,0,1)
+      CALL ZERSYM(ICORE,60+ISPIN)
+
+      CALL INIPCK(1,9,10,42,IMODE,0,1)
+      CALL INIPCK(1,11,12,43,IMODE,0,1)
+
+      IF (SIDE .EQ. "R") THEN
+         DO ISPIN = 1, IUHF+1
+            CALL UPDMOI(1,NT(ISPIN), ISPIN+2,90,0,0)
+            CALL UPDMOI(1,NF1(ISPIN),ISPIN,  91,0,0)
+            CALL UPDMOI(1,NF2(ISPIN),ISPIN,  92,0,0)
+            CALL UPDMOI(1,NT(ISPIN), ISPIN,  93,0,0)
+            call aces_list_memset(ispin,91,0)
+            call aces_list_memset(ispin,92,0)
+            call aces_list_memset(ispin,93,0)
+         END DO
+      ENDIF 
+
+      IF (SIDE .EQ. "L") THEN
+         ISPIN = 3
+         CALL INIPCK(1,ISYTYP(1,43+ISPIN),ISYTYP(2,43+ISPIN),
+     &               60+ISPIN,IMODE,0,1)
+         CALL ZERSYM(ICORE,60+ISPIN)
+         ISPIN = 1
+         CALL UPDMOI(1,NF1(ISPIN),ISPIN,191,0,0)
+         CALL UPDMOI(1,NF2(ISPIN),ISPIN,192,0,0)
+         CALL INIPCK(1,9,10,137,IMODE,0,1)
+         CALL INIPCK(1,11,12,139,IMODE,0,1)
+         CALL INIPCK(1,14,18,110,IMODE,0,1)
+         CALL INIPCK(1,9,10,118,IMODE,0,1)
+         CALL INIPCK(1,9,9,123,IMODE,0,1)
+         CALL INIPCK(1,11,11,125,IMODE,0,1)
+         CALL INIPCK(1,13,11,130,IMODE,0,1)
+      ENDIF 
+
+      RETURN
+      END

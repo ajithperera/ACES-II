@@ -1,0 +1,225 @@
+      Subroutine Pccd_form_htau_pqrs_hpph_0(Work,Maxcor,List_v1,
+     +                                      List_v2,List_v3,List_g1,
+     +                                      List_g2,List_g3,List_h)
+      Implicit Double Precision(A-H,O-Z)
+
+      Dimension Work(Maxcor)
+
+#include "sym.com"
+#include "sympop.com"
+#include "syminf.com"
+#include "info.com"
+
+      Data One,Onem,Dnull,Ione /1.0D0,-1.0D0,0.0D0,1/
+
+C List_g1 = 118, List_v1,List_v2=23,26
+C <me|b>*G(me,aj) -> H(ib,aj)
+
+      Irrepx = Ione
+      Ispin  = Ione
+      Ioff   = Ione
+
+      Nsize_t = Idsymsz(Irrepx,11,11)
+      I000 = Ione
+      I010 = I000 + Nsize_t
+
+C G(me,aj) stored as am,ej and reorder to em,aj
+
+      Nsize = Idsymsz(Irrepx,11,11)
+      I020 = I010 + Nsize
+      I030 = I020 + Nsize
+      Iend = I030 + Max(Nvrto(1)*Nocco(1),Nvrto(1)*Nvrto(1),Nocco(1)*
+     +                  Nocco(1))
+      If (Iend .Gt. Maxcor) Call Insmem("Pccd_form_htau_pqrs_hpph_0",
+     +                                   Iend,Maxcor)
+
+      Call Getall(Work(I020),Nsize,Irrepx,List_g1)
+      Call Sstgen(Work(I020),Work(I010),Nsize,Vrt(1,Ispin),Pop(1,Ispin),
+     +            Vrt(1,Ispin),Pop(1,Ispin),Work(I030),Irrepx,"3214")
+
+C <me|ib> stored as bm,ei and reorder to bi,em
+
+      Nsize = Idsymsz(Irrepx,11,11)
+      I020 = I020 + Nsize
+      I030 = I030 + Nsize
+      Iend = I040 + Max(Nvrto(1)*Nocco(1),Nvrto(1)*Nvrto(1),Nocco(1)*
+     +                  Nocco(1))
+      If (Iend .Gt. Maxcor) Call Insmem("Pccd_form_htau_pqrs_hpph_0",
+     +                                   Iend,Maxcor)
+
+      Call Getall(Work(I020),Nsize,Irrepx,List_v1)
+      Call Getall(Work(I030),Nsize,Irrepx,List_v1)
+      Call Daxpy(Nsize,Work(I020),1,Work(I030),1)
+      Call Sstgen(Work(I030),Work(I020),Nsize,Vrt(1,Ispin),Pop(1,Ispin),
+     +            Vrt(1,Ispin),Pop(1,Ispin),Work(I030),Irrepx,"1432")
+
+C I(bi,em)*G(em,aj) -> H(bi,aj)
+
+      Ioff = I000
+      Joff = I020
+      Koff = I010
+      Do Irrep_aj = 1, Nirrep
+         Irrep_em = Dirprd(Irrep_aj,Irrepx) 
+         Irrep_bi = Dirprd(Irrep_em,Irrepx)
+
+         Nrow_bi = Irpdpd(Irrep_bi,11)
+         Ncol_em = Irpdpd(Irrep_em,11)
+         Ncol_aj = Irpdpd(Irrep_aj,11)
+
+         Icheck = Min(Nrow_bi,Ncol_em,Ncol_aj)
+
+         I030 = I020 + Nrow_bi*Ncol_aj
+         I040 = I030 + Max(Nrow_bi,Ncol_aj)
+         Iend = I040 + Max(Nrow_bi,Ncol_aj)
+         If (Iend .Gt. Maxcor) Call Insmem("Pccd_form_htau_pqrs_hpph_0",
+     +                                      Iend,Maxcor)
+         If (Icheck .Gt. 0) Then
+            Call Dgemm("N","N",Nrow_bi,Ncol_aj,Nrow_em,One,Work(Joff),
+     +                  Nrow_bi,Work(Koff),Nrow_em,Dnull,Work(Ioff),
+     +                  Nrow_bi)
+         Endif 
+         
+         Call Symtr1(Irrep_aj,Vrt(1,Ispin),Pop(1,Ispin),Nrow_bi,
+     +               Work(Ioff),Work(I03),Work(I040))
+         Call Transp(Work(Ioff),Work(I020),Ncol_aj,Nrow_bi)
+#ifdef _DEBUG_LVL0
+         call checksum("OVVO    :",Work(Ioff),Nrow_bi*Ncol_aj)
+#endif 
+         Call Putlst(Work(Ioff),1,Ncol_aj,1,Irrep_aj,List_h)
+         Ioff = Ioff + Nrow_bi*Ncol_aj
+         Joff = Joff + Nrow_bi*Ncol_em
+         Koff = Koff + Ncol_aj*Ncol_em
+      Enddo 
+
+C List_v2 = 18,List_g2=123,List_g3=125 H(aj,ib)
+C <aj|me>*G(ib,me)
+C <aj|me> orderd as (am,ej) reorder to (aj,em)
+
+      Nsize_t = Idsymsz(Irrepx,11,11)
+      I020 = I010 + Nsize
+      I030 = I020 + Nsize
+      Iend = I030 + Max(Nvrto(1)*Nocco(1),Nvrto(1)*Nvrto(1),Nocco(1)*
+     +                  Nocco(1))
+      If (Iend .Gt. Maxcor) Call Insmem("Pccd_form_htau_pqrs_hpph_0",
+     +                                   Iend,Maxcor)
+
+      Call Getall(Work(I020),Nsize,Irrepx,List_v1)
+      Call Sstgen(Work(I020),Work(I010),Nsize,Vrt(1,Ispin),Pop(1,Ispin),
+     +            Vrt(1,Ispin),Pop(1,Ispin),Work(I030),Irrepx,"1432")
+
+C G(ib,me) is ordered as (em,bi)
+
+      Iend = I030 + Nsize
+      If (Iend .Gt. Maxcor) Call Insmem("Pccd_form_htau_pqrs_hpph_0",
+     +                                   Iend,Maxcor)
+
+      Call Getlst(Work(I020),1,Ncol_bi,2,Irrep_bi,List_g2)
+      Call Getlst(Work(I030),1,Ncol_bi,2,Irrep_bi,List_g3)
+      Call Daxpy(Ncol_bi*Ncol_em,Work(I030),1,Work(I020),1)
+
+C I(aj,em)*G(em,bi) is ordered as em,bi  H(aj,bi)
+
+      Ioff = I000
+      Joff = I010
+      Koff = I020
+      Do Irrep_bi = 1, Nirrep
+         Irrep_em = Dirprd(Irrep_bi,Irrepx)
+         Irrep_aj = Dirprd(Irrep_em,Irrepx)
+
+         Ncol_bi = Irpdpd(Irrep_bi,11)
+         Nrow_em = Irpdpd(Irrep_em,11)
+         Nrow_aj = Irpdpd(Irrep_aj,11)
+
+         I040 = I030 + Max(Ncol_bi,Nrow_aj)
+         Iend = I040 + Max(Ncol_bi,Nrow_aj)
+         If (Iend .Gt. Maxcor) Call Insmem("Pccd_form_htau_pqrs_hpph_0",
+     +                                      Iend,Maxcor)
+         Icheck = Min(Ncol_bi,Nrow_em,Nrow_aj)
+
+         If (Icheck .Gt. 0) Then
+            Call Dgemm("N","N",Nrow_aj,Ncol_bi,Nrow_em,One,Work(Joff),
+     +                  Nrow_aj,Work(Koff),Nrow_em,Dnull,Work(Ioff),
+     +                  Nrow_aj)
+         Endif
+         Call Symtr1(Irrep_bi,Vrt(1,Ispin),Pop(1,Ispin),Nrow_aj,
+     +               Work(Ioff),Work(I030),Work(I040))
+         Call Transp(Work(Ioff),Work(I020),Ncol_bi,Nrow_aj)
+
+         Iend = I000 + Ncol_bi*Nrow_aj
+         If (Iend .Gt. I020) Then
+            Write(6,"(2a)") " Breach of array bound integrity in",
+     +                      " pccd_form_htau_pqrs_hpph.F"
+            Call Errex
+         Endif
+
+#ifdef _DEBUG_LVL0
+         call checksum("OVVO    :",Work(Ioff),Ncol_bi*Ncol_aj)
+#endif
+         Call Getlst(Work(I000),1,Ncol_aj,1,Irrep_aj,List_h)
+         Call Daxpy(Ncol_bi*Nrow_aj,Work(I000),1,Work(I020),1)
+         Call Putlst(Work(I020),1,Ncol_aj,1,Irrep_aj,List_h)
+
+         Ioff = Ioff + Ncol_bi*Nrow_aj
+         Joff = Joff + Nrow_aj*Nrow_em
+         Koff = Koff + Ncol_bi*Nrow_em
+      Enddo
+
+C List_v1=18,List_g1=118
+C <em|ia>*G(em,jb) -> H(ai,bj) <em|ia> is stores as (ei,am) and G(em,jb)=G(me,bj)
+C is stored as bm,ej
+
+      Nsize = Idsymsz(Irrepx,11,110)
+      I020 = I010 + Nsize
+      Iend = I020 + Nsize
+      If (Iend .Gt. Maxcor) Call Insmem("Pccd_form_htau_pqrs_phph_0",
+     +                                   Iend,Maxcor)
+
+      Call Getall(Work(I020),Nsize,Irrepx,List_v3)
+      Call Sstgen(Work(I020),Work(I010),Nsize,Vrt(1,Ispin),Pop(1,Ispin),
+     +            Vrt(1,Ispin),Pop(1,Ispin),Work(I030),Irrepx,"1432")
+
+      I030 = I020 + Nsize
+      Iend = I030 + Nsize
+      If (Iend .Gt. Maxcor) Call Insmem("Pccd_form_htau_pqrs_phph_0",
+     +                                   Iend,Maxcor)
+      Call Getall(Work(I030),Nsize,Irrepx,List_v3)
+      Call Sstgen(Work(I030),Work(I020),Nsize,Vrt(1,Ispin),Pop(1,Ispin),
+     +            Vrt(1,Ispin),Pop(1,Ispin),Work(I030),Irrepx,"1432")
+
+      Ioff = I000
+      Joff = I010
+      Koff = I020
+      Do Irrep_ia = 1, Nirrep
+         Irrep_em = Dirprd(Irrep_ia,Irrepx)
+         Irrep_jb = Dirprd(Irrep_jb,Irrepx)
+
+         Nrow_em = Irpdpd(Irrep_em,11)
+         Ncol_ia = Irpdpd(Irrep_ib,11)
+         Ncol_jb = Irpdpd(Irrep_ja,11)
+
+         If (Iend .Gt. Maxcor) Call Insmem("Pccd_form_htau_pqrs_phph_0",
+     +                                      Iend,Maxcor)
+         Icheck = Min(Ncol_ai,Ncol_bj,Nrow_em)
+
+C <em|ai>*G(em,bj)-> H(ai,bj)
+
+         If (Icheck .Gt. 0) Then
+            Call Dgemm("T","N",Ncol_ia,Ncol_jb,Nrow_em,Two,Work(Joff),
+     +                  Nrow_em,Work(Koff),Nrow_em,Dnull,Work(Ioff),
+     +                  Ncol_ia)
+        Endif
+#ifdef _DEBUG_LVL0
+         call checksum("VOVO    :",Work(I020),Ncol_ia*Ncol_jb)
+#endif
+         Call Putlst(Work(Ioff),1,Ncol_jb,1,Irrep_jb,List_h)
+
+         Ioff = Ioff + Ncol_jb*Ncol_ia
+         Joff = Joff + Nrow_em*Ncol_ia
+         Koff = Koff + Nrow_em*Ncol_jb
+
+      Enddo
+
+      Return
+      End 
+
+

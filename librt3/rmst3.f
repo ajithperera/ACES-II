@@ -1,0 +1,69 @@
+      SUBROUTINE RMST3(Z,MAXCOR,IUHF,RMS)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DOUBLE PRECISION SDOT
+      INTEGER DISTSZ,DIRPRD
+      DIMENSION Z(1),RMS(4)
+C
+C     Subroutine to compute the RMS difference of triple excitation
+C     amplitudes from successive iterations.
+C
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPS(255,2),DIRPRD(8,8)
+      COMMON /FILES / LUOUT,MOINTS
+      COMMON /AUXIO / DISTSZ(8,100),NDISTS(8,100),INIWRD(8,100),LNPHYR,
+     1                NRECS,LUAUX
+      COMMON /T3IOOF/ IJKPOS(8,8,8,2),IJKLEN(36,8,4),IJKOFF(36,8,4),
+     1                NCOMB(4)
+C
+      WRITE(LUOUT,1000)
+ 1000 FORMAT(' RMST3-I, Calculating T3 RMS difference. ')
+C
+      DO  30 ISPIN=1,4
+      VAL  = 0.0D+00
+      NTOT = 0
+      DO  20 IRREP=1,NIRREP
+C
+      I000 = 1
+      I010 = I000 + DISTSZ(IRREP,ISPIN)
+      I020 = I010 + DISTSZ(IRREP,ISPIN)
+      NEED = I020 * IINTFP
+      IF(NEED.GT.MAXCOR)THEN
+C
+C     This should never happen since we couldn't have computed any T3 in
+C     the first place.
+C
+      WRITE(LUOUT,1010) NEED,MAXCOR
+ 1010 FORMAT(' @RMST3-F, Insufficient memory. Need ',I10,' Got ',I10)
+      STOP
+      ENDIF
+C
+      IF(DISTSZ(IRREP,ISPIN).LE.0.OR.NDISTS(IRREP,ISPIN).LE.0) GOTO 20
+      IF(DISTSZ(IRREP,ISPIN).NE.DISTSZ(IRREP,ISPIN + 4).OR.
+     1   NDISTS(IRREP,ISPIN).NE.NDISTS(IRREP,ISPIN + 4))THEN
+      WRITE(LUOUT,1020)
+ 1020 FORMAT(' @RMST3-F, List dimension mismatch ! ')
+      STOP
+      ENDIF
+C
+      DO  10 IDIST=1,NDISTS(IRREP,ISPIN)
+      CALL GETLIST(Z(I000),IDIST,1,1,IRREP,ISPIN)
+      CALL GETLIST(Z(I010),IDIST,1,1,IRREP,ISPIN + 4)
+C
+      CALL VADD(Z(I000),Z(I000),Z(I010),DISTSZ(IRREP,ISPIN),-1.0D+00)
+C
+      VAL = VAL + SDOT(DISTSZ(IRREP,ISPIN),Z(I000),1,Z(I000),1)
+C
+   10 CONTINUE
+      NTOT = NTOT + DISTSZ(IRREP,ISPIN) * NDISTS(IRREP,ISPIN)
+C
+   20 CONTINUE
+C
+      VAL = VAL / DFLOAT(NTOT)
+      VAL = DSQRT(VAL)
+      RMS(ISPIN) = VAL
+      WRITE(LUOUT,1030) ISPIN,VAL
+ 1030 FORMAT(' RMST3-I, For Spin ',I2,' RMS error is ',
+     1       F20.10)
+   30 CONTINUE
+      RETURN
+      END

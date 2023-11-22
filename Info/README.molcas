@@ -1,0 +1,15 @@
+$MOLCAS/cfg/Solaris.cfg:
+   add XLIB="-lmvec" (for vexp and vpow in Seward)
+   change "-fast" to "-fast -nodepend" (for McKinley)
+   vscf has problems linking against an optimized Molcas library. You
+   may need to remove "-fast".
+
+./configure:
+   The first two prompts usually ask for F77 and C compilers. You can
+   execute commands in these prompts like: `which f77` (including the graves)
+   The molcas script tries to install itself into the first directory
+   in your path.
+
+LaTeX errors while building manual:
+   As long as the regular TeX programs are installed, then the following
+   should work: gmake TEXMF=$TEXMF

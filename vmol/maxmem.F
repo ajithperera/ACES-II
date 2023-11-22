@@ -1,0 +1,46 @@
+      SUBROUTINE MAXMEM
+C
+C CALCULATES A CONSERVATIVE AMOUNT OF CORE REQUIRED BY WHAT
+C  WAS FORMERLY THE WORK1 ARRAY
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      INTEGER AND,OR,EOR,DSTRT
+C      
+C-----------------------------------------------------------------------
+C     Parameters
+C-----------------------------------------------------------------------
+#include "baslims.par"
+C-----------------------------------------------------------------------
+      COMMON /INDX/ PC(512),DSTRT(8,MXCBF),NTAP,LU2,NRSS,NUCZ,ITAG,
+     1 MAXLOP,MAXLOT,KMAX,NMAX,KHKT(7),MULT(8),ISYTYP(3),ITYPE(7,28),
+     2 AND(8,8),OR(8,8),EOR(8,8),NPARSU(8),NPAR(8),MULNUC(100),
+     3 NHKT(MXTNSH),MUL(MXTNSH),NUCO(MXTNSH),NRCO(MXTNSH),JSTRT(MXTNSH),
+     4 NSTRT(MXTNSH),MST(MXTNSH),JRS(MXTNSH)
+      COMMON /END2/ MEM2
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+C
+      MEM2=0
+      LTOP=0
+      IBUZ=0
+      KTOP=0
+C
+C GET MAXIMUM NUMBER OF UNCONTRACTED GAUSSIANS IN EACH SHELL
+C
+      LTOP=1
+      NTOP=1
+      DO 10 I=1,KMAX
+       LTOP=MAX(LTOP,NUCO(I))
+       IBUZ=MAX(IBUZ,NRCO(I)*KHKT(NHKT(I)))
+       KTOP=MAX(KTOP,KHKT(NHKT(I)))
+       NTOP=MAX(NTOP,NHKT(I))
+10    CONTINUE
+      ICUBE=LTOP*LTOP*LTOP*LTOP
+      MAAMRAF=IBUZ*IBUZ*IBUZ*IBUZ
+      IADONN =KTOP*KTOP*KTOP*KTOP
+C
+      MEM2=MAX(MEM2,ICUBE*LTOP*4,MAAMRAF+ICUBE*3+IADONN+100,
+     &         MAAMRAF+ICUBE*3+4*ICUBE*NTOP)*IINTFP
+C
+      write(6,*)' w2 common required ',mem2,' words '
+      RETURN
+      END

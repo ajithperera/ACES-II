@@ -1,0 +1,312 @@
+      SUBROUTINE EXPSPH(CMO,SCR)
+C
+C THIS ROUTINE EXPANDS A GIVEN SET OF MO COEFFICIENTS
+C FROM SPHERICAL TO CARTESIAN GAUSSIAN BASIS FUNCTIONS.
+C
+CEND
+C
+C CODED  NOV/91 JG
+C
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      LOGICAL SHARE,DOPERT,DCORD,DCORGD,NOORBT
+      INTEGER AND,OR,XOR
+C
+      DIMENSION CMO(1),SCR(1)
+C
+#include "baslims.par"
+#include "mxcent.par"
+C
+      COMMON /SHELLSi/ KMAX,
+     &                NHKT(MXSHEL),   KHKT(MXSHEL), MHKT(MXSHEL),
+     &                ISTBAO(MXSHEL), NUCO(MXSHEL), JSTRT(MXSHEL),
+     &                NSTRT(MXSHEL),  MST(MXSHEL),  NCENT(MXSHEL),
+     &                NRCO(MXSHEL), NUMCF(MXSHEL),
+     &                NBCH(MXSHEL),   KSTRT(MXSHEL)
+      COMMON /SHELLS/ CENT(MXSHEL,3), SHARE(MXSHEL)
+      COMMON/SYMMET/FMULT(0:7),PT(0:7),
+     &              MAXLOP,MAXLOT,MULT(0:7),ISYTYP(3),
+     &              ITYPE(8,36),NPARSU(8),NPAR(8),NAOS(8),
+     &              NPARNU(8,8),IPTSYM(MXCORB,0:7),
+     &              IPTCNT(3*MXCENT,0:7),NCRREP(0:7),
+     &              IPTCOR(MXCENT*3),NAXREP(0:7),IPTAX(3),
+     &              IPTXYZ(3,0:7)
+      COMMON/MACHSP/IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON/BASSYM/NBAS(8),NBASIS,NBASSQ,NBASTT
+      COMMON/BASSPH/NBAS5(8),NBASIS5,NBASSQ5,NBASTT5
+C
+      DATA TWO/2.D0/,THREE/3.D0/,FOUR/4.D0/
+C
+      IBTAND(I,J)=AND(I,J) 
+      IBTOR(I,J)=OR(I,J)
+      IBTXOR(I,J)=XOR(I,J)
+C
+      IND10=0
+      IND20=0
+C
+C   LOOP OVER ALL IRREPS
+C
+      DO 100 IRREP=0,MAXLOP
+C
+       IND1=0
+       IND2=0
+C
+       NMO=NBAS5(IRREP+1)
+       NAO=NBAS(IRREP+1) 
+C
+C   LOOP OVER ALL SHELLS
+C
+       DO 200 ISHELL=1,KMAX
+C
+        KHKTA=KHKT(ISHELL)
+        NHKTA=NHKT(ISHELL)
+        NRCA=NRCO(ISHELL)
+        MULA=ISTBAO(ISHELL)
+C
+        IF(NHKTA.LE.2) THEN
+C 
+C S- AND P-TYPE
+C
+         DO 300 NA=1,KHKTA
+          IF(IBTAND(MULA,IBTXOR(IRREP,ITYPE(NHKTA,NA))).EQ.0) THEN
+           DO 400 IRCA=1,NRCA
+C
+           IND1=IND1+1
+           IND2=IND2+1     
+C
+           DO 500 IMO=1,NMO 
+C
+            SCR(IND10+IND1+(IMO-1)*NAO)=
+     &      CMO(IND20+IND2+(IMO-1)*NMO)
+C
+500        CONTINUE
+C
+400       CONTINUE
+C
+         ENDIF
+300     CONTINUE
+       ELSE IF(NHKTA.EQ.3) THEN
+C
+C D-TYPE
+C     
+        J=IND1+1-NRCA
+        K=IND2+1-NRCA
+        IOFFX21=0
+        IOFFY21=0
+        IOFFZ21=0
+        IOFFXY1=0
+        IOFFXZ1=0
+        IOFFYZ1=0
+        IF(IBTAND(MULA,IBTXOR(IRREP,ITYPE(NHKTA,1))).EQ.0) THEN
+         J=J+NRCA
+         K=K+NRCA
+         IOFFX21=J
+         IOFFX22=K
+        ENDIF
+        IF(IBTAND(MULA,IBTXOR(IRREP,ITYPE(NHKTA,2))).EQ.0) THEN
+         J=J+NRCA
+         K=K+NRCA
+         IOFFXY1=J
+         IOFFXY2=K
+        ENDIF
+        IF(IBTAND(MULA,IBTXOR(IRREP,ITYPE(NHKTA,3))).EQ.0) THEN 
+         J=J+NRCA
+         K=K+NRCA
+         IOFFXZ1=J
+         IOFFXZ2=K
+        ENDIF
+        IF(IBTAND(MULA,IBTXOR(IRREP,ITYPE(NHKTA,4))).EQ.0) THEN 
+         J=J+NRCA
+         K=K+NRCA
+         IOFFY21=J
+         IOFFY22=K
+        ENDIF
+        IF(IBTAND(MULA,IBTXOR(IRREP,ITYPE(NHKTA,5))).EQ.0) THEN
+         J=J+NRCA
+         K=K+NRCA
+         IOFFYZ1=J
+         IOFFYZ2=K
+        ENDIF
+        IF(IBTAND(MULA,IBTXOR(IRREP,ITYPE(NHKTA,6))).EQ.0) THEN
+         J=J+NRCA
+         IOFFZ21=J
+        ENDIF
+        IND1=J+NRCA-1
+        IND2=K+NRCA-1
+        IF(IOFFX21.NE.0) THEN
+         DO 401 IRCA=1,NRCA
+          DO 501 IMO=1,NMO
+           SCR(IND10+IOFFX21+IRCA-1+(IMO-1)*NAO)=
+     &           -CMO(IND20+IOFFX22+IRCA-1+(IMO-1)*NMO)+
+     &            CMO(IND20+IOFFY22+IRCA-1+(IMO-1)*NMO)
+           SCR(IND10+IOFFY21+IRCA-1+(IMO-1)*NAO)=
+     &          -CMO(IND20+IOFFX22+IRCA-1+(IMO-1)*NMO)-
+     &           CMO(IND20+IOFFY22+IRCA-1+(IMO-1)*NMO)
+            SCR(IND10+IOFFZ21+IRCA-1+(IMO-1)*NAO)=
+     &      CMO(IND20+IOFFX22+IRCA-1+(IMO-1)*NMO)*TWO
+501       CONTINUE
+401      CONTINUE
+        ENDIF
+        IF(IOFFXY1.NE.0) THEN
+         DO 402 IRCA=1,NRCA
+          DO 502 IMO=1,NMO
+           SCR(IND10+IOFFXY1+IRCA-1+(IMO-1)*NAO)=
+     &      CMO(IND20+IOFFXY2+IRCA-1+(IMO-1)*NMO)
+502       CONTINUE
+402      CONTINUE
+        ENDIF
+        IF(IOFFXZ1.NE.0) THEN
+         DO 403 IRCA=1,NRCA
+          DO 503 IMO=1,NMO
+           SCR(IND10+IOFFXZ1+IRCA-1+(IMO-1)*NAO)=
+     &      CMO(IND20+IOFFXZ2+IRCA-1+(IMO-1)*NMO)
+503       CONTINUE
+403      CONTINUE
+        ENDIF
+        IF(IOFFYZ1.NE.0) THEN
+         DO 404 IRCA=1,NRCA
+          DO 504 IMO=1,NMO
+           SCR(IND10+IOFFYZ1+IRCA-1+(IMO-1)*NAO)=
+     &      CMO(IND20+IOFFYZ2+IRCA-1+(IMO-1)*NMO)
+504       CONTINUE
+404      CONTINUE
+        ENDIF 
+C
+       ELSE IF(NHKTA.EQ.4) THEN
+C
+C F-TYPE
+C
+        J=IND1+1-NRCA
+        K=IND2+1-NRCA
+        IOFFX31=0
+        IOFFY31=0
+        IOFFZ31=0
+        IOFFX2Y1=0
+        IOFFX2Z1=0
+        IOFFXY21=0
+        IOFFXZ21=0
+        IOFFYZ21=0
+        IOFFY2Z1=0
+        IOFFXYZ1=0
+C
+        IF(IBTAND(MULA,IBTXOR(IRREP,ITYPE(NHKTA,1))).EQ.0) THEN
+         J=J+NRCA
+         K=K+NRCA
+         IOFFX31=J
+         IOFFF1=K
+        ENDIF
+        IF(IBTAND(MULA,IBTXOR(IRREP,ITYPE(NHKTA,2))).EQ.0) THEN
+         J=J+NRCA
+         K=K+NRCA
+         IOFFX2Y1=J
+         IOFFF2=K
+        ENDIF
+        IF(IBTAND(MULA,IBTXOR(IRREP,ITYPE(NHKTA,3))).EQ.0) THEN
+         J=J+NRCA
+         K=K+NRCA
+         IOFFX2Z1=J
+         IOFFF3=K
+        ENDIF
+        IF(IBTAND(MULA,IBTXOR(IRREP,ITYPE(NHKTA,4))).EQ.0) THEN
+         J=J+NRCA
+         K=K+NRCA
+         IOFFXY21=J
+         IOFFF4=K
+        ENDIF
+        IF(IBTAND(MULA,IBTXOR(IRREP,ITYPE(NHKTA,5))).EQ.0) THEN
+         J=J+NRCA
+         K=K+NRCA
+         IOFFXYZ1=J
+         IOFFF5=K
+        ENDIF
+        IF(IBTAND(MULA,IBTXOR(IRREP,ITYPE(NHKTA,6))).EQ.0) THEN
+         J=J+NRCA
+         IOFFXZ21=J
+        ENDIF
+        IF(IBTAND(MULA,IBTXOR(IRREP,ITYPE(NHKTA,7))).EQ.0) THEN
+         J=J+NRCA
+         K=K+NRCA
+         IOFFY31=J
+         IOFFF7=K
+        ENDIF
+        IF(IBTAND(MULA,IBTXOR(IRREP,ITYPE(NHKTA,8))).EQ.0) THEN
+         J=J+NRCA
+         K=K+NRCA
+         IOFFY2Z1=J
+         IOFFF8=K
+        ENDIF
+        IF(IBTAND(MULA,IBTXOR(IRREP,ITYPE(NHKTA,9))).EQ.0) THEN
+         J=J+NRCA
+         IOFFYZ21=J
+        ENDIF
+        IF(IBTAND(MULA,IBTXOR(IRREP,ITYPE(NHKTA,10))).EQ.0) THEN
+         J=J+NRCA
+         IOFFZ31=J
+        ENDIF
+        IND1=J+NRCA-1
+        IND2=K+NRCA-1
+        IF(IOFFX31.NE.0) THEN
+         DO 602 IRCA=1,NRCA
+          DO 702 IMO=1,NMO
+           SCR(IND10+IOFFX31+IRCA-1+(IMO-1)*NAO)=
+     &      -CMO(IND20+IOFFF1+IRCA-1+(IMO-1)*NMO)
+     &      +CMO(IND20+IOFFF4+IRCA-1+(IMO-1)*NMO)
+           SCR(IND10+IOFFXY21+IRCA-1+(IMO-1)*NAO)=
+     &      -CMO(IND20+IOFFF1+IRCA-1+(IMO-1)*NMO)
+     &      -THREE*CMO(IND20+IOFFF4+IRCA-1+(IMO-1)*NMO)
+           SCR(IND10+IOFFXZ21+IRCA-1+(IMO-1)*NAO)=
+     &      FOUR*CMO(IND20+IOFFF1+IRCA-1+(IMO-1)*NMO)
+702       CONTINUE
+602      CONTINUE
+        ENDIF
+        IF(IOFFX2Y1.NE.0) THEN
+         DO 603 IRCA=1,NRCA
+          DO 703 IMO=1,NMO
+           SCR(IND10+IOFFX2Y1+IRCA-1+(IMO-1)*NAO)=
+     &      -CMO(IND20+IOFFF2+IRCA-1+(IMO-1)*NMO)
+     &      +THREE*CMO(IND20+IOFFF7+IRCA-1+(IMO-1)*NMO)
+           SCR(IND10+IOFFY31+IRCA-1+(IMO-1)*NAO)=
+     &      -CMO(IND20+IOFFF2+IRCA-1+(IMO-1)*NMO)
+     &      -CMO(IND20+IOFFF7+IRCA-1+(IMO-1)*NMO)
+           SCR(IND10+IOFFYZ21+IRCA-1+(IMO-1)*NAO)=
+     &      FOUR*CMO(IND20+IOFFF2+IRCA-1+(IMO-1)*NMO)
+703       CONTINUE
+603      CONTINUE
+        ENDIF
+        IF(IOFFX2Z1.NE.0) THEN
+         DO 604 IRCA=1,NRCA
+          DO 704 IMO=1,NMO
+           SCR(IND10+IOFFX2Z1+IRCA-1+(IMO-1)*NAO)=
+     &      -THREE*CMO(IND20+IOFFF3+IRCA-1+(IMO-1)*NMO)
+     &      +CMO(IND20+IOFFF8+IRCA-1+(IMO-1)*NMO)
+           SCR(IND10+IOFFY2Z1+IRCA-1+(IMO-1)*NAO)=
+     &      -THREE*CMO(IND20+IOFFF3+IRCA-1+(IMO-1)*NMO)
+     &      -CMO(IND20+IOFFF8+IRCA-1+(IMO-1)*NMO)
+           SCR(IND10+IOFFZ31+IRCA-1+(IMO-1)*NAO)=
+     &      TWO*CMO(IND20+IOFFF3+IRCA-1+(IMO-1)*NMO)
+704       CONTINUE
+604      CONTINUE
+        ENDIF
+        IF(IOFFXYZ1.NE.0) THEN
+         DO 601 IRCA=1,NRCA
+          DO 701 IMO=1,NMO
+           SCR(IND10+IOFFXYZ1+IRCA-1+(IMO-1)*NAO)=
+     &      CMO(IND20+IOFFF5+IRCA-1+(IMO-1)*NMO)
+701       CONTINUE
+601      CONTINUE
+        ENDIF 
+C
+       ENDIF
+200   CONTINUE
+C
+      IND10=IND10+NAO*NMO
+      IND20=IND20+NMO*NMO
+100   CONTINUE
+C
+c YAU : old
+c     CALL ICOPY(IINTFP*IND10,SCR,1,CMO,1)
+c YAU : new
+      CALL DCOPY(IND10,SCR,1,CMO,1)
+c YAU : end
+C
+      RETURN
+      END

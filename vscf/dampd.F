@@ -1,0 +1,71 @@
+      SUBROUTINE DAMPD(DE,DEP,DEAVG,DAMP)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DATA DMPMAX /256.0D+00/
+      DATA ZERO,PT25,PT5,TWO,FOUR,FAC /0.0D+00,2.5D-01,0.5D+00,
+     1 2.0D+00,4.0D+00,1.6D+01/
+      DATA PT2 /0.2D+00/
+
+#ifdef _DEBUG_LVLM
+      write(6,"(a)") "Checking the input variables"
+      write(6,"(3(1x,F10.5))") DE, DEP, DEAVG
+#endif
+
+      IF( DE.GT.ZERO) GO TO 400
+      IF(DEP.GT.ZERO) GO TO 300
+      IF( DE.GT. DEP) GO TO 200
+C
+C     ----- DE < 0. , DEP < 0. , DE < DEP -----
+C
+      IF( ABS(DE).LT.TWO*DEAVG) GO TO 110
+      DAMP=FAC* DMAX1(DAMP,DEAVG)
+      GO TO 600
+  110 IF( ABS(DE).GT.PT5*DEAVG) GO TO 600
+      DAMP=DAMP/FAC
+      GO TO 600
+  200 CONTINUE
+C
+C     ----- DE < 0. , DEP < 0. , DE > DEP -----
+C
+      IF(DE.GT.PT25*DEP) GO TO 210
+      DAMP=(DE/DEP)**2* DMAX1(DAMP,DEAVG)
+      GO TO 600
+  210 DAMP=DAMP/FAC
+      GO TO 600
+  300 CONTINUE
+C
+C     ----- DE < 0. , DEP > 0. -----
+C
+      DAMP=FOUR* DMAX1(DAMP,DEAVG)
+      IF(-DE.GT.DEAVG) DAMP=DAMP*FAC
+      IF(-DE+DEP.GE.DEAVG) GO TO 600
+      DAMP=DAMP/FAC
+      GO TO 600
+  400 CONTINUE
+      IF(DEP.GT.ZERO) GO TO 500
+C
+C     ----- DE > 0. , DEP < 0. -----
+C
+      DAMP=FOUR* DMAX1(DAMP,DEAVG)
+      IF(DE.GT.PT5*DEAVG) DAMP=DAMP*FAC
+      IF(DE-DEP.GE.PT2*DEAVG) GO TO 600
+      DAMP=DAMP/FAC
+      GO TO 600
+  500 CONTINUE
+C
+C     ----- DE > 0. , DEP > 0. -----
+C
+      DAMP=FOUR* DMAX1(DAMP,DEAVG)
+      IF(DE.LT.FOUR*DEP) GO TO 510
+      DAMP=FAC* DMAX1(DAMP,DEAVG)
+      GO TO 600
+  510 IF(DE.GT.PT25*DEP) GO TO 520
+      DAMP=DAMP/FAC
+      GO TO 600
+  520 DAMP=(DE/DEP)**2* DMAX1(DAMP,DEAVG)
+C
+C     ----- DO NOT LET -DAMP- GO OUT OF CONTROL -----
+C
+  600 CONTINUE
+      DAMP=DMIN1(DAMP,DMPMAX)
+      RETURN
+      END

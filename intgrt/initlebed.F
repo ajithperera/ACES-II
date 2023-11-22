@@ -1,0 +1,301 @@
+      subroutine initlebed(flag,grid,type,grdangpts,gridxyz,gridwt)
+
+c References:
+c    Lebedev, V. I., Zh. vychisl. Mat. mat. Fiz., 16, 2, 293, 1976.
+c    Lebedev, V. I., Zh. vychisl. Mat. mat. Fiz., 15, 1, 48, 1975.
+c
+c This subroutine sets up one of the angular grids (grid) to be a
+c Lebedev grid of type.  There are several grids to choose from, obtained
+c by solving the Lebedev equations.  Only certain solutions are possible.
+c The solutions included here are:
+c    N= 9, 11, 17, 23, 27, 29
+c The parameter maxlebgrid is the number of grids implemented.
+c
+c The grid referred to by each of these solutions can be written in two
+c forms: contracted or expanded.  For simplicity, each of the grids are
+c included here in their contracted form (for ease of typing them in and
+c to eliminate errors), but are then expanded for use in the rest of the
+c program.  The contracted form of a grid consists of a number of weights
+c and points.  For example, the contracted form for N=9 consists of 3
+c weights and points:
+c     0.010   1.0  0.0  0.0
+c     0.032   1.0  1.0  1.0
+c     0.029   0.9  0.5  0.0
+c The first column is the weight.  The last three columns are coordinates.
+c The expanded form consists of all possible combinations of the three
+c coordinates (both positive and negative) in (x,y,z) coordinates, each
+c with the given weight.  So, the N=9 solution consists of 6 points:
+c   (0,0,1) (0,0,-1) (0,1,0) (0,-1,0) (1,0,0) (-1,0,0)
+c all with the weight of 0.010, 8 points:
+c   (1,1,1) (1,1,-1) (1,-1,1) (-1,1,1)
+c   (1,-1,-1) (-1,1,-1) (-1,-1,1) (-1,-1,-1)
+c all with the weight of 0.032, and 24 points:
+c   (0.9,0.5,0) (0.9,-0.5,0) (-0.9,0.5,0) (-0.9,-0.5,0)
+c   (0.9,0,0.5) (0.9,0,-0.5) (-0.9,0,0.5) (-0.9,0,-0.5)
+c   (0,0.9,0.5) (0,0.9,-0.5) (0,-0.9,0.5) (0,-0.9,-0.5)
+c   (0.5,0.9,0) (0.5,-0.9,0) (-0.5,0.9,0) (-0.5,-0.9,0)
+c   (0.5,0,0.9) (0.5,0,-0.9) (-0.5,0,0.9) (-0.5,0,-0.9)
+c   (0,0.5,0.9) (0,0.5,-0.9) (0,-0.5,0.9) (0,-0.5,-0.9)
+c each with the weight of 0.029.  This gives a total of 6+8+24=38 points.
+c
+c The number of contracted and expanded points in each grid is given by
+c the table:
+c             N    9  11  17  23  27  29    Total
+c    Contracted    3   4   6   9  11  12       45
+c      Expanded   38  50 110 194 266 302      960
+
+c prakash
+C  now order of lebedev grid
+C     
+C     N  ?  26 74 86 146
+C contra 1   3  5 5   7
+C expan  6  26 74  86 146
+
+C  end praksh
+
+
+c These numbers are contained in the variables ncontpts and nexppts.  The
+c total contracted points is in totcontpts.
+c
+c The full set of contracted points and weights are in contpts.  These
+c may be expanded as needed.  When this routine is called, the type'th
+c solution (numbered 1 to maxlebgrid) is expaneded and stored as the
+c grid'th grid in the set of all angular grids used.
+
+      implicit none
+#include <aces.h>
+#include <grid.com>
+      integer grid,type,grdangpts(numgrid),flag
+      M_REAL
+     &    gridxyz(3,maxangpts,numgrid),gridwt(maxangpts,numgrid)
+
+      integer maxlebgrid,totcontpts,i,j
+      parameter (maxlebgrid=11)
+      parameter (totcontpts=66)
+
+      M_REAL
+     &    sqrt2,sqrt3
+      parameter (sqrt2=0.707106781186547462d0)
+      parameter (sqrt3=0.577350269189625842d0)
+
+      integer icontoff,iexp
+      M_REAL
+     &    x0,x1,x2,wt,one,zero
+      parameter (one=1.0D0)
+      parameter (zero=0.D0)
+ 
+      integer ncontpts(maxlebgrid),nexppts(maxlebgrid)
+      M_REAL
+     &    contpts(totcontpts,4)
+
+      data ncontpts/3,4,6,9,11,12,3,5,1,5,7/
+      data nexppts/38,50,110,194,266,302,26,74,6,86,146/
+
+c N= 9
+      data ((contpts(i,j),j=1,4),i=1,3)/
+     &    0.00952380952397d0,1.d0,0.d0,0.d0,
+     &    0.0321428571429d0,sqrt3,sqrt3,sqrt3,
+     &    0.0285714285714d0,0.888073833977d0,0.459700843381d0,0.d0/
+c N=11
+      data ((contpts(i,j),j=1,4),i=4,7)/
+     &    0.0126984126985d0,1.d0,0.d0,0.d0,
+     &    0.0225749559083d0,sqrt2,sqrt2,0.d0,
+     &    0.02109357d0,sqrt3,sqrt3,sqrt3,
+     &    0.0201733355379d0,
+     &    0.301511344578d0,0.301511344578d0,0.904534033733d0/
+c N=17
+      data ((contpts(i,j),j=1,4),i=8,13)/
+     &    0.003828270494940d0,1.d0,0.d0,0.d0,
+     &    0.009793737512490d0,sqrt3,sqrt3,sqrt3,
+     &    0.008211737283190d0,
+     &    0.1851156353450d0,0.1851156353450d0,0.9651240350870d0,
+     &    0.009595471336070d0,
+     &    0.3956894730560d0,0.3956894730560d0,0.8287699812530d0,
+     &    0.00994281489118d0,
+     &    0.690421048382d0,0.690421048382d0,0.215957291846d0,
+     &    0.00969499636166d0,
+     &    0.878158910604d0,0.478369028812d0,0.d0/
+c N=23
+      data ((contpts(i,j),j=1,4),i=14,22)/
+     &    0.00178234044724d0,1.d0,0.d0,0.d0,
+     &    0.00571690594998d0,sqrt2,sqrt2,0.d0,
+     &    0.00557338317884d0,sqrt3,sqrt3,sqrt3,
+     &    0.00551877146727d0,
+     &    0.444693317871d0,0.444693317871d0,0.777493219315d0,
+     &    0.005158237711810d0,
+     &    0.2892465627580d0,0.2892465627580d0,0.9125090968670d0,
+     &    0.00560870408259d0,
+     &    0.671297344270d0,0.671297344270d0,0.314196994183d0,
+     &    0.00410677702817d0,
+     &    0.129933544765d0,0.129933544765d0,0.982972302707d0,
+     &    0.00505184606462d0,
+     &    0.938319218138d0,0.345770219761d0,0.d0,
+     &    0.00553024891623d0,
+     &    0.836036015482d0,0.159041710538d0,0.525118572443d0/
+c N=27
+      data ((contpts(i,j),j=1,4),i=23,33)/
+     &    -0.00131376912733d0,1.d0,0.d0,0.d0,
+     &    -0.00252272870489d0,sqrt2,sqrt2,0.d0,
+     &    0.00418685388170d0,sqrt3,sqrt3,sqrt3,
+     &    0.00531516797782d0,
+     &    0.703937339159d0,0.703937339159d0,0.0945750764036d0,
+     &    0.00425613135143d0,
+     &    0.662033866370d0,0.662033866370d0,0.351315128565d0,
+     &    0.00411248239441d0,
+     &    0.464744872642d0,0.464744872642d0,0.753673939251d0,
+     &    0.00359558489976d0,
+     &    0.327742065497d0,0.327742065497d0,0.886098344997d0,
+c The following point has been fixed.  The z value was originally
+c 0.98 6948074629  (the space added for clarification) changed to
+c 0.9896948074629
+     &    0.00404714237709d0,
+     &    0.101252624857d0,0.101252624857d0,0.9896948074629d0,
+     &    0.00422958270065d0,
+     &    0.850650808352d0,0.525731112119d0,0.d0,
+     &    0.00407146759383d0,
+     &    0.819343388819d0,0.524493924092d0,0.231479015871d0,
+c The following point is suspect!  (X**2 + Y**2 + Z**2)=0.99999999950000
+c which is off from 1.0 by a lot further then the other points.  Every
+c other point is off by less then 1.0e-12.
+     &    0.00408091422578d0,
+     &    0.939227929750d0,0.323348454269d0,0.115311196765d0/
+c N=29
+      data ((contpts(i,j),j=1,4),i=34,42)/
+     &    0.000854591172878d0,1.d0,0.d0,0.d0,
+     &    0.00359911928502d0,sqrt3,sqrt3,sqrt3,
+     &    0.00365004580768d0,
+     &    0.701176641609d0,0.701176641609d0,0.129238672710d0,
+     &    0.00360482260142d0,
+     &    0.656632941022d0,0.656632941022d0,0.371034178385d0,
+     &    0.00357672966173d0,
+     &    0.472905413258d0,0.472905413258d0,0.743452042987d0,
+     &    0.00344978842429d0,
+     &    0.351564034558d0,0.351564034558d0,0.867643624544d0,
+     &    0.00310895312238d0,
+     &    0.221964523631d0,0.221964523631d0,0.949454317226d0,
+     &    0.00235210141366d0,
+     &    0.0961830852303d0,0.0961830852303d0,0.990705621379d0,
+     &    0.00360082093222d0,
+     &    0.820326419828d0,0.571895589188d0,0.d0/
+      data ((contpts(i,j),j=1,4),i=43,45)/
+     &    0.00298234496317d0,
+     &    0.964408914879d0,0.264415288706d0,0.d0,
+     &    0.00357154055427d0,
+     &    0.251003475177d0,0.800072749407d0,0.544867737258d0,
+     &    0.00339231220501d0,
+     &    0.902442529533d0,0.412772408317d0,0.123354853258d0/
+
+
+
+c
+C no of points =26
+      data((contpts(i,j),j=1,4),i=46,48)/
+     &   0.0476190476d0,one,zero,zero,
+     &   0.0380952381d0,sqrt2,sqrt2,zero,
+     &   0.032142857d0,sqrt3,sqrt3,sqrt3/
+c no of points=74
+      data((contpts(i,j),j=1,4),i=49,53)/
+     &  0.00051306718d0,one,zero,zero,
+     &  0.0166040696d0,sqrt2,sqrt2,zero,
+     & -0.029586039d0,sqrt3,sqrt3,sqrt3,
+     &  0.0265762071d0,
+     &  0.480384461d0,0.480384461d0,0.733799386d0,
+     &  0.016522171d0,
+     &  0.320772649d0,0.947156221d0,zero/
+
+C no of points =6
+      data(contpts(54,j),j=1,4)/
+     &    0.166666667D0,one,zero,zero/
+
+c no of points=86
+       data((contpts(i,j),j=1,4),i=55,59)/
+     & 0.0115440115d0,zero,zero,one,
+     & 0.0119439091d0,sqrt3,sqrt3,sqrt3,
+     & 0.0111105557d0,
+     & 0.369602846d0,0.369602846d0,0.852518312d0,
+     & 0.0118765013d0,
+     & 0.694354007d0,0.694354007d0,0.189063553d0,
+     &  0.0118123037d0,
+     &  0.374243039d0,0.927330657d0,zero/
+c no of points = 146
+       data((contpts(i,j),j=1,4),i=60,66)/
+     &  0.000599631369d0,one,zero,zero,
+     &  0.00737299972d0,sqrt2,sqrt2,zero,
+     &  0.00721051536d0,sqrt3,sqrt3,sqrt3,
+     &  0.00711635549d0,
+     &  0.67644104d0,0.67644104d0,0.291298882d0,
+     &  0.00675382949d0,
+     &  0.41749612d0,0.41749612d0,0.807089818d0,
+     &  0.00757439416d0,
+     &  0.157467667d0,0.157467667d0,0.974888644d0,
+     &  0.00699108735d0,
+     &  0.140355381d0,0.449332832d0,0.882270011d0/
+
+
+      call callstack_push('INITLEBED')
+
+      if (type.gt.maxlebgrid) then
+        write (*,9000)
+ 9000   format(t3,'@INITLEBED - Invalid Lebedev grid.')
+        call errex
+        stop
+      endif
+
+      if (flag.eq.0) then
+        ntotrad=ntotrad+nexppts(type)*gridlist(grid,3)
+        if (nexppts(type).gt.maxangpts) then
+          maxangpts=nexppts(type)
+          maxanggrd=grid
+        endif
+        goto 999
+      endif
+
+      grdangpts(grid)=nexppts(type)
+
+c icontoff is the location of the first point in contpts belonging
+c to the type'th angular grid
+      icontoff=1
+      do 10 i=1,type-1
+        icontoff=icontoff+ncontpts(i)
+   10 continue
+
+c iexp is the location of the current expanded point
+      iexp=1
+      do 20 i=icontoff,icontoff+ncontpts(type)-1
+c Each contracted point is (wt,x0,x1,x2)
+        wt=contpts(i,1)
+        x0=contpts(i,2)
+        x1=contpts(i,3)
+        x2=contpts(i,4)
+
+c Take all possible (x,y,z) combinations of the three coordinates
+c including both positive and negative values of the three coordinates.
+        if (x0.eq.x1 .and. x0.eq.x2) then
+          call plusminus(iexp,wt,x0,x0,x0,grid,gridxyz,gridwt)
+        elseif (x0.eq.x1) then
+          call plusminus(iexp,wt,x0,x0,x2,grid,gridxyz,gridwt)
+          call plusminus(iexp,wt,x0,x2,x0,grid,gridxyz,gridwt)
+          call plusminus(iexp,wt,x2,x0,x0,grid,gridxyz,gridwt)
+        elseif (x0.eq.x2) then
+          call plusminus(iexp,wt,x0,x0,x1,grid,gridxyz,gridwt)
+          call plusminus(iexp,wt,x0,x1,x0,grid,gridxyz,gridwt)
+          call plusminus(iexp,wt,x1,x0,x0,grid,gridxyz,gridwt)
+        elseif (x1.eq.x2) then
+          call plusminus(iexp,wt,x0,x1,x1,grid,gridxyz,gridwt)
+          call plusminus(iexp,wt,x1,x0,x1,grid,gridxyz,gridwt)
+          call plusminus(iexp,wt,x1,x1,x0,grid,gridxyz,gridwt)
+        else
+          call plusminus(iexp,wt,x0,x1,x2,grid,gridxyz,gridwt)
+          call plusminus(iexp,wt,x0,x2,x1,grid,gridxyz,gridwt)
+          call plusminus(iexp,wt,x1,x0,x2,grid,gridxyz,gridwt)
+          call plusminus(iexp,wt,x1,x2,x0,grid,gridxyz,gridwt)
+          call plusminus(iexp,wt,x2,x0,x1,grid,gridxyz,gridwt)
+          call plusminus(iexp,wt,x2,x1,x0,grid,gridxyz,gridwt)
+        endif
+
+   20 continue
+
+  999 continue
+      call callstack_pop
+      return
+      end

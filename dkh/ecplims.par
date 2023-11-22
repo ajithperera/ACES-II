@@ -1,0 +1,21 @@
+#ifndef _ECPLiMS_PAR_
+#define _ECPLIMS_PAR_
+      parameter (max_centers = 300)
+      parameter (max_shells  = 5000)
+      parameter (max_prims   = max_shells)
+      Parameter (max_cbf     = 1000)
+      parameter (max_primcc  = Max_prims*max_cbf)
+      parameter (Ndi4 = 550, Ndi9 = max_shells, Ndi10 = max_centers,
+     &           Ndi13 = 350, Ndico = 10, ndi14 = 120, ndi27 = 400)
+     &
+      parameter (Maxang = 6)
+      parameter (Maxproj =5)
+      parameter (ndilmx = Maxang+1)
+      parameter (nh4=4*(ndilmx-1)-3)
+      parameter (maxjco = 10)
+      Parameter(Max_ecpmem = 50000)
+C
+#endif /* _ECPLIMS_PAR_ */
+C
+
+

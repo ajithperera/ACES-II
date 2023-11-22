@@ -1,0 +1,48 @@
+Welcome to the ACES II top-level source code directory.
+
+This document contains descriptions of files and directories that are used to
+build and support ACES II. Descriptions of the ACES II executables and
+libraries can be found in Info/OBJECTS.
+
+Info : ACES II documentation
+  BUILDING	: Guide to compiling the source code
+  CHANGELOG	: List of changes between versions
+  F77_IO_UNITS	: List of (known) FORTRAN file/unit assignments
+  GDBINIT	: A sample .gdbinit file for debugging with gdb
+  OBJECTS	: Directory of ACES Member Executables (AME) and
+		  ACES Shared Libraries (ASL)
+  PORTING	: List of optimization defects found when porting the code
+  README.molcas	: Notes on building Molcas
+  TODO		: Neglected list of things to do
+
+Makefiles : Primary ACES II makefiles (all others should link to these)
+  GNUmakefile     : Principal makefile for building AMEs and ASLs
+  GNUmakefile.src : Override makefile to undo GNUmakefile options
+  GNUmakefile.tl  : Top-level makefile for recursively building subdirectories
+
+Script : Collection of some user scripts
+  clean.sh : Cleaning script for aggressively removing unknown runtime files
+
+TestSuite : (optional) Collection of good output files for testing a new build
+  WORKDIR    : Directory for running tests from the command line
+  TESTDIR    : Directory for running tests automatically
+  test.*     : Input files
+  pre.test.* : Good output files
+  out.test.* : New output files
+  runtest    : Script for running all tests
+  checktest  : Script for (inadequately) comparing old and new output files
+
+configure : Discovery tool for porting the code to new platforms
+            (ignored by all makefiles)
+
+gemini.skip : Parallel program to create local tmp directories and run serial
+              programs in them (not built automatically by GNUmakefile.tl)
+
+xprep   : Script for preparing the top-level build environment
+xskip   : Script for switching directories to .skip directories
+xunskip : Script for undoing the effects of xskip
+
+include : Top-level ACES II include directory
+bin     : Default binary installation directory (created by xprep)
+lib     : Default library installation directory (created by xprep)
+

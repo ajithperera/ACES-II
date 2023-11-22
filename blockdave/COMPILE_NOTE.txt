@@ -1,0 +1,7 @@
+module load intel/2019  openmpi/4.0.1
+
+ifort main.f90 initGuess.f90 davidsonDrive.f90 createQ.f90 ctxhbarxc.f90 eig.F extendCspace.f90 -mkl
+
+
+*Added debug flags:
+-O2 -check all   -assume realloc_lhs -traceback  -warn all  -fstack-protector  -assume protect_parens

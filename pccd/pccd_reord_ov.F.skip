@@ -1,0 +1,12 @@
+      Subroutine Pccd_reord_ov(Ov,Tmp,Nvrt,Nocc)
+
+      Implicit Double Precison(A-H,O-Z-
+
+      Dimension Ov(Nocc,Nvrt),Tmp(Nocc*Nvrt))
+
+      Call Dcopy(Nocc*Nvrt,Ov,1,Tmp,1)
+
+      Do I = 1, Nvrt
+         Do J = 1, Nocc
+
+            Ov(J,I) = Tmp(I,J)

@@ -1,0 +1,112 @@
+c __FILE__ : begin
+
+c This file is for adding in T3(*,PqR) contributions.
+
+c NOTE: ndx must point to the first T3(*,PqR) contribution in dscr().
+
+c Anti-symmetry works like this:
+c    p<r<q (-)
+c    r<p<q (+)
+
+#define C_MOD c
+#define C_ONE c
+
+c   o loop over irreps of q in T3(*,PqR)
+      do irp_q = 1, nirrep
+         irp_p = dirprd(irp_q,irp_pq)
+         max_p = vrt(irp_p,ispin1)
+         max_q = vrt(irp_q,ispin2)
+         do_irp_q = ((max_p.ne.0).and.(max_q.ne.0))
+      if (do_irp_q) then
+
+c      o skip irp_q if there are not enough virtual orbitals for T3
+         do_t3 = ((irp_r.ne.irp_p).or.(max_p.ne.1))
+         if (do_t3) then
+
+c         o point to the irreps whose T3 amplitudes are in the buffer
+            itmp = nirrep*(irp_q-1) + max(irp_p,irp_r)
+            iadd = ndx_t3vrt(itmp)
+
+c ----------------------------------------------------------------------
+
+c   o irp_r < irp_p < irp_q
+      if (irp_r.lt.irp_p) then
+         itmp = ( max_p * max_q )
+         iadd = iadd + r
+         do pq = 0, itmp-1
+C_MOD      print *, 'modifying dcore(',iadd,') at line ',__LINE__
+            dcore(iadd) = dcore(iadd) + dscr(ndx+pq)
+C_ONE      if (dcore(iadd).gt.1.0d0) print *, dcore(iadd)
+            iadd = iadd + max_r
+         end do
+         ndx = ndx + itmp
+      else
+
+c   o irp_p = irp_r < irp_q
+      if (irp_p.eq.irp_r) then
+         to_p = max_p-1
+         ioff = rshift(r*(r-1),1)
+         do q = 0, max_q-1
+            if (r.ne.0) then
+               iadd = iadd + ioff
+               do p = 0, r-1
+C_MOD      print *, 'modifying dcore(',iadd+p,') at line ',__LINE__
+                  dcore(iadd+p) = dcore(iadd+p) - dscr(ndx+p)
+C_ONE      if (dcore(iadd+p).gt.1.0d0) print *, dcore(iadd+p)
+               end do
+               ndx  = ndx  + r + 1
+               iadd = iadd + r
+            else
+               ndx  = ndx  + 1
+            end if
+            if (r.ne.to_p) then
+               do p = 1, to_p-r
+                  iadd = iadd + r
+C_MOD      print *, 'modifying dcore(',iadd,') at line ',__LINE__
+                  dcore(iadd) = dcore(iadd) + dscr(ndx)
+C_ONE      if (dcore(iadd).gt.1.0d0) print *, dcore(iadd)
+                  ndx  = ndx  + 1
+                  iadd = iadd + p
+               end do
+            end if
+         end do
+      else
+
+c   o irp_p < irp_r < irp_q
+      ioff = max_p * max_r
+      iadd = iadd + ( max_p * r )
+      to_p = max_p-1
+      do q = 1, max_q
+         do p = 0, to_p
+C_MOD      print *, 'modifying dcore(',iadd+p,') at line ',__LINE__
+            dcore(iadd+p) = dcore(iadd+p) - dscr(ndx+p)
+C_ONE      if (dcore(iadd+p).gt.1.0d0) print *, dcore(iadd+p)
+         end do
+         ndx  = ndx  + max_p
+         iadd = iadd + ioff
+      end do
+
+c     end if (irp_p.eq.irp_r)
+      end if
+c     end if (irp_r.lt.irp_p)
+      end if
+
+c ----------------------------------------------------------------------
+
+c      o close the T3 conditional
+         else
+c         o itmp is the number of Pq pairs to skip
+            ndx = ndx + max_q
+c        end if (do_t3)
+         end if
+
+c   o close the loop over irreps of q in T3(*,PqR)
+c     end if (do_irp_q)
+      end if
+c     end do irp_q = 1, nirrep
+      end do
+
+#undef C_MOD
+#undef C_ONE
+
+c __FILE__ : end

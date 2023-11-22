@@ -1,0 +1,51 @@
+      SUBROUTINE PCCD_CMPENG(ICORE,MAXCOR,NLIST2,ECORR,ETOT)
+
+      IMPLICIT INTEGER (A-Z)
+      CHARACTER*2 SPCASE(3)
+      DOUBLE PRECISION ETOT,ECORR(3),E_AB
+      LOGICAL PCCD,CCD,LCCD
+      DIMENSION ICORE(MAXCOR)
+
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /CALC/PCCD,CCD,LCCD
+      COMMON /NHFREF/NONHF
+      COMMON /SYM/ POP(8,2),VRT(8,2),NT(2),NF1(2),NF2(2)
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPA(255),IRREPB(255),
+     &                DIRPRD(8,8)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),NTOT(18)
+
+      DATA SPCASE /'AA','BB','AB'/
+
+C THE T2(Ij,Ab) <Ij|Ab> i=j,a=b CONTRIBUTION TO THE ENERGY (SPIN CASE AB)
+
+      ETOT = 0.0D0
+      DO 200 IRREP=1,NIRREP
+         DISSYT=IRPDPD(IRREP,ISYTYP(1,46))
+         NUMSYT=IRPDPD(IRREP,ISYTYP(2,46))
+         IF (MIN(NUMSYT,DISSYT).NE.0) THEN
+            I001=IFREE
+            I002=I001+IINTFP*NUMSYT*DISSYT
+            I003=I002+IINTFP*NUMSYT*DISSYT
+            I004=I003+IINTFP*NUMSYT*DISSYT
+            IF(I004.LT.MAXCOR) THEN
+               CALL PCCD_TENER(IRREP,NLIST2,E_AB,NUMSYT,DISSYT,
+     +                          ICORE(I001),ICORE(I002),ICORE(I003),
+     +                          POP(1,1),NIRREP)
+            ELSE
+               CALL INSMEM('CMPENG',I004,MXCOR)
+            ENDIF
+            ETOT  = ETOT   + E_AB
+         ENDIF
+200   CONTINUE
+
+      ECORR(1)=0.0D0
+      ECORR(2)=0.0D0
+      ECORR(3)=ETOT
+      WRITE(6,80) SPCASE(3),ECORR(3)
+      WRITE(6,81)ETOT
+ 80   FORMAT(T3,' The ',A2,' contribution to the correlation ',
+     &        'energy is: ',F12.7,' a.u.')
+ 81   FORMAT(T3,' The total correlation energy is ',F15.12,' a.u.')
+     
+      RETURN
+      END

@@ -1,0 +1,351 @@
+      SUBROUTINE GTDFEQ(SCR,EVAL,EVEC,DENP,DENM,HMO
+     X ,UP1,UM1,UP2,UM2,UWP,UWM,US,US2,USWP,USWM,UWWP,UWWM
+     X ,F1,F2,FW,FS,FS2,FSW,FWW,E1,E2,EW,ES,ES2,ESW,EWW,FP,FM
+     X ,UPDATE,ASMALL,ASQUARE,ASCALE,ICONV,XX,IX,NINTMX,ABP,ABM,ABPI
+     X ,APVEC,AMVEC,APVEC1,AMVEC1,ABPM,UVAL,UVEC,WVAL,WVEC,PORT
+     X ,SVEC,TVEC,ZVEC,YVEC,REDVEC
+     X ,IVO,IVOS,IVRT,IOCC,IVRTS,IOCCS,IA,IAS,ISYMO,LCOMP,NCOMP)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION SCR(1),EVAL(1),EVEC(1) 
+     X ,DENP(1),DENM(1),IA(1),HMO(1)
+     X ,F1(1),F2(1),FW(1),E1(1),E2(1),EW(1),FP(1),FM(1)
+     X ,FS(1),FS2(1),ES(1),ES2(1),FSW(1),ESW(1),FWW(1),EWW(1)
+     X ,UVAL(1),UVEC(1),WVAL(1),WVEC(1),PORT(1)
+      DIMENSION UP1(1),UM1(1),UP2(1),UM2(1),UWP(1),UWM(1)
+     X ,US(1),US2(1),USWP(1),USWM(1),UWWP(1),UWWM(1)
+      DIMENSION APVEC(1),AMVEC(1),APVEC1(1),AMVEC1(1)
+      DIMENSION SVEC(1),TVEC(1),ZVEC(1),YVEC(1),REDVEC(1)
+      DIMENSION XX(1),IX(1) 
+      DIMENSION ABP(1),ABM(1),ABPM(1),ABPI(1),IVO(1),IVRT(1),IOCC(1)
+      DIMENSION IAS(1),IVRTS(1),IOCCS(1),IVOS(1),ISYMO(1)
+      DIMENSION ENRG(3,9),LCOMP(21,4)
+C ... for reduced linear equation solver
+      DIMENSION UPDATE(1),ASMALL(1),ASQUARE(1),ASCALE(1),ICONV(1)
+C ..............................
+      COMMON/SWPPP/INP,IAMO,IFAMO,IINDO,IORTH               
+      COMMON/INFOA/NBASIS,NUMSCF,NX,NMO2,NOC,NVT,NVO     
+      COMMON/THRES/ TOLPER,DEGEN,EPSI
+      COMMON/ILINEA/ISALPH,IDALPH
+      COMMON/INBETA/ISBETA,ISHG,IEOPE,IOR
+      COMMON/ITOPR/ IDCSHG,IOKE,IDCOR,IIDRI,ITHG
+      COMMON/CONST/ EBETA,EGAMMA
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON/THRE1/ NITER,MAXIT
+      COMMON/INFSYM/NSYMHF,NSO(8),NOCS(8),NVTS(8),IDPR(8,8),NVOS(8)
+     X ,NIJS(8),NIJS2(8),NRDS(8),NIJSR(8)
+      COMMON/MFREQ/NFREQ
+      COMMON/DFREQ/VFREQ(100)
+      COMMON /TIMEINFO/ TIMEIN, TIMENOW, TIMETOT, TIMENEW     
+      DATA ZERO/0.D0/,ONE/1.D0/,HALF/.5D0/,TWO/2.D0/
+      DATA OCTH/1.D-8/,THREE/3.D0/
+ 
+      NSIZ1=NUMSCF
+      NSIZ3=(NBASIS+1)*NBASIS/2
+      NSIZO=NOC
+      NSIZVO=NVO
+      NVO2=NIJS2(NSYMHF)+NVOS(NSYMHF)*NVOS(NSYMHF)
+      WRITE(6,*) ' Total space for v-o*v-o NVO2 ',NVO2
+      CALL TIMER(0)
+      IF(IFAMO.EQ.0) THEN
+      CALL TDHFMX(ABP,ABM,XX,IX,IVO,IVOS,ISYMO,NINTMX,NSYMHF
+     X ,NSIZ1,NSIZO)
+CSSS      CALL OUTPUT(ABP, 1, NVO2, 1, NVO2, NVO2, NVO2, 1)
+      CALL TIMER(1)
+      WRITE(6,*) '  Timing for TDHFMX ',TIMENEW
+      END IF
+      NFIRST=0
+      DO 5 IFREQ=1,NFREQ
+      FREQ = VFREQ(IFREQ)
+      FREQ2= FREQ*TWO
+      FREQ3= FREQ*THREE
+      WRITE(6,*) ' ************************************* '
+      WRITE(6,*) ' ******   ! ! ! ! ! ! ! ! !   ******** '
+      WRITE(6,*) ' ************************************* '
+      EVFREQ=FREQ*27.2113957D0
+      CMIF=EVFREQ*8065.54093D0
+      CMFR=1.D0/CMIF
+      WRITE(6,*) ' Fundamental Field Frequency '
+      WRITE(6,*) '(',IFREQ,') ',FREQ,' a.u.',EVFREQ,' eV',CMIF,
+     X ' /cm',CMFR,' cm'
+      EVFREQ=FREQ2*27.2113957D0
+      CMIF=EVFREQ*8065.54093D0
+      CMFR=1.D0/CMIF
+      WRITE(6,*) ' Doubled Field Frequency '
+      WRITE(6,*) '(',IFREQ,') ',FREQ2,' a.u.',EVFREQ,' eV',CMIF,
+     X ' /cm',CMFR,' cm'
+      EVFREQ=FREQ3*27.2113957D0
+      CMIF=EVFREQ*8065.54093D0
+      CMFR=1.D0/CMIF
+      WRITE(6,*) ' Tripled Field Frequency '
+      WRITE(6,*) '(',IFREQ,') ',FREQ3,' a.u.',EVFREQ,' eV',CMIF,
+     X ' /cm',CMFR,' cm'
+      IF(IFREQ.GT.1) NFIRST=1
+      CALL TDSOLV(UP1,UM1,ABP,ABM,APVEC,AMVEC,APVEC1,AMVEC1,ABPM,SCR
+     X ,UVAL,UVEC,WVAL,WVEC,PORT,SVEC,TVEC,ZVEC,YVEC,REDVEC,
+     X IVRT,IOCC,IVRTS,IOCCS,DENP,DENM,FP
+     X ,FM,F1,E1,IA,HMO,EVAL,EVEC,ENRG,UPDATE,ASMALL,ASQUARE,ASCALE
+     X ,ICONV,FREQ,3,NFIRST
+     X ,XX,IX,NSYMHF,NSIZ1,NSIZ3,NSIZO,NSIZVO,NINTMX)
+      CALL TIMER(1)
+      IF(ISBETA.EQ.0.OR.ISHG.EQ.0.OR.IEOPE.EQ.0.OR.IOR.EQ.0) THEN
+C     WRITE(6,*) '  Timing for TDSOLV ',TIMENEW
+C......... Second Harmonic Generation ........
+      CALL CONSW2(F1,F1,E1,E1,UP1,UP1,UM1,UM1,DENP,DENM,FP,FM,
+     X UP2,UM2,F2,E2,EVAL,EVEC,ENRG,FREQ2,6,HMO,XX,IX,NINTMX,
+     X IA,IVRT,IOCC,NSIZ1,NSIZ3,NSIZO)  
+      CALL TIMER(1)
+      WRITE(6,*) '  Timing for CONSW2 ',TIMENEW
+      CALL TUGEN(UP2,UM2,APVEC,AMVEC,APVEC1,AMVEC1,ABP,ABM,ABPM
+     X ,UVAL,UVEC,WVAL,WVEC,PORT,SCR,SVEC,TVEC,ZVEC,YVEC,REDVEC,
+     X IVRT,IOCC,IVRTS,IOCCS
+     X ,DENP,DENM,FP,FM,F2,E2,IA,HMO,EVAL,EVEC,ENRG
+     X ,UPDATE,ASMALL,ASQUARE,ASCALE,ICONV,FREQ2,6,XX,IX,NSYMHF
+     X ,NSIZ1,NSIZ3,NSIZO,NSIZVO,NINTMX)
+      BXXX=3.D0*ENRG(1,1)+ENRG(1,2)+ENRG(2,4)+ENRG(2,4)
+     X                   +ENRG(1,3)+ENRG(3,6)+ENRG(3,6)
+      BXXX=BXXX/5.D0
+      BYYY=3.D0*ENRG(2,2)+ENRG(2,1)+ENRG(1,4)+ENRG(1,4)
+     X                   +ENRG(2,3)+ENRG(3,5)+ENRG(3,5)
+      BYYY=BYYY/5.D0
+      BZZZ=3.D0*ENRG(3,3)+ENRG(3,1)+ENRG(1,6)+ENRG(1,6)
+     X                   +ENRG(3,2)+ENRG(2,5)+ENRG(2,5)
+      BZZZ=BZZZ/5.D0
+      BZPP=(TWO*(ENRG(3,1)+ENRG(3,2)+ENRG(3,3))
+     X         -ENRG(1,6)-ENRG(2,5)-ENRG(3,3))/5.D0
+      BXPP=(TWO*(ENRG(1,1)+ENRG(1,2)+ENRG(1,3))
+     X         -ENRG(1,1)-ENRG(2,4)-ENRG(3,6))/5.D0
+      BYPP=(TWO*(ENRG(2,1)+ENRG(2,2)+ENRG(2,3))
+     X         -ENRG(1,4)-ENRG(2,2)-ENRG(3,5))/5.D0
+      WRITE(6,*) ' >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+      WRITE(6,*) '******* Second Harmonic Generation BETA(-2w;w,w)'
+      WRITE(6,*) ' >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+      WRITE(6,*) '  Parallel x,y,z(a.u.) '
+      WRITE(6,*) BXXX,BYYY,BZZZ
+      BXESU=BXXX*EBETA
+      BYESU=BYYY*EBETA
+      BZESU=BZZZ*EBETA
+      WRITE(6,*) ' Beta in e.s.u. ',BXESU,BYESU,BZESU
+      WRITE(6,*) ' perpendicular = ',BXPP,BYPP,BZPP
+      CALL TIMER(1)
+C     WRITE(6,*) '  Timing for TUGEN ',TIMENEW
+CCC ...... Third Harmonic Generation .............
+      IF(ITHG.NE.0) THEN
+C  ......... 3*omega solution ..........
+C  ......... NFIRST=1 set up assuming Propergator diagonalized ...
+      WRITE(6,*) '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+      WRITE(6,*) ' Solve Linear Equations with Tripled Frequency '
+      WRITE(6,*) '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+      CALL TDSOLV(UWP,UWM,ABP,ABM,APVEC,AMVEC,APVEC1,AMVEC1,ABPM
+     X ,SCR,UVAL,UVEC,WVAL,WVEC,PORT,SVEC,TVEC,ZVEC,YVEC,REDVEC,
+     X IVRT,IOCC,IVRTS,IOCCS,DENP,DENM,FP,FM,FW,EW,IA,HMO,EVAL,
+     X EVEC,ENRG,UPDATE,ASMALL,ASQUARE
+     X ,ASCALE,ICONV,FREQ3,3,1,XX,IX,NSYMHF,NSIZ1,NSIZ3,NSIZO
+     X ,NSIZVO,NINTMX)
+      CALL TIMER(1)
+C     WRITE(6,*) '  Timing for TDSOLV ',TIMENEW
+      CALL THG(F1,F2,FW,E1,E2,EW,UP1,UP2,UM1,UM2,UWP,UWM,
+     X LCOMP,NCOMP,NSIZ1,NSIZ3,NSIZO)
+      CALL TIMER(1)
+      WRITE(6,*) '  Timing for THG ',TIMENEW
+      END IF
+C .....   end of beta switch zero .....
+      END IF
+      IF(IDCSHG.NE.0.OR.IOKE.NE.0.OR.IDCOR.NE.0.OR.ISBETA.NE.0
+     X .OR.IEOPE.NE.0.OR.IOR.NE.0) THEN
+C  ....... Static Perturbation ...........
+      WRITE(6,*) '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+      WRITE(6,*) ' Solve Static Linear Equations '
+      WRITE(6,*) '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+      IF(NITER.EQ.1) THEN
+c YAU : old
+c     CALL ICOPY(NVO2*IINTFP,ABP,1,ABPI,1)
+c YAU : new
+      CALL DCOPY(NVO2,ABP,1,ABPI,1)
+c YAU : end
+C     IREDS=0
+C     DO 10 IIS=1,NSYMHF
+C  10 IF(NVOS(IIS).NE.NRDS(IIS)) IREDS=1
+C     IF(IREDS.EQ.0) THEN
+C     CALL ABSOLS(US,ABPI,APVEC,APVEC1,UVEC,SCR,IVRT,IOCC,IVRTS,IOCCS
+C    X ,DENP,FP,FS,ES,IA,HMO,EVAL,EVEC,ENRG,UPDATE,ASMALL,ASQUARE
+C    X ,ASCALE,ICONV,3,2,XX,IX,NSYMHF,NSIZ1,NSIZ3,NSIZO,NSIZVO,NINTMX)
+C     ELSE
+      CALL ABSGRN(US,ABP,ABM,ABPM,APVEC,AMVEC,APVEC1,UVAL,UVEC
+     X ,WVAL,WVEC,PORT,SVEC,REDVEC,IVRT,IOCC,IVRTS,IOCCS,
+     X DENP,FP,FS,ES,IA,HMO,EVAL,EVEC,ENRG,UPDATE,
+     X ASMALL,ASQUARE,
+     X ACSALE,ICONV,3,XX,IX,NSYMHF,NSIZ1,NSIZ3,NSIZO,NSIZVO,NINTMX)
+C     END IF
+      ELSE
+      CALL ABSOLS(US,ABP,APVEC,APVEC1,UVEC,SCR,IVRT,IOCC,IVRTS,IOCCS
+     X ,DENP,FP,FS,ES,IA,HMO,EVAL,EVEC,ENRG,UPDATE,ASMALL,ASQUARE
+     X ,ASCALE,ICONV,3,2,XX,IX,NSYMHF,NSIZ1,NSIZ3,NSIZO,NSIZVO,NINTMX)
+      CALL TIMER(1)
+      WRITE(6,*) '  Timing for ABSOLV ',TIMENEW
+      END IF
+      CALL BSTAT(FS,ES,US,NSIZ1,NSIZO)
+      CALL SDBETA(F1,FS,E1,ES,UP1,UM1,US,NSIZ1,NSIZO)
+      END IF
+      IF(IDCSHG.NE.0.OR.IOKE.NE.0.OR.IDCOR.NE.0) THEN
+C  ..... construct constant part for beta(-w;0,w) the Combination of
+C ......indices for (0,w) is (xx,yy,zz,xy,yz,zx,yx,zy,xz) .......
+      CALL CONSW2(FS,F1,ES,E1,US,UP1,US,UM1,DENP,DENM,FP,FM,
+     X USWP,USWM,FSW,ESW,EVAL,EVEC,ENRG,FREQ,9,HMO,XX,IX,NINTMX,
+     X IA,IVRT,IOCC,NSIZ1,NSIZ3,NSIZO)  
+      CALL TIMER(1)
+      WRITE(6,*) '  Timing for CONSW2 ',TIMENEW
+      CALL TUGEN(USWP,USWM,APVEC,AMVEC,APVEC1,AMVEC1,ABP,ABM,ABPM
+     X ,UVAL,UVEC,WVAL,WVEC,PORT,SCR,SVEC,TVEC,ZVEC,YVEC,REDVEC,
+     X IVRT,IOCC,IVRTS,IOCCS,DENP,DENM
+     X ,FP,FM,FSW,ESW,IA,HMO,EVAL,EVEC,ENRG,UPDATE,ASMALL,ASQUARE
+     X ,ASCALE,ICONV,FREQ,9,XX,IX,NSYMHF,NSIZ1,NSIZ3,NSIZO,NSIZVO
+     X ,NINTMX)
+      CALL TIMER(1)
+      BXXX=3.D0*ENRG(1,1)+ENRG(1,2)+ENRG(2,4)+ENRG(2,7)
+     X                   +ENRG(1,3)+ENRG(3,6)+ENRG(3,9)
+      BXXX=BXXX/5.D0
+      BYYY=3.D0*ENRG(2,2)+ENRG(2,1)+ENRG(1,4)+ENRG(1,7)
+     X                   +ENRG(2,3)+ENRG(3,5)+ENRG(3,8)
+      BYYY=BYYY/5.D0
+      BZZZ=3.D0*ENRG(3,3)+ENRG(3,1)+ENRG(1,6)+ENRG(1,9)
+     X                   +ENRG(3,2)+ENRG(2,5)+ENRG(2,8)
+      BZZZ=BZZZ/5.D0
+      BXPP=(TWO*(ENRG(1,1)+ENRG(2,7)+ENRG(3,6))
+     X         -ENRG(1,1)-ENRG(2,4)-ENRG(3,9))/5.D0
+      BYPP=(TWO*(ENRG(1,4)+ENRG(2,2)+ENRG(3,8))
+     X         -ENRG(1,7)-ENRG(2,2)-ENRG(3,5))/5.D0
+      BZPP=(TWO*(ENRG(1,9)+ENRG(2,5)+ENRG(3,3))
+     X         -ENRG(1,6)-ENRG(2,8)-ENRG(3,3))/5.D0
+      WRITE(6,*) ' >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+      WRITE(6,*) ' ***Electro Optic Pockel Effect BETA(-w;0,w)'
+      WRITE(6,*) ' >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+      WRITE(6,*) ' Parallel x,y,z(a.u.) '
+      WRITE(6,*) BXXX,BYYY,BZZZ
+      BXESU=BXXX*EBETA
+      BYESU=BYYY*EBETA
+      BZESU=BZZZ*EBETA
+      WRITE(6,*) ' Beta in e.s.u. ',BXESU,BYESU,BZESU
+      WRITE(6,*) ' Perpendicular = ',BXPP,BYPP,BZPP
+C     WRITE(6,*) '  Timing for TUGEN ',TDHF
+      END IF
+      IF(IDCSHG.NE.0.OR.ISHG.NE.0) THEN
+C  ......... 2*omega solution ..........
+C  ...... NFIRST=1 set up, assuming propagator diagonalized ....
+      WRITE(6,*) '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+      WRITE(6,*) ' Solve Linear Equations with Doubled Frequency '
+      WRITE(6,*) '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+      CALL TDSOLV(UWP,UWM,ABP,ABM,APVEC,AMVEC,APVEC1,AMVEC1,ABPM
+     X ,SCR,UVAL,UVEC,WVAL,WVEC,PORT,SVEC,TVEC,ZVEC,YVEC,REDVEC,
+     X IVRT,IOCC,IVRTS,IOCCS,DENP,DENM,FP,FM,FW,EW,IA,HMO,EVAL,
+     X EVEC,ENRG,UPDATE,ASMALL,ASQUARE
+     X ,ASCALE,ICONV,FREQ2,3,1,XX,IX,NSYMHF,NSIZ1,NSIZ3,NSIZO,NSIZVO
+     X ,NINTMX)
+      CALL TIMER(1)
+      WRITE(6,*) '  Timing for TDSOLV ',TIMENEW
+      CALL SHG(F1,FW,E1,EW,UP1,UWP,UM1,UWM,NSIZ1,NSIZO)
+      IF(IDCSHG.NE.0) THEN
+      CALL DCSHG(F1,F2,FS,FSW,FW,E1,E2,ES,ESW,EW,
+     X UP1,UP2,UM1,UM2,US,USWP,USWM,UWP,UWM,
+     X LCOMP,NCOMP,NSIZ1,NSIZ3,NSIZO)
+      CALL TIMER(1)
+      WRITE(6,*) '  Timing for DCSHG ',TIMENEW
+      END IF
+      END IF
+      IF(ISBETA.NE.0.OR.ISHG.NE.0.OR.IEOPE.NE.0.OR.IOR.NE.0) GO TO 5
+      IF(IIDRI.NE.0.OR.IDCOR.NE.0) THEN
+C     CALL CONST2(F1,E1,UP1,UM1,ES2,DENP,FP,US2,FS2,EVAL,ENRG,
+C    X HMO,9,XX,IX,NINTMX,IA,NSIZ1,NSIZ3,NSIZO)  
+C     CALL UGEN(US2,ABP,IVO,IVRT,IOCC,DENP,FP,FS2,EVAL,ENRG,
+C    X UPDATE,ASMALL,ASQUARE,ASCALE,ICONV,IA,HMO,
+C    X ES2,9,XX,IX,NSIZ1,NSIZ3,NSIZO,NSIZVO,NSIZIV,NINTMX)
+      CALL CONSOR(F1,E1,UP1,UM1,DENP,DENM,FP,FM,UWWP,UWWM,
+     X FWW,EWW,EVAL,EVEC,ENRG,9,HMO,XX,IX,NINTMX,IA,IVRT,IOCC,
+     X NSIZ1,NSIZ3,NSIZO)  
+      CALL TIMER(1)
+      WRITE(6,*) '  Timing for CONSOR ',TIMENEW
+      CALL TUGEN(UWWP,UWWM,APVEC,AMVEC,APVEC1,AMVEC1,ABP,ABM,ABPM
+     X ,UVAL,UVEC,WVAL,WVEC,PORT,SCR,SVEC,TVEC,ZVEC,YVEC,REDVEC,
+     X IVRT,IOCC,IVRTS,IOCCS,DENP,DENM
+     X ,FP,FM,FWW,EWW,IA,HMO,EVAL,EVEC,ENRG,UPDATE,ASMALL,ASQUARE
+     X ,ASCALE,ICONV,ZERO,9,XX,IX,NSYMHF,NSIZ1,NSIZ3,NSIZO,NSIZVO
+     X ,NINTMX)
+      BXXX=3.D0*ENRG(1,1)+ENRG(1,2)+ENRG(2,4)+ENRG(2,7)
+     X                   +ENRG(1,3)+ENRG(3,6)+ENRG(3,9)
+      BXXX=BXXX/5.D0
+      BYYY=3.D0*ENRG(2,2)+ENRG(2,1)+ENRG(1,4)+ENRG(1,7)
+     X                   +ENRG(2,3)+ENRG(3,5)+ENRG(3,8)
+      BYYY=BYYY/5.D0
+      BZZZ=3.D0*ENRG(3,3)+ENRG(3,1)+ENRG(1,6)+ENRG(1,9)
+     X                   +ENRG(3,2)+ENRG(2,5)+ENRG(2,8)
+      BZZZ=BZZZ/5.D0
+      WRITE(6,*) ' >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+      WRITE(6,*) '  Optical Rectification: Beta(0;w,-w) ' 
+      WRITE(6,*) ' >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+      WRITE(6,*) ' beta x,y,z(a.u.) ',BXXX,BYYY,BZZZ
+      BXESU=BXXX*EBETA
+      BYESU=BYYY*EBETA
+      BZESU=BZZZ*EBETA
+      WRITE(6,*) ' Beta in e.s.u. ',BXESU,BYESU,BZESU
+      CALL TIMER(1)
+C     WRITE(6,*) '  Timing for TUGEN ',TDHF
+      IF(IIDRI.NE.0)CALL IDRI(F1,F2,FWW,E1,E2,EWW,UP1,UP2,UM1,UM2,UWWP,
+     X UWWM,LCOMP,NCOMP,NSIZ1,NSIZ3,NSIZO)
+      IF(IIDRI.NE.0) CALL TIMER(1)
+C     IF(IIDRI.NE.0) WRITE(6,*) '  Timing for IDRI ',TDHF
+      END IF
+      IF(IOKE.NE.0) THEN
+      CALL CONST2(FS,ES,US,US,ES2,DENP,FP,US2,FS2,EVAL,EVEC,ENRG,
+     X HMO,6,XX,IX,NINTMX,IA,IVRT,IOCC,NSIZ1,NSIZ3,NSIZO)  
+      CALL TIMER(1)
+C     WRITE(6,*) '  Timing for CONST2 ',TDHF
+      WRITE(6,*) ' >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+      WRITE(6,*) 'Solve the Second-Order Static Equation'
+      WRITE(6,*) ' >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+      IF(NITER.EQ.1) THEN
+C     IF(IREDS.EQ.0) THEN
+C     CALL UGEN(US2,ABPI,APVEC,APVEC1,IVRT,IOCC,IVRTS,IOCCS,DENP,FP
+C    X ,FS2,EVAL,EVEC,ENRG,UPDATE,ASMALL,ASQUARE,ASCALE,ICONV,IA,HMO
+C    X ,ES2,6,XX,IX,NSYMHF,NSIZ1,NSIZ3,NSIZO,NSIZVO,NINTMX)
+C     ELSE
+      CALL UGRN(US2,ABP,ABM,ABPM,APVEC,AMVEC,APVEC1,IVRT,IOCC,
+     X IVRTS,IOCCS,PORT,UVAL,UVEC,WVAL,WVEC,SVEC,REDVEC
+     X ,DENP,FP,FS2,EVAL,EVEC,ENRG,UPDATE,ASMALL,ASQUARE,ASCALE,ICONV
+     X ,IA,HMO,ES2,6,XX,IX,NSYMHF,NSIZ1,NSIZ3,NSIZO,NSIZVO,NINTMX)
+C     END IF
+      ELSE
+      CALL UGEN(US2,ABP,APVEC,APVEC1,IVRT,IOCC,IVRTS,IOCCS,DENP,FP
+     X ,FS2,EVAL,EVEC,ENRG,UPDATE,ASMALL,ASQUARE,ASCALE,ICONV,IA,HMO
+     X ,ES2,6,XX,IX,NSYMHF,NSIZ1,NSIZ3,NSIZO,NSIZVO,NINTMX)
+      END IF
+      CALL TIMER(1)
+      BXXX=3.D0*ENRG(1,1)+ENRG(1,2)+ENRG(2,4)+ENRG(2,4)
+     X                   +ENRG(1,3)+ENRG(3,6)+ENRG(3,6)
+      BXXX=BXXX/5.D0
+      BYYY=3.D0*ENRG(2,2)+ENRG(2,1)+ENRG(1,4)+ENRG(1,4)
+     X                   +ENRG(2,3)+ENRG(3,5)+ENRG(3,5)
+      BYYY=BYYY/5.D0
+      BZZZ=3.D0*ENRG(3,3)+ENRG(3,1)+ENRG(1,6)+ENRG(1,6)
+     X                   +ENRG(3,2)+ENRG(2,5)+ENRG(2,5)
+      BZZZ=BZZZ/5.D0
+      WRITE(6,*) ' >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+      WRITE(6,*) ' Static Second Order Hyperpolarizabilities '
+      WRITE(6,*) ' >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+      WRITE(6,*) ' beta x,y,z(a.u.) ',BXXX,BYYY,BZZZ
+      BXESU=BXXX*EBETA
+      BYESU=BYYY*EBETA
+      BZESU=BZZZ*EBETA
+      WRITE(6,*) ' Beta in e.s.u. ',BXESU,BYESU,BZESU
+C     WRITE(6,*) '  Timing for UGEN ',TDHF
+       CALL OKE(F1,FS,FSW,FS2,E1,ES,ESW,ES2,UP1,US,
+     X UM1,US2,USWP,USWM,LCOMP,NCOMP,NSIZ1,NSIZ3,NSIZO)
+      CALL TIMER(1)
+      WRITE(6,*) '  Timing for OKE ',TIMENEW
+      END IF
+      IF(IDCOR.NE.0) CALL DCOR(F1,FS,FSW,FWW,E1,ES,ESW,EWW,US,UP1,
+     X UM1,UWWP,UWWM,USWP,USWM,LCOMP,NCOMP,NSIZ1,NSIZ3,NSIZO)
+      IF(IDCOR.NE.0) CALL TIMER(1)
+      IF(IDCOR.NE.0) WRITE(6,*) '  Timing for DCOR ',TIMENEW
+      CALL GSTAT(FS,FS2,ES,ES2,US,US2,LCOMP,NCOMP,NSIZ1,NSIZ3,NSIZO)
+    5 CONTINUE
+      RETURN
+      END 

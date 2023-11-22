@@ -1,0 +1,596 @@
+      SUBROUTINE GRDPT(NUC,NCNTR,NATOMS,ATMRAD,WGHT,XDAT,YDAT,ZDAT,
+     & COORD,ATMXVEC,ATMYVEC,ATMZVEC,RI,RIJ,WTINTR,TOTWT,XCDNT,YCDNT,
+     & ZCDNT,RSQRD,IQ1,IQ2,IQ3,IQ4,IQ5,IQ6,IQ7,IQ8,IFACT,NRADPT,AIJ,
+     & BSLRDII,XBSL,NITR,NAPTS,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,RADWT)
+C
+C This routine sets up the numerical grid for different
+C abelian symmetries.
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C
+      COMMON /PAR/ PI,PIX4
+      COMMON /IPAR/ LUOUT
+C
+      DIMENSION ATMRAD(86),WGHT(98),XDAT(194),YDAT(194),ZDAT(194),
+     & COORD(NATOMS*3),
+     & ATMXVEC(NATOMS,NATOMS),ATMYVEC(NATOMS,NATOMS),
+     & ATMZVEC(NATOMS,NATOMS),RI(NATOMS),RIJ(NATOMS,NATOMS),
+     & WTINTR(NATOMS),TOTWT(NRADPT,194),NUC(NATOMS),
+     & XCDNT(NATOMS,NRADPT,194),YCDNT(NATOMS,NRADPT,194),
+     & ZCDNT(NATOMS,NRADPT,194),RSQRD(NATOMS,NRADPT,194),
+     & AIJ(NATOMS,NATOMS),
+     & BSLRDII(NATOMS),XBSL(86),RRR(NATOMS,NRADPT,194),
+     & XGRDPT(NATOMS,NRADPT,194),YGRDPT(NATOMS,NRADPT,194),
+     & ZGRDPT(NATOMS,NRADPT,194),ANGWT(194),RADWT(50)
+C
+C     EULER-MACLAURIN SCHEME, RADIAL INTEGRATION
+C     GAUSS-MARKOV QUADRATURE, ANGULAR INTEGRATION
+C     BECKE POLYATOMIC SCHEME
+C
+C Atomic number of integration center for radial scaling
+      INUC=NUC(NCNTR)
+C Set up array of Bragg-Slater radii
+      DO 777 IATM=1,NATOMS
+         BSLRDII(IATM)=XBSL(NUC(IATM))
+  777 CONTINUE
+C If NCNTR is a ghost atom don't integrate
+      IF(INUC.EQ.110)RETURN
+C
+C Set up atomic vectors and calculate the surface shifting 
+C parameter AIJ
+      DO 6010 IATM=1,NATOMS
+         XCNTR=COORD((IATM-1)*3+1)
+         YCNTR=COORD((IATM-1)*3+2)
+         ZCNTR=COORD((IATM-1)*3+3)
+         DO 6020 JATM=1,IATM-1
+            ATMXVEC(IATM,JATM)=XCNTR-COORD((JATM-1)*3+1)
+            ATMYVEC(IATM,JATM)=YCNTR-COORD((JATM-1)*3+2)
+            ATMZVEC(IATM,JATM)=ZCNTR-COORD((JATM-1)*3+3)
+            RIJ(IATM,JATM)=DSQRT(ATMXVEC(IATM,JATM)**2.D+00
+     &           +ATMYVEC(IATM,JATM)**2.D+00+ATMZVEC(IATM,JATM)**2.D+00)
+            CHI=BSLRDII(IATM)/BSLRDII(JATM)
+            CHI2=(CHI-1.D+00)/(CHI+1.D+00)
+            AIJ(IATM,JATM)=CHI2/(CHI2*CHI2-1.D+00)
+            IF(AIJ(IATM,JATM).GT.0.5D+00) AIJ(IATM,JATM)=0.5D+00
+            IF(AIJ(IATM,JATM).LT.-0.5D+00) AIJ(IATM,JATM)=-0.5D+00
+ 6020 CONTINUE
+         DO 6030 JATM=IATM+1,NATOMS
+            ATMXVEC(IATM,JATM)=XCNTR-COORD((JATM-1)*3+1)
+            ATMYVEC(IATM,JATM)=YCNTR-COORD((JATM-1)*3+2)
+            ATMZVEC(IATM,JATM)=ZCNTR-COORD((JATM-1)*3+3)
+            RIJ(IATM,JATM)=DSQRT(ATMXVEC(IATM,JATM)**2.D+00
+     &           +ATMYVEC(IATM,JATM)**2.D+00+ATMZVEC(IATM,JATM)**2.D+00)
+            CHI=BSLRDII(IATM)/BSLRDII(JATM)
+            CHI2=(CHI-1.D+00)/(CHI+1.D+00)
+            AIJ(IATM,JATM)=CHI2/(CHI2*CHI2-1.D+00)
+            IF(AIJ(IATM,JATM).GT.0.5D+00) AIJ(IATM,JATM)=0.5D+00
+            IF(AIJ(IATM,JATM).LT.-0.5D+00) AIJ(IATM,JATM)=-0.5D+00
+ 6030 CONTINUE
+         ATMXVEC(IATM,IATM)=0.D+00
+         ATMYVEC(IATM,IATM)=0.D+00
+         ATMZVEC(IATM,IATM)=0.D+00
+ 6010 CONTINUE
+C
+C     Number of radial points
+      ITMP=NRADPT
+      XTMP=REAL(ITMP)
+      XNP1=XTMP+1.D+00
+C
+C     Set radial grid scaling using Slaters rules
+      RAD=ATMRAD(INUC)
+C
+C Integrate over one octant of angular points
+      IF(IFACT.EQ.8)THEN
+C octant xyz
+      I1=1
+      I2=31
+      IOFF1=0
+      IOFF2=0
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+
+         NAPTS=31
+         GOTO 300
+      ENDIF
+C Integrate over two octants
+      IF(IFACT.EQ.4)THEN
+C octants xyz and xy(-z)
+         IF(IQ2.EQ.1)THEN
+            XWGHT2=WGHT(2)
+            XWGHT3=WGHT(3)
+            XWGHT4=WGHT(4)
+            XWGHT7=WGHT(7)
+            XWGHT10=WGHT(10)
+            WGHT(2)=2.D+00*WGHT(2)
+            WGHT(3)=2.D+00*WGHT(3)
+            WGHT(4)=2.D+00*WGHT(4)
+            WGHT(7)=2.D+00*WGHT(7)
+            WGHT(10)=2.D+00*WGHT(10)
+C
+      I1=1
+      I2=57
+      IOFF1=0
+      IOFF2=0
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+         WGHT(2)=XWGHT2
+         WGHT(3)=XWGHT3
+         WGHT(4)=XWGHT4
+         WGHT(7)=XWGHT7
+         WGHT(10)=XWGHT10
+         NAPTS=57
+         GOTO 300
+      ENDIF
+C octants xyz and x(-y)z
+         IF(IQ3.EQ.1)THEN
+            XWGHT1=WGHT(1)
+            XWGHT3=WGHT(3)
+            XWGHT5=WGHT(5)
+            XWGHT8=WGHT(8)
+            XWGHT11=WGHT(11)
+            WGHT(1)=2.D+00*WGHT(1)
+            WGHT(3)=2.D+00*WGHT(3)
+            WGHT(5)=2.D+00*WGHT(5)
+            WGHT(8)=2.D+00*WGHT(8)
+            WGHT(11)=2.D+00*WGHT(11)
+C
+C octant xyz
+      I1=1
+      I2=31
+      IOFF1=0
+      IOFF2=0
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+C octant x(-y)z
+      I1=32
+      I2=57
+      IOFF1=26
+      IOFF2=0
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+            WGHT(1)=XWGHT1
+            WGHT(3)=XWGHT3
+            WGHT(5)=XWGHT5
+            WGHT(8)=XWGHT8
+            WGHT(11)=XWGHT11
+            NAPTS=57
+            GOTO 300
+         ENDIF
+C octants xyz and (-x)yz
+         IF(IQ5.EQ.1)THEN
+            XWGHT1=WGHT(1)
+            XWGHT2=WGHT(2)
+            XWGHT6=WGHT(6)
+            XWGHT9=WGHT(9)
+            XWGHT12=WGHT(12)
+            WGHT(1)=2.D+00*WGHT(1)
+            WGHT(2)=2.D+00*WGHT(2)
+            WGHT(6)=2.D+00*WGHT(6)
+            WGHT(9)=2.D+00*WGHT(9)
+            WGHT(12)=2.D+00*WGHT(12)
+C
+C octant xyz
+      I1=1
+      I2=31
+      IOFF1=0
+      IOFF2=0
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+C octant (-x)yz
+      I1=32
+      I2=57
+      IOFF1=52
+      IOFF2=0
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+            WGHT(1)=XWGHT1
+            WGHT(2)=XWGHT2
+            WGHT(6)=XWGHT6
+            WGHT(9)=XWGHT9
+            WGHT(12)=XWGHT12
+            NAPTS=57
+            GOTO 300
+         ENDIF
+      ENDIF
+C
+C Integrate over four octants
+      IF(IFACT.EQ.2)THEN
+C octants xyz, xy(-z), x(-y)z, x(-y)(-z)
+         IF(IQ4.EQ.1)THEN
+C
+            XWGHT1=WGHT(1)
+            XWGHT2=WGHT(2)
+            XWGHT3=WGHT(3)
+            XWGHT4=WGHT(4)
+            XWGHT5=WGHT(5)
+            XWGHT7=WGHT(7)
+            XWGHT8=WGHT(8)
+            XWGHT10=WGHT(10)
+            XWGHT11=WGHT(11)
+            XWGHT32=WGHT(32)
+            XWGHT33=WGHT(33)
+            XWGHT35=WGHT(35)
+            XWGHT37=WGHT(37)
+            WGHT(1)=2.D+00*WGHT(1)
+            WGHT(2)=2.D+00*WGHT(2)
+            WGHT(3)=4.D+00*WGHT(3)
+            WGHT(4)=2.D+00*WGHT(4)
+            WGHT(5)=2.D+00*WGHT(5)
+            WGHT(7)=2.D+00*WGHT(7)
+            WGHT(8)=2.D+00*WGHT(8)
+            WGHT(10)=2.D+00*WGHT(10)
+            WGHT(11)=2.D+00*WGHT(11)
+            WGHT(32)=2.D+00*WGHT(32)
+            WGHT(33)=2.D+00*WGHT(33)
+            WGHT(35)=2.D+00*WGHT(35)
+            WGHT(37)=2.D+00*WGHT(37)
+C
+C
+C octants xyz and xy(-z)
+      I1=1
+      I2=57
+      IOFF1=0
+      IOFF2=0
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+C
+C octant x(-y)z
+      I1=58
+      I2=83
+      IOFF1=0
+      IOFF2=26
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+C
+C octant x(-y)(-z)
+      I1=84
+      I2=105
+      IOFF1=26
+      IOFF2=26
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+            WGHT(1)=XWGHT1
+            WGHT(2)=XWGHT2
+            WGHT(3)=XWGHT3
+            WGHT(4)=XWGHT4
+            WGHT(5)=XWGHT5
+            WGHT(7)=XWGHT7
+            WGHT(8)=XWGHT8
+            WGHT(10)=XWGHT10
+            WGHT(11)=XWGHT11
+            WGHT(32)=XWGHT32
+            WGHT(33)=XWGHT33
+            WGHT(35)=XWGHT35
+            WGHT(37)=XWGHT37
+            NAPTS=105
+            GOTO 300
+         ENDIF
+C octants xyz, xy(-z), (-x)yz, (-x)y(-z)
+         IF(IQ6.EQ.1)THEN
+C octants xyz and xy(-z)
+            XWGHT1=WGHT(1)
+            XWGHT2=WGHT(2)
+            XWGHT3=WGHT(3)
+            XWGHT4=WGHT(4)
+            XWGHT6=WGHT(6)
+            XWGHT7=WGHT(7)
+            XWGHT9=WGHT(9)
+            XWGHT10=WGHT(10)
+            XWGHT12=WGHT(12)
+            XWGHT32=WGHT(32)
+            XWGHT34=WGHT(34)
+            XWGHT36=WGHT(36)
+            XWGHT38=WGHT(38)
+            WGHT(1)=2.D+00*WGHT(1)
+            WGHT(2)=4.D+00*WGHT(2)
+            WGHT(3)=2.D+00*WGHT(3)
+            WGHT(4)=2.D+00*WGHT(4)
+            WGHT(6)=2.D+00*WGHT(6)
+            WGHT(7)=2.D+00*WGHT(7)
+            WGHT(9)=2.D+00*WGHT(9)
+            WGHT(10)=2.D+00*WGHT(10)
+            WGHT(12)=2.D+00*WGHT(12)
+            WGHT(32)=2.D+00*WGHT(32)
+            WGHT(34)=2.D+00*WGHT(34)
+            WGHT(36)=2.D+00*WGHT(36)
+            WGHT(38)=2.D+00*WGHT(38)
+C
+      I1=1
+      I2=57
+      IOFF1=0
+      IOFF2=0
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+            WGHT(1)=XWGHT1
+            WGHT(2)=XWGHT2
+            WGHT(3)=XWGHT3
+            WGHT(4)=XWGHT4
+            WGHT(6)=XWGHT6
+            WGHT(7)=XWGHT7
+            WGHT(9)=XWGHT9
+            WGHT(10)=XWGHT10
+            WGHT(12)=XWGHT12
+            WGHT(32)=XWGHT32
+            WGHT(34)=XWGHT34
+            WGHT(36)=XWGHT36
+            WGHT(38)=XWGHT38
+C
+C octant (-x)yz
+            XWGHT32=WGHT(32)
+            XWGHT33=WGHT(33)
+            XWGHT35=WGHT(35)
+            XWGHT37=WGHT(37)
+            WGHT(32)=2.D+00*WGHT(32)
+            WGHT(33)=2.D+00*WGHT(33)
+            WGHT(35)=2.D+00*WGHT(35)
+            WGHT(37)=2.D+00*WGHT(37)
+C
+      I1=58
+      I2=83
+      IOFF1=26
+      IOFF2=26
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+            WGHT(32)=XWGHT32
+            WGHT(33)=XWGHT33
+            WGHT(35)=XWGHT35
+            WGHT(37)=XWGHT37
+C
+C octant (-x)y(-z)
+      I1=84
+      I2=105
+      IOFF1=48
+      IOFF2=26
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+            NAPTS=105
+            GOTO 300
+         ENDIF
+C octants xyz, x(-y)z, (-x)yz, (-x)(-y)z
+         IF(IQ7.EQ.1)THEN
+            XWGHT1=WGHT(1)
+            XWGHT2=WGHT(2)
+            XWGHT3=WGHT(3)
+            XWGHT5=WGHT(5)
+            XWGHT6=WGHT(6)
+            XWGHT8=WGHT(8)
+            XWGHT9=WGHT(9)
+            XWGHT11=WGHT(11)
+            XWGHT12=WGHT(12)
+            XWGHT32=WGHT(32)
+            XWGHT34=WGHT(34)
+            XWGHT36=WGHT(36)
+            XWGHT38=WGHT(38)
+            WGHT(1)=4.D+00*WGHT(1)
+            WGHT(2)=2.D+00*WGHT(2)
+            WGHT(3)=2.D+00*WGHT(3)
+            WGHT(5)=2.D+00*WGHT(5)
+            WGHT(6)=2.D+00*WGHT(6)
+            WGHT(8)=2.D+00*WGHT(8)
+            WGHT(9)=2.D+00*WGHT(9)
+            WGHT(11)=2.D+00*WGHT(11)
+            WGHT(12)=2.D+00*WGHT(12)
+            WGHT(32)=2.D+00*WGHT(32)
+            WGHT(34)=2.D+00*WGHT(34)
+            WGHT(36)=2.D+00*WGHT(36)
+            WGHT(38)=2.D+00*WGHT(38)
+C
+C octant xyz
+      I1=1
+      I2=31
+      IOFF1=0
+      IOFF2=0
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+C octant x(-y)z
+      I1=32
+      I2=57
+      IOFF1=26
+      IOFF2=0
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+C octant (-x)yz
+      I1=58
+      I2=83
+      IOFF1=26
+      IOFF2=26
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+C octant (-x)(-y)z
+      I1=84
+      I2=105
+      IOFF1=70
+      IOFF2=26
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+            WGHT(1)=XWGHT1
+            WGHT(2)=XWGHT2
+            WGHT(3)=XWGHT3
+            WGHT(5)=XWGHT5
+            WGHT(6)=XWGHT6
+            WGHT(8)=XWGHT8
+            WGHT(9)=XWGHT9
+            WGHT(11)=XWGHT11
+            WGHT(12)=XWGHT12
+            WGHT(32)=XWGHT32
+            WGHT(34)=XWGHT34
+            WGHT(36)=XWGHT36
+            WGHT(38)=XWGHT38
+            NAPTS=105
+            GOTO 300
+         ENDIF
+      ENDIF
+C
+C     If no previous if statements have been satisfied, then C1
+C     Fill all eight octants with angular points and weights
+C
+            XWGHT1=WGHT(1)
+            XWGHT2=WGHT(2)
+            XWGHT3=WGHT(3)
+            XWGHT4=WGHT(4)
+            XWGHT5=WGHT(5)
+            XWGHT6=WGHT(6)
+            XWGHT7=WGHT(7)
+            XWGHT8=WGHT(8)
+            XWGHT9=WGHT(9)
+            XWGHT10=WGHT(10)
+            XWGHT11=WGHT(11)
+            XWGHT12=WGHT(12)
+            XWGHT32=WGHT(32)
+            XWGHT33=WGHT(33)
+            XWGHT34=WGHT(34)
+            XWGHT35=WGHT(35)
+            XWGHT36=WGHT(36)
+            XWGHT37=WGHT(37)
+            XWGHT38=WGHT(38)
+            XWGHT58=WGHT(58)
+            XWGHT59=WGHT(59)
+            XWGHT60=WGHT(60)
+            WGHT(1)=4.D+00*WGHT(1)
+            WGHT(2)=4.D+00*WGHT(2)
+            WGHT(3)=4.D+00*WGHT(3)
+            WGHT(4)=2.D+00*WGHT(4)
+            WGHT(5)=2.D+00*WGHT(5)
+            WGHT(6)=2.D+00*WGHT(6)
+            WGHT(7)=2.D+00*WGHT(7)
+            WGHT(8)=2.D+00*WGHT(8)
+            WGHT(9)=2.D+00*WGHT(9)
+            WGHT(10)=2.D+00*WGHT(10)
+            WGHT(11)=2.D+00*WGHT(11)
+            WGHT(12)=2.D+00*WGHT(12)
+            WGHT(32)=4.D+00*WGHT(32)
+            WGHT(33)=2.D+00*WGHT(33)
+            WGHT(34)=2.D+00*WGHT(34)
+            WGHT(35)=2.D+00*WGHT(35)
+            WGHT(36)=2.D+00*WGHT(36)
+            WGHT(37)=2.D+00*WGHT(37)
+            WGHT(38)=2.D+00*WGHT(38)
+            WGHT(58)=2.D+00*WGHT(58)
+            WGHT(59)=2.D+00*WGHT(59)
+            WGHT(60)=2.D+00*WGHT(60)
+C
+C octants xyz and xy(-z)
+      I1=1
+      I2=57
+      IOFF1=0
+      IOFF2=0
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+C octant x(-y)z
+      I1=58
+      I2=83
+      IOFF1=0
+      IOFF2=26
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+C octant (-x)yz and x(-y)(-z)
+      I1=84
+      I2=131
+      IOFF1=0
+      IOFF2=52
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+C octant (-x)y(-z)
+      I1=132
+      I2=153
+      IOFF1=0
+      IOFF2=74
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+C octant (-x)(-y)z and (-x)(-y)(-z)
+      I1=154
+      I2=194
+      IOFF1=0
+      IOFF2=96
+      CALL OCT(ITMP,XDAT,YDAT,ZDAT,XCDNT,YCDNT,ZCDNT,ATMXVEC,ATMYVEC,
+     & ATMZVEC,RSQRD,RI,RIJ,NATOMS,AIJ,WTINTR,TOTWT,WGHT,I1,I2,IOFF1,
+     & IOFF2,NITR,NCNTR,RAD,NRADPT,NUC,RRR,XGRDPT,YGRDPT,ZGRDPT,ANGWT,
+     & RADWT)
+C
+            WGHT(1)=XWGHT1
+            WGHT(2)=XWGHT2
+            WGHT(3)=XWGHT3
+            WGHT(4)=XWGHT4
+            WGHT(5)=XWGHT5
+            WGHT(6)=XWGHT6
+            WGHT(7)=XWGHT7
+            WGHT(8)=XWGHT8
+            WGHT(9)=XWGHT9
+            WGHT(10)=XWGHT10
+            WGHT(11)=XWGHT11
+            WGHT(12)=XWGHT12
+            WGHT(32)=XWGHT32
+            WGHT(33)=XWGHT33
+            WGHT(34)=XWGHT34
+            WGHT(35)=XWGHT35
+            WGHT(36)=XWGHT36
+            WGHT(37)=XWGHT37
+            WGHT(38)=XWGHT38
+            WGHT(58)=XWGHT58
+            WGHT(59)=XWGHT59
+            WGHT(60)=XWGHT60
+            NAPTS=194
+C
+  300 CONTINUE
+C
+      RETURN
+      END

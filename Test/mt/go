@@ -1,0 +1,22 @@
+#!/bin/ksh
+. ~yau/.profile
+. ~yau/.kshrc
+
+v main.F
+
+echo Processing main.f...
+cpp -P main.F main.f
+
+echo Compiling multi-threaded main.f...
+f77 -fast main.f -o multi \
+    -L../../ATLAS.mt/lib/SunOS_SunUSX_4 -llapack -lptf77blas -lptcblas -latlas \
+    -lpthread || exit 1
+
+echo Compiling single-threaded main.f...
+f77 -fast main.f -o single \
+    -L../../ATLAS/lib/SunOS_SunUSX -llapack -lf77blas -lcblas -latlas \
+    || exit 1
+
+time ./multi
+time ./single
+

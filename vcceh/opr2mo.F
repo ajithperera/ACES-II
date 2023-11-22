@@ -1,0 +1,166 @@
+      SUBROUTINE OPR2MO(LABEL,OPIJ,OPAB,OPAI,F,BUF,
+     &                  NBAS,NBAST,IUHF,IRREPX,IPERT,VPROP)
+C
+C THIS ROUTINE READS THE MATRIX ELEMENTS OF A ONE-ELECTRON
+C OPERATOR FROM JOBARC AND TRANSFORM THE OPERATOR TO THE
+C MOLECULAR ORBITAL BASIS.
+C
+CEND
+      IMPLICIT INTEGER (A-Z)
+      DIMENSION IOFFO(8),IOFFV(8)
+      DOUBLE PRECISION F(NBAS,NBAS),BUF(4*NBAST*NBAST),X,ONEM,DENOM
+      DOUBLE PRECISION OPIJ(*),OPAB(*),OPAI(*)
+      LOGICAL VPROP
+      CHARACTER*1 SP(2)
+      CHARACTER*8 LABEL
+      LOGICAL NONHF
+      COMMON /INFO/ NOCCO(2),NVRTO(2)
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON/AOSYM/IAOPOP(8),IOFFAO(8),IOFFS(8,2),IRPDPDAO(8),
+     &             ISTART(8,8),ISTARTMO(8,3)
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPA(255),IRREPB(255),
+     &                DIRPRD(8,8)
+      COMMON /SYM/ POP(8,2),VRT(8,2),NT(2),NFEA(2),NFMI(2)
+      COMMON/SYMPOP/IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON /FLAGS/ IFLAGS(100)
+      DATA ONEM /-1.0/
+
+      DATA SP /'A','B'/
+C
+      NNP1O2(I)=(I*(I+1))/2
+C
+      NBAS2=NBAS*NBAS
+      NBAST2=NBAST*NBAST
+      IOFFBF=NBAST*NBAST+1
+C
+C IRREPX CORRESPONDS TO THE SYMMETRY OF THE PERTURBATION
+C
+C
+C LOOP OVER SPIN CASE
+C
+      ITHRUIJ=0
+      ITHRUAB=0
+      ITHRUAI=0
+C     
+      IF (IFLAGS(18) .EQ. 8) THEN
+         IANTI = 1
+      ELSE
+         IANTI = 0
+      ENDIF
+C
+      DO 1001 ISPIN=1,1+IUHF
+C
+C CALCULATE OFFSETS
+C
+       IOFFO(1)=0
+       IOFFV(1)=NOCCO(ISPIN)
+       DO 1 IRREP=1,NIRREP-1
+        IOFFO(IRREP+1)=IOFFO(IRREP)+POP(IRREP,ISPIN)
+        IOFFV(IRREP+1)=IOFFV(IRREP)+VRT(IRREP,ISPIN)
+1      CONTINUE
+C
+C PICK UP OPERATOR INTEGRALS FROM JOBARC AND TRANSFORM TO THE MO BASIS
+C
+       IF (VPROP) THEN
+C
+          CALL GETREC(20, 'JOBARC', LABEL, NNP1O2(NBAST)*IINTFP, F)
+          IF (IANTI .EQ. 1) THEN
+             CALL EXPND(F, BUF, NBAST, IANTI)
+          ELSE
+             CALL EXPND(F, BUF, NBAST, IANTI)
+          ENDIF
+C
+          CALL SCOPY (NBAST2, BUF, 1, F, 1)
+C
+       ELSE
+C
+C Get the operator integral from the 'GAMLAM' or 'DERINT' file. Mostly, here we deal
+C with the NMR perturbations.
+C
+         LISTF = 198
+         IF (IFLAGS(18) .EQ. 8 .OR. IFLAGS(18) .EQ. 9 .OR.
+     &      IFLAGS(18) .EQ. 10) LISTF = 398
+         
+          CALL GETLST(F, IPERT, 1, 1, IRREPX, LISTF)
+          CALL ZERO (BUF, NBAST2)
+C
+          IF (IANTI .EQ. 1) THEN
+             CALL EXPND(F, BUF, NBAST, IANTI)
+          ELSE
+             CALL EXPND(F, BUF, NBAST, IANTI)
+          ENDIF
+C
+          CALL SCOPY (NBAST2, BUF, 1, F, 1)
+C
+       ENDIF
+C     
+       CALL AO2MO2(F,F,BUF,BUF(IOFFBF),NBAS,NBAST,ISPIN)
+       CALL FILTER(F,NBAS*NBAS,1.D-10)
+C
+       IF (LABEL(1:5).EQ.'RHOSQ'.AND.IUHF.NE.0.AND.ISPIN.EQ.2 .AND.
+     &         IANTI .EQ. 0)THEN
+          CALL VMINUS(F,NBAS*NBAS)
+       ENDIF
+C
+#ifdef _DEBUG_LVLM
+      write(6,"(a)") "The MO basis dipole integrals"
+      call output(F,1,Nbas,1,Nbas,Nbas,Nbas,1)
+#endif
+
+       IF(IFLAGS(1).GT.40)THEN
+        WRITE(6,5000)LABEL
+5000    FORMAT(T3,A8,' MO basis operator integrals ')
+        WRITE(6,'((2I5,F10.5,20X,2I5,F10.5))')((I,J,F(I,J),
+     &        I=1,NBAS),J=1,NBAS)
+       ENDIF  
+C
+C FORM SYMMETRY PACKED OCCUPIED-OCCUPIED PART.
+C
+       DO 10 IRREPR=1,NIRREP
+        IRREPL=DIRPRD(IRREPR,IRREPX)
+        DO 20 J=1,POP(IRREPR,ISPIN)
+         DO 21 I=1,POP(IRREPL,ISPIN)
+          ITHRUIJ=ITHRUIJ+1
+          OPIJ(ITHRUIJ)=F(I+IOFFO(IRREPL),J+IOFFO(IRREPR))
+21       CONTINUE
+20      CONTINUE
+10     CONTINUE
+C
+C FORM SYMMETRY PACKED VIRTUAL-VIRTUAL PART.
+C
+       DO 110 IRREPR=1,NIRREP
+        IRREPL=DIRPRD(IRREPR,IRREPX)
+        DO 120 J=1,VRT(IRREPR,ISPIN)
+         DO 121 I=1,VRT(IRREPL,ISPIN)
+          ITHRUAB=ITHRUAB+1
+          OPAB(ITHRUAB)=F(I+IOFFV(IRREPL),J+IOFFV(IRREPR))
+121      CONTINUE
+120     CONTINUE
+110    CONTINUE
+C
+C FORM SYMMETRY PACKED VIRTUAL-OCCUPIED PART.
+C
+       DO 210 IRREPR=1,NIRREP
+        IRREPL=DIRPRD(IRREPR,IRREPX)
+        DO 220 I=1,POP(IRREPR,ISPIN)
+         DO 221 A=1,VRT(IRREPL,ISPIN)
+          ITHRUAI=ITHRUAI+1
+          OPAI(ITHRUAI)=F(A+IOFFV(IRREPL),I+IOFFO(IRREPR))
+221      CONTINUE
+220     CONTINUE
+210    CONTINUE
+#ifdef _DEBUG_LVL0
+C      lenoo=irpdpd(irrepx,20+ispin)
+C      lenvv=irpdpd(irrepx,18+ispin)
+C      lenvo=irpdpd(irrepx,8+ispin)
+C      Write(6,"(a)") "The OO-MO dipole matrices"
+C      write(6,"(6(1x,F12.6))") (Opij(i),i=1,Lenoo)
+C      Write(6,"(a)") "The VV-MO dipole matrices"
+C      write(6,"(6(1x,F12.6))") (Opab(i),i=1,Lenvv)
+C      Write(6,"(a)") "The VO-MO dipole matrices"
+C      write(6,"(6(1x,F12.6))") (Opai(i),i=1,Lenvo)
+#endif
+1001  CONTINUE
+C
+      RETURN
+      END 

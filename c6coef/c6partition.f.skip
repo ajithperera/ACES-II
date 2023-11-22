@@ -1,0 +1,2761 @@
+      subroutine c6partition(numocca,numoccb,c6cff,system)
+      implicit none
+
+      integer iii, jjj
+
+      integer numocca, numoccb
+      
+      double precision c6cff(numocca,numoccb)
+      
+      double precision grpc6
+
+      character*7 system
+
+      write(*,*)
+      write(*,*)
+      write(*,5)
+      do iii = 1, numocca
+         do jjj = 1, numoccb
+            write(*,10) iii, jjj, c6cff(iii,jjj)
+         end do 
+      end do
+      write(*,*)
+      write(*,*)
+      
+      if (system.eq.'DIGLY  ') then
+
+CCC A: cc-pvdz drop digly
+CCC B: cc-pvdz drop digly
+     
+CCC carboxyl-carboxyl
+      write(*,140) 
+      write(*,10)  1,  1, c6cff(1,1)
+      write(*,10)  1,  2, c6cff(1,2)
+      write(*,10)  1,  6, c6cff(1,6)
+      write(*,10)  1,  7, c6cff(1,7)
+      write(*,10)  1,  8, c6cff(1,8)
+      write(*,10)  1, 10, c6cff(1,10)
+      write(*,10)  1, 23, c6cff(1,23)
+      write(*,10)  1, 24, c6cff(1,24)
+      write(*,10)  2,  1, c6cff(2,1)
+      write(*,10)  2,  2, c6cff(2,2)
+      write(*,10)  2,  6, c6cff(2,6)
+      write(*,10)  2,  7, c6cff(2,7)
+      write(*,10)  2,  8, c6cff(2,8)
+      write(*,10)  2, 10, c6cff(2,10)
+      write(*,10)  2, 23, c6cff(2,23)
+      write(*,10)  2, 24, c6cff(2,24)
+      write(*,10)  6,  1, c6cff(6,1)
+      write(*,10)  6,  2, c6cff(6,2)
+      write(*,10)  6,  6, c6cff(6,6)
+      write(*,10)  6,  7, c6cff(6,7)
+      write(*,10)  6,  8, c6cff(6,8)
+      write(*,10)  6, 10, c6cff(6,10)
+      write(*,10)  6, 23, c6cff(6,23)
+      write(*,10)  6, 24, c6cff(6,24)
+      write(*,10)  7,  1, c6cff(7,1)
+      write(*,10)  7,  2, c6cff(7,2)
+      write(*,10)  7,  6, c6cff(7,6)
+      write(*,10)  7,  7, c6cff(7,7)
+      write(*,10)  7,  8, c6cff(7,8)
+      write(*,10)  7, 10, c6cff(7,10)
+      write(*,10)  7, 23, c6cff(7,23)
+      write(*,10)  7, 24, c6cff(7,24)
+      write(*,10)  8,  1, c6cff(8,1)
+      write(*,10)  8,  2, c6cff(8,2)
+      write(*,10)  8,  6, c6cff(8,6)
+      write(*,10)  8,  7, c6cff(8,7)
+      write(*,10)  8,  8, c6cff(8,8)
+      write(*,10)  8, 10, c6cff(8,10)
+      write(*,10)  8, 23, c6cff(8,23)
+      write(*,10)  8, 24, c6cff(8,24)
+      write(*,10) 10,  1, c6cff(10,1)
+      write(*,10) 10,  2, c6cff(10,2)
+      write(*,10) 10,  6, c6cff(10,6)
+      write(*,10) 10,  7, c6cff(10,7)
+      write(*,10) 10,  8, c6cff(10,8)
+      write(*,10) 10, 10, c6cff(10,10)
+      write(*,10) 10, 23, c6cff(10,23)
+      write(*,10) 10, 24, c6cff(10,24)
+      write(*,10) 23,  1, c6cff(23,1)
+      write(*,10) 23,  2, c6cff(23,2)
+      write(*,10) 23,  6, c6cff(23,6)
+      write(*,10) 23,  7, c6cff(23,7)
+      write(*,10) 23,  8, c6cff(23,8)
+      write(*,10) 23, 10, c6cff(23,10)
+      write(*,10) 23, 23, c6cff(23,23)
+      write(*,10) 23, 24, c6cff(23,24)
+      write(*,10) 24,  1, c6cff(24,1)
+      write(*,10) 24,  2, c6cff(24,2)
+      write(*,10) 24,  6, c6cff(24,6)
+      write(*,10) 24,  7, c6cff(24,7)
+      write(*,10) 24,  8, c6cff(24,8)
+      write(*,10) 24, 10, c6cff(24,10)
+      write(*,10) 24, 23, c6cff(24,23)
+      write(*,10) 24, 24, c6cff(24,24)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,1) + c6cff(1,2) + c6cff(1,6) +
+     & c6cff(1,7) + c6cff(1,8) + c6cff(1,10) +
+     & c6cff(1,23) + c6cff(1,24) +
+     & c6cff(2,1) + c6cff(2,2) + c6cff(2,6) +
+     & c6cff(2,7) + c6cff(2,8) + c6cff(2,10) +
+     & c6cff(2,23) + c6cff(2,24) +
+     & c6cff(6,1) + c6cff(6,2) + c6cff(6,6) +
+     & c6cff(6,7) + c6cff(6,8) + c6cff(6,10) +
+     & c6cff(6,23) + c6cff(6,24) +
+     & c6cff(7,1) + c6cff(7,2) + c6cff(7,6) +
+     & c6cff(7,7) + c6cff(7,8) + c6cff(7,10) +
+     & c6cff(7,23) + c6cff(7,24) +
+     & c6cff(8,1) + c6cff(8,2) + c6cff(8,6) +
+     & c6cff(8,7) + c6cff(8,8) + c6cff(8,10) +
+     & c6cff(8,23) + c6cff(8,24) +
+     & c6cff(10,1) + c6cff(10,2) + c6cff(10,6) +
+     & c6cff(10,7) + c6cff(10,8) + c6cff(10,10) +
+     & c6cff(10,23) + c6cff(10,24) +
+     & c6cff(23,1) + c6cff(23,2) + c6cff(23,6) +
+     & c6cff(23,7) + c6cff(23,8) + c6cff(23,10) +
+     & c6cff(23,23) + c6cff(23,24) +
+     & c6cff(24,1) + c6cff(24,2) + c6cff(24,6) +
+     & c6cff(24,7) + c6cff(24,8) + c6cff(24,10) +
+     & c6cff(24,23) + c6cff(24,24) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl1-methyl1
+      write(*,150) 
+      write(*,10)  9,  9, c6cff(9,9)
+      write(*,10)  9, 11, c6cff(9,11)
+      write(*,10)  9, 12, c6cff(9,12)
+      write(*,10)  9, 13, c6cff(9,13)
+      write(*,10) 11,  9, c6cff(11,9)
+      write(*,10) 11, 11, c6cff(11,11)
+      write(*,10) 11, 12, c6cff(11,12)
+      write(*,10) 11, 13, c6cff(11,13)
+      write(*,10) 12,  9, c6cff(12,9)
+      write(*,10) 12, 11, c6cff(12,11)
+      write(*,10) 12, 12, c6cff(12,12)
+      write(*,10) 12, 13, c6cff(12,13)
+      write(*,10) 13,  9, c6cff(13,9)
+      write(*,10) 13, 11, c6cff(13,11)
+      write(*,10) 13, 12, c6cff(13,12)
+      write(*,10) 13, 13, c6cff(13,13)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(9,9) + c6cff(9,11) + c6cff(9,12) +
+     & c6cff(9,13) +
+     & c6cff(11,9) + c6cff(11,11) + c6cff(11,12) + c6cff(11,13) +
+     & c6cff(12,9) + c6cff(12,11) + c6cff(12,12) + c6cff(12,13) +
+     & c6cff(13,9) + c6cff(13,11) + c6cff(13,12) + c6cff(13,13)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC peptide-peptide
+      write(*,160) 
+      write(*,10)  3,  3, c6cff(3,3)
+      write(*,10)  3,  5, c6cff(3,5)
+      write(*,10)  3, 14, c6cff(3,14)
+      write(*,10)  3, 15, c6cff(3,15)
+      write(*,10)  3, 16, c6cff(3,16)
+      write(*,10)  3, 25, c6cff(3,25)
+      write(*,10)  3, 26, c6cff(3,26)
+      write(*,10)  5,  3, c6cff(5,3)
+      write(*,10)  5,  5, c6cff(5,5)
+      write(*,10)  5, 14, c6cff(5,14)
+      write(*,10)  5, 15, c6cff(5,15)
+      write(*,10)  5, 16, c6cff(5,16)
+      write(*,10)  5, 25, c6cff(5,25)
+      write(*,10)  5, 26, c6cff(5,26)
+      write(*,10) 14,  3, c6cff(14,3)
+      write(*,10) 14,  5, c6cff(14,5)
+      write(*,10) 14, 14, c6cff(14,14)
+      write(*,10) 14, 15, c6cff(14,15)
+      write(*,10) 14, 16, c6cff(14,16)
+      write(*,10) 14, 25, c6cff(14,25)
+      write(*,10) 14, 26, c6cff(14,26)
+      write(*,10) 15,  3, c6cff(15,3)
+      write(*,10) 15,  5, c6cff(15,5)
+      write(*,10) 15, 14, c6cff(15,14)
+      write(*,10) 15, 15, c6cff(15,15)
+      write(*,10) 15, 16, c6cff(15,16)
+      write(*,10) 15, 25, c6cff(15,25)
+      write(*,10) 15, 26, c6cff(15,26)
+      write(*,10) 16,  3, c6cff(16,3)
+      write(*,10) 16,  5, c6cff(16,5)
+      write(*,10) 16, 14, c6cff(16,14)
+      write(*,10) 16, 15, c6cff(16,15)
+      write(*,10) 16, 16, c6cff(16,16)
+      write(*,10) 16, 25, c6cff(16,25)
+      write(*,10) 16, 26, c6cff(16,26)
+      write(*,10) 25,  3, c6cff(25,3)
+      write(*,10) 25,  5, c6cff(25,5)
+      write(*,10) 25, 14, c6cff(25,14)
+      write(*,10) 25, 15, c6cff(25,15)
+      write(*,10) 25, 16, c6cff(25,16)
+      write(*,10) 25, 25, c6cff(25,25)
+      write(*,10) 25, 26, c6cff(25,26)
+      write(*,10) 26,  3, c6cff(26,3)
+      write(*,10) 26,  5, c6cff(26,5)
+      write(*,10) 26, 14, c6cff(26,14)
+      write(*,10) 26, 15, c6cff(26,15)
+      write(*,10) 26, 16, c6cff(26,16)
+      write(*,10) 26, 25, c6cff(26,25)
+      write(*,10) 26, 26, c6cff(26,26)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(3,3) + c6cff(3,5) + c6cff(3,14) +
+     & c6cff(3,15) + c6cff(3,16) + c6cff(3,25) + c6cff(3,26) +
+     & c6cff(5,3) + c6cff(5,5) + c6cff(5,14) +
+     & c6cff(5,15) + c6cff(5,16) + c6cff(5,25) + c6cff(5,26) +
+     & c6cff(14,3) + c6cff(14,5) + c6cff(14,14) +
+     & c6cff(14,15) + c6cff(14,16) + c6cff(14,25) + c6cff(14,26) +
+     & c6cff(15,3) + c6cff(15,5) + c6cff(15,14) +
+     & c6cff(15,15) + c6cff(15,16) + c6cff(15,25) + c6cff(15,26) +
+     & c6cff(16,3) + c6cff(16,5) + c6cff(16,14) +
+     & c6cff(16,15) + c6cff(16,16) + c6cff(16,25) + c6cff(16,26) +
+     & c6cff(25,3) + c6cff(25,5) + c6cff(25,14) +
+     & c6cff(25,15) + c6cff(25,16) + c6cff(25,25) + c6cff(25,26) +
+     & c6cff(26,3) + c6cff(26,5) + c6cff(26,14) +
+     & c6cff(26,15) + c6cff(26,16) + c6cff(26,25) + c6cff(26,26)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl2-methyl2
+      write(*,170) 
+      write(*,10) 17, 17, c6cff(17,17)
+      write(*,10) 17, 18, c6cff(17,18)
+      write(*,10) 17, 19, c6cff(17,19)
+      write(*,10) 17, 20, c6cff(17,20)
+      write(*,10) 18, 17, c6cff(18,17)
+      write(*,10) 18, 18, c6cff(18,18)
+      write(*,10) 18, 19, c6cff(18,19)
+      write(*,10) 18, 20, c6cff(18,20)
+      write(*,10) 19, 17, c6cff(19,17)
+      write(*,10) 19, 18, c6cff(19,18)
+      write(*,10) 19, 19, c6cff(19,19)
+      write(*,10) 19, 20, c6cff(19,20)
+      write(*,10) 20, 17, c6cff(20,17)
+      write(*,10) 20, 18, c6cff(20,18)
+      write(*,10) 20, 19, c6cff(20,19)
+      write(*,10) 20, 20, c6cff(20,20)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(17,17) + c6cff(17,18) + c6cff(17,19) +
+     & c6cff(17,20) +
+     & c6cff(18,17) + c6cff(18,18) + c6cff(18,19) + c6cff(18,20) +
+     & c6cff(19,17) + c6cff(19,18) + c6cff(19,19) + c6cff(19,20) +
+     & c6cff(20,17) + c6cff(20,18) + c6cff(20,19) + c6cff(20,20)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC amino-amino
+      write(*,180) 
+      write(*,10)  4,  4, c6cff(4,4)
+      write(*,10)  4, 21, c6cff(4,21)
+      write(*,10)  4, 22, c6cff(4,22)
+      write(*,10) 21,  4, c6cff(21,4)
+      write(*,10) 21, 21, c6cff(21,21)
+      write(*,10) 21, 22, c6cff(21,22)
+      write(*,10) 22,  4, c6cff(22,4)
+      write(*,10) 22, 21, c6cff(22,21)
+      write(*,10) 22, 22, c6cff(22,22)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(4,4) + c6cff(4,21) + c6cff(4,22) +
+     & c6cff(21,4) + c6cff(21,21) + c6cff(21,22) +
+     & c6cff(22,4) + c6cff(22,21) + c6cff(22,22)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+      
+      end if
+      
+      if (system.eq.'ALKANE1') then
+
+CCC A: cc-pvdz ALK1
+CCC B: cc-pvdz ALK1
+     
+CCC methyl1-methyl1
+      write(*,30) 
+      write(*,10)  1,  1, c6cff(1,1)
+      write(*,10)  1,  2, c6cff(1,2)
+      write(*,10)  1,  4, c6cff(1,4)
+      write(*,10)  2,  1, c6cff(2,1)
+      write(*,10)  2,  2, c6cff(2,2)
+      write(*,10)  2,  4, c6cff(2,4)
+      write(*,10)  4,  1, c6cff(4,1)
+      write(*,10)  4,  2, c6cff(4,2)
+      write(*,10)  4,  4, c6cff(4,4)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,1) + c6cff(1,2) + c6cff(1,4) +
+     & c6cff(2,1) + c6cff(2,2) + c6cff(2,4) +
+     & c6cff(4,1) + c6cff(4,2) + c6cff(4,4)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl1-methylene
+      write(*,60) 
+      write(*,10)  1,  3, c6cff(1,3)
+      write(*,10)  2,  3, c6cff(2,3)
+      write(*,10)  4,  3, c6cff(4,3)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,3) + c6cff(2,3) + c6cff(4,3) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methyl1
+      write(*,80) 
+      write(*,10)  3,  1, c6cff(3,1)
+      write(*,10)  3,  2, c6cff(3,2)
+      write(*,10)  3,  4, c6cff(3,4)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(3,1) + c6cff(3,2) + c6cff(3,4) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methylene
+      write(*,90) 
+      write(*,10) 3,  3, c6cff(3,3)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(3,3) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+      
+      end if
+      
+      if (system.eq.'ALKANE2') then
+
+CCC A: cc-pvdz ALK2
+CCC B: cc-pvdz ALK2
+     
+CCC methyl1-methyl1
+      write(*,30) 
+      write(*,10)  2,  2, c6cff(2,2)
+      write(*,10)  2,  3, c6cff(2,3)
+      write(*,10)  2,  4, c6cff(2,4)
+      write(*,10)  3,  2, c6cff(3,2)
+      write(*,10)  3,  3, c6cff(3,3)
+      write(*,10)  3,  4, c6cff(3,4)
+      write(*,10)  4,  2, c6cff(4,2)
+      write(*,10)  4,  3, c6cff(4,3)
+      write(*,10)  4,  4, c6cff(4,4)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(2,2) + c6cff(2,3) + c6cff(2,4) +
+     & c6cff(3,2) + c6cff(3,3) + c6cff(3,4) +
+     & c6cff(4,2) + c6cff(4,3) + c6cff(4,4)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl1-methylene
+      write(*,60) 
+      write(*,10)  2,  1, c6cff(2,1)
+      write(*,10)  3,  1, c6cff(3,1)
+      write(*,10)  4,  1, c6cff(4,1)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(2,1) + c6cff(3,1) + c6cff(4,1) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl1-methyl2
+      write(*,70) 
+      write(*,10)  2,  5, c6cff(2,5)
+      write(*,10)  2,  6, c6cff(2,6)
+      write(*,10)  2,  7, c6cff(2,7)
+      write(*,10)  3,  5, c6cff(3,5)
+      write(*,10)  3,  6, c6cff(3,6)
+      write(*,10)  3,  7, c6cff(3,7)
+      write(*,10)  4,  5, c6cff(4,5)
+      write(*,10)  4,  6, c6cff(4,6)
+      write(*,10)  4,  7, c6cff(4,7)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(2,5) + c6cff(2,6) + c6cff(2,7) +
+     & c6cff(3,5) + c6cff(3,6) + c6cff(3,7) +
+     & c6cff(4,5) + c6cff(4,6) + c6cff(4,7)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methyl1
+      write(*,80) 
+      write(*,10) 1,  2, c6cff(1,2)
+      write(*,10) 1,  3, c6cff(1,3)
+      write(*,10) 1,  4, c6cff(1,4)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,2) + c6cff(1,3) + c6cff(1,4)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methylene
+      write(*,90) 
+      write(*,10) 1,  1, c6cff(1,1)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,1) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methyl2
+      write(*,100) 
+      write(*,10) 1,  5, c6cff(1,5)
+      write(*,10) 1,  6, c6cff(1,6)
+      write(*,10) 1,  7, c6cff(1,7)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,5) + c6cff(1,6) + c6cff(1,7) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl2-methyl1
+      write(*,110) 
+      write(*,10)  5,  2, c6cff(5,2)
+      write(*,10)  5,  3, c6cff(5,3)
+      write(*,10)  5,  4, c6cff(5,4)
+      write(*,10)  6,  2, c6cff(6,2)
+      write(*,10)  6,  3, c6cff(6,3)
+      write(*,10)  6,  4, c6cff(6,4)
+      write(*,10)  7,  2, c6cff(7,2)
+      write(*,10)  7,  3, c6cff(7,3)
+      write(*,10)  7,  4, c6cff(7,4)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(5,2) + c6cff(5,3) + c6cff(5,4) +
+     & c6cff(6,2) + c6cff(6,3) + c6cff(6,4) +
+     & c6cff(7,2) + c6cff(7,3) + c6cff(7,4)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl2-methylene
+      write(*,120) 
+      write(*,10) 5,  1, c6cff(5,1)
+      write(*,10) 6,  1, c6cff(6,1)
+      write(*,10) 7,  1, c6cff(7,1)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(5,1) + c6cff(6,1) + c6cff(7,1) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl2-methyl2
+      write(*,130) 
+      write(*,10) 5,  5, c6cff(5,5)
+      write(*,10) 5,  6, c6cff(5,6)
+      write(*,10) 5,  7, c6cff(5,7)
+      write(*,10) 6,  5, c6cff(6,5)
+      write(*,10) 6,  6, c6cff(6,6)
+      write(*,10) 6,  7, c6cff(6,7)
+      write(*,10) 7,  5, c6cff(7,5)
+      write(*,10) 7,  6, c6cff(7,6)
+      write(*,10) 7,  7, c6cff(7,7)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(5,5) + c6cff(5,6) + c6cff(5,7) + 
+     & c6cff(6,5) + c6cff(6,6) + c6cff(6,7) + 
+     & c6cff(7,5) + c6cff(7,6) + c6cff(7,7) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+      end if
+
+      if (system.eq.'ALKANE3') then
+
+CCC A: cc-pvdz ALK3 
+CCC B: cc-pvdz ALK3
+     
+CCC methyl1-methyl1
+      write(*,30) 
+      write(*,10)  8,  8, c6cff(8,8)
+      write(*,10)  8,  9, c6cff(8,9)
+      write(*,10)  8, 10, c6cff(8,10) 
+      write(*,10)  9,  8, c6cff(9,8)
+      write(*,10)  9,  9, c6cff(9,9)
+      write(*,10)  9, 10, c6cff(9,10)
+      write(*,10) 10,  8, c6cff(10,8)
+      write(*,10) 10,  9, c6cff(10,9)
+      write(*,10) 10, 10, c6cff(10,10)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(8,8) + c6cff(8,9) + c6cff(8,10) +
+     & c6cff(9,8) + c6cff(9,9) + c6cff(9,10) + 
+     & c6cff(10,8) + c6cff(10,9) + c6cff(10,10)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl1-methylene
+      write(*,60) 
+      write(*,10)  8,  1, c6cff(8,1)
+      write(*,10)  8,  2, c6cff(8,2)
+      write(*,10)  8,  3, c6cff(8,3)
+      write(*,10)  8,  4, c6cff(8,4)
+      write(*,10)  9,  1, c6cff(9,1)
+      write(*,10)  9,  2, c6cff(9,2)
+      write(*,10)  9,  3, c6cff(9,3)
+      write(*,10)  9,  4, c6cff(9,4)
+      write(*,10) 10,  1, c6cff(10,1)
+      write(*,10) 10,  2, c6cff(10,2)
+      write(*,10) 10,  3, c6cff(10,3)
+      write(*,10) 10,  4, c6cff(10,4)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(8,1) + c6cff(8,2) + c6cff(8,3) + c6cff(8,4) +
+     & c6cff(9,1) + c6cff(9,2) + c6cff(9,3) + c6cff(9,4) +
+     & c6cff(10,1) + c6cff(10,2) + c6cff(10,3) + c6cff(10,4) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl1-methyl2
+      write(*,70) 
+      write(*,10)  8,  5, c6cff(8,5)
+      write(*,10)  8,  6, c6cff(8,6)
+      write(*,10)  8,  7, c6cff(8,7)
+      write(*,10)  9,  5, c6cff(9,5)
+      write(*,10)  9,  6, c6cff(9,6)
+      write(*,10)  9,  7, c6cff(9,7)
+      write(*,10) 10,  5, c6cff(10,5)
+      write(*,10) 10,  6, c6cff(10,6)
+      write(*,10) 10,  7, c6cff(10,7)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(8,5) + c6cff(8,6) + c6cff(8,7) + 
+     & c6cff(9,5) + c6cff(9,6) + c6cff(9,7) + 
+     & c6cff(10,5) + c6cff(10,6) + c6cff(10,7)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methyl1
+      write(*,80) 
+      write(*,10) 1,  8, c6cff(1,8)
+      write(*,10) 1,  9, c6cff(1,9)
+      write(*,10) 1, 10, c6cff(1,10)
+      write(*,10) 2,  8, c6cff(2,8)
+      write(*,10) 2,  9, c6cff(2,9)
+      write(*,10) 2, 10, c6cff(2,10)
+      write(*,10) 3,  8, c6cff(3,8)
+      write(*,10) 3,  9, c6cff(3,9)
+      write(*,10) 3, 10, c6cff(3,10)
+      write(*,10) 4,  8, c6cff(4,8)
+      write(*,10) 4,  9, c6cff(4,9)
+      write(*,10) 4, 10, c6cff(4,10)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,8) + c6cff(1,9) + c6cff(1,10) +
+     & c6cff(2,8) + c6cff(2,9) + c6cff(2,10) +
+     & c6cff(3,8) + c6cff(3,9) + c6cff(3,10) +
+     & c6cff(4,8) + c6cff(4,9) + c6cff(4,10) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methylene
+      write(*,90) 
+      write(*,10) 1,  1, c6cff(1,1)
+      write(*,10) 1,  2, c6cff(1,2)
+      write(*,10) 1,  3, c6cff(1,3)
+      write(*,10) 1,  4, c6cff(1,4)
+      write(*,10) 2,  1, c6cff(2,1)
+      write(*,10) 2,  2, c6cff(2,2)
+      write(*,10) 2,  3, c6cff(2,3)
+      write(*,10) 2,  4, c6cff(2,4)
+      write(*,10) 3,  1, c6cff(3,1)
+      write(*,10) 3,  2, c6cff(3,2)
+      write(*,10) 3,  3, c6cff(3,3)
+      write(*,10) 3,  4, c6cff(3,4)
+      write(*,10) 4,  1, c6cff(4,1)
+      write(*,10) 4,  2, c6cff(4,2)
+      write(*,10) 4,  3, c6cff(4,3)
+      write(*,10) 4,  4, c6cff(4,4)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,1) + c6cff(1,2) + c6cff(1,3) + c6cff(1,4) +
+     & c6cff(2,1) + c6cff(2,2) + c6cff(2,3) + c6cff(2,4) +
+     & c6cff(3,1) + c6cff(3,2) + c6cff(3,3) + c6cff(3,4) +
+     & c6cff(4,1) + c6cff(4,2) + c6cff(4,3) + c6cff(4,4) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methyl2
+      write(*,100) 
+      write(*,10) 1,  5, c6cff(1,5)
+      write(*,10) 1,  6, c6cff(1,6)
+      write(*,10) 1,  7, c6cff(1,7)
+      write(*,10) 2,  5, c6cff(2,5)
+      write(*,10) 2,  6, c6cff(2,6)
+      write(*,10) 2,  7, c6cff(2,7)
+      write(*,10) 3,  5, c6cff(3,5)
+      write(*,10) 3,  6, c6cff(3,6)
+      write(*,10) 3,  7, c6cff(3,7)
+      write(*,10) 4,  5, c6cff(4,5)
+      write(*,10) 4,  6, c6cff(4,6)
+      write(*,10) 4,  7, c6cff(4,7)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,5) + c6cff(1,6) + c6cff(1,7) + 
+     & c6cff(2,5) + c6cff(2,6) + c6cff(2,7) + 
+     & c6cff(3,5) + c6cff(3,6) + c6cff(3,7) + 
+     & c6cff(4,5) + c6cff(4,6) + c6cff(4,7) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl2-methyl1
+      write(*,110) 
+      write(*,10) 5,  8, c6cff(5,8)
+      write(*,10) 5,  9, c6cff(5,9)
+      write(*,10) 5, 10, c6cff(5,10)
+      write(*,10) 6,  8, c6cff(6,8)
+      write(*,10) 6,  9, c6cff(6,9)
+      write(*,10) 6, 10, c6cff(6,10)
+      write(*,10) 7,  8, c6cff(7,8)
+      write(*,10) 7,  9, c6cff(7,9)
+      write(*,10) 7, 10, c6cff(7,10)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(5,8) + c6cff(5,9) + c6cff(5,10) +
+     & c6cff(6,8) + c6cff(6,9) + c6cff(6,10) +
+     & c6cff(7,8) + c6cff(7,9) + c6cff(7,10) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl2-methylene
+      write(*,120) 
+      write(*,10) 5,  1, c6cff(5,1)
+      write(*,10) 5,  2, c6cff(5,2)
+      write(*,10) 5,  3, c6cff(5,3)
+      write(*,10) 5,  4, c6cff(5,4)
+      write(*,10) 6,  1, c6cff(6,1)
+      write(*,10) 6,  2, c6cff(6,2)
+      write(*,10) 6,  3, c6cff(6,3)
+      write(*,10) 6,  4, c6cff(6,4)
+      write(*,10) 7,  1, c6cff(7,1)
+      write(*,10) 7,  2, c6cff(7,2)
+      write(*,10) 7,  3, c6cff(7,3)
+      write(*,10) 7,  4, c6cff(7,4)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(5,1) + c6cff(5,2) + c6cff(5,3) + c6cff(5,4) +
+     & c6cff(6,1) + c6cff(6,2) + c6cff(6,3) + c6cff(6,4) +
+     & c6cff(7,1) + c6cff(7,2) + c6cff(7,3) + c6cff(7,4) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl2-methyl2
+      write(*,130) 
+      write(*,10) 5,  5, c6cff(5,5)
+      write(*,10) 5,  6, c6cff(5,6)
+      write(*,10) 5,  7, c6cff(5,7)
+      write(*,10) 6,  5, c6cff(6,5)
+      write(*,10) 6,  6, c6cff(6,6)
+      write(*,10) 6,  7, c6cff(6,7)
+      write(*,10) 7,  5, c6cff(7,5)
+      write(*,10) 7,  6, c6cff(7,6)
+      write(*,10) 7,  7, c6cff(7,7)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(5,5) + c6cff(5,6) + c6cff(5,7) + 
+     & c6cff(6,5) + c6cff(6,6) + c6cff(6,7) + 
+     & c6cff(7,5) + c6cff(7,6) + c6cff(7,7) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+      end if
+      
+      if (system.eq.'ALKANE4') then
+
+CCC A: cc-pvdz ALK4
+CCC B: cc-pvdz ALK4
+     
+CCC methyl1-methyl1
+      write(*,30) 
+      write(*,10) 11, 11, c6cff(11,11)
+      write(*,10) 11, 12, c6cff(11,12)
+      write(*,10) 11, 13, c6cff(11,13)
+      write(*,10) 12, 11, c6cff(12,11)
+      write(*,10) 12, 12, c6cff(12,12)
+      write(*,10) 12, 13, c6cff(12,13)
+      write(*,10) 13, 11, c6cff(13,11)
+      write(*,10) 13, 12, c6cff(13,12)
+      write(*,10) 13, 13, c6cff(13,13)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(11,11) + c6cff(11,12) + c6cff(11,13) + 
+     & c6cff(12,11) + c6cff(12,12) + c6cff(12,13) + 
+     & c6cff(13,11) + c6cff(13,12) + c6cff(13,13) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl1-methylene
+      write(*,60) 
+      write(*,10) 11,  1, c6cff(11,1)
+      write(*,10) 11,  2, c6cff(11,2)
+      write(*,10) 11,  3, c6cff(11,3)
+      write(*,10) 11,  4, c6cff(11,4)
+      write(*,10) 11,  8, c6cff(11,8)
+      write(*,10) 11,  9, c6cff(11,9)
+      write(*,10) 11, 10, c6cff(11,10)
+      write(*,10) 12,  1, c6cff(12,1)
+      write(*,10) 12,  2, c6cff(12,2)
+      write(*,10) 12,  3, c6cff(12,3)
+      write(*,10) 12,  4, c6cff(12,4)
+      write(*,10) 12,  8, c6cff(12,8)
+      write(*,10) 12,  9, c6cff(12,9)
+      write(*,10) 12, 10, c6cff(12,10)
+      write(*,10) 13,  1, c6cff(13,1)
+      write(*,10) 13,  2, c6cff(13,2)
+      write(*,10) 13,  3, c6cff(13,3)
+      write(*,10) 13,  4, c6cff(13,4)
+      write(*,10) 13,  8, c6cff(13,8)
+      write(*,10) 13,  9, c6cff(13,9)
+      write(*,10) 13, 10, c6cff(13,10)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(11,1) + c6cff(11,2) + c6cff(11,3) + c6cff(11,4) +
+     & c6cff(11,8) + c6cff(11,9) + c6cff(11,10) + 
+     & c6cff(12,1) + c6cff(12,2) + c6cff(12,3) + c6cff(12,4) +
+     & c6cff(12,8) + c6cff(12,9) + c6cff(12,10) + 
+     & c6cff(13,1) + c6cff(13,2) + c6cff(13,3) + c6cff(13,4) +
+     & c6cff(13,8) + c6cff(13,9) + c6cff(13,10)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl1-methyl2
+      write(*,70) 
+      write(*,10) 11,  5, c6cff(11,5)
+      write(*,10) 11,  6, c6cff(11,6)
+      write(*,10) 11,  7, c6cff(11,7)
+      write(*,10) 12,  5, c6cff(12,5)
+      write(*,10) 12,  6, c6cff(12,6)
+      write(*,10) 12,  7, c6cff(12,7)
+      write(*,10) 13,  5, c6cff(13,5)
+      write(*,10) 13,  6, c6cff(13,6)
+      write(*,10) 13,  7, c6cff(13,7)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(11,5) + c6cff(11,6) + c6cff(11,7) +
+     & c6cff(12,5) + c6cff(12,6) + c6cff(12,7) +
+     & c6cff(13,5) + c6cff(13,6) + c6cff(13,7) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methyl1
+      write(*,80) 
+      write(*,10)  1, 11, c6cff(1,11)
+      write(*,10)  1, 12, c6cff(1,12)
+      write(*,10)  1, 13, c6cff(1,13)
+      write(*,10)  2, 11, c6cff(2,11)
+      write(*,10)  2, 12, c6cff(2,12)
+      write(*,10)  2, 13, c6cff(2,13)
+      write(*,10)  3, 11, c6cff(3,11)
+      write(*,10)  3, 12, c6cff(3,12)
+      write(*,10)  3, 13, c6cff(3,13)
+      write(*,10)  4, 11, c6cff(4,11)
+      write(*,10)  4, 12, c6cff(4,12)
+      write(*,10)  4, 13, c6cff(4,13)
+      write(*,10)  8, 11, c6cff(8,11)
+      write(*,10)  8, 12, c6cff(8,12)
+      write(*,10)  8, 13, c6cff(8,13)
+      write(*,10)  9, 11, c6cff(9,11)
+      write(*,10)  9, 12, c6cff(9,12)
+      write(*,10)  9, 13, c6cff(9,13)
+      write(*,10) 10, 11, c6cff(10,11)
+      write(*,10) 10, 12, c6cff(10,12)
+      write(*,10) 10, 13, c6cff(10,13)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,11) + c6cff(1,12) + c6cff(1,13) +
+     & c6cff(2,11) + c6cff(2,12) + c6cff(2,13) +
+     & c6cff(3,11) + c6cff(3,12) + c6cff(3,13) +
+     & c6cff(4,11) + c6cff(4,12) + c6cff(4,13) +
+     & c6cff(8,11) + c6cff(8,12) + c6cff(8,13) +
+     & c6cff(9,11) + c6cff(9,12) + c6cff(9,13) +
+     & c6cff(10,11) + c6cff(10,12) + c6cff(10,13)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methylene
+      write(*,90) 
+      write(*,10)  1,  1, c6cff(1,1)
+      write(*,10)  1,  2, c6cff(1,2)
+      write(*,10)  1,  3, c6cff(1,3)
+      write(*,10)  1,  4, c6cff(1,4)
+      write(*,10)  1,  8, c6cff(1,8)
+      write(*,10)  1,  9, c6cff(1,9)
+      write(*,10)  1, 10, c6cff(1,10)
+      write(*,10)  2,  1, c6cff(2,1)
+      write(*,10)  2,  2, c6cff(2,2)
+      write(*,10)  2,  3, c6cff(2,3)
+      write(*,10)  2,  4, c6cff(2,4)
+      write(*,10)  2,  8, c6cff(2,8)
+      write(*,10)  2,  9, c6cff(2,9)
+      write(*,10)  2, 10, c6cff(2,10)
+      write(*,10)  3,  1, c6cff(3,1)
+      write(*,10)  3,  2, c6cff(3,2)
+      write(*,10)  3,  3, c6cff(3,3)
+      write(*,10)  3,  4, c6cff(3,4)
+      write(*,10)  3,  8, c6cff(3,8)
+      write(*,10)  3,  9, c6cff(3,9)
+      write(*,10)  3, 10, c6cff(3,10)
+      write(*,10)  4,  1, c6cff(4,1)
+      write(*,10)  4,  2, c6cff(4,2)
+      write(*,10)  4,  3, c6cff(4,3)
+      write(*,10)  4,  4, c6cff(4,4)
+      write(*,10)  4,  8, c6cff(4,8)
+      write(*,10)  4,  9, c6cff(4,9)
+      write(*,10)  4, 10, c6cff(4,10)
+      write(*,10)  8,  1, c6cff(8,1)
+      write(*,10)  8,  2, c6cff(8,2)
+      write(*,10)  8,  3, c6cff(8,3)
+      write(*,10)  8,  4, c6cff(8,4)
+      write(*,10)  8,  8, c6cff(8,8)
+      write(*,10)  8,  9, c6cff(8,9)
+      write(*,10)  8, 10, c6cff(8,10)
+      write(*,10)  9,  1, c6cff(9,1)
+      write(*,10)  9,  2, c6cff(9,2)
+      write(*,10)  9,  3, c6cff(9,3)
+      write(*,10)  9,  4, c6cff(9,4)
+      write(*,10)  9,  8, c6cff(9,8)
+      write(*,10)  9,  9, c6cff(9,9)
+      write(*,10)  9, 10, c6cff(9,10)
+      write(*,10) 10,  1, c6cff(10,1)
+      write(*,10) 10,  2, c6cff(10,2)
+      write(*,10) 10,  3, c6cff(10,3)
+      write(*,10) 10,  4, c6cff(10,4)
+      write(*,10) 10,  8, c6cff(10,8)
+      write(*,10) 10,  9, c6cff(10,9)
+      write(*,10) 10, 10, c6cff(10,10)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,1) + c6cff(1,2) + c6cff(1,3) +
+     & c6cff(1,4) + c6cff(1,8) + c6cff(1,9) + c6cff(1,10) +
+     & c6cff(2,1) + c6cff(2,2) + c6cff(2,3) +
+     & c6cff(2,4) + c6cff(2,8) + c6cff(2,9) + c6cff(2,10) +
+     & c6cff(3,1) + c6cff(3,2) + c6cff(3,3) +
+     & c6cff(3,4) + c6cff(3,8) + c6cff(3,9) + c6cff(3,10) +
+     & c6cff(4,1) + c6cff(4,2) + c6cff(4,3) +
+     & c6cff(4,4) + c6cff(4,8) + c6cff(4,9) + c6cff(4,10) +
+     & c6cff(8,1) + c6cff(8,2) + c6cff(8,3) +
+     & c6cff(8,4) + c6cff(8,8) + c6cff(8,9) + c6cff(8,10) +
+     & c6cff(9,1) + c6cff(9,2) + c6cff(9,3) +
+     & c6cff(9,4) + c6cff(9,8) + c6cff(9,9) + c6cff(9,10) +
+     & c6cff(10,1) + c6cff(10,2) + c6cff(10,3) +
+     & c6cff(10,4) + c6cff(10,8) + c6cff(10,9) + c6cff(10,10)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methyl2
+      write(*,100) 
+      write(*,10)  1,  5, c6cff(1,5)
+      write(*,10)  1,  6, c6cff(1,6)
+      write(*,10)  1,  7, c6cff(1,7)
+      write(*,10)  2,  5, c6cff(2,5)
+      write(*,10)  2,  6, c6cff(2,6)
+      write(*,10)  2,  7, c6cff(2,7)
+      write(*,10)  3,  5, c6cff(3,5)
+      write(*,10)  3,  6, c6cff(3,6)
+      write(*,10)  3,  7, c6cff(3,7)
+      write(*,10)  4,  5, c6cff(4,5)
+      write(*,10)  4,  6, c6cff(4,6)
+      write(*,10)  4,  7, c6cff(4,7)
+      write(*,10)  8,  5, c6cff(8,5)
+      write(*,10)  8,  6, c6cff(8,6)
+      write(*,10)  8,  7, c6cff(8,7)
+      write(*,10)  9,  5, c6cff(9,5)
+      write(*,10)  9,  6, c6cff(9,6)
+      write(*,10)  9,  7, c6cff(9,7)
+      write(*,10) 10,  5, c6cff(10,5)
+      write(*,10) 10,  6, c6cff(10,6)
+      write(*,10) 10,  7, c6cff(10,7)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,5) + c6cff(1,6) + c6cff(1,7) +
+     & c6cff(2,5) + c6cff(2,6) + c6cff(2,7) +
+     & c6cff(3,5) + c6cff(3,6) + c6cff(3,7) +
+     & c6cff(4,5) + c6cff(4,6) + c6cff(4,7) +
+     & c6cff(8,5) + c6cff(8,6) + c6cff(8,7) +
+     & c6cff(9,5) + c6cff(9,6) + c6cff(9,7) +
+     & c6cff(10,5) + c6cff(10,6) + c6cff(10,7)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl2-methyl1
+      write(*,110) 
+      write(*,10)  5, 11, c6cff(5,11)
+      write(*,10)  5, 12, c6cff(5,12)
+      write(*,10)  5, 13, c6cff(5,13)
+      write(*,10)  6, 11, c6cff(6,11)
+      write(*,10)  6, 12, c6cff(6,12)
+      write(*,10)  6, 13, c6cff(6,13)
+      write(*,10)  7, 11, c6cff(7,11)
+      write(*,10)  7, 12, c6cff(7,12)
+      write(*,10)  7, 13, c6cff(7,13)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(5,11) + c6cff(5,12) + c6cff(5,13) +
+     & c6cff(6,11) + c6cff(6,12) + c6cff(6,13) +
+     & c6cff(7,11) + c6cff(7,12) + c6cff(7,13)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl2-methylene
+      write(*,120) 
+      write(*,10)  5,  1, c6cff(5,1)
+      write(*,10)  5,  2, c6cff(5,2)
+      write(*,10)  5,  3, c6cff(5,3)
+      write(*,10)  5,  4, c6cff(5,4)
+      write(*,10)  5,  8, c6cff(5,8)
+      write(*,10)  5,  9, c6cff(5,9)
+      write(*,10)  5, 10, c6cff(5,10)
+      write(*,10)  6,  1, c6cff(6,1)
+      write(*,10)  6,  2, c6cff(6,2)
+      write(*,10)  6,  3, c6cff(6,3)
+      write(*,10)  6,  4, c6cff(6,4)
+      write(*,10)  6,  8, c6cff(6,8)
+      write(*,10)  6,  9, c6cff(6,9)
+      write(*,10)  6, 10, c6cff(6,10)
+      write(*,10)  7,  1, c6cff(7,1)
+      write(*,10)  7,  2, c6cff(7,2)
+      write(*,10)  7,  3, c6cff(7,3)
+      write(*,10)  7,  4, c6cff(7,4)
+      write(*,10)  7,  8, c6cff(7,8)
+      write(*,10)  7,  9, c6cff(7,9)
+      write(*,10)  7, 10, c6cff(7,10)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(5,1) + c6cff(5,2) + c6cff(5,3) +
+     & c6cff(5,4) + c6cff(5,8) + c6cff(5,9) + c6cff(5,10) +
+     & c6cff(6,1) + c6cff(6,2) + c6cff(6,3) +
+     & c6cff(6,4) + c6cff(6,8) + c6cff(6,9) + c6cff(6,10) +
+     & c6cff(7,1) + c6cff(7,2) + c6cff(7,3) +
+     & c6cff(7,4) + c6cff(7,8) + c6cff(7,9) + c6cff(7,10)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl2-methyl2
+      write(*,130) 
+      write(*,10)  5,  5, c6cff(5,5)
+      write(*,10)  5,  6, c6cff(5,6)
+      write(*,10)  5,  7, c6cff(5,7)
+      write(*,10)  6,  5, c6cff(6,5)
+      write(*,10)  6,  6, c6cff(6,6)
+      write(*,10)  6,  7, c6cff(6,7)
+      write(*,10)  7,  5, c6cff(7,5)
+      write(*,10)  7,  6, c6cff(7,6)
+      write(*,10)  7,  7, c6cff(7,7)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(5,5) + c6cff(5,6) + c6cff(5,7) +
+     & c6cff(6,5) + c6cff(6,6) + c6cff(6,7) +
+     & c6cff(7,5) + c6cff(7,6) + c6cff(7,7)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+      end if
+      
+      if (system.eq.'ALKANE5') then
+
+CCC A: cc-pvdz ALK5
+CCC B: cc-pvdz ALK5
+     
+CCC methyl1-methyl1
+      write(*,30) 
+      write(*,10)  2,  2, c6cff(2,2)
+      write(*,10)  2,  3, c6cff(2,3)
+      write(*,10)  2,  4, c6cff(2,4)
+      write(*,10)  3,  2, c6cff(3,2)
+      write(*,10)  3,  3, c6cff(3,3)
+      write(*,10)  3,  4, c6cff(3,4)
+      write(*,10)  4,  2, c6cff(4,2)
+      write(*,10)  4,  3, c6cff(4,3)
+      write(*,10)  4,  4, c6cff(4,4)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(2,2) + c6cff(2,3) + c6cff(2,4) +
+     & c6cff(3,2) + c6cff(3,3) + c6cff(3,4) +
+     & c6cff(4,2) + c6cff(4,3) + c6cff(4,4)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl1-methylene
+      write(*,60) 
+      write(*,10)  2,  1, c6cff(2,1)
+      write(*,10)  2,  5, c6cff(2,5)
+      write(*,10)  2,  6, c6cff(2,6)
+      write(*,10)  2,  7, c6cff(2,7)
+      write(*,10)  2,  8, c6cff(2,8)
+      write(*,10)  2,  9, c6cff(2,9)
+      write(*,10)  2, 10, c6cff(2,10)
+      write(*,10)  2, 11, c6cff(2,11)
+      write(*,10)  2, 12, c6cff(2,12)
+      write(*,10)  2, 13, c6cff(2,13)
+      write(*,10)  3,  1, c6cff(3,1)
+      write(*,10)  3,  5, c6cff(3,5)
+      write(*,10)  3,  6, c6cff(3,6)
+      write(*,10)  3,  7, c6cff(3,7)
+      write(*,10)  3,  8, c6cff(3,8)
+      write(*,10)  3,  9, c6cff(3,9)
+      write(*,10)  3, 10, c6cff(3,10)
+      write(*,10)  3, 11, c6cff(3,11)
+      write(*,10)  3, 12, c6cff(3,12)
+      write(*,10)  3, 13, c6cff(3,13)
+      write(*,10)  4,  1, c6cff(4,1)
+      write(*,10)  4,  5, c6cff(4,5)
+      write(*,10)  4,  6, c6cff(4,6)
+      write(*,10)  4,  7, c6cff(4,7)
+      write(*,10)  4,  8, c6cff(4,8)
+      write(*,10)  4,  9, c6cff(4,9)
+      write(*,10)  4, 10, c6cff(4,10)
+      write(*,10)  4, 11, c6cff(4,11)
+      write(*,10)  4, 12, c6cff(4,12)
+      write(*,10)  4, 13, c6cff(4,13)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(2,1) + c6cff(2,5) + c6cff(2,6) +
+     & c6cff(2,7) + c6cff(2,8) + c6cff(2,9) +
+     & c6cff(2,10) + c6cff(2,11) + c6cff(2,12) + c6cff(2,13) +
+     & c6cff(3,1) + c6cff(3,5) + c6cff(3,6) +
+     & c6cff(3,7) + c6cff(3,8) + c6cff(3,9) +
+     & c6cff(3,10) + c6cff(3,11) + c6cff(3,12) + c6cff(3,13) +
+     & c6cff(4,1) + c6cff(4,5) + c6cff(4,6) +
+     & c6cff(4,7) + c6cff(4,8) + c6cff(4,9) +
+     & c6cff(4,10) + c6cff(4,11) + c6cff(4,12) + c6cff(4,13)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl1-methyl2
+      write(*,70) 
+      write(*,10)  2, 14, c6cff(2,14)
+      write(*,10)  2, 15, c6cff(2,15)
+      write(*,10)  2, 16, c6cff(2,16)
+      write(*,10)  3, 14, c6cff(3,14)
+      write(*,10)  3, 15, c6cff(3,15)
+      write(*,10)  3, 16, c6cff(3,16)
+      write(*,10)  4, 14, c6cff(4,14)
+      write(*,10)  4, 15, c6cff(4,15)
+      write(*,10)  4, 16, c6cff(4,16)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(2,14) + c6cff(2,15) + c6cff(2,16) +
+     & c6cff(3,14) + c6cff(3,15) + c6cff(3,16) +
+     & c6cff(4,14) + c6cff(4,15) + c6cff(4,16)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methyl1
+      write(*,80) 
+      write(*,10)  1,  2, c6cff(1,2)
+      write(*,10)  1,  3, c6cff(1,3)
+      write(*,10)  1,  4, c6cff(1,4)
+      write(*,10)  5,  2, c6cff(5,2)
+      write(*,10)  5,  3, c6cff(5,3)
+      write(*,10)  5,  4, c6cff(5,4)
+      write(*,10)  6,  2, c6cff(6,2)
+      write(*,10)  6,  3, c6cff(6,3)
+      write(*,10)  6,  4, c6cff(6,4)
+      write(*,10)  7,  2, c6cff(7,2)
+      write(*,10)  7,  3, c6cff(7,3)
+      write(*,10)  7,  4, c6cff(7,4)
+      write(*,10)  8,  2, c6cff(8,2)
+      write(*,10)  8,  3, c6cff(8,3)
+      write(*,10)  8,  4, c6cff(8,4)
+      write(*,10)  9,  2, c6cff(9,2)
+      write(*,10)  9,  3, c6cff(9,3)
+      write(*,10)  9,  4, c6cff(9,4)
+      write(*,10) 10,  2, c6cff(10,2)
+      write(*,10) 10,  3, c6cff(10,3)
+      write(*,10) 10,  4, c6cff(10,4)
+      write(*,10) 11,  2, c6cff(11,2)
+      write(*,10) 11,  3, c6cff(11,3)
+      write(*,10) 11,  4, c6cff(11,4)
+      write(*,10) 12,  2, c6cff(12,2)
+      write(*,10) 12,  3, c6cff(12,3)
+      write(*,10) 12,  4, c6cff(12,4)
+      write(*,10) 13,  2, c6cff(13,2)
+      write(*,10) 13,  3, c6cff(13,3)
+      write(*,10) 13,  4, c6cff(13,4)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,2) + c6cff(1,3) + c6cff(1,4) +
+     & c6cff(5,2) + c6cff(5,3) + c6cff(5,4) +
+     & c6cff(6,2) + c6cff(6,3) + c6cff(6,4) +
+     & c6cff(7,2) + c6cff(7,3) + c6cff(7,4) +
+     & c6cff(8,2) + c6cff(8,3) + c6cff(8,4) +
+     & c6cff(9,2) + c6cff(9,3) + c6cff(9,4) +
+     & c6cff(10,2) + c6cff(10,3) + c6cff(10,4) +
+     & c6cff(11,2) + c6cff(11,3) + c6cff(11,4) +
+     & c6cff(12,2) + c6cff(12,3) + c6cff(12,4) +
+     & c6cff(13,2) + c6cff(13,3) + c6cff(13,4) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methylene
+      write(*,90) 
+      write(*,10)  1,  1, c6cff(1,1)
+      write(*,10)  1,  5, c6cff(1,5)
+      write(*,10)  1,  6, c6cff(1,6)
+      write(*,10)  1,  7, c6cff(1,7)
+      write(*,10)  1,  8, c6cff(1,8)
+      write(*,10)  1,  9, c6cff(1,9)
+      write(*,10)  1, 10, c6cff(1,10)
+      write(*,10)  1, 11, c6cff(1,11)
+      write(*,10)  1, 12, c6cff(1,12)
+      write(*,10)  1, 13, c6cff(1,13)
+      write(*,10)  5,  1, c6cff(5,1)
+      write(*,10)  5,  5, c6cff(5,5)
+      write(*,10)  5,  6, c6cff(5,6)
+      write(*,10)  5,  7, c6cff(5,7)
+      write(*,10)  5,  8, c6cff(5,8)
+      write(*,10)  5,  9, c6cff(5,9)
+      write(*,10)  5, 10, c6cff(5,10)
+      write(*,10)  5, 11, c6cff(5,11)
+      write(*,10)  5, 12, c6cff(5,12)
+      write(*,10)  5, 13, c6cff(5,13)
+      write(*,10)  6,  1, c6cff(6,1)
+      write(*,10)  6,  5, c6cff(6,5)
+      write(*,10)  6,  6, c6cff(6,6)
+      write(*,10)  6,  7, c6cff(6,7)
+      write(*,10)  6,  8, c6cff(6,8)
+      write(*,10)  6,  9, c6cff(6,9)
+      write(*,10)  6, 10, c6cff(6,10)
+      write(*,10)  6, 11, c6cff(6,11)
+      write(*,10)  6, 12, c6cff(6,12)
+      write(*,10)  6, 13, c6cff(6,13)
+      write(*,10)  7,  1, c6cff(7,1)
+      write(*,10)  7,  5, c6cff(7,5)
+      write(*,10)  7,  6, c6cff(7,6)
+      write(*,10)  7,  7, c6cff(7,7)
+      write(*,10)  7,  8, c6cff(7,8)
+      write(*,10)  7,  9, c6cff(7,9)
+      write(*,10)  7, 10, c6cff(7,10)
+      write(*,10)  7, 11, c6cff(7,11)
+      write(*,10)  7, 12, c6cff(7,12)
+      write(*,10)  7, 13, c6cff(7,13)
+      write(*,10)  8,  1, c6cff(8,1)
+      write(*,10)  8,  5, c6cff(8,5)
+      write(*,10)  8,  6, c6cff(8,6)
+      write(*,10)  8,  7, c6cff(8,7)
+      write(*,10)  8,  8, c6cff(8,8)
+      write(*,10)  8,  9, c6cff(8,9)
+      write(*,10)  8, 10, c6cff(8,10)
+      write(*,10)  8, 11, c6cff(8,11)
+      write(*,10)  8, 12, c6cff(8,12)
+      write(*,10)  8, 13, c6cff(8,13)
+      write(*,10)  9,  1, c6cff(9,1)
+      write(*,10)  9,  5, c6cff(9,5)
+      write(*,10)  9,  6, c6cff(9,6)
+      write(*,10)  9,  7, c6cff(9,7)
+      write(*,10)  9,  8, c6cff(9,8)
+      write(*,10)  9,  9, c6cff(9,9)
+      write(*,10)  9, 10, c6cff(9,10)
+      write(*,10)  9, 11, c6cff(9,11)
+      write(*,10)  9, 12, c6cff(9,12)
+      write(*,10)  9, 13, c6cff(9,13)
+      write(*,10) 10,  1, c6cff(10,1)
+      write(*,10) 10,  5, c6cff(10,5)
+      write(*,10) 10,  6, c6cff(10,6)
+      write(*,10) 10,  7, c6cff(10,7)
+      write(*,10) 10,  8, c6cff(10,8)
+      write(*,10) 10,  9, c6cff(10,9)
+      write(*,10) 10, 10, c6cff(10,10)
+      write(*,10) 10, 11, c6cff(10,11)
+      write(*,10) 10, 12, c6cff(10,12)
+      write(*,10) 10, 13, c6cff(10,13)
+      write(*,10) 11,  1, c6cff(11,1)
+      write(*,10) 11,  5, c6cff(11,5)
+      write(*,10) 11,  6, c6cff(11,6)
+      write(*,10) 11,  7, c6cff(11,7)
+      write(*,10) 11,  8, c6cff(11,8)
+      write(*,10) 11,  9, c6cff(11,9)
+      write(*,10) 11, 10, c6cff(11,10)
+      write(*,10) 11, 11, c6cff(11,11)
+      write(*,10) 11, 12, c6cff(11,12)
+      write(*,10) 11, 13, c6cff(11,13)
+      write(*,10) 12,  1, c6cff(12,1)
+      write(*,10) 12,  5, c6cff(12,5)
+      write(*,10) 12,  6, c6cff(12,6)
+      write(*,10) 12,  7, c6cff(12,7)
+      write(*,10) 12,  8, c6cff(12,8)
+      write(*,10) 12,  9, c6cff(12,9)
+      write(*,10) 12, 10, c6cff(12,10)
+      write(*,10) 12, 11, c6cff(12,11)
+      write(*,10) 12, 12, c6cff(12,12)
+      write(*,10) 12, 13, c6cff(12,13)
+      write(*,10) 13,  1, c6cff(13,1)
+      write(*,10) 13,  5, c6cff(13,5)
+      write(*,10) 13,  6, c6cff(13,6)
+      write(*,10) 13,  7, c6cff(13,7)
+      write(*,10) 13,  8, c6cff(13,8)
+      write(*,10) 13,  9, c6cff(13,9)
+      write(*,10) 13, 10, c6cff(13,10)
+      write(*,10) 13, 11, c6cff(13,11)
+      write(*,10) 13, 12, c6cff(13,12)
+      write(*,10) 13, 13, c6cff(13,13)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,1) + c6cff(1,5) + c6cff(1,6) +
+     & c6cff(1,7) + c6cff(1,8) + c6cff(1,9) + c6cff(1,10) +
+     & c6cff(1,11) + c6cff(1,12) + c6cff(1,13) +
+     & c6cff(5,1) + c6cff(5,5) + c6cff(5,6) +
+     & c6cff(5,7) + c6cff(5,8) + c6cff(5,9) + c6cff(5,10) +
+     & c6cff(5,11) + c6cff(5,12) + c6cff(5,13) +
+     & c6cff(6,1) + c6cff(6,5) + c6cff(6,6) +
+     & c6cff(6,7) + c6cff(6,8) + c6cff(6,9) + c6cff(6,10) +
+     & c6cff(6,11) + c6cff(6,12) + c6cff(6,13) +
+     & c6cff(7,1) + c6cff(7,5) + c6cff(7,6) +
+     & c6cff(7,7) + c6cff(7,8) + c6cff(7,9) + c6cff(7,10) +
+     & c6cff(7,11) + c6cff(7,12) + c6cff(7,13) +
+     & c6cff(8,1) + c6cff(8,5) + c6cff(8,6) +
+     & c6cff(8,7) + c6cff(8,8) + c6cff(8,9) + c6cff(8,10) +
+     & c6cff(8,11) + c6cff(8,12) + c6cff(8,13) +
+     & c6cff(9,1) + c6cff(9,5) + c6cff(9,6) +
+     & c6cff(9,7) + c6cff(9,8) + c6cff(9,9) + c6cff(9,10) +
+     & c6cff(9,11) + c6cff(9,12) + c6cff(9,13) +
+     & c6cff(10,1) + c6cff(10,5) + c6cff(10,6) +
+     & c6cff(10,7) + c6cff(10,8) + c6cff(10,9) + c6cff(10,10) +
+     & c6cff(10,11) + c6cff(10,12) + c6cff(10,13) +
+     & c6cff(11,1) + c6cff(11,5) + c6cff(11,6) +
+     & c6cff(11,7) + c6cff(11,8) + c6cff(11,9) + c6cff(11,10) +
+     & c6cff(11,11) + c6cff(11,12) + c6cff(11,13) +
+     & c6cff(12,1) + c6cff(12,5) + c6cff(12,6) +
+     & c6cff(12,7) + c6cff(12,8) + c6cff(12,9) + c6cff(12,10) +
+     & c6cff(12,11) + c6cff(12,12) + c6cff(12,13) +
+     & c6cff(13,1) + c6cff(13,5) + c6cff(13,6) +
+     & c6cff(13,7) + c6cff(13,8) + c6cff(13,9) + c6cff(13,10) +
+     & c6cff(13,11) + c6cff(13,12) + c6cff(13,13)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methyl2
+      write(*,100) 
+      write(*,10)  1, 14, c6cff(1,14)
+      write(*,10)  1, 15, c6cff(1,15)
+      write(*,10)  1, 16, c6cff(1,16)
+      write(*,10)  5, 14, c6cff(5,14)
+      write(*,10)  5, 15, c6cff(5,15)
+      write(*,10)  5, 16, c6cff(5,16)
+      write(*,10)  6, 14, c6cff(6,14)
+      write(*,10)  6, 15, c6cff(6,15)
+      write(*,10)  6, 16, c6cff(6,16)
+      write(*,10)  7, 14, c6cff(7,14)
+      write(*,10)  7, 15, c6cff(7,15)
+      write(*,10)  7, 16, c6cff(7,16)
+      write(*,10)  8, 14, c6cff(8,14)
+      write(*,10)  8, 15, c6cff(8,15)
+      write(*,10)  8, 16, c6cff(8,16)
+      write(*,10)  9, 14, c6cff(9,14)
+      write(*,10)  9, 15, c6cff(9,15)
+      write(*,10)  9, 16, c6cff(9,16)
+      write(*,10) 10, 14, c6cff(10,14)
+      write(*,10) 10, 15, c6cff(10,15)
+      write(*,10) 10, 16, c6cff(10,16)
+      write(*,10) 11, 14, c6cff(11,14)
+      write(*,10) 11, 15, c6cff(11,15)
+      write(*,10) 11, 16, c6cff(11,16)
+      write(*,10) 12, 14, c6cff(12,14)
+      write(*,10) 12, 15, c6cff(12,15)
+      write(*,10) 12, 16, c6cff(12,16)
+      write(*,10) 13, 14, c6cff(13,14)
+      write(*,10) 13, 15, c6cff(13,15)
+      write(*,10) 13, 16, c6cff(13,16)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,14) + c6cff(1,15) + c6cff(1,16) +
+     & c6cff(5,14) + c6cff(5,15) + c6cff(5,16) +
+     & c6cff(6,14) + c6cff(6,15) + c6cff(6,16) +
+     & c6cff(7,14) + c6cff(7,15) + c6cff(7,16) +
+     & c6cff(8,14) + c6cff(8,15) + c6cff(8,16) +
+     & c6cff(9,14) + c6cff(9,15) + c6cff(9,16) +
+     & c6cff(10,14) + c6cff(10,15) + c6cff(10,16) +
+     & c6cff(11,14) + c6cff(11,15) + c6cff(11,16) +
+     & c6cff(12,14) + c6cff(12,15) + c6cff(12,16) +
+     & c6cff(13,14) + c6cff(13,15) + c6cff(13,16)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl2-methyl1
+      write(*,110) 
+      write(*,10) 14,  2, c6cff(14,2)
+      write(*,10) 14,  3, c6cff(14,3)
+      write(*,10) 14,  4, c6cff(14,4)
+      write(*,10) 15,  2, c6cff(15,2)
+      write(*,10) 15,  3, c6cff(15,3)
+      write(*,10) 15,  4, c6cff(15,4)
+      write(*,10) 16,  2, c6cff(16,2)
+      write(*,10) 16,  3, c6cff(16,3)
+      write(*,10) 16,  4, c6cff(16,4)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(14,2) + c6cff(14,3) + c6cff(14,4) +
+     & c6cff(15,2) + c6cff(15,3) + c6cff(15,4) +
+     & c6cff(16,2) + c6cff(16,3) + c6cff(16,4)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl2-methylene
+      write(*,120) 
+      write(*,10) 14,  1, c6cff(14,1)
+      write(*,10) 14,  5, c6cff(14,5)
+      write(*,10) 14,  6, c6cff(14,6)
+      write(*,10) 14,  7, c6cff(14,7)
+      write(*,10) 14,  8, c6cff(14,8)
+      write(*,10) 14,  9, c6cff(14,9)
+      write(*,10) 14, 10, c6cff(14,10)
+      write(*,10) 14, 11, c6cff(14,11)
+      write(*,10) 14, 12, c6cff(14,12)
+      write(*,10) 14, 13, c6cff(14,13)
+      write(*,10) 15,  1, c6cff(15,1)
+      write(*,10) 15,  5, c6cff(15,5)
+      write(*,10) 15,  6, c6cff(15,6)
+      write(*,10) 15,  7, c6cff(15,7)
+      write(*,10) 15,  8, c6cff(15,8)
+      write(*,10) 15,  9, c6cff(15,9)
+      write(*,10) 15, 10, c6cff(15,10)
+      write(*,10) 15, 11, c6cff(15,11)
+      write(*,10) 15, 12, c6cff(15,12)
+      write(*,10) 15, 13, c6cff(15,13)
+      write(*,10) 16,  1, c6cff(16,1)
+      write(*,10) 16,  5, c6cff(16,5)
+      write(*,10) 16,  6, c6cff(16,6)
+      write(*,10) 16,  7, c6cff(16,7)
+      write(*,10) 16,  8, c6cff(16,8)
+      write(*,10) 16,  9, c6cff(16,9)
+      write(*,10) 16, 10, c6cff(16,10)
+      write(*,10) 16, 11, c6cff(16,11)
+      write(*,10) 16, 12, c6cff(16,12)
+      write(*,10) 16, 13, c6cff(16,13)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(14,1) + c6cff(14,5) + c6cff(14,6) +
+     & c6cff(14,7) + c6cff(14,8) + c6cff(14,9) + c6cff(14,10) +
+     & c6cff(14,11) + c6cff(14,12) + c6cff(14,13) +
+     & c6cff(15,1) + c6cff(15,5) + c6cff(15,6) +
+     & c6cff(15,7) + c6cff(15,8) + c6cff(15,9) + c6cff(15,10) +
+     & c6cff(15,11) + c6cff(15,12) + c6cff(15,13) +
+     & c6cff(16,1) + c6cff(16,5) + c6cff(16,6) +
+     & c6cff(16,7) + c6cff(16,8) + c6cff(16,9) + c6cff(16,10) +
+     & c6cff(16,11) + c6cff(16,12) + c6cff(16,13)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl2-methyl2
+      write(*,130) 
+      write(*,10) 14, 14, c6cff(14,14)
+      write(*,10) 14, 15, c6cff(14,15)
+      write(*,10) 14, 16, c6cff(14,16)
+      write(*,10) 15, 14, c6cff(15,14)
+      write(*,10) 15, 15, c6cff(15,15)
+      write(*,10) 15, 16, c6cff(15,16)
+      write(*,10) 16, 14, c6cff(16,14)
+      write(*,10) 16, 15, c6cff(16,15)
+      write(*,10) 16, 16, c6cff(16,16)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(14,14) + c6cff(14,15) + c6cff(14,16) +
+     & c6cff(15,14) + c6cff(15,15) + c6cff(15,16) +
+     & c6cff(16,14) + c6cff(16,15) + c6cff(16,16) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+      end if
+      
+      if (system.eq.'ALKANE6') then
+
+CCC A: cc-pvdz ALK6
+CCC B: cc-pvdz ALK6
+     
+CCC methyl1-methyl1
+      write(*,30) 
+      write(*,10)  2,  2, c6cff(2,2)
+      write(*,10)  2,  3, c6cff(2,3)
+      write(*,10)  2,  4, c6cff(2,4)
+      write(*,10)  3,  2, c6cff(3,2)
+      write(*,10)  3,  3, c6cff(3,3)
+      write(*,10)  3,  4, c6cff(3,4)
+      write(*,10)  4,  2, c6cff(4,2)
+      write(*,10)  4,  3, c6cff(4,3)
+      write(*,10)  4,  4, c6cff(4,4)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(2,2) + c6cff(2,3) + c6cff(2,4) +
+     & c6cff(3,2) + c6cff(3,3) + c6cff(3,4) +
+     & c6cff(4,2) + c6cff(4,3) + c6cff(4,4)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl1-methylene
+      write(*,60) 
+      write(*,10)  2,  1, c6cff(2,1)
+      write(*,10)  2,  5, c6cff(2,5)
+      write(*,10)  2,  6, c6cff(2,6)
+      write(*,10)  2,  7, c6cff(2,7)
+      write(*,10)  2,  8, c6cff(2,8)
+      write(*,10)  2,  9, c6cff(2,9)
+      write(*,10)  2, 10, c6cff(2,10)
+      write(*,10)  2, 11, c6cff(2,11)
+      write(*,10)  2, 12, c6cff(2,12)
+      write(*,10)  2, 13, c6cff(2,13)
+      write(*,10)  2, 14, c6cff(2,14)
+      write(*,10)  2, 15, c6cff(2,15)
+      write(*,10)  2, 16, c6cff(2,16)
+      write(*,10)  3,  1, c6cff(3,1)
+      write(*,10)  3,  5, c6cff(3,5)
+      write(*,10)  3,  6, c6cff(3,6)
+      write(*,10)  3,  7, c6cff(3,7)
+      write(*,10)  3,  8, c6cff(3,8)
+      write(*,10)  3,  9, c6cff(3,9)
+      write(*,10)  3, 10, c6cff(3,10)
+      write(*,10)  3, 11, c6cff(3,11)
+      write(*,10)  3, 12, c6cff(3,12)
+      write(*,10)  3, 13, c6cff(3,13)
+      write(*,10)  3, 14, c6cff(3,14)
+      write(*,10)  3, 15, c6cff(3,15)
+      write(*,10)  3, 16, c6cff(3,16)
+      write(*,10)  4,  1, c6cff(4,1)
+      write(*,10)  4,  5, c6cff(4,5)
+      write(*,10)  4,  6, c6cff(4,6)
+      write(*,10)  4,  7, c6cff(4,7)
+      write(*,10)  4,  8, c6cff(4,8)
+      write(*,10)  4,  9, c6cff(4,9)
+      write(*,10)  4, 10, c6cff(4,10)
+      write(*,10)  4, 11, c6cff(4,11)
+      write(*,10)  4, 12, c6cff(4,12)
+      write(*,10)  4, 13, c6cff(4,13)
+      write(*,10)  4, 14, c6cff(4,14)
+      write(*,10)  4, 15, c6cff(4,15)
+      write(*,10)  4, 16, c6cff(4,16)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(2,1) + c6cff(2,5) + c6cff(2,6) +
+     & c6cff(2,7) + c6cff(2,8) + c6cff(2,9) +
+     & c6cff(2,10) + c6cff(2,11) + c6cff(2,12) + c6cff(2,13) +
+     & c6cff(2,14) + c6cff(2,15) + c6cff(2,16) + 
+     & c6cff(3,1) + c6cff(3,5) + c6cff(3,6) +
+     & c6cff(3,7) + c6cff(3,8) + c6cff(3,9) +
+     & c6cff(3,10) + c6cff(3,11) + c6cff(3,12) + c6cff(3,13) +
+     & c6cff(3,14) + c6cff(3,15) + c6cff(3,16) + 
+     & c6cff(4,1) + c6cff(4,5) + c6cff(4,6) +
+     & c6cff(4,7) + c6cff(4,8) + c6cff(4,9) +
+     & c6cff(4,10) + c6cff(4,11) + c6cff(4,12) + c6cff(4,13) +
+     & c6cff(4,14) + c6cff(4,15) + c6cff(4,16) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl1-methyl2
+      write(*,70) 
+      write(*,10)  2, 17, c6cff(2,17)
+      write(*,10)  2, 18, c6cff(2,18)
+      write(*,10)  2, 19, c6cff(2,19)
+      write(*,10)  3, 17, c6cff(3,17)
+      write(*,10)  3, 18, c6cff(3,18)
+      write(*,10)  3, 19, c6cff(3,19)
+      write(*,10)  4, 17, c6cff(4,17)
+      write(*,10)  4, 18, c6cff(4,18)
+      write(*,10)  4, 19, c6cff(4,19)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(2,17) + c6cff(2,18) + c6cff(2,19) +
+     & c6cff(3,17) + c6cff(3,18) + c6cff(3,19) +
+     & c6cff(4,17) + c6cff(4,18) + c6cff(4,19)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methyl1
+      write(*,80) 
+      write(*,10)  1,  2, c6cff(1,2)
+      write(*,10)  1,  3, c6cff(1,3)
+      write(*,10)  1,  4, c6cff(1,4)
+      write(*,10)  5,  2, c6cff(5,2)
+      write(*,10)  5,  3, c6cff(5,3)
+      write(*,10)  5,  4, c6cff(5,4)
+      write(*,10)  6,  2, c6cff(6,2)
+      write(*,10)  6,  3, c6cff(6,3)
+      write(*,10)  6,  4, c6cff(6,4)
+      write(*,10)  7,  2, c6cff(7,2)
+      write(*,10)  7,  3, c6cff(7,3)
+      write(*,10)  7,  4, c6cff(7,4)
+      write(*,10)  8,  2, c6cff(8,2)
+      write(*,10)  8,  3, c6cff(8,3)
+      write(*,10)  8,  4, c6cff(8,4)
+      write(*,10)  9,  2, c6cff(9,2)
+      write(*,10)  9,  3, c6cff(9,3)
+      write(*,10)  9,  4, c6cff(9,4)
+      write(*,10) 10,  2, c6cff(10,2)
+      write(*,10) 10,  3, c6cff(10,3)
+      write(*,10) 10,  4, c6cff(10,4)
+      write(*,10) 11,  2, c6cff(11,2)
+      write(*,10) 11,  3, c6cff(11,3)
+      write(*,10) 11,  4, c6cff(11,4)
+      write(*,10) 12,  2, c6cff(12,2)
+      write(*,10) 12,  3, c6cff(12,3)
+      write(*,10) 12,  4, c6cff(12,4)
+      write(*,10) 13,  2, c6cff(13,2)
+      write(*,10) 13,  3, c6cff(13,3)
+      write(*,10) 13,  4, c6cff(13,4)
+      write(*,10) 14,  2, c6cff(14,2)
+      write(*,10) 14,  3, c6cff(14,3)
+      write(*,10) 14,  4, c6cff(14,4)
+      write(*,10) 15,  2, c6cff(15,2)
+      write(*,10) 15,  3, c6cff(15,3)
+      write(*,10) 15,  4, c6cff(15,4)
+      write(*,10) 16,  2, c6cff(16,2)
+      write(*,10) 16,  3, c6cff(16,3)
+      write(*,10) 16,  4, c6cff(16,4)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,2) + c6cff(1,3) + c6cff(1,4) +
+     & c6cff(5,2) + c6cff(5,3) + c6cff(5,4) +
+     & c6cff(6,2) + c6cff(6,3) + c6cff(6,4) +
+     & c6cff(7,2) + c6cff(7,3) + c6cff(7,4) +
+     & c6cff(8,2) + c6cff(8,3) + c6cff(8,4) +
+     & c6cff(9,2) + c6cff(9,3) + c6cff(9,4) +
+     & c6cff(10,2) + c6cff(10,3) + c6cff(10,4) +
+     & c6cff(11,2) + c6cff(11,3) + c6cff(11,4) +
+     & c6cff(12,2) + c6cff(12,3) + c6cff(12,4) +
+     & c6cff(13,2) + c6cff(13,3) + c6cff(13,4) +
+     & c6cff(14,2) + c6cff(14,3) + c6cff(14,4) +
+     & c6cff(15,2) + c6cff(15,3) + c6cff(15,4) +
+     & c6cff(16,2) + c6cff(16,3) + c6cff(16,4)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methylene
+      write(*,90) 
+      write(*,10)  1,  1, c6cff(1,1)
+      write(*,10)  1,  5, c6cff(1,5)
+      write(*,10)  1,  6, c6cff(1,6)
+      write(*,10)  1,  7, c6cff(1,7)
+      write(*,10)  1,  8, c6cff(1,8)
+      write(*,10)  1,  9, c6cff(1,9)
+      write(*,10)  1, 10, c6cff(1,10)
+      write(*,10)  1, 11, c6cff(1,11)
+      write(*,10)  1, 12, c6cff(1,12)
+      write(*,10)  1, 13, c6cff(1,13)
+      write(*,10)  1, 14, c6cff(1,14)
+      write(*,10)  1, 15, c6cff(1,15)
+      write(*,10)  1, 16, c6cff(1,16)
+      write(*,10)  5,  1, c6cff(5,1)
+      write(*,10)  5,  5, c6cff(5,5)
+      write(*,10)  5,  6, c6cff(5,6)
+      write(*,10)  5,  7, c6cff(5,7)
+      write(*,10)  5,  8, c6cff(5,8)
+      write(*,10)  5,  9, c6cff(5,9)
+      write(*,10)  5, 10, c6cff(5,10)
+      write(*,10)  5, 11, c6cff(5,11)
+      write(*,10)  5, 12, c6cff(5,12)
+      write(*,10)  5, 13, c6cff(5,13)
+      write(*,10)  5, 14, c6cff(5,14)
+      write(*,10)  5, 15, c6cff(5,15)
+      write(*,10)  5, 16, c6cff(5,16)
+      write(*,10)  6,  1, c6cff(6,1)
+      write(*,10)  6,  5, c6cff(6,5)
+      write(*,10)  6,  6, c6cff(6,6)
+      write(*,10)  6,  7, c6cff(6,7)
+      write(*,10)  6,  8, c6cff(6,8)
+      write(*,10)  6,  9, c6cff(6,9)
+      write(*,10)  6, 10, c6cff(6,10)
+      write(*,10)  6, 11, c6cff(6,11)
+      write(*,10)  6, 12, c6cff(6,12)
+      write(*,10)  6, 13, c6cff(6,13)
+      write(*,10)  6, 14, c6cff(6,14)
+      write(*,10)  6, 15, c6cff(6,15)
+      write(*,10)  6, 16, c6cff(6,16)
+      write(*,10)  7,  1, c6cff(7,1)
+      write(*,10)  7,  5, c6cff(7,5)
+      write(*,10)  7,  6, c6cff(7,6)
+      write(*,10)  7,  7, c6cff(7,7)
+      write(*,10)  7,  8, c6cff(7,8)
+      write(*,10)  7,  9, c6cff(7,9)
+      write(*,10)  7, 10, c6cff(7,10)
+      write(*,10)  7, 11, c6cff(7,11)
+      write(*,10)  7, 12, c6cff(7,12)
+      write(*,10)  7, 13, c6cff(7,13)
+      write(*,10)  7, 14, c6cff(7,14)
+      write(*,10)  7, 15, c6cff(7,15)
+      write(*,10)  7, 16, c6cff(7,16)
+      write(*,10)  8,  1, c6cff(8,1)
+      write(*,10)  8,  5, c6cff(8,5)
+      write(*,10)  8,  6, c6cff(8,6)
+      write(*,10)  8,  7, c6cff(8,7)
+      write(*,10)  8,  8, c6cff(8,8)
+      write(*,10)  8,  9, c6cff(8,9)
+      write(*,10)  8, 10, c6cff(8,10)
+      write(*,10)  8, 11, c6cff(8,11)
+      write(*,10)  8, 12, c6cff(8,12)
+      write(*,10)  8, 13, c6cff(8,13)
+      write(*,10)  8, 14, c6cff(8,14)
+      write(*,10)  8, 15, c6cff(8,15)
+      write(*,10)  8, 16, c6cff(8,16)
+      write(*,10)  9,  1, c6cff(9,1)
+      write(*,10)  9,  5, c6cff(9,5)
+      write(*,10)  9,  6, c6cff(9,6)
+      write(*,10)  9,  7, c6cff(9,7)
+      write(*,10)  9,  8, c6cff(9,8)
+      write(*,10)  9,  9, c6cff(9,9)
+      write(*,10)  9, 10, c6cff(9,10)
+      write(*,10)  9, 11, c6cff(9,11)
+      write(*,10)  9, 12, c6cff(9,12)
+      write(*,10)  9, 13, c6cff(9,13)
+      write(*,10)  9, 14, c6cff(9,14)
+      write(*,10)  9, 15, c6cff(9,15)
+      write(*,10)  9, 16, c6cff(9,16)
+      write(*,10) 10,  1, c6cff(10,1)
+      write(*,10) 10,  5, c6cff(10,5)
+      write(*,10) 10,  6, c6cff(10,6)
+      write(*,10) 10,  7, c6cff(10,7)
+      write(*,10) 10,  8, c6cff(10,8)
+      write(*,10) 10,  9, c6cff(10,9)
+      write(*,10) 10, 10, c6cff(10,10)
+      write(*,10) 10, 11, c6cff(10,11)
+      write(*,10) 10, 12, c6cff(10,12)
+      write(*,10) 10, 13, c6cff(10,13)
+      write(*,10) 10, 14, c6cff(10,14)
+      write(*,10) 10, 15, c6cff(10,15)
+      write(*,10) 10, 16, c6cff(10,16)
+      write(*,10) 11,  1, c6cff(11,1)
+      write(*,10) 11,  5, c6cff(11,5)
+      write(*,10) 11,  6, c6cff(11,6)
+      write(*,10) 11,  7, c6cff(11,7)
+      write(*,10) 11,  8, c6cff(11,8)
+      write(*,10) 11,  9, c6cff(11,9)
+      write(*,10) 11, 10, c6cff(11,10)
+      write(*,10) 11, 11, c6cff(11,11)
+      write(*,10) 11, 12, c6cff(11,12)
+      write(*,10) 11, 13, c6cff(11,13)
+      write(*,10) 11, 14, c6cff(11,14)
+      write(*,10) 11, 15, c6cff(11,15)
+      write(*,10) 11, 16, c6cff(11,16)
+      write(*,10) 12,  1, c6cff(12,1)
+      write(*,10) 12,  5, c6cff(12,5)
+      write(*,10) 12,  6, c6cff(12,6)
+      write(*,10) 12,  7, c6cff(12,7)
+      write(*,10) 12,  8, c6cff(12,8)
+      write(*,10) 12,  9, c6cff(12,9)
+      write(*,10) 12, 10, c6cff(12,10)
+      write(*,10) 12, 11, c6cff(12,11)
+      write(*,10) 12, 12, c6cff(12,12)
+      write(*,10) 12, 13, c6cff(12,13)
+      write(*,10) 12, 14, c6cff(12,14)
+      write(*,10) 12, 15, c6cff(12,15)
+      write(*,10) 12, 16, c6cff(12,16)
+      write(*,10) 13,  1, c6cff(13,1)
+      write(*,10) 13,  5, c6cff(13,5)
+      write(*,10) 13,  6, c6cff(13,6)
+      write(*,10) 13,  7, c6cff(13,7)
+      write(*,10) 13,  8, c6cff(13,8)
+      write(*,10) 13,  9, c6cff(13,9)
+      write(*,10) 13, 10, c6cff(13,10)
+      write(*,10) 13, 11, c6cff(13,11)
+      write(*,10) 13, 12, c6cff(13,12)
+      write(*,10) 13, 13, c6cff(13,13)
+      write(*,10) 13, 14, c6cff(13,14)
+      write(*,10) 13, 15, c6cff(13,15)
+      write(*,10) 13, 16, c6cff(13,16)
+      write(*,10) 14,  1, c6cff(14,1)
+      write(*,10) 14,  5, c6cff(14,5)
+      write(*,10) 14,  6, c6cff(14,6)
+      write(*,10) 14,  7, c6cff(14,7)
+      write(*,10) 14,  8, c6cff(14,8)
+      write(*,10) 14,  9, c6cff(14,9)
+      write(*,10) 14, 10, c6cff(14,10)
+      write(*,10) 14, 11, c6cff(14,11)
+      write(*,10) 14, 12, c6cff(14,12)
+      write(*,10) 14, 13, c6cff(14,13)
+      write(*,10) 14, 14, c6cff(14,14)
+      write(*,10) 14, 15, c6cff(14,15)
+      write(*,10) 14, 16, c6cff(14,16)
+      write(*,10) 15,  1, c6cff(15,1)
+      write(*,10) 15,  5, c6cff(15,5)
+      write(*,10) 15,  6, c6cff(15,6)
+      write(*,10) 15,  7, c6cff(15,7)
+      write(*,10) 15,  8, c6cff(15,8)
+      write(*,10) 15,  9, c6cff(15,9)
+      write(*,10) 15, 10, c6cff(15,10)
+      write(*,10) 15, 11, c6cff(15,11)
+      write(*,10) 15, 12, c6cff(15,12)
+      write(*,10) 15, 13, c6cff(15,13)
+      write(*,10) 15, 14, c6cff(15,14)
+      write(*,10) 15, 15, c6cff(15,15)
+      write(*,10) 15, 16, c6cff(15,16)
+      write(*,10) 16,  1, c6cff(16,1)
+      write(*,10) 16,  5, c6cff(16,5)
+      write(*,10) 16,  6, c6cff(16,6)
+      write(*,10) 16,  7, c6cff(16,7)
+      write(*,10) 16,  8, c6cff(16,8)
+      write(*,10) 16,  9, c6cff(16,9)
+      write(*,10) 16, 10, c6cff(16,10)
+      write(*,10) 16, 11, c6cff(16,11)
+      write(*,10) 16, 12, c6cff(16,12)
+      write(*,10) 16, 13, c6cff(16,13)
+      write(*,10) 16, 14, c6cff(16,14)
+      write(*,10) 16, 15, c6cff(16,15)
+      write(*,10) 16, 16, c6cff(16,16)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,1) + c6cff(1,5) + c6cff(1,6) +
+     & c6cff(1,7) + c6cff(1,8) + c6cff(1,9) + c6cff(1,10) +
+     & c6cff(1,11) + c6cff(1,12) + c6cff(1,13) +
+     & c6cff(1,14) + c6cff(1,15) + c6cff(1,16) +
+     & c6cff(5,1) + c6cff(5,5) + c6cff(5,6) +
+     & c6cff(5,7) + c6cff(5,8) + c6cff(5,9) + c6cff(5,10) +
+     & c6cff(5,11) + c6cff(5,12) + c6cff(5,13) +
+     & c6cff(5,14) + c6cff(5,15) + c6cff(5,16) +
+     & c6cff(6,1) + c6cff(6,5) + c6cff(6,6) +
+     & c6cff(6,7) + c6cff(6,8) + c6cff(6,9) + c6cff(6,10) +
+     & c6cff(6,11) + c6cff(6,12) + c6cff(6,13) +
+     & c6cff(6,14) + c6cff(6,15) + c6cff(6,16) +
+     & c6cff(7,1) + c6cff(7,5) + c6cff(7,6) +
+     & c6cff(7,7) + c6cff(7,8) + c6cff(7,9) + c6cff(7,10) +
+     & c6cff(7,11) + c6cff(7,12) + c6cff(7,13) +
+     & c6cff(7,14) + c6cff(7,15) + c6cff(7,16) +
+     & c6cff(8,1) + c6cff(8,5) + c6cff(8,6) +
+     & c6cff(8,7) + c6cff(8,8) + c6cff(8,9) + c6cff(8,10) +
+     & c6cff(8,11) + c6cff(8,12) + c6cff(8,13) +
+     & c6cff(8,14) + c6cff(8,15) + c6cff(8,16) +
+     & c6cff(9,1) + c6cff(9,5) + c6cff(9,6) +
+     & c6cff(9,7) + c6cff(9,8) + c6cff(9,9) + c6cff(9,10) +
+     & c6cff(9,11) + c6cff(9,12) + c6cff(9,13) +
+     & c6cff(9,14) + c6cff(9,15) + c6cff(9,16) +
+     & c6cff(10,1) + c6cff(10,5) + c6cff(10,6) +
+     & c6cff(10,7) + c6cff(10,8) + c6cff(10,9) + c6cff(10,10) +
+     & c6cff(10,11) + c6cff(10,12) + c6cff(10,13) +
+     & c6cff(10,14) + c6cff(10,15) + c6cff(10,16) +
+     & c6cff(11,1) + c6cff(11,5) + c6cff(11,6) +
+     & c6cff(11,7) + c6cff(11,8) + c6cff(11,9) + c6cff(11,10) +
+     & c6cff(11,11) + c6cff(11,12) + c6cff(11,13) +
+     & c6cff(11,14) + c6cff(11,15) + c6cff(11,16) +
+     & c6cff(12,1) + c6cff(12,5) + c6cff(12,6) +
+     & c6cff(12,7) + c6cff(12,8) + c6cff(12,9) + c6cff(12,10) +
+     & c6cff(12,11) + c6cff(12,12) + c6cff(12,13) +
+     & c6cff(12,14) + c6cff(12,15) + c6cff(12,16) +
+     & c6cff(13,1) + c6cff(13,5) + c6cff(13,6) +
+     & c6cff(13,7) + c6cff(13,8) + c6cff(13,9) + c6cff(13,10) +
+     & c6cff(13,11) + c6cff(13,12) + c6cff(13,13) +
+     & c6cff(13,14) + c6cff(13,15) + c6cff(13,16) +
+     & c6cff(14,1) + c6cff(14,5) + c6cff(14,6) +
+     & c6cff(14,7) + c6cff(14,8) + c6cff(14,9) + c6cff(14,10) +
+     & c6cff(14,11) + c6cff(14,12) + c6cff(14,13) +
+     & c6cff(14,14) + c6cff(14,15) + c6cff(14,16) +
+     & c6cff(15,1) + c6cff(15,5) + c6cff(15,6) +
+     & c6cff(15,7) + c6cff(15,8) + c6cff(15,9) + c6cff(15,10) +
+     & c6cff(15,11) + c6cff(15,12) + c6cff(15,13) +
+     & c6cff(15,14) + c6cff(15,15) + c6cff(15,16) +
+     & c6cff(16,1) + c6cff(16,5) + c6cff(16,6) +
+     & c6cff(16,7) + c6cff(16,8) + c6cff(16,9) + c6cff(16,10) +
+     & c6cff(16,11) + c6cff(16,12) + c6cff(16,13) +
+     & c6cff(16,14) + c6cff(16,15) + c6cff(16,16)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methyl2
+      write(*,100) 
+      write(*,10)  1, 17, c6cff(1,17)
+      write(*,10)  1, 18, c6cff(1,18)
+      write(*,10)  1, 19, c6cff(1,19)
+      write(*,10)  5, 17, c6cff(5,17)
+      write(*,10)  5, 18, c6cff(5,18)
+      write(*,10)  5, 19, c6cff(5,19)
+      write(*,10)  6, 17, c6cff(6,17)
+      write(*,10)  6, 18, c6cff(6,18)
+      write(*,10)  6, 19, c6cff(6,19)
+      write(*,10)  7, 17, c6cff(7,17)
+      write(*,10)  7, 18, c6cff(7,18)
+      write(*,10)  7, 19, c6cff(7,19)
+      write(*,10)  8, 17, c6cff(8,17)
+      write(*,10)  8, 18, c6cff(8,18)
+      write(*,10)  8, 19, c6cff(8,19)
+      write(*,10)  9, 17, c6cff(9,17)
+      write(*,10)  9, 18, c6cff(9,18)
+      write(*,10)  9, 19, c6cff(9,19)
+      write(*,10) 10, 17, c6cff(10,17)
+      write(*,10) 10, 18, c6cff(10,18)
+      write(*,10) 10, 19, c6cff(10,19)
+      write(*,10) 11, 17, c6cff(11,17)
+      write(*,10) 11, 18, c6cff(11,18)
+      write(*,10) 11, 19, c6cff(11,19)
+      write(*,10) 12, 17, c6cff(12,17)
+      write(*,10) 12, 18, c6cff(12,18)
+      write(*,10) 12, 19, c6cff(12,19)
+      write(*,10) 13, 17, c6cff(13,17)
+      write(*,10) 13, 18, c6cff(13,18)
+      write(*,10) 13, 19, c6cff(13,19)
+      write(*,10) 14, 17, c6cff(14,17)
+      write(*,10) 14, 18, c6cff(14,18)
+      write(*,10) 14, 19, c6cff(14,19)
+      write(*,10) 15, 17, c6cff(15,17)
+      write(*,10) 15, 18, c6cff(15,18)
+      write(*,10) 15, 19, c6cff(15,19)
+      write(*,10) 16, 17, c6cff(16,17)
+      write(*,10) 16, 18, c6cff(16,18)
+      write(*,10) 16, 19, c6cff(16,19)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,17) + c6cff(1,18) + c6cff(1,19) +
+     & c6cff(5,17) + c6cff(5,18) + c6cff(5,19) +
+     & c6cff(6,17) + c6cff(6,18) + c6cff(6,19) +
+     & c6cff(7,17) + c6cff(7,18) + c6cff(7,19) +
+     & c6cff(8,17) + c6cff(8,18) + c6cff(8,19) +
+     & c6cff(9,17) + c6cff(9,18) + c6cff(9,19) +
+     & c6cff(10,17) + c6cff(10,18) + c6cff(10,19) +
+     & c6cff(11,17) + c6cff(11,18) + c6cff(11,19) +
+     & c6cff(12,17) + c6cff(12,18) + c6cff(12,19) +
+     & c6cff(13,17) + c6cff(13,18) + c6cff(13,19) +
+     & c6cff(14,17) + c6cff(14,18) + c6cff(14,19) +
+     & c6cff(15,17) + c6cff(15,18) + c6cff(15,19) +
+     & c6cff(16,17) + c6cff(16,18) + c6cff(16,19) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl2-methyl1
+      write(*,110) 
+      write(*,10) 17,  2, c6cff(17,2)
+      write(*,10) 17,  3, c6cff(17,3)
+      write(*,10) 17,  4, c6cff(17,4)
+      write(*,10) 18,  2, c6cff(18,2)
+      write(*,10) 18,  3, c6cff(18,3)
+      write(*,10) 18,  4, c6cff(18,4)
+      write(*,10) 19,  2, c6cff(19,2)
+      write(*,10) 19,  3, c6cff(19,3)
+      write(*,10) 19,  4, c6cff(19,4)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(17,2) + c6cff(17,3) + c6cff(17,4) +
+     & c6cff(18,2) + c6cff(18,3) + c6cff(18,4) +
+     & c6cff(19,2) + c6cff(19,3) + c6cff(19,4)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl2-methylene
+      write(*,120) 
+      write(*,10) 17,  1, c6cff(17,1)
+      write(*,10) 17,  5, c6cff(17,5)
+      write(*,10) 17,  6, c6cff(17,6)
+      write(*,10) 17,  7, c6cff(17,7)
+      write(*,10) 17,  8, c6cff(17,8)
+      write(*,10) 17,  9, c6cff(17,9)
+      write(*,10) 17, 10, c6cff(17,10)
+      write(*,10) 17, 11, c6cff(17,11)
+      write(*,10) 17, 12, c6cff(17,12)
+      write(*,10) 17, 13, c6cff(17,13)
+      write(*,10) 17, 14, c6cff(17,14)
+      write(*,10) 17, 15, c6cff(17,15)
+      write(*,10) 17, 16, c6cff(17,16)
+      write(*,10) 18,  1, c6cff(18,1)
+      write(*,10) 18,  5, c6cff(18,5)
+      write(*,10) 18,  6, c6cff(18,6)
+      write(*,10) 18,  7, c6cff(18,7)
+      write(*,10) 18,  8, c6cff(18,8)
+      write(*,10) 18,  9, c6cff(18,9)
+      write(*,10) 18, 10, c6cff(18,10)
+      write(*,10) 18, 11, c6cff(18,11)
+      write(*,10) 18, 12, c6cff(18,12)
+      write(*,10) 18, 13, c6cff(18,13)
+      write(*,10) 18, 14, c6cff(18,14)
+      write(*,10) 18, 15, c6cff(18,15)
+      write(*,10) 18, 16, c6cff(18,16)
+      write(*,10) 19,  1, c6cff(19,1)
+      write(*,10) 19,  5, c6cff(19,5)
+      write(*,10) 19,  6, c6cff(19,6)
+      write(*,10) 19,  7, c6cff(19,7)
+      write(*,10) 19,  8, c6cff(19,8)
+      write(*,10) 19,  9, c6cff(19,9)
+      write(*,10) 19, 10, c6cff(19,10)
+      write(*,10) 19, 11, c6cff(19,11)
+      write(*,10) 19, 12, c6cff(19,12)
+      write(*,10) 19, 13, c6cff(19,13)
+      write(*,10) 19, 14, c6cff(19,14)
+      write(*,10) 19, 15, c6cff(19,15)
+      write(*,10) 19, 16, c6cff(19,16)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(17,1) + c6cff(17,5) + c6cff(17,6) +
+     & c6cff(17,7) + c6cff(17,8) + c6cff(17,9) + c6cff(17,10) +
+     & c6cff(17,11) + c6cff(17,12) + c6cff(17,13) +
+     & c6cff(17,14) + c6cff(17,15) + c6cff(17,16) +
+     & c6cff(18,1) + c6cff(18,5) + c6cff(18,6) +
+     & c6cff(18,7) + c6cff(18,8) + c6cff(18,9) + c6cff(18,10) +
+     & c6cff(18,11) + c6cff(18,12) + c6cff(18,13) +
+     & c6cff(18,14) + c6cff(18,15) + c6cff(18,16) +
+     & c6cff(19,1) + c6cff(19,5) + c6cff(19,6) +
+     & c6cff(19,7) + c6cff(19,8) + c6cff(19,9) + c6cff(19,10) +
+     & c6cff(19,11) + c6cff(19,12) + c6cff(19,13) +
+     & c6cff(19,14) + c6cff(19,15) + c6cff(19,16)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl2-methyl2
+      write(*,130) 
+      write(*,10) 17, 17, c6cff(17,17)
+      write(*,10) 17, 18, c6cff(17,18)
+      write(*,10) 17, 19, c6cff(17,19)
+      write(*,10) 18, 17, c6cff(18,17)
+      write(*,10) 18, 18, c6cff(18,18)
+      write(*,10) 18, 19, c6cff(18,19)
+      write(*,10) 19, 17, c6cff(19,17)
+      write(*,10) 19, 18, c6cff(19,18)
+      write(*,10) 19, 19, c6cff(19,19)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(17,17) + c6cff(17,18) + c6cff(17,19) +
+     & c6cff(18,17) + c6cff(18,18) + c6cff(18,19) +
+     & c6cff(19,17) + c6cff(19,18) + c6cff(19,19) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+      end if
+      
+      if (system.eq.'ALKANE7') then
+
+CCC A: cc-pvdz ALK7
+CCC B: cc-pvdz ALK7
+     
+CCC methyl1-methyl1
+      write(*,30) 
+      write(*,10) 20, 20, c6cff(20,20)
+      write(*,10) 20, 21, c6cff(20,21)
+      write(*,10) 20, 22, c6cff(20,22)
+      write(*,10) 21, 20, c6cff(21,20)
+      write(*,10) 21, 21, c6cff(21,21)
+      write(*,10) 21, 22, c6cff(21,22)
+      write(*,10) 22, 20, c6cff(22,20)
+      write(*,10) 22, 21, c6cff(22,21)
+      write(*,10) 22, 22, c6cff(22,22)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(20,20) + c6cff(20,21) + c6cff(20,22) +
+     & c6cff(21,20) + c6cff(21,21) + c6cff(21,22) +
+     & c6cff(22,20) + c6cff(22,21) + c6cff(22,22)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl1-methylene
+      write(*,60) 
+      write(*,10) 20,  1, c6cff(20,1)
+      write(*,10) 20,  2, c6cff(20,2)
+      write(*,10) 20,  3, c6cff(20,3)
+      write(*,10) 20,  4, c6cff(20,4)
+      write(*,10) 20,  8, c6cff(20,8)
+      write(*,10) 20,  9, c6cff(20,9)
+      write(*,10) 20, 10, c6cff(20,10)
+      write(*,10) 20, 11, c6cff(20,11)
+      write(*,10) 20, 12, c6cff(20,12)
+      write(*,10) 20, 13, c6cff(20,13)
+      write(*,10) 20, 14, c6cff(20,14)
+      write(*,10) 20, 15, c6cff(20,15)
+      write(*,10) 20, 16, c6cff(20,16)
+      write(*,10) 20, 17, c6cff(20,17)
+      write(*,10) 20, 18, c6cff(20,18)
+      write(*,10) 20, 19, c6cff(20,19)
+      write(*,10) 21,  1, c6cff(21,1)
+      write(*,10) 21,  2, c6cff(21,2)
+      write(*,10) 21,  3, c6cff(21,3)
+      write(*,10) 21,  4, c6cff(21,4)
+      write(*,10) 21,  8, c6cff(21,8)
+      write(*,10) 21,  9, c6cff(21,9)
+      write(*,10) 21, 10, c6cff(21,10)
+      write(*,10) 21, 11, c6cff(21,11)
+      write(*,10) 21, 12, c6cff(21,12)
+      write(*,10) 21, 13, c6cff(21,13)
+      write(*,10) 21, 14, c6cff(21,14)
+      write(*,10) 21, 15, c6cff(21,15)
+      write(*,10) 21, 16, c6cff(21,16)
+      write(*,10) 21, 17, c6cff(21,17)
+      write(*,10) 21, 18, c6cff(21,18)
+      write(*,10) 21, 19, c6cff(21,19)
+      write(*,10) 22,  1, c6cff(22,1)
+      write(*,10) 22,  2, c6cff(22,2)
+      write(*,10) 22,  3, c6cff(22,3)
+      write(*,10) 22,  4, c6cff(22,4)
+      write(*,10) 22,  8, c6cff(22,8)
+      write(*,10) 22,  9, c6cff(22,9)
+      write(*,10) 22, 10, c6cff(22,10)
+      write(*,10) 22, 11, c6cff(22,11)
+      write(*,10) 22, 12, c6cff(22,12)
+      write(*,10) 22, 13, c6cff(22,13)
+      write(*,10) 22, 14, c6cff(22,14)
+      write(*,10) 22, 15, c6cff(22,15)
+      write(*,10) 22, 16, c6cff(22,16)
+      write(*,10) 22, 17, c6cff(22,17)
+      write(*,10) 22, 18, c6cff(22,18)
+      write(*,10) 22, 19, c6cff(22,19)
+      
+      grpc6 = 0.0D0
+      grpc6 = c6cff(20,1) + c6cff(20,2) + c6cff(20,3) +
+     & c6cff(20,4) + c6cff(20,8) + c6cff(20,9) + c6cff(20,10) +
+     & c6cff(20,11) + c6cff(20,12) + c6cff(20,13) + c6cff(20,14) +
+     & c6cff(20,15) + c6cff(20,16) + c6cff(20,17) + c6cff(20,18) +
+     & c6cff(20,19) +
+     & c6cff(21,1) + c6cff(21,2) + c6cff(21,3) + c6cff(21,4) +
+     & c6cff(21,8) + c6cff(21,9) + c6cff(21,10) + c6cff(21,11) +
+     & c6cff(21,12) + c6cff(21,13) + c6cff(21,14) + c6cff(21,15) +
+     & c6cff(21,16) + c6cff(21,17) + c6cff(21,18) + c6cff(21,19) +
+     & c6cff(22,1) + c6cff(22,2) + c6cff(22,3) + c6cff(22,4) +
+     & c6cff(22,8) + c6cff(22,9) + c6cff(22,10) + c6cff(22,11) +
+     & c6cff(22,12) + c6cff(22,13) + c6cff(22,14) + c6cff(22,15) +
+     & c6cff(22,16) + c6cff(22,17) + c6cff(22,18) + c6cff(22,19)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl1-methyl2
+      write(*,70) 
+      write(*,10) 20,  5, c6cff(20,5)
+      write(*,10) 20,  6, c6cff(20,6)
+      write(*,10) 20,  7, c6cff(20,7)
+      write(*,10) 21,  5, c6cff(21,5)
+      write(*,10) 21,  6, c6cff(21,6)
+      write(*,10) 21,  7, c6cff(21,7)
+      write(*,10) 22,  5, c6cff(22,5)
+      write(*,10) 22,  6, c6cff(22,6)
+      write(*,10) 22,  7, c6cff(22,7)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(20,5) + c6cff(20,6) + c6cff(20,7) +
+     & c6cff(21,5) + c6cff(21,6) + c6cff(21,7) +
+     & c6cff(22,5) + c6cff(22,6) + c6cff(22,7)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methyl1
+      write(*,80) 
+      write(*,10)  1, 20, c6cff(1,20)
+      write(*,10)  1, 21, c6cff(1,21)
+      write(*,10)  1, 22, c6cff(1,22)
+      write(*,10)  2, 20, c6cff(2,20)
+      write(*,10)  2, 21, c6cff(2,21)
+      write(*,10)  2, 22, c6cff(2,22)
+      write(*,10)  3, 20, c6cff(3,20)
+      write(*,10)  3, 21, c6cff(3,21)
+      write(*,10)  3, 22, c6cff(3,22)
+      write(*,10)  4, 20, c6cff(4,20)
+      write(*,10)  4, 21, c6cff(4,21)
+      write(*,10)  4, 22, c6cff(4,22)
+      write(*,10)  8, 20, c6cff(8,20)
+      write(*,10)  8, 21, c6cff(8,21)
+      write(*,10)  8, 22, c6cff(8,22)
+      write(*,10)  9, 20, c6cff(9,20)
+      write(*,10)  9, 21, c6cff(9,21)
+      write(*,10)  9, 22, c6cff(9,22)
+      write(*,10) 10, 20, c6cff(10,20)
+      write(*,10) 10, 21, c6cff(10,21)
+      write(*,10) 10, 22, c6cff(10,22)
+      write(*,10) 11, 20, c6cff(11,20)
+      write(*,10) 11, 21, c6cff(11,21)
+      write(*,10) 11, 22, c6cff(11,22)
+      write(*,10) 12, 20, c6cff(12,20)
+      write(*,10) 12, 21, c6cff(12,21)
+      write(*,10) 12, 22, c6cff(12,22)
+      write(*,10) 13, 20, c6cff(13,20)
+      write(*,10) 13, 21, c6cff(13,21)
+      write(*,10) 13, 22, c6cff(13,22)
+      write(*,10) 14, 20, c6cff(14,20)
+      write(*,10) 14, 21, c6cff(14,21)
+      write(*,10) 14, 22, c6cff(14,22)
+      write(*,10) 15, 20, c6cff(15,20)
+      write(*,10) 15, 21, c6cff(15,21)
+      write(*,10) 15, 22, c6cff(15,22)
+      write(*,10) 16, 20, c6cff(16,20)
+      write(*,10) 16, 21, c6cff(16,21)
+      write(*,10) 16, 22, c6cff(16,22)
+      write(*,10) 17, 20, c6cff(17,20)
+      write(*,10) 17, 21, c6cff(17,21)
+      write(*,10) 17, 22, c6cff(17,22)
+      write(*,10) 18, 20, c6cff(18,20)
+      write(*,10) 18, 21, c6cff(18,21)
+      write(*,10) 18, 22, c6cff(18,22)
+      write(*,10) 19, 20, c6cff(19,20)
+      write(*,10) 19, 21, c6cff(19,21)
+      write(*,10) 19, 22, c6cff(19,22)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,20) + c6cff(1,21) + c6cff(1,22) +
+     & c6cff(2,20) + c6cff(2,21) + c6cff(2,22) +
+     & c6cff(3,20) + c6cff(3,21) + c6cff(3,22) +
+     & c6cff(4,20) + c6cff(4,21) + c6cff(4,22) +
+     & c6cff(8,20) + c6cff(8,21) + c6cff(8,22) +
+     & c6cff(9,20) + c6cff(9,21) + c6cff(9,22) +
+     & c6cff(10,20) + c6cff(10,21) + c6cff(10,22) +
+     & c6cff(11,20) + c6cff(11,21) + c6cff(11,22) +
+     & c6cff(12,20) + c6cff(12,21) + c6cff(12,22) +
+     & c6cff(13,20) + c6cff(13,21) + c6cff(13,22) +
+     & c6cff(14,20) + c6cff(14,21) + c6cff(14,22) +
+     & c6cff(15,20) + c6cff(15,21) + c6cff(15,22) +
+     & c6cff(16,20) + c6cff(16,21) + c6cff(16,22) +
+     & c6cff(17,20) + c6cff(17,21) + c6cff(17,22) +
+     & c6cff(18,20) + c6cff(18,21) + c6cff(18,22) +
+     & c6cff(19,20) + c6cff(19,21) + c6cff(19,22)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methylene
+      write(*,90) 
+      write(*,10)  1,  1, c6cff(1,1)
+      write(*,10)  1,  2, c6cff(1,2)
+      write(*,10)  1,  3, c6cff(1,3)
+      write(*,10)  1,  4, c6cff(1,4)
+      write(*,10)  1,  8, c6cff(1,8)
+      write(*,10)  1,  9, c6cff(1,9)
+      write(*,10)  1, 10, c6cff(1,10)
+      write(*,10)  1, 11, c6cff(1,11)
+      write(*,10)  1, 12, c6cff(1,12)
+      write(*,10)  1, 13, c6cff(1,13)
+      write(*,10)  1, 14, c6cff(1,14)
+      write(*,10)  1, 15, c6cff(1,15)
+      write(*,10)  1, 16, c6cff(1,16)
+      write(*,10)  1, 17, c6cff(1,17)
+      write(*,10)  1, 18, c6cff(1,18)
+      write(*,10)  1, 19, c6cff(1,19)
+      write(*,10)  2,  1, c6cff(2,1)
+      write(*,10)  2,  2, c6cff(2,2)
+      write(*,10)  2,  3, c6cff(2,3)
+      write(*,10)  2,  4, c6cff(2,4)
+      write(*,10)  2,  8, c6cff(2,8)
+      write(*,10)  2,  9, c6cff(2,9)
+      write(*,10)  2, 10, c6cff(2,10)
+      write(*,10)  2, 11, c6cff(2,11)
+      write(*,10)  2, 12, c6cff(2,12)
+      write(*,10)  2, 13, c6cff(2,13)
+      write(*,10)  2, 14, c6cff(2,14)
+      write(*,10)  2, 15, c6cff(2,15)
+      write(*,10)  2, 16, c6cff(2,16)
+      write(*,10)  2, 17, c6cff(2,17)
+      write(*,10)  2, 18, c6cff(2,18)
+      write(*,10)  2, 19, c6cff(2,19)
+      write(*,10)  3,  1, c6cff(3,1)
+      write(*,10)  3,  2, c6cff(3,2)
+      write(*,10)  3,  3, c6cff(3,3)
+      write(*,10)  3,  4, c6cff(3,4)
+      write(*,10)  3,  8, c6cff(3,8)
+      write(*,10)  3,  9, c6cff(3,9)
+      write(*,10)  3, 10, c6cff(3,10)
+      write(*,10)  3, 11, c6cff(3,11)
+      write(*,10)  3, 12, c6cff(3,12)
+      write(*,10)  3, 13, c6cff(3,13)
+      write(*,10)  3, 14, c6cff(3,14)
+      write(*,10)  3, 15, c6cff(3,15)
+      write(*,10)  3, 16, c6cff(3,16)
+      write(*,10)  3, 17, c6cff(3,17)
+      write(*,10)  3, 18, c6cff(3,18)
+      write(*,10)  3, 19, c6cff(3,19)
+      write(*,10)  4,  1, c6cff(4,1)
+      write(*,10)  4,  2, c6cff(4,2)
+      write(*,10)  4,  3, c6cff(4,3)
+      write(*,10)  4,  4, c6cff(4,4)
+      write(*,10)  4,  8, c6cff(4,8)
+      write(*,10)  4,  9, c6cff(4,9)
+      write(*,10)  4, 10, c6cff(4,10)
+      write(*,10)  4, 11, c6cff(4,11)
+      write(*,10)  4, 12, c6cff(4,12)
+      write(*,10)  4, 13, c6cff(4,13)
+      write(*,10)  4, 14, c6cff(4,14)
+      write(*,10)  4, 15, c6cff(4,15)
+      write(*,10)  4, 16, c6cff(4,16)
+      write(*,10)  4, 17, c6cff(4,17)
+      write(*,10)  4, 18, c6cff(4,18)
+      write(*,10)  4, 19, c6cff(4,19)
+      write(*,10)  8,  1, c6cff(8,1)
+      write(*,10)  8,  2, c6cff(8,2)
+      write(*,10)  8,  3, c6cff(8,3)
+      write(*,10)  8,  4, c6cff(8,4)
+      write(*,10)  8,  8, c6cff(8,8)
+      write(*,10)  8,  9, c6cff(8,9)
+      write(*,10)  8, 10, c6cff(8,10)
+      write(*,10)  8, 11, c6cff(8,11)
+      write(*,10)  8, 12, c6cff(8,12)
+      write(*,10)  8, 13, c6cff(8,13)
+      write(*,10)  8, 14, c6cff(8,14)
+      write(*,10)  8, 15, c6cff(8,15)
+      write(*,10)  8, 16, c6cff(8,16)
+      write(*,10)  8, 17, c6cff(8,17)
+      write(*,10)  8, 18, c6cff(8,18)
+      write(*,10)  8, 19, c6cff(8,19)
+      write(*,10)  9,  1, c6cff(9,1)
+      write(*,10)  9,  2, c6cff(9,2)
+      write(*,10)  9,  3, c6cff(9,3)
+      write(*,10)  9,  4, c6cff(9,4)
+      write(*,10)  9,  8, c6cff(9,8)
+      write(*,10)  9,  9, c6cff(9,9)
+      write(*,10)  9, 10, c6cff(9,10)
+      write(*,10)  9, 11, c6cff(9,11)
+      write(*,10)  9, 12, c6cff(9,12)
+      write(*,10)  9, 13, c6cff(9,13)
+      write(*,10)  9, 14, c6cff(9,14)
+      write(*,10)  9, 15, c6cff(9,15)
+      write(*,10)  9, 16, c6cff(9,16)
+      write(*,10)  9, 17, c6cff(9,17)
+      write(*,10)  9, 18, c6cff(9,18)
+      write(*,10)  9, 19, c6cff(9,19)
+      write(*,10) 10,  1, c6cff(10,1)
+      write(*,10) 10,  2, c6cff(10,2)
+      write(*,10) 10,  3, c6cff(10,3)
+      write(*,10) 10,  4, c6cff(10,4)
+      write(*,10) 10,  8, c6cff(10,8)
+      write(*,10) 10,  9, c6cff(10,9)
+      write(*,10) 10, 10, c6cff(10,10)
+      write(*,10) 10, 11, c6cff(10,11)
+      write(*,10) 10, 12, c6cff(10,12)
+      write(*,10) 10, 13, c6cff(10,13)
+      write(*,10) 10, 14, c6cff(10,14)
+      write(*,10) 10, 15, c6cff(10,15)
+      write(*,10) 10, 16, c6cff(10,16)
+      write(*,10) 10, 17, c6cff(10,17)
+      write(*,10) 10, 18, c6cff(10,18)
+      write(*,10) 10, 19, c6cff(10,19)
+      write(*,10) 11,  1, c6cff(11,1)
+      write(*,10) 11,  2, c6cff(11,2)
+      write(*,10) 11,  3, c6cff(11,3)
+      write(*,10) 11,  4, c6cff(11,4)
+      write(*,10) 11,  8, c6cff(11,8)
+      write(*,10) 11,  9, c6cff(11,9)
+      write(*,10) 11, 10, c6cff(11,10)
+      write(*,10) 11, 11, c6cff(11,11)
+      write(*,10) 11, 12, c6cff(11,12)
+      write(*,10) 11, 13, c6cff(11,13)
+      write(*,10) 11, 14, c6cff(11,14)
+      write(*,10) 11, 15, c6cff(11,15)
+      write(*,10) 11, 16, c6cff(11,16)
+      write(*,10) 11, 17, c6cff(11,17)
+      write(*,10) 11, 18, c6cff(11,18)
+      write(*,10) 11, 19, c6cff(11,19)
+      write(*,10) 12,  1, c6cff(12,1)
+      write(*,10) 12,  2, c6cff(12,2)
+      write(*,10) 12,  3, c6cff(12,3)
+      write(*,10) 12,  4, c6cff(12,4)
+      write(*,10) 12,  8, c6cff(12,8)
+      write(*,10) 12,  9, c6cff(12,9)
+      write(*,10) 12, 10, c6cff(12,10)
+      write(*,10) 12, 11, c6cff(12,11)
+      write(*,10) 12, 12, c6cff(12,12)
+      write(*,10) 12, 13, c6cff(12,13)
+      write(*,10) 12, 14, c6cff(12,14)
+      write(*,10) 12, 15, c6cff(12,15)
+      write(*,10) 12, 16, c6cff(12,16)
+      write(*,10) 12, 17, c6cff(12,17)
+      write(*,10) 12, 18, c6cff(12,18)
+      write(*,10) 12, 19, c6cff(12,19)
+      write(*,10) 13,  1, c6cff(13,1)
+      write(*,10) 13,  2, c6cff(13,2)
+      write(*,10) 13,  3, c6cff(13,3)
+      write(*,10) 13,  4, c6cff(13,4)
+      write(*,10) 13,  8, c6cff(13,8)
+      write(*,10) 13,  9, c6cff(13,9)
+      write(*,10) 13, 10, c6cff(13,10)
+      write(*,10) 13, 11, c6cff(13,11)
+      write(*,10) 13, 12, c6cff(13,12)
+      write(*,10) 13, 13, c6cff(13,13)
+      write(*,10) 13, 14, c6cff(13,14)
+      write(*,10) 13, 15, c6cff(13,15)
+      write(*,10) 13, 16, c6cff(13,16)
+      write(*,10) 13, 17, c6cff(13,17)
+      write(*,10) 13, 18, c6cff(13,18)
+      write(*,10) 13, 19, c6cff(13,19)
+      write(*,10) 14,  1, c6cff(14,1)
+      write(*,10) 14,  2, c6cff(14,2)
+      write(*,10) 14,  3, c6cff(14,3)
+      write(*,10) 14,  4, c6cff(14,4)
+      write(*,10) 14,  8, c6cff(14,8)
+      write(*,10) 14,  9, c6cff(14,9)
+      write(*,10) 14, 10, c6cff(14,10)
+      write(*,10) 14, 11, c6cff(14,11)
+      write(*,10) 14, 12, c6cff(14,12)
+      write(*,10) 14, 13, c6cff(14,13)
+      write(*,10) 14, 14, c6cff(14,14)
+      write(*,10) 14, 15, c6cff(14,15)
+      write(*,10) 14, 16, c6cff(14,16)
+      write(*,10) 14, 17, c6cff(14,17)
+      write(*,10) 14, 18, c6cff(14,18)
+      write(*,10) 14, 19, c6cff(14,19)
+      write(*,10) 15,  1, c6cff(15,1)
+      write(*,10) 15,  2, c6cff(15,2)
+      write(*,10) 15,  3, c6cff(15,3)
+      write(*,10) 15,  4, c6cff(15,4)
+      write(*,10) 15,  8, c6cff(15,8)
+      write(*,10) 15,  9, c6cff(15,9)
+      write(*,10) 15, 10, c6cff(15,10)
+      write(*,10) 15, 11, c6cff(15,11)
+      write(*,10) 15, 12, c6cff(15,12)
+      write(*,10) 15, 13, c6cff(15,13)
+      write(*,10) 15, 14, c6cff(15,14)
+      write(*,10) 15, 15, c6cff(15,15)
+      write(*,10) 15, 16, c6cff(15,16)
+      write(*,10) 15, 17, c6cff(15,17)
+      write(*,10) 15, 18, c6cff(15,18)
+      write(*,10) 15, 19, c6cff(15,19)
+      write(*,10) 16,  1, c6cff(16,1)
+      write(*,10) 16,  2, c6cff(16,2)
+      write(*,10) 16,  3, c6cff(16,3)
+      write(*,10) 16,  4, c6cff(16,4)
+      write(*,10) 16,  8, c6cff(16,8)
+      write(*,10) 16,  9, c6cff(16,9)
+      write(*,10) 16, 10, c6cff(16,10)
+      write(*,10) 16, 11, c6cff(16,11)
+      write(*,10) 16, 12, c6cff(16,12)
+      write(*,10) 16, 13, c6cff(16,13)
+      write(*,10) 16, 14, c6cff(16,14)
+      write(*,10) 16, 15, c6cff(16,15)
+      write(*,10) 16, 16, c6cff(16,16)
+      write(*,10) 16, 17, c6cff(16,17)
+      write(*,10) 16, 18, c6cff(16,18)
+      write(*,10) 16, 19, c6cff(16,19)
+      write(*,10) 17,  1, c6cff(17,1)
+      write(*,10) 17,  2, c6cff(17,2)
+      write(*,10) 17,  3, c6cff(17,3)
+      write(*,10) 17,  4, c6cff(17,4)
+      write(*,10) 17,  8, c6cff(17,8)
+      write(*,10) 17,  9, c6cff(17,9)
+      write(*,10) 17, 10, c6cff(17,10)
+      write(*,10) 17, 11, c6cff(17,11)
+      write(*,10) 17, 12, c6cff(17,12)
+      write(*,10) 17, 13, c6cff(17,13)
+      write(*,10) 17, 14, c6cff(17,14)
+      write(*,10) 17, 15, c6cff(17,15)
+      write(*,10) 17, 16, c6cff(17,16)
+      write(*,10) 17, 17, c6cff(17,17)
+      write(*,10) 17, 18, c6cff(17,18)
+      write(*,10) 17, 19, c6cff(17,19)
+      write(*,10) 18,  1, c6cff(18,1)
+      write(*,10) 18,  2, c6cff(18,2)
+      write(*,10) 18,  3, c6cff(18,3)
+      write(*,10) 18,  4, c6cff(18,4)
+      write(*,10) 18,  8, c6cff(18,8)
+      write(*,10) 18,  9, c6cff(18,9)
+      write(*,10) 18, 10, c6cff(18,10)
+      write(*,10) 18, 11, c6cff(18,11)
+      write(*,10) 18, 12, c6cff(18,12)
+      write(*,10) 18, 13, c6cff(18,13)
+      write(*,10) 18, 14, c6cff(18,14)
+      write(*,10) 18, 15, c6cff(18,15)
+      write(*,10) 18, 16, c6cff(18,16)
+      write(*,10) 18, 17, c6cff(18,17)
+      write(*,10) 18, 18, c6cff(18,18)
+      write(*,10) 18, 19, c6cff(18,19)
+      write(*,10) 19,  1, c6cff(19,1)
+      write(*,10) 19,  2, c6cff(19,2)
+      write(*,10) 19,  3, c6cff(19,3)
+      write(*,10) 19,  4, c6cff(19,4)
+      write(*,10) 19,  8, c6cff(19,8)
+      write(*,10) 19,  9, c6cff(19,9)
+      write(*,10) 19, 10, c6cff(19,10)
+      write(*,10) 19, 11, c6cff(19,11)
+      write(*,10) 19, 12, c6cff(19,12)
+      write(*,10) 19, 13, c6cff(19,13)
+      write(*,10) 19, 14, c6cff(19,14)
+      write(*,10) 19, 15, c6cff(19,15)
+      write(*,10) 19, 16, c6cff(19,16)
+      write(*,10) 19, 17, c6cff(19,17)
+      write(*,10) 19, 18, c6cff(19,18)
+      write(*,10) 19, 19, c6cff(19,19)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,1) + c6cff(1,2) + c6cff(1,3) +
+     & c6cff(1,4) + c6cff(1,8) + c6cff(1,9) + c6cff(1,10) +
+     & c6cff(1,11) + c6cff(1,12) + c6cff(1,13) +
+     & c6cff(1,14) + c6cff(1,15) + c6cff(1,16) +
+     & c6cff(1,17) + c6cff(1,18) + c6cff(1,19) +
+     & c6cff(2,1) + c6cff(2,2) + c6cff(2,3) +
+     & c6cff(2,4) + c6cff(2,8) + c6cff(2,9) + c6cff(2,10) +
+     & c6cff(2,11) + c6cff(2,12) + c6cff(2,13) +
+     & c6cff(2,14) + c6cff(2,15) + c6cff(2,16) +
+     & c6cff(2,17) + c6cff(2,18) + c6cff(2,19) +
+     & c6cff(3,1) + c6cff(3,2) + c6cff(3,3) +
+     & c6cff(3,4) + c6cff(3,8) + c6cff(3,9) + c6cff(3,10) +
+     & c6cff(3,11) + c6cff(3,12) + c6cff(3,13) +
+     & c6cff(3,14) + c6cff(3,15) + c6cff(3,16) +
+     & c6cff(3,17) + c6cff(3,18) + c6cff(3,19) +
+     & c6cff(4,1) + c6cff(4,2) + c6cff(4,3) +
+     & c6cff(4,4) + c6cff(4,8) + c6cff(4,9) + c6cff(4,10) +
+     & c6cff(4,11) + c6cff(4,12) + c6cff(4,13) +
+     & c6cff(4,14) + c6cff(4,15) + c6cff(4,16) +
+     & c6cff(4,17) + c6cff(4,18) + c6cff(4,19) +
+     & c6cff(8,1) + c6cff(8,2) + c6cff(8,3) +
+     & c6cff(8,4) + c6cff(8,8) + c6cff(8,9) +
+     & c6cff(8,10) + c6cff(8,11) + c6cff(8,12) +
+     & c6cff(8,13) + c6cff(8,14) + c6cff(8,15) +
+     & c6cff(8,16) + c6cff(8,17) + c6cff(8,18) +
+     & c6cff(8,19) +
+     & c6cff(9,1) + c6cff(9,2) + c6cff(9,3) +
+     & c6cff(9,4) + c6cff(9,8) + c6cff(9,9) + c6cff(9,10) +
+     & c6cff(9,11) + c6cff(9,12) + c6cff(9,13) +
+     & c6cff(9,14) + c6cff(9,15) + c6cff(9,16) +
+     & c6cff(9,17) + c6cff(9,18) + c6cff(9,19) +
+     & c6cff(10,1) + c6cff(10,2) + c6cff(10,3) +
+     & c6cff(10,4) + c6cff(10,8) + c6cff(10,9) + c6cff(10,10) +
+     & c6cff(10,11) + c6cff(10,12) + c6cff(10,13) +
+     & c6cff(10,14) + c6cff(10,15) + c6cff(10,16) +
+     & c6cff(10,17) + c6cff(10,18) + c6cff(10,19) +
+     & c6cff(11,1) + c6cff(11,2) + c6cff(11,3) +
+     & c6cff(11,4) + c6cff(11,8) + c6cff(11,9) + c6cff(11,10) +
+     & c6cff(11,11) + c6cff(11,12) + c6cff(11,13) +
+     & c6cff(11,14) + c6cff(11,15) + c6cff(11,16) +
+     & c6cff(11,17) + c6cff(11,18) + c6cff(11,19) +
+     & c6cff(12,1) + c6cff(12,2) + c6cff(12,3) +
+     & c6cff(12,4) + c6cff(12,8) + c6cff(12,9) + c6cff(12,10) +
+     & c6cff(12,11) + c6cff(12,12) + c6cff(12,13) +
+     & c6cff(12,14) + c6cff(12,15) + c6cff(12,16) +
+     & c6cff(12,17) + c6cff(12,18) + c6cff(12,19) +
+     & c6cff(13,1) + c6cff(13,2) + c6cff(13,3) +
+     & c6cff(13,4) + c6cff(13,8) + c6cff(13,9) + c6cff(13,10) +
+     & c6cff(13,11) + c6cff(13,12) + c6cff(13,13) +
+     & c6cff(13,14) + c6cff(13,15) + c6cff(13,16) +
+     & c6cff(13,17) + c6cff(13,18) + c6cff(13,19) +
+     & c6cff(14,1) + c6cff(14,2) + c6cff(14,3) +
+     & c6cff(14,4) + c6cff(14,8) + c6cff(14,9) + c6cff(14,10) +
+     & c6cff(14,11) + c6cff(14,12) + c6cff(14,13) +
+     & c6cff(14,14) + c6cff(14,15) + c6cff(14,16) +
+     & c6cff(14,17) + c6cff(14,18) + c6cff(14,19) +
+     & c6cff(15,1) + c6cff(15,2) + c6cff(15,3) +
+     & c6cff(15,4) + c6cff(15,8) + c6cff(15,9) + c6cff(15,10) +
+     & c6cff(15,11) + c6cff(15,12) + c6cff(15,13) +
+     & c6cff(15,14) + c6cff(15,15) + c6cff(15,16) +
+     & c6cff(15,17) + c6cff(15,18) + c6cff(15,19) +
+     & c6cff(16,1) + c6cff(16,2) + c6cff(16,3) +
+     & c6cff(16,4) + c6cff(16,8) + c6cff(16,9) + c6cff(16,10) +
+     & c6cff(16,11) + c6cff(16,12) + c6cff(16,13) +
+     & c6cff(16,14) + c6cff(16,15) + c6cff(16,16) +
+     & c6cff(16,17) + c6cff(16,18) + c6cff(16,19) +
+     & c6cff(17,1) + c6cff(17,2) + c6cff(17,3) +
+     & c6cff(17,4) + c6cff(17,8) + c6cff(17,9) + c6cff(17,10) +
+     & c6cff(17,11) + c6cff(17,12) + c6cff(17,13) +
+     & c6cff(17,14) + c6cff(17,15) + c6cff(17,16) +
+     & c6cff(17,17) + c6cff(17,18) + c6cff(17,19) +
+     & c6cff(18,1) + c6cff(18,2) + c6cff(18,3) +
+     & c6cff(18,4) + c6cff(18,8) + c6cff(18,9) + c6cff(18,10) +
+     & c6cff(18,11) + c6cff(18,12) + c6cff(18,13) +
+     & c6cff(18,14) + c6cff(18,15) + c6cff(18,16) +
+     & c6cff(18,17) + c6cff(18,18) + c6cff(18,19) +
+     & c6cff(19,1) + c6cff(19,2) + c6cff(19,3) +
+     & c6cff(19,4) + c6cff(19,8) + c6cff(19,9) + c6cff(19,10) +
+     & c6cff(19,11) + c6cff(19,12) + c6cff(19,13) +
+     & c6cff(19,14) + c6cff(19,15) + c6cff(19,16) +
+     & c6cff(19,17) + c6cff(19,18) + c6cff(19,19) 
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methylene-methyl2
+      write(*,100) 
+      write(*,10)  1,  5, c6cff(1,5)
+      write(*,10)  1,  6, c6cff(1,6)
+      write(*,10)  1,  7, c6cff(1,7)
+      write(*,10)  2,  5, c6cff(2,5)
+      write(*,10)  2,  6, c6cff(2,6)
+      write(*,10)  2,  7, c6cff(2,7)
+      write(*,10)  3,  5, c6cff(3,5)
+      write(*,10)  3,  6, c6cff(3,6)
+      write(*,10)  3,  7, c6cff(3,7)
+      write(*,10)  4,  5, c6cff(4,5)
+      write(*,10)  4,  6, c6cff(4,6)
+      write(*,10)  4,  7, c6cff(4,7)
+      write(*,10)  8,  5, c6cff(8,5)
+      write(*,10)  8,  6, c6cff(8,6)
+      write(*,10)  8,  7, c6cff(8,7)
+      write(*,10)  9,  5, c6cff(9,5)
+      write(*,10)  9,  6, c6cff(9,6)
+      write(*,10)  9,  7, c6cff(9,7)
+      write(*,10) 10,  5, c6cff(10,5)
+      write(*,10) 10,  6, c6cff(10,6)
+      write(*,10) 10,  7, c6cff(10,7)
+      write(*,10) 11,  5, c6cff(11,5)
+      write(*,10) 11,  6, c6cff(11,6)
+      write(*,10) 11,  7, c6cff(11,7)
+      write(*,10) 12,  5, c6cff(12,5)
+      write(*,10) 12,  6, c6cff(12,6)
+      write(*,10) 12,  7, c6cff(12,7)
+      write(*,10) 13,  5, c6cff(13,5)
+      write(*,10) 13,  6, c6cff(13,6)
+      write(*,10) 13,  7, c6cff(13,7)
+      write(*,10) 14,  5, c6cff(14,5)
+      write(*,10) 14,  6, c6cff(14,6)
+      write(*,10) 14,  7, c6cff(14,7)
+      write(*,10) 15,  5, c6cff(15,5)
+      write(*,10) 15,  6, c6cff(15,6)
+      write(*,10) 15,  7, c6cff(15,7)
+      write(*,10) 16,  5, c6cff(16,5)
+      write(*,10) 16,  6, c6cff(16,6)
+      write(*,10) 16,  7, c6cff(16,7)
+      write(*,10) 17,  5, c6cff(17,5)
+      write(*,10) 17,  6, c6cff(17,6)
+      write(*,10) 17,  7, c6cff(17,7)
+      write(*,10) 18,  5, c6cff(18,5)
+      write(*,10) 18,  6, c6cff(18,6)
+      write(*,10) 18,  7, c6cff(18,7)
+      write(*,10) 19,  5, c6cff(19,5)
+      write(*,10) 19,  6, c6cff(19,6)
+      write(*,10) 19,  7, c6cff(19,7)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(1,5) + c6cff(1,6) + c6cff(1,7) +
+     & c6cff(2,5) + c6cff(2,6) + c6cff(2,7) +
+     & c6cff(3,5) + c6cff(3,6) + c6cff(3,7) +
+     & c6cff(4,5) + c6cff(4,6) + c6cff(4,7) +
+     & c6cff(8,5) + c6cff(8,6) + c6cff(8,7) +
+     & c6cff(9,5) + c6cff(9,6) + c6cff(9,7) +
+     & c6cff(10,5) + c6cff(10,6) + c6cff(10,7) +
+     & c6cff(11,5) + c6cff(11,6) + c6cff(11,7) +
+     & c6cff(12,5) + c6cff(12,6) + c6cff(12,7) +
+     & c6cff(13,5) + c6cff(13,6) + c6cff(13,7) +
+     & c6cff(14,5) + c6cff(14,6) + c6cff(14,7) +
+     & c6cff(15,5) + c6cff(15,6) + c6cff(15,7) +
+     & c6cff(16,5) + c6cff(16,6) + c6cff(16,7) +
+     & c6cff(17,5) + c6cff(17,6) + c6cff(17,7) +
+     & c6cff(18,5) + c6cff(18,6) + c6cff(18,7) +
+     & c6cff(19,5) + c6cff(19,6) + c6cff(19,7)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl2-methyl1
+      write(*,110) 
+      write(*,10)  5, 20, c6cff(5,20)
+      write(*,10)  5, 21, c6cff(5,21)
+      write(*,10)  5, 22, c6cff(5,22)
+      write(*,10)  6, 20, c6cff(6,20)
+      write(*,10)  6, 21, c6cff(6,21)
+      write(*,10)  6, 22, c6cff(6,22)
+      write(*,10)  7, 20, c6cff(7,20)
+      write(*,10)  7, 21, c6cff(7,21)
+      write(*,10)  7, 22, c6cff(7,22)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(5,20) + c6cff(5,21) + c6cff(5,22) +
+     & c6cff(6,20) + c6cff(6,21) + c6cff(6,22) +
+     & c6cff(7,20) + c6cff(7,21) + c6cff(7,22)
+      write(*,40)
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl2-methylene
+      write(*,120) 
+      write(*,10)  5,  1, c6cff(5,1)
+      write(*,10)  5,  2, c6cff(5,2)
+      write(*,10)  5,  3, c6cff(5,3)
+      write(*,10)  5,  4, c6cff(5,4)
+      write(*,10)  5,  8, c6cff(5,8)
+      write(*,10)  5,  9, c6cff(5,9)
+      write(*,10)  5, 10, c6cff(5,10)
+      write(*,10)  5, 11, c6cff(5,11)
+      write(*,10)  5, 12, c6cff(5,12)
+      write(*,10)  5, 13, c6cff(5,13)
+      write(*,10)  5, 14, c6cff(5,14)
+      write(*,10)  5, 15, c6cff(5,15)
+      write(*,10)  5, 16, c6cff(5,16)
+      write(*,10)  5, 17, c6cff(5,17)
+      write(*,10)  5, 18, c6cff(5,18)
+      write(*,10)  5, 19, c6cff(5,19)
+      write(*,10)  6,  1, c6cff(6,1)
+      write(*,10)  6,  2, c6cff(6,2)
+      write(*,10)  6,  3, c6cff(6,3)
+      write(*,10)  6,  4, c6cff(6,4)
+      write(*,10)  6,  8, c6cff(6,8)
+      write(*,10)  6,  9, c6cff(6,9)
+      write(*,10)  6, 10, c6cff(6,10)
+      write(*,10)  6, 11, c6cff(6,11)
+      write(*,10)  6, 12, c6cff(6,12)
+      write(*,10)  6, 13, c6cff(6,13)
+      write(*,10)  6, 14, c6cff(6,14)
+      write(*,10)  6, 15, c6cff(6,15)
+      write(*,10)  6, 16, c6cff(6,16)
+      write(*,10)  6, 17, c6cff(6,17)
+      write(*,10)  6, 18, c6cff(6,18)
+      write(*,10)  6, 19, c6cff(6,19)
+      write(*,10)  7,  1, c6cff(7,1)
+      write(*,10)  7,  2, c6cff(7,2)
+      write(*,10)  7,  3, c6cff(7,3)
+      write(*,10)  7,  4, c6cff(7,4)
+      write(*,10)  7,  8, c6cff(7,8)
+      write(*,10)  7,  9, c6cff(7,9)
+      write(*,10)  7, 10, c6cff(7,10)
+      write(*,10)  7, 11, c6cff(7,11)
+      write(*,10)  7, 12, c6cff(7,12)
+      write(*,10)  7, 13, c6cff(7,13)
+      write(*,10)  7, 14, c6cff(7,14)
+      write(*,10)  7, 15, c6cff(7,15)
+      write(*,10)  7, 16, c6cff(7,16)
+      write(*,10)  7, 17, c6cff(7,17)
+      write(*,10)  7, 18, c6cff(7,18)
+      write(*,10)  7, 19, c6cff(7,19)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(5,1) + c6cff(5,2) + c6cff(5,3) +
+     & c6cff(5,4) + c6cff(5,8) + c6cff(5,9) + c6cff(5,10) +
+     & c6cff(5,11) + c6cff(5,12) + c6cff(5,13) +
+     & c6cff(5,14) + c6cff(5,15) + c6cff(5,16) +
+     & c6cff(5,17) + c6cff(5,18) + c6cff(5,19) +
+     & c6cff(6,1) + c6cff(6,2) + c6cff(6,3) +
+     & c6cff(6,4) + c6cff(6,8) + c6cff(6,9) + c6cff(6,10) +
+     & c6cff(6,11) + c6cff(6,12) + c6cff(6,13) +
+     & c6cff(6,14) + c6cff(6,15) + c6cff(6,16) +
+     & c6cff(6,17) + c6cff(6,18) + c6cff(6,19) +
+     & c6cff(7,1) + c6cff(7,2) + c6cff(7,3) +
+     & c6cff(7,4) + c6cff(7,8) + c6cff(7,9) + c6cff(7,10) +
+     & c6cff(7,11) + c6cff(7,12) + c6cff(7,13) +
+     & c6cff(7,14) + c6cff(7,15) + c6cff(7,16) +
+     & c6cff(7,17) + c6cff(7,18) + c6cff(7,19)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+CCC methyl2-methyl2
+      write(*,130) 
+      write(*,10)  5,  5, c6cff(5,5)
+      write(*,10)  5,  6, c6cff(5,6)
+      write(*,10)  5,  7, c6cff(5,7)
+      write(*,10)  6,  5, c6cff(6,5)
+      write(*,10)  6,  6, c6cff(6,6)
+      write(*,10)  6,  7, c6cff(6,7)
+      write(*,10)  7,  5, c6cff(7,5)
+      write(*,10)  7,  6, c6cff(7,6)
+      write(*,10)  7,  7, c6cff(7,7)
+
+      grpc6 = 0.0D0
+      grpc6 = c6cff(5,5) + c6cff(5,6) + c6cff(5,7) +
+     & c6cff(6,5) + c6cff(6,6) + c6cff(6,7) +
+     & c6cff(7,5) + c6cff(7,6) + c6cff(7,7)
+      write(*,40) 
+      write(*,50) grpc6
+      write(*,*)
+      write(*,*)
+
+      end if
+      
+  5   format('iii jjj c6coef_iiijjj')
+ 10   format(2I6,F20.10)
+ 40   format('====================')
+ 50   format('Total = ',F20.10)
+ 30   format('Methyl1-Methyl1 contribution')
+ 60   format('Methyl1-Methylene contribution')
+ 70   format('Methyl1-Methyl2 contribution')
+ 80   format('Methylene-Methyl1 contribution')
+ 90   format('Methylene-Methylene contribution')
+100   format('Methylene-Methyl2 contribution')
+110   format('Methyl2-Methyl1 contribution')
+120   format('Methyl2-Methylene contribution')
+130   format('Methyl2-Methyl2 contribution')
+140   format('Carboxyl-Carboxyl contribution')
+150   format('Methyl1-Methyl1 contribution')
+160   format('Peptide-Peptide contribution')
+170   format('Methyl2-Methyl2 contribution')
+180   format('Amino-Amino contribution')
+
+      return
+      end
+ 

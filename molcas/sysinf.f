@@ -1,0 +1,3 @@
+      SubRoutine SysInf()
+      Return
+      End

@@ -1,0 +1,33 @@
+      SUBROUTINE PCCD_FORMX(ICORE,MAXCOR,IUHF)
+C
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      INTEGER POP,VRT,DIRPRD
+      LOGICAL PCCD,CCD,LCCD
+      DIMENSION ICORE(MAXCOR)
+C
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON/SYM/POP(8,2),VRT(8,2),NT(2),NF1(2),NF2(2)
+      COMMON/SYMINF/NSTART,NIRREP,IRREPS(255,2),DIRPRD(8,8)
+      COMMON/SYMPOP/IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON/CALC/pCCD,CCD,LCCD
+C
+      CALL PCCD_FORMH4(ICORE,MAXCOR,IUHF)
+      IF (.NOT. LCCD) CALL PCCD_V1INX2(ICORE,MAXCOR,IUHF)
+#ifdef _DEBUG_LVL0
+      call checkgamma1(icore,maxcor,iuhf)
+#endif
+      IF (.NOT. LCCD) CALL PCCD_H4INX2(ICORE,MAXCOR,IUHF)
+#ifdef _DEBUG_LVL0
+      call checkgamma1(icore,maxcor,iuhf)
+#endif
+      IF (.NOT. LCCD) CALL PCCD_G1INX2(ICORE,MAXCOR,IUHF)
+#ifdef _DEBUG_LVL0
+      call checkgamma1(icore,maxcor,iuhf)
+#endif
+      IF (.NOT. LCCD) CALL PCCD_G2INX2(ICORE,MAXCOR,IUHF)
+#ifdef _DEBUG_LVL0
+      call checkgamma1(icore,maxcor,iuhf)
+#endif
+
+      RETURN
+      END

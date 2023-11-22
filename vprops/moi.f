@@ -1,0 +1,68 @@
+      SUBROUTINE MOI(VLIST, NOC)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      COMMON /COMINF/ TOTMSS, COM(3), RMOI(3), PATRAN(3,3)
+      DIMENSION VLIST(NOC,10)
+      DIMENSION TENMOI(6)
+C
+C....    DETERMINE CENTER OF MASS
+C
+      TOTMSS = 0.
+      XM = 0.
+      YM = 0.
+      ZM = 0.
+      DO 10 I = 1,NOC
+      TOTMSS = TOTMSS + VLIST(I,6)
+      XM = XM + VLIST(I,6)*VLIST(I,1)
+      YM = YM + VLIST(I,6)*VLIST(I,2)
+      ZM = ZM + VLIST(I,6)*VLIST(I,3)
+10    CONTINUE
+      COM(1) = XM/TOTMSS
+      COM(2) = YM/TOTMSS
+      COM(3) = ZM/TOTMSS
+C
+C....    NOW DETERMINE MOMENT OF INERTIA TENSOR AND PRINCIPAL AXIS
+C....    SYSTEM
+C
+      DO 20 IJ = 1,6
+      TENMOI(IJ) = 0.
+20    CONTINUE
+      DO 30 I = 1,NOC
+      WT = VLIST(I,6)
+      WTR2 = WT*((VLIST(I,1) - COM(1))**2 + (VLIST(I,2) - COM(2))**2
+     1            + (VLIST(I,3) - COM(3))**2)
+      DO 40 J = 1,3
+      JJ = (J*(J+1))/2
+      TENMOI(JJ) = TENMOI(JJ) + WTR2 - WT*(VLIST(I,J) - COM(J))**2
+      IF (J .EQ. 1) GOTO 40
+      DO 50 K = 1,J-1
+      JK = (J*(J-1))/2 + K
+      TENMOI(JK) = TENMOI(JK)
+     1              + WT*(VLIST(I,J) - COM(J))*(VLIST(I,K) - COM(K))
+50    CONTINUE
+40    CONTINUE
+30    CONTINUE
+C
+C....    NOW DIAGONALIZE MOI TENSOR
+C
+      DO 60 I = 1,3
+      DO 70 J = 1,3
+      PATRAN(I,J) = 0.
+70    CONTINUE
+      PATRAN(I,I) = 1.
+60    CONTINUE
+      CALL JACOBI(TENMOI,PATRAN,RMOI,3)
+C
+C....    RMOI NOW CONTAINS THE PRINCIPAL MOMENTS OF INERTIA.  TAKE
+C....    RECIPROCALS AND CONVERT TO GHZ.  THE FACTOR USED AS A THRESHOLD
+C....    FOR A VANISHING MOI IS CHOSEN TO PRINT **** FOR THE ROTATIONAL
+C....    FREQUENCY IN THE MAIN PROGRAM
+C
+      DO 80 I = 1,3
+      IF (ABS(RMOI(I)) .GT. 1.E-1) THEN
+        RMOI(I) = 6 579 668./(2.*1822.887*RMOI(I))
+      ELSE
+        RMOI(I) = 10 000.
+      ENDIF
+80    CONTINUE
+      RETURN
+      END

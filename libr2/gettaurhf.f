@@ -1,0 +1,82 @@
+      SUBROUTINE GetTauRHF(List39,ICORE,MAXCOR,T2SIZE)
+C
+CEND
+      IMPLICIT INTEGER (A-Z)
+      DOUBLE PRECISION ONE,ONEM,ZILCH
+      DIMENSION ICORE(MAXCOR),IOFFT1(8,2),List39(T2SIZE)
+      CHARACTER*4 SPCASEA(2)
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPS(255,2),DIRPRD(8,8)
+      COMMON /SYM/ POP(8,2),VRT(8,2),NT(2),NFMI(2),NFEA(2)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON/INFO/NOCC(2),NVRTO(2)
+C
+      DATA ONE,ONEM,ZILCH /1.0D0,-1.0D0,0.0D0/
+      DATA SPCASEA /'AAAA', 'BBBB'/
+C
+      print *
+      print *,"GETTAURHF START"
+      print *      
+
+      IUHF=0
+
+      CALL GETT1(ICORE,MAXCOR,MXCOR,IUHF,IOFFT1)
+C
+      LISTT=37
+      LISTR=39
+
+      REFLIST2 = 46
+      T2LIST2  = 37
+      REFSIZT2 = ISYMSZ(ISYTYP(1, REFLIST2), ISYTYP(2, REFLIST2))
+      ISCRSIZT = NOCC(1)*NOCC(2) + NVRTO(1)*NVRTO(2) + 
+     &           NVRTO(1)*NOCC(1) + NVRTO(2)*NOCC(2)
+
+         T2LEN=0
+         IRREPX=1
+C
+         DO 220 IRPIJ=1,NIRREP
+            IRPAB  = DIRPRD(IRREPX,IRPIJ)
+            NT2DSZ = IRPDPD(IRPAB,13)
+            NT2DIS = IRPDPD(IRPIJ,14)
+            T2LEN  = T2LEN+NT2DSZ*NT2DIS
+220      CONTINUE
+
+C
+      I000 = 1
+      I010 = I000 + IINTFP*T2LEN
+      I020 = I010 + IINTFP*T2LEN
+      I030 = I020 + IINTFP*REFSIZT2
+      I040 = I030 + IINTFP*ISCRSIZT
+      IF(I040.GE.MAXCOR) CALL INSMEM('GETTAURHF',I040,MAXCOR)
+C     
+      CALL GETALL(ICORE(I010), REFSIZT2, 1, REFLIST2)
+      CALL SST002(ICORE(I010), ICORE(I000), REFSIZT2,
+     &            T2LEN, ICORE(I020), 'BBAA')
+
+      call checksum("getall 37:",icore(i000),refsizt2)
+
+      NUMDIS=IRPDPD(1,ISYTYP(2,LISTT))
+      DISSIZ=IRPDPD(1,ISYTYP(1,LISTT))
+      ISIZE=ISYMSZ(ISYTYP(1,LISTT),ISYTYP(2,LISTT))
+
+      I000=1
+      I010=I000+ISIZE*IINTFP
+      I020=I010+ISIZE*IINTFP
+
+       CALL XGEMM ('N','N',DISSIZ,NUMDIS,1,ONE,
+     &             ICORE(IOFFT1(1,1)),DISSIZ,
+     &             ICORE(IOFFT1(1,2)),1,
+     &             ONE,ICORE(I000),DISSIZ)
+
+      call checksum("xgemm 1:",icore(i000),numdis*dissiz)
+
+      CALL SSTGEN(ICORE(I000),List39,ISIZE,VRT(1,1),
+     &            POP(1,1),VRT(1,2),POP(1,2),ICORE(I020),
+     &            1,'1432')
+
+
+      print *
+      print *,"GETTAURHF END"
+      print *      
+      RETURN
+      END

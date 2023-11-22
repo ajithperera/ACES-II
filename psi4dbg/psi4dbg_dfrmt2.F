@@ -1,0 +1,52 @@
+#include "flags.h" 
+      SUBROUTINE PSI4DBG_DFRMT2(ICORE,MAXCOR,IUHF)
+C
+C DRIVER FOR FORMATION OF SYMMETRY PACKED T2 AMPLITUDE VECTORS.
+C
+CEND
+      IMPLICIT INTEGER (A-Z)
+      DIMENSION ICORE(MAXCOR)
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /INFO/ NOCCO(2),NVRTO(2)
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPY(255,2),DIRPRD(8,8)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),D(18)
+      COMMON /SHIFT/ ISHIFT,NDRGEO
+      COMMON /FLAGS/ IFLAGS(100)
+
+#include "parcc.com"
+C
+C DETERMINE LARGEST IRREP FOR INTEGRAL AND DENOMINATOR ARRAYS.
+C
+      MAXSIZ=0
+      DO 10 ISPIN=1,3,2-IUHF
+       DO 20 IRREP=1,NIRREP
+        NDIS=IRPDPD(IRREP,ISYTYP(2,13+ISPIN+ISHIFT)) 
+        NDSZ=IRPDPD(IRREP,ISYTYP(1,13+ISPIN+ISHIFT))
+        if (NDIS*NDSZ.LT.0) call trap_intovf('DFRMT2',1)
+        MAXSIZ=MAX(MAXSIZ,NDIS*NDSZ)
+20     CONTINUE
+10    CONTINUE
+      I000=1
+      I010=I000+IINTFP*MAXSIZ
+      I020=I010+IINTFP*MAXSIZ
+      if (I020.LT.0) call trap_intovf('DFRMT2',2)
+      IF(I020.GT.MAXCOR)CALL INSMEM('DFRMT2',I020,MAXCOR)
+      CALL PSI4DBG_FORMT2(ICORE(I000),ICORE(I010),IUHF)
+C
+C Lets us break down the 2nd-order energy in Coulomb and Exchange
+C contributions. This is done for Johaness's work. 06/2106.
+C
+
+CSSS      IF (ISPAR .AND. COULOMB) THEN
+CSSS          CALL MAKE_COULOMB_ABIJ(ICORE(I000),MAXCOR,5,1,"AIBJ")
+CSSS          IF (Iflags(h_IFLAGS_symmetry) .NE. 1) Then
+CSSS              Write(6,"(a,a)") " The Abelian symmetry is not "
+CSSS     &                         "currently allowed"
+CSSS           Call Errex
+CSSS              ENDIF 
+CSSS          CALL FORM_SPLIT_E2(ICORE(I000),MAXCOR,IUHF)
+CSSS      ENDIF 
+
+      RETURN
+      END
+

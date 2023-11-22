@@ -1,0 +1,26 @@
+      FUNCTION MATCH1(I,A,IIRREP, AIRREP,
+     &   ASPIN,INDEX,IRREP,PHTYPE)
+C
+      IMPLICIT INTEGER (A-Z)
+      CHARACTER*4 PHTYPE
+      DIMENSION INDEX(2)
+      LOGICAL MATCH1
+C
+      MATCH1 = .FALSE.
+      IF (PHTYPE .EQ. 'HOLE') THEN
+        IF (IIRREP. EQ. IRREP .AND.  I .EQ. INDEX(ASPIN)) THEN
+          MATCH1 = .TRUE.
+        ENDIF
+      ELSEIF (PHTYPE .EQ. 'PART' ) THEN
+        IF (AIRREP. EQ. IRREP .AND.  A .EQ. INDEX(ASPIN)) THEN
+          MATCH1 = .TRUE.
+        ENDIF
+      ENDIF
+C
+      RETURN
+      END
+
+
+
+
+

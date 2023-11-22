@@ -1,0 +1,115 @@
+ONNO Vibrational frequency calculation
+O
+N 1 NO
+N 2 NN 1 A
+O 3 NO 2 A 1 D180
+
+NO   =     1.2016552993
+NN   =     2.8018091447
+A    =   122.7008589601
+D180=180.0
+
+*ACES2
+!restart
+BASIS=3-21G,SPHERICAL=ON
+CHARGE=2
+DROPMO=1-4,CALC=CCSD
+EA_CALC=EA_EOMCC
+DEA_CALC=STEOM,DEA_SYM=3-0-0-0
+VIB=FINDIF
+
+*mrcc_gen
+ closed_shell_calc=ccsd
+ ea_high=-10.0
+ gradient_type=dea
+ grad_energ=-257.4480087451
+ igrad_mult=1
+*end
+
+Comments
+
+The ONNO system is a beautiful example for a dea calculation. The (NO) dimer has
+4 low lying pi orbitals (8 spin-orbitals) that are occupied by two electrons.
+Hence we start from the dication and add two electrons in a dea calculation.
+
+In order to get better agreement with experiment it is advisable to use
+a much larger diffuse basis set.
+
+Note that the number of roots in the eaeom part of the calculation is
+specified by the keyword ea_high  (this indicates the highest Hartree-Fock
+dication eigenvalue that would be included in the STEOM active space). This is
+necessary as the symmetry changes upon non-symmetric distortions.
+
+TEST.DAT
+d TOTENERG
+ -0.257448008779E+03   0.1E-08
+d FORCECON
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.250613570000E-04   0.1E-08
+  0.345961260000E-04   0.1E-08
+  0.980482730000E-04   0.1E-08
+  0.642991544000E-03   0.1E-08
+  0.969689794260E-01   0.1E-08
+  0.970064549610E-01   0.1E-08
+d INTR_HES
+  0.723383808835E+00   0.1E-08
+ -0.914383793000E-03   0.1E-08
+  0.138310617100E-02   0.1E-08
+ -0.627216677000E-03   0.1E-08
+ -0.695338044000E-03   0.1E-08
+  0.000000000000E+00   0.1E-08
+ -0.914383793000E-03   0.1E-08
+  0.380539974000E-02   0.1E-08
+ -0.381232783000E-03   0.1E-08
+ -0.914383793000E-03   0.1E-08
+ -0.381232783000E-03   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.138310617100E-02   0.1E-08
+ -0.381232783000E-03   0.1E-08
+  0.306639040100E-02   0.1E-08
+ -0.695338044000E-03   0.1E-08
+  0.209553818500E-02   0.1E-08
+  0.000000000000E+00   0.1E-08
+ -0.627216677000E-03   0.1E-08
+ -0.914383793000E-03   0.1E-08
+ -0.695338044000E-03   0.1E-08
+  0.723383808835E+00   0.1E-08
+  0.138310617100E-02   0.1E-08
+  0.000000000000E+00   0.1E-08
+ -0.695338044000E-03   0.1E-08
+ -0.381232783000E-03   0.1E-08
+  0.209553818500E-02   0.1E-08
+  0.138310617100E-02   0.1E-08
+  0.306639040100E-02   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.471605671000E-03   0.1E-08
+d E_AVG
+ -0.856281397478E+00   0.1E-08
+d E_OPEN
+ -0.857405300819E+00   0.1E-08
+d NUCDIPOL
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.519231200000E-05   0.1E-08
+d NUCREP
+  0.824653916024E+02   0.1E-08
+d PARENERG
+ -0.256590603479E+03   0.1E-08
+d REFDIPOL
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+ -0.456633148000E-03   0.1E-08
+d SCFENEG
+ -0.256007351321E+03   0.1E-08
+d TOTENER2
+ -0.257448008779E+03   0.1E-08

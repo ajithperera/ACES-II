@@ -1,0 +1,81 @@
+      SUBROUTINE IP_NEWLIST(SIRREP, NS, IUHF, ISPIN, ITYP)
+C
+C THIS ROUTINE UPDATES THE MOIO POINTERS FOR THE SPECIFIC 
+C SYMMETRY OF INTEREST. INPUT IS SIRREP, ISPIN, AND NS, THE NUMBER 
+C OF S-VECTORS THAT ARE CALULATED
+C
+      IMPLICIT INTEGER (A-Z)
+      DIMENSION NDUMS(8)
+      LOGICAL  LEFTHAND
+C
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPS(255,2),DIRPRD(8,8)
+      COMMON /SYM/ POP(8,2),VRT(8,2),NT(2),NFMI(2),NFEA(2)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON/SLISTS/LS1IN, LS1OUT, LS2IN(2,2), LS2OUT(2,2)
+      COMMON/LISTDAV/LISTC, LISTHC, LISTH0      
+      COMMON/EACALC/LEFTHAND,SINGONLY, DROPCORE
+      COMMON/STINFO/ITOTALS, STMODE, LISTST, STCALC, NSIZEST
+C
+C FIRST UPDATE S1 LISTS
+C
+      DO 10 JSPIN = 1, 1 + IUHF
+         NS1 = NS * POP(SIRREP, JSPIN)
+         call aces_list_resize(JSPIN, LS1IN,  NS1)
+         call aces_list_resize(JSPIN, LS1OUT, NS1)
+ 10   CONTINUE
+C
+C UPDATE S2 LISTS
+C
+      IF (IUHF .EQ. 0) THEN
+         CALL UPDLSTS2(LS2IN(1,2), VRT(1,1), NS, 14, SIRREP)
+         CALL UPDLSTS2(LS2OUT(1,2), VRT(1,1), NS, 14, SIRREP)
+      ELSE
+         DO 15 KSPIN = 1, 2
+            CALL UPDLSTS2(LS2IN(KSPIN, KSPIN),VRT(1,KSPIN), NS,
+     $         2+KSPIN, SIRREP)
+            CALL UPDLSTS2(LS2OUT(KSPIN, KSPIN),VRT(1,KSPIN), NS,
+     $         2+KSPIN, SIRREP)
+            MSPIN = 3 - KSPIN
+            CALL UPDLSTS2(LS2IN(KSPIN, MSPIN),VRT(1,MSPIN), NS,
+     $         14, SIRREP)
+            CALL UPDLSTS2(LS2OUT(KSPIN, MSPIN),VRT(1,MSPIN), NS,
+     $         14, SIRREP)
+ 15      CONTINUE
+      ENDIF
+C
+C  UPDATE LISTS USED IN DAVIDSON PROCEDURE FOR IP-EOM.
+C
+      IF (ITYP .EQ. 2) THEN
+
+      CALL IZERO(NDUMS,8)
+      NDUMS(SIRREP) = NS
+
+         IF (IUHF.EQ.0) THEN
+            CALL GETLEN_HHP(LENAB, POP(1,1), POP(1,1), VRT(1,1), 
+     +                     NDUMS(1))
+            LENAA = 0
+         ELSE
+            MSPIN = 3 - ISPIN
+            CALL GETLEN_HHP2(LENAA, IRPDPD(1,2+ISPIN), VRT(1,ISPIN),
+     $         NDUMS(1))
+            CALL GETLEN_HHP2(LENAB, IRPDPD(1,14), VRT(1,MSPIN), 
+     $                       NDUMS(1))
+         ENDIF
+         NIP = POP(SIRREP,ISPIN) + LENAA + LENAB
+
+         IF (LEFTHAND) THEN
+            IDIS = 2
+         ELSE
+            IDIS = 1
+         ENDIF
+         DO 25 I=1,IDIS
+            call aces_list_resize(I, LISTC,  NIP)
+            call aces_list_resize(I, LISTHC, NIP)
+ 25      CONTINUE
+            call aces_list_resize(1, LISTH0, NIP)
+            call aces_list_resize(1, LISTST, NSIZEST)
+      ENDIF
+
+      RETURN
+      END

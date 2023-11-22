@@ -1,0 +1,79 @@
+
+C DRIVER FOR DETERMINATION OF ORBITAL SYMMETRIES
+
+      SUBROUTINE IRRORB_SHELL(ICORE,MAXCOR,NBAS,IUHF)
+      IMPLICIT INTEGER (A-Z)
+
+      DIMENSION ICORE(MAXCOR)
+      CHARACTER*1 SP(2)
+
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /INFO/   NOCCO(2),NVRTO(2)
+      COMMON /FLAGS/  IFLAGS(100)
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPA(255,2),DIRPRD(8,8) 
+
+      DATA IONE /1/
+      DATA SP /'A','B'/
+
+#ifdef _TRACE_VSCF
+      write(*,*) '@VSCF: Entering ', __FILE__
+#endif /* _TRACE_VSCF */
+
+C FOR SPHERICAL HARMONICS, DIMENSION OF COMPUTATIONAL BASIS
+C IS SMALLER THAN THE CARTESIAN SET.  READ THAT VALUE NOW.
+
+      IF (IFLAGS(62).EQ.1) THEN
+         CALL GETREC(-1,'JOBARC','NAOBASFN',IONE,NBASX)
+      ELSE
+         NBASX = NBAS
+      END IF
+      CALL GETREC(-1,'JOBARC','NATOMS  ',IONE,NATOMS)
+      CALL GETREC(-1,'JOBARC','COMPNIRR',IONE,NIRREP)
+      CALL GETREC(-1,'JOBARC','FULLORDR',IONE,IORDGP)
+
+      DO ISPIN = 1, (IUHF+1)
+         CALL IZERO(ICORE(1),MAXCOR)
+         NSIZE = MAX(NBAS,NATOMS,NIRREP,NBASX)
+         I000 = 1
+         I010 = I000 + IINTFP*NSIZE*NSIZE
+         I020 = I010 + IINTFP*NSIZE*NSIZE*2
+         I030 = I020 + IINTFP*MAX(NBASX*10,NATOMS)
+         I040 = I030 + MAX(NBASX+MOD(NBASX,2),IINTFP*3*NATOMS)
+         I060 = I040 + MAX(NBASX+MOD(NBASX,2),NATOMS+MOD(NATOMS,2))
+         I080 = I060 + MAX(1080,NATOMS+MOD(NATOMS,2),IINTFP*NBASX*5)
+         I090 = I080 + MAX(NATOMS*5+MOD(NATOMS,2),IINTFP*NBASX)
+         I100 = I090 + NATOMS*5+MOD(NATOMS,2)
+         I070 = I100 + IINTFP*IORDGP
+         I110 = I070 + MAX(2000,NATOMS+MOD(NATOMS,2),NBASX+MOD(NBASX,2),
+     &                     NBASX*NBASX*IINTFP)
+
+         IF (I110-1.GT.MAXCOR) THEN
+            CALL NOMEM('determining orbital symmetries',
+     &                 '{IRRORB_SHELL} <-- VSCF',I110-1,MAXCOR)
+         ELSE
+            CALL T2FULAO(ICORE(I000),ICORE(I010),ICORE(I020),
+     &                   NBAS,NBAS,NBASX,
+     &                   'SCFEVC'//SP(ISPIN)//'0',
+     &                   'EVECAO_'//SP(ISPIN),
+     &                   'SCFEVL'//SP(ISPIN)//'0',
+     &                   'EVALORDR',1,0)
+            CALL IZERO(ICORE,I110)
+c SCR(*)  at i020 is at most NBASX*NDEGEN
+c SCR1(*) at i070 is at least MAX(9,NATOMS*3)
+c Z(*)    at i100 is IORDGRP
+            CALL IRRORB(ICORE(I000),ICORE(I010),ICORE(I020),ICORE(I030),
+     &                  ICORE(I040),NBAS,                   ICORE(I060),
+     &                  ICORE(I070),ICORE(I080),ICORE(I090),ICORE(I100),
+     &                  NATOMS,     ISPIN,      NBASX)
+         END IF
+
+c     END DO ISPIN = 1, (IUHF+1)
+      END DO
+
+#ifdef _TRACE_VSCF
+      write(*,*) '@VSCF: Leaving ', __FILE__
+#endif /* _TRACE_VSCF */
+
+      RETURN
+      END
+

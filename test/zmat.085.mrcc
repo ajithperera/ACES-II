@@ -1,0 +1,82 @@
+Intersystem crossing at EE-STEOM level
+C
+N 1 R*
+H 2 RNH* 1 ACNH*
+H 1 RCH1* 2 AHCN1* 3 D180
+H 1 RCH2* 2 AHCN2* 4 D180
+
+R=1.3942323098
+RNH=1.0121810716
+ACNH=131.1664747914
+RCH1=1.0818438736
+AHCN1=118.5691274628
+RCH2=1.0906351470
+AHCN2=120.1657729347
+D180=180.0
+
+*ACES2
+!restart
+BASIS=6-31G*
+CALC=MBPT(2),SPHERICAL=OFF
+IP_CALC=IP_EOMCC,IP_SYM=3-1
+EA_CALC=EA_EOMCC,EA_SYM=4-1
+EXCITE=STEOM,EE_SYM=3-3/3-3
+MAX_STEP=20,STP_SIZ_CTL=NORM
+
+*mrcc_gen
+isc_crossing=ee isc_state1=1 isc_sym1=2 isc_mult1=1
+isc_state2=1 isc_mult2=3 isc_sym2=1
+isc_penalty=5
+*end
+
+Comments
+A singlet-triplet connical intersection is determined using analytical gradients
+for two states.
+The search algorithm is a little sensitive and therefore the MAX_STEP
+parameter is set to 20. Taking the default leads to many more steps in
+the optimization.
+
+We start very close to the conical intersection, and can take a large
+penalty component therefore. In initial ISC searches a value of isc_penalty of 3
+or 4 is more suitable.
+
+ps isc stands for intersystem crossing, but it can be used to locate
+conical intersections in general.
+
+TEST.DAT
+d TOTENERG
+ -0.941608428678E+02   0.1E-08
+d COORD
+ -0.133666482519E+01   0.1E-08
+  0.396624136850E-01   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.129217923331E+01   0.1E-08
+ -0.135946857630E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.264453708994E+01   0.1E-08
+  0.121670823956E+01   0.1E-08
+  0.000000000000E+00   0.1E-08
+ -0.243180920646E+01   0.1E-08
+ -0.168666946980E+01   0.1E-08
+  0.000000000000E+00   0.1E-08
+ -0.225127460957E+01   0.1E-08
+  0.188660042797E+01   0.1E-08
+  0.000000000000E+00   0.1E-08
+d E_AVG
+  0.280716729161E+00   0.1E-08
+d NUCDIPOL
+ -0.101328104411E+01   0.1E-08
+  0.702985676428E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+d NUCREP
+  0.309958745252E+02   0.1E-08
+d PARENERG
+ -0.942932736602E+02   0.1E-08
+d REFDIPOL
+ -0.512645818997E+00   0.1E-08
+  0.604934775230E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+d SCFENEG
+ -0.939869915974E+02   0.1E-08
+d TOTENER2
+ -0.941608428678E+02   0.1E-08

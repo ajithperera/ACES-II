@@ -1,0 +1,23 @@
+      SUBROUTINE WRSEQ(BUF,IBUF,NUT,LEN,IUNIT)
+      DOUBLE PRECISION BUF(LEN)
+      INTEGER IBUF(LEN)
+      WRITE(IUNIT)BUF,IBUF,NUT
+      RETURN
+      END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

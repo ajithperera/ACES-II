@@ -1,0 +1,101 @@
+C
+      subroutine dkh__contract(zcore,maxcor,coreham,coeffs,nshells,
+     +                         nprims,ncnfns,npfps,npcoef,npcoef_uc,
+     +                         ncfps,
+     +                         ixpcoef,ixalpha)
+
+      Implicit Double Precision (a-h, o-z)
+
+#include "ecplims.par"
+
+      Dimension zcore(maxcor),coreham(nprims*nprims),coeffs(npcoef)
+      Integer npfps(nshells),ncfps(nshells)
+      Integer coef_start,zcor_start,zcor_off(max_shells)
+      Integer coef_off(max_shells)
+      
+      logical spherical 
+
+#ifdef _DEBUG_LVL0
+      write(6,*) "The primitive DKH integrals"
+      call output(coreham,1,nprims,1,nprims,nprims,nprims,1)
+      write(6,*) "The contraction coefs."
+      write(6,"(6(1x,f10.6))") (coeffs(i),i=1,npcoef)
+      write(6,*) "The number of primitive functions"
+      write(6,"(6(1x,i4))") (npfps(i),i=1,nshells)
+      write(6,*) "The number of contracted functions"
+      write(6,"(6(1x,i4))") (ncfps(i),i=1,nshells)
+#endif 
+
+      zcor_off(1) = 1
+      coef_off(1) = 1
+      Do ishell = 2, Nshells
+         ncont_shell = ncfps(ishell-1)
+         nprim_shell = npfps(ishell-1)
+      
+         if (spherical) then
+            ndegen = 2*(ishell-2) + 1
+         else
+            ndegen = (ishell-1) * (ishell)/2
+         endif
+CSSS         zcor_off(ishell) = zcor_off(ishell-1) + nprim_shell * ndegen +
+CSSS     +                      nprims * ncont_shell * ndegen 
+         zcor_off(ishell) = zcor_off(ishell-1) + nprims * ndegen 
+
+         coef_off(ishell) = coef_off(ishell-1) + 
+     +                      nprim_shell * ncont_shell 
+      Enddo 
+    
+       write(6,*) (zcor_off(i), i=1,nshells)
+       write(6,*) (coef_off(i), i=1,nshells)
+
+C#ifdef _NOSKIP
+      spherical = .true.
+      coef_start = 1
+      zcor_start = 1
+      coef_save  = 1
+      zcor_save  = 1
+      call dzero(zcore, nprims * ncnfns) 
+      Do ishell = 1, Nshells
+         nprim_shell = npfps(ishell)
+         ncont_shell = ncfps(ishell)
+
+         if (spherical) then
+            ndegen = 2*(ishell-1) + 1 
+         else
+            ndegen = (ishell) * (ishell+1)/2 
+         endif 
+         nblks = nprim_shell 
+
+         do idegen = 1, ndegen 
+
+            coef_start = coef_off(Ishell)
+CSSS            zcor_start = zcor_off(ishell) +  (idegen-1) * 
+CSSS     +                   (nprims * nprim_shell + ncont_shell)
+CSSS
+            zcor_start = zcor_off(ishell) +  (idegen-1) * 
+     +                   (nprims * nprim_shell + ncont_shell)
+
+            do icont = 1, ncont_shell
+               write(6, "(4(i4))") coef_start, zcor_start,icont,idegen
+               call dcopy(nblks, coeffs(coef_start), 1, 
+     +                    zcore(zcor_start), 1)
+               coef_start = coef_start + nprim_shell 
+               zcor_start = zcor_start + nprims 
+            enddo 
+            zcor_start = zcor_start + ndegen 
+         enddo
+
+      Enddo 
+
+      call output(zcore,1,nprims,1,ncnfns,nprims,ncnfns,1)
+C
+C         call xgemm("t","n",ncont,nprim,npri,1.0D,coeffs,ncont,coeham,
+C     +               nprim,0.0d0,zcore,ncont)
+C
+C         call xgemm("n","n",ncont,nprim,npri,1.0D,zcore,ncont,coeffs,
+C     +               nprim,0.0d0,coreham,ncont)
+C#endif 
+      
+      Return
+      End 
+      

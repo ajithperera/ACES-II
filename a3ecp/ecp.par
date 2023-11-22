@@ -1,0 +1,28 @@
+#ifndef _ECP_PAR_
+#define _ECP_PAR_
+
+C
+C Basic parameters: Maxang set to 7 (i functions) and Maxproj set
+C 5 (up to h functions in projection space).
+
+      parameter (max_centers = 300)
+      parameter (max_shells  = 5000)
+      parameter (max_prims   = max_shells)
+      Parameter (max_cbf     = 1000)
+      parameter (max_primcc  = Max_prims*max_cbf)
+      parameter (Ndi4 = 550, Ndi9 = max_shells, Ndi10 = max_centers, 
+     &           Ndi13 = 350, Ndico = 10, ndi14 = 120, ndi27 = 400)
+     &           
+      Parameter(Maxang=7, Maxproj=6, Lmxecp=7, 
+     &          Mxecpprim=Max_prims*Max_centers, Maxjco=10)
+
+      Parameter(Maxangpwr=(Maxang+1)**2,Lmnpwr=(((Maxang*(Maxang+2)*
+     &         (Maxang+4))/3)*(Maxang+3)+(Maxang+2)**2*(Maxang+4))/16)
+
+      Parameter(ndi4=550,ndi13=350,ndico=10,ndi14=120,Ndilmx=Maxang)
+
+      Parameter(Max_ecpmem = 50000)
+   
+      Parameter(Rint_cutoff = 25.32838, Eps1 = 1.0D-15)
+#endif /* _ECP_PAR_ */
+

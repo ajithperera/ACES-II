@@ -1,0 +1,33 @@
+
+C----------------------------------------------------------------------------
+COrbital Symm. Eigenvalue  <xx>     <yy>     <zz>     <xy>     <xz>     <yz>
+c----------------------------------------------------------------------------
+c  135     4  -13513.153 1534.35  3251.31  3512.35
+C1234567890123456789012345678901234567890123456789012345678901234567890
+      
+
+      SUBROUTINE ORDERTDA(NROOT,LENVEC,EVAL,EVEC,SCR,ISCR)
+C
+C ORDER THE TDA EIGENVALUES FROM SMALLEST TO LARGEST AND
+C ALSO REORDER THE VECTORS CORRESPONDINGLY.
+C
+CEND
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION EVAL(NROOT),EVEC(LENVEC,NROOT),
+     &          SCR(LENVEC,NROOT),ISCR(NROOT)
+C
+      DO 10 I=1,NROOT
+       ISCR(I)=I
+10    CONTINUE
+C
+      CALL PIKSR2(NROOT,EVAL,ISCR)
+C
+      DO 20 I=1,NROOT
+       J=ISCR(I)
+       CALL SCOPY(LENVEC,EVEC(1,J),1,SCR(1,I),1)
+20    CONTINUE
+C
+      CALL SCOPY(LENVEC*NROOT,SCR,1,EVEC,1)
+C
+      RETURN
+      END

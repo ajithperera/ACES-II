@@ -1,0 +1,1115 @@
+      Subroutine A2MIX(ICORE, MAXCOR, IUHF)
+C     
+C---- 
+C     
+C     This program utilizes an arbitrary density to calculate
+C     the correlation correction to SCF with an arbitrary
+C     set of density functionals.
+C     
+C     Written by Nevin Oliphant, Quantum Theory Project,
+C     University of Florida, 1993.
+C     
+C---- 
+C     
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C     
+C     Characters for determining symmetry elements
+      CHARACTER*1 SYMEL(3,3)
+      CHARACTER*8 PGRP
+      PARAMETER(MAXSHELL = 10)
+      LOGICAL POTNS,INTS,SPIN_DENS
+C     
+      DIMENSION IANGX(56),IANGY(56),IANGZ(56),ATMRAD(86),BSLRDII(86),
+     &   WGHT(98),XDAT(194),YDAT(194),ZDAT(194),NOCC(16),ISHL(6)
+      DIMENSION ICORE(MAXCOR)
+      DIMENSION RMOM_T(7),RMOM_D(7)
+C     
+CSSS      COMMON//ICORE(1)
+CSSS      COMMON /ISTART/ I0, ICRSIZ 
+CSSS      COMMON /IOPOS/ ICRSIZ,ICHSZ,IOFF(2),LENREC
+
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /FLAGS/ IFLAGS(100)
+      COMMON /FLAGS2/ IFLAGS2(500)
+      COMMON /ISYMINF/ NIRREP,NSOIRP(8)
+      COMMON /CNST/ ALPHA,X2,X3,X4,X5,X6,X7,X8,X9,X10,X11,X12,X13,X14,X15
+      COMMON /PAR/ PI,PIX4
+      COMMON /IPAR/ LUOUT
+C     
+C     Atomic size using Slater's rules for the radial integration
+C     
+      DATA ATMRAD /1.000,0.588,
+     &   3.077,2.051,1.538,1.231,1.026,0.879,0.769,0.684,
+     &   4.091,3.158,2.571,2.169,1.875,1.651,1.475,1.333,
+     &   6.27,4.84,4.59,4.38,4.20,4.01,3.82,3.68,3.53,
+     &   1.192,3.27,3.16,2.76,2.44,2.19,1.98,1.81,1.66,
+     &   7.29,5.67,5.37,5.12,4.91,4.69,4.46,4.31,4.12,
+     &   3.97,3.82,3.68,3.23,2.85,2.55,2.31,2.12,1.94,
+     &   8.03,6.24,0.00,0.00,0.00,0.00,0.00,0.00,0.00,
+     &   0.00,0.00,0.00,0.00,0.00,0.00,0.00,5.90,5.60,
+     &   5.40,5.16,4.91,4.74,4.54,4.37,4.20,4.06,3.55,
+     &   3.14,2.80,0.00,0.00,0.00/
+C
+C     Bragg-Slater radii for determining the relative size of the
+C     polyhedra in the polyatomic integration scheme
+C     
+      DATA BSLRDII /0.35,0.50,
+     &   1.45,1.05,0.85,0.70,0.65,0.60,0.50,0.65,
+     &   1.80,1.50,1.25,1.10,1.00,1.00,1.00,0.95,
+     &   2.20,1.80,1.60,1.40,1.35,1.40,1.40,1.40,1.35,
+     &   0.60,0.60,1.35,1.30,1.25,1.15,1.15,1.15,1.10,
+     &   2.35,2.00,1.80,1.55,1.45,1.45,1.35,1.30,1.35,
+     &   1.40,1.60,1.55,1.55,1.45,1.45,1.40,1.40,1.30,
+     &   2.60,2.15,0.00,0.00,0.00,0.00,0.00,0.00,0.00,
+     &   0.00,0.00,0.00,0.00,0.00,0.00,0.00,1.75,1.55,
+     &   1.45,1.35,1.35,1.30,1.35,1.35,1.35,1.50,1.90,
+     &   1.75,1.60,0.00,0.00,0.00/
+C
+C     x, y, z angular momentum
+C
+      DATA IANGX /0,1,0,0,2,1,1,0,0,0,3,2,2,1,1,1,0,0,0,0,
+     &   4,3,3,2,2,2,1,1,1,1,0,0,0,0,0,5,4,4,3,3,
+     &   3,2,2,2,2,1,1,1,1,1,0,0,0,0,0,0/
+      DATA IANGY /0,0,1,0,0,1,0,2,1,0,0,1,0,2,1,0,3,2,1,0,
+     &   0,1,0,2,1,0,3,2,1,0,4,3,2,1,0,0,1,0,2,1,
+     &   0,3,2,1,0,4,3,2,1,0,5,4,3,2,1,0/
+      DATA IANGZ /0,0,0,1,0,0,1,0,1,2,0,0,1,0,1,2,0,1,2,3,
+     &   0,0,1,0,1,2,0,1,2,3,0,1,2,3,4,0,0,1,0,1,
+     &   2,0,1,2,3,0,1,2,3,4,0,1,2,3,4,5/
+C     
+C     Weights for the angular quadrature
+C     
+C     The xyz quadrant 1,31
+      DATA WGHT /4.45585111810D-04,4.45585111810D-04,4.45585111810D-04,
+     &   2.85845297499D-03,2.85845297499D-03,2.85845297499D-03,
+     &   2.52592303231D-03,2.52592303231D-03,2.52592303231D-03,
+     &   2.52592303231D-03,2.52592303231D-03,2.52592303231D-03,
+     &   5.57338317884D-03,
+     &   5.51877146727D-03,5.51877146727D-03,5.51877146727D-03,
+     &   5.15823771181D-03,5.15823771181D-03,5.15823771181D-03,
+     &   5.60870408259D-03,5.60870408259D-03,5.60870408259D-03,
+     &   4.10677702817D-03,4.10677702817D-03,4.10677702817D-03,
+     &   5.53024891623D-03,5.53024891623D-03,5.53024891623D-03,
+     &   5.53024891623D-03,5.53024891623D-03,5.53024891623D-03,
+C     xy(-z), x(-y)z, (-x)yz quadrants, 32,57
+     &   4.45585111810D-04,
+     &   2.85845297499D-03,2.85845297499D-03,
+     &   2.52592303231D-03,2.52592303231D-03,
+     &   2.52592303231D-03,2.52592303231D-03,
+     &   5.57338317884D-03,
+     &   5.51877146727D-03,5.51877146727D-03,5.51877146727D-03,
+     &   5.15823771181D-03,5.15823771181D-03,5.15823771181D-03,
+     &   5.60870408259D-03,5.60870408259D-03,5.60870408259D-03,
+     &   4.10677702817D-03,4.10677702817D-03,4.10677702817D-03,
+     &   5.53024891623D-03,5.53024891623D-03,5.53024891623D-03,
+     &   5.53024891623D-03,5.53024891623D-03,5.53024891623D-03,
+C     x(-y)(-z), (-x)y(-z), (-x)(-y)z quadrants 58,79
+     &   2.85845297499D-03,
+     &   2.52592303231D-03,
+     &   2.52592303231D-03,
+     &   5.57338317884D-03,
+     &   5.51877146727D-03,5.51877146727D-03,5.51877146727D-03,
+     &   5.15823771181D-03,5.15823771181D-03,5.15823771181D-03,
+     &   5.60870408259D-03,5.60870408259D-03,5.60870408259D-03,
+     &   4.10677702817D-03,4.10677702817D-03,4.10677702817D-03,
+     &   5.53024891623D-03,5.53024891623D-03,5.53024891623D-03,
+     &   5.53024891623D-03,5.53024891623D-03,5.53024891623D-03,
+C     (-x)(-y)(-z) quadrants 58,98
+     &   5.57338317884D-03,
+     &   5.51877146727D-03,5.51877146727D-03,5.51877146727D-03,
+     &   5.15823771181D-03,5.15823771181D-03,5.15823771181D-03,
+     &   5.60870408259D-03,5.60870408259D-03,5.60870408259D-03,
+     &   4.10677702817D-03,4.10677702817D-03,4.10677702817D-03,
+     &   5.53024891623D-03,5.53024891623D-03,5.53024891623D-03,
+     &   5.53024891623D-03,5.53024891623D-03,5.53024891623D-03/
+C     
+C     The xyz quadrant 1,31
+      DATA XDAT /0.0,0.0,1.0,
+     &   0.707106781187,0.707106781187,0.0,
+     &   0.938319218138,0.938319218138,0.0,
+     &   0.345770219761,0.345770219761,0.0,
+     &   0.577350269190,
+     &   0.444693317871,0.444693317871,0.777493219315,
+     &   0.289246562758,0.289246562758,0.912509096867,
+     &   0.671297344270,0.671297344270,0.314196994183,
+     &   0.129933544765,0.129933544765,0.982972302707,
+     &   0.836036015482,0.836036015482,0.159041710538,
+     &   0.159041710538,0.525118572443,0.525118572443,
+C     xy(-z) 32,57
+     &   0.0,
+     &   0.707106781187,0.0,
+     &   0.938319218138,0.0,
+     &   0.345770219761,0.0,
+     &   0.577350269190,
+     &   0.444693317871,0.444693317871,0.777493219315,
+     &   0.289246562758,0.289246562758,0.912509096867,
+     &   0.671297344270,0.671297344270,0.314196994183,
+     &   0.129933544765,0.129933544765,0.982972302707,
+     &   0.836036015482,0.836036015482,0.159041710538,
+     &   0.159041710538,0.525118572443,0.525118572443,
+C     x(-y)z 58,83
+     &   0.0,
+     &   0.707106781187,0.0,
+     &   0.938319218138,0.0,
+     &   0.345770219761,0.0,
+     &   0.577350269190,
+     &   0.444693317871,0.444693317871,0.777493219315,
+     &   0.289246562758,0.289246562758,0.912509096867,
+     &   0.671297344270,0.671297344270,0.314196994183,
+     &   0.129933544765,0.129933544765,0.982972302707,
+     &   0.836036015482,0.836036015482,0.159041710538,
+     &   0.159041710538,0.525118572443,0.525118572443,
+C     (-x)yz 84,109
+     &   -1.0,
+     &   -0.707106781187,-0.707106781187,
+     &   -0.938319218138,-0.938319218138,
+     &   -0.345770219761,-0.345770219761,
+     &   -0.577350269190,
+     &   -0.444693317871,-0.444693317871,-0.777493219315,
+     &   -0.289246562758,-0.289246562758,-0.912509096867,
+     &   -0.671297344270,-0.671297344270,-0.314196994183,
+     &   -0.129933544765,-0.129933544765,-0.982972302707,
+     &   -0.836036015482,-0.836036015482,-0.159041710538,
+     &   -0.159041710538,-0.525118572443,-0.525118572443,
+C     x(-y)(-z) 110,131
+     &   0.0,
+     &   0.0,
+     &   0.0,
+     &   0.577350269190,
+     &   0.444693317871,0.444693317871,0.777493219315,
+     &   0.289246562758,0.289246562758,0.912509096867,
+     &   0.671297344270,0.671297344270,0.314196994183,
+     &   0.129933544765,0.129933544765,0.982972302707,
+     &   0.836036015482,0.836036015482,0.159041710538,
+     &   0.159041710538,0.525118572443,0.525118572443,
+C     (-x)y(-z) 132,153
+     &   -0.707106781187,
+     &   -0.938319218138,
+     &   -0.345770219761,
+     &   -0.577350269190,
+     &   -0.444693317871,-0.444693317871,-0.777493219315,
+     &   -0.289246562758,-0.289246562758,-0.912509096867,
+     &   -0.671297344270,-0.671297344270,-0.314196994183,
+     &   -0.129933544765,-0.129933544765,-0.982972302707,
+     &   -0.836036015482,-0.836036015482,-0.159041710538,
+     &   -0.159041710538,-0.525118572443,-0.525118572443,
+C     (-x)(-y)z 154,175
+     &   -0.707106781187,
+     &   -0.938319218138,
+     &   -0.345770219761,
+     &   -0.577350269190,
+     &   -0.444693317871,-0.444693317871,-0.777493219315,
+     &   -0.289246562758,-0.289246562758,-0.912509096867,
+     &   -0.671297344270,-0.671297344270,-0.314196994183,
+     &   -0.129933544765,-0.129933544765,-0.982972302707,
+     &   -0.836036015482,-0.836036015482,-0.159041710538,
+     &   -0.159041710538,-0.525118572443,-0.525118572443,
+C     (-x)(-y)(-z) 176,194
+     &   -0.577350269190,
+     &   -0.444693317871,-0.444693317871,-0.777493219315,
+     &   -0.289246562758,-0.289246562758,-0.912509096867,
+     &   -0.671297344270,-0.671297344270,-0.314196994183,
+     &   -0.129933544765,-0.129933544765,-0.982972302707,
+     &   -0.836036015482,-0.836036015482,-0.159041710538,
+     &   -0.159041710538,-0.525118572443,-0.525118572443/
+C     The xyz quadrant
+      DATA YDAT /0.0,1.0,0.0,
+     &   0.707106781187,0.0,0.707106781187,
+     &   0.345770219761,0.0,0.938319218138,
+     &   0.938319218138,0.0,0.345770219761,
+     &   0.577350269190,
+     &   0.444693317871,0.777493219315,0.444693317871,
+     &   0.289246562758,0.912509096867,0.289246562758,
+     &   0.671297344270,0.314196994183,0.671297344270,
+     &   0.129933544765,0.982972302707,0.129933544765,
+     &   0.159041710538,0.525118572443,0.836036015482,
+     &   0.525118572443,0.159041710538,0.836036015482,
+C     xy(-z)
+     &   0.0,
+     &   0.0,0.707106781187,
+     &   0.0,0.938319218138,
+     &   0.0,0.345770219761,
+     &   0.577350269190,
+     &   0.444693317871,0.777493219315,0.444693317871,
+     &   0.289246562758,0.912509096867,0.289246562758,
+     &   0.671297344270,0.314196994183,0.671297344270,
+     &   0.129933544765,0.982972302707,0.129933544765,
+     &   0.159041710538,0.525118572443,0.836036015482,
+     &   0.525118572443,0.159041710538,0.836036015482,
+C     x(-y)z
+     &   -1.0,
+     &   -0.707106781187,-0.707106781187,
+     &   -0.345770219761,-0.938319218138,
+     &   -0.938319218138,-0.345770219761,
+     &   -0.577350269190,
+     &   -0.444693317871,-0.777493219315,-0.444693317871,
+     &   -0.289246562758,-0.912509096867,-0.289246562758,
+     &   -0.671297344270,-0.314196994183,-0.671297344270,
+     &   -0.129933544765,-0.982972302707,-0.129933544765,
+     &   -0.159041710538,-0.525118572443,-0.836036015482,
+     &   -0.525118572443,-0.159041710538,-0.836036015482,
+C     (-x)yz
+     &   0.0,
+     &   0.707106781187,0.0,
+     &   0.345770219761,0.0,
+     &   0.938319218138,0.0,
+     &   0.577350269190,
+     &   0.444693317871,0.777493219315,0.444693317871,
+     &   0.289246562758,0.912509096867,0.289246562758,
+     &   0.671297344270,0.314196994183,0.671297344270,
+     &   0.129933544765,0.982972302707,0.129933544765,
+     &   0.159041710538,0.525118572443,0.836036015482,
+     &   0.525118572443,0.159041710538,0.836036015482,
+C     x(-y)(-z)
+     &   -0.707106781187,
+     &   -0.938319218138,
+     &   -0.345770219761,
+     &   -0.577350269190,
+     &   -0.444693317871,-0.777493219315,-0.444693317871,
+     &   -0.289246562758,-0.912509096867,-0.289246562758,
+     &   -0.671297344270,-0.314196994183,-0.671297344270,
+     &   -0.129933544765,-0.982972302707,-0.129933544765,
+     &   -0.159041710538,-0.525118572443,-0.836036015482,
+     &   -0.525118572443,-0.159041710538,-0.836036015482,
+C     (-x)y(-z)
+     &   0.0,
+     &   0.0,
+     &   0.0,
+     &   0.577350269190,
+     &   0.444693317871,0.777493219315,0.444693317871,
+     &   0.289246562758,0.912509096867,0.289246562758,
+     &   0.671297344270,0.314196994183,0.671297344270,
+     &   0.129933544765,0.982972302707,0.129933544765,
+     &   0.159041710538,0.525118572443,0.836036015482,
+     &   0.525118572443,0.159041710538,0.836036015482,
+C     (-x)(-y)z
+     &   -0.707106781187,
+     &   -0.345770219761,
+     &   -0.938319218138,
+     &   -0.577350269190,
+     &   -0.444693317871,-0.777493219315,-0.444693317871,
+     &   -0.289246562758,-0.912509096867,-0.289246562758,
+     &   -0.671297344270,-0.314196994183,-0.671297344270,
+     &   -0.129933544765,-0.982972302707,-0.129933544765,
+     &   -0.159041710538,-0.525118572443,-0.836036015482,
+     &   -0.525118572443,-0.159041710538,-0.836036015482,
+C     (-x)(-y)(-z)
+     &   -0.577350269190,
+     &   -0.444693317871,-0.777493219315,-0.444693317871,
+     &   -0.289246562758,-0.912509096867,-0.289246562758,
+     &   -0.671297344270,-0.314196994183,-0.671297344270,
+     &   -0.129933544765,-0.982972302707,-0.129933544765,
+     &   -0.159041710538,-0.525118572443,-0.836036015482,
+     &   -0.525118572443,-0.159041710538,-0.836036015482/
+C     The xyz quadrant
+      DATA ZDAT /1.0,0.0,0.0,
+     &   0.0,0.707106781187,0.707106781187,
+     &   0.0,0.345770219761,0.345770219761,
+     &   0.0,0.938319218138,0.938319218138,
+     &   0.577350269190,
+     &   0.777493219315,0.444693317871,0.444693317871,
+     &   0.912509096867,0.289246562758,0.289246562758,
+     &   0.314196994183,0.671297344270,0.671297344270,
+     &   0.982972302707,0.129933544765,0.129933544765,
+     &   0.525118572443,0.159041710538,0.525118572443,
+     &   0.836036015482,0.836036015482,0.159041710538,
+C     xy(-z)
+     &   -1.0,
+     &   -0.707106781187,-0.707106781187,
+     &   -0.345770219761,-0.345770219761,
+     &   -0.938319218138,-0.938319218138,
+     &   -0.577350269190,
+     &   -0.777493219315,-0.444693317871,-0.444693317871,
+     &   -0.912509096867,-0.289246562758,-0.289246562758,
+     &   -0.314196994183,-0.671297344270,-0.671297344270,
+     &   -0.982972302707,-0.129933544765,-0.129933544765,
+     &   -0.525118572443,-0.159041710538,-0.525118572443,
+     &   -0.836036015482,-0.836036015482,-0.159041710538,
+C     x(-y)z
+     &   0.0,
+     &   0.0,0.707106781187,
+     &   0.0,0.345770219761,
+     &   0.0,0.938319218138,
+     &   0.577350269190,
+     &   0.777493219315,0.444693317871,0.444693317871,
+     &   0.912509096867,0.289246562758,0.289246562758,
+     &   0.314196994183,0.671297344270,0.671297344270,
+     &   0.982972302707,0.129933544765,0.129933544765,
+     &   0.525118572443,0.159041710538,0.525118572443,
+     &   0.836036015482,0.836036015482,0.159041710538,
+C     (-x)yz
+     &   0.0,
+     &   0.0,0.707106781187,
+     &   0.0,0.345770219761,
+     &   0.0,0.938319218138,
+     &   0.577350269190,
+     &   0.777493219315,0.444693317871,0.444693317871,
+     &   0.912509096867,0.289246562758,0.289246562758,
+     &   0.314196994183,0.671297344270,0.671297344270,
+     &   0.982972302707,0.129933544765,0.129933544765,
+     &   0.525118572443,0.159041710538,0.525118572443,
+     &   0.836036015482,0.836036015482,0.159041710538,
+C     x(-y)(-z)
+     &   -0.707106781187,
+     &   -0.345770219761,
+     &   -0.938319218138,
+     &   -0.577350269190,
+     &   -0.777493219315,-0.444693317871,-0.444693317871,
+     &   -0.912509096867,-0.289246562758,-0.289246562758,
+     &   -0.314196994183,-0.671297344270,-0.671297344270,
+     &   -0.982972302707,-0.129933544765,-0.129933544765,
+     &   -0.525118572443,-0.159041710538,-0.525118572443,
+     &   -0.836036015482,-0.836036015482,-0.159041710538,
+C     (-x)y(-z)
+     &   -0.707106781187,
+     &   -0.345770219761,
+     &   -0.938319218138,
+     &   -0.577350269190,
+     &   -0.777493219315,-0.444693317871,-0.444693317871,
+     &   -0.912509096867,-0.289246562758,-0.289246562758,
+     &   -0.314196994183,-0.671297344270,-0.671297344270,
+     &   -0.982972302707,-0.129933544765,-0.129933544765,
+     &   -0.525118572443,-0.159041710538,-0.525118572443,
+     &   -0.836036015482,-0.836036015482,-0.159041710538,
+C     (-x)(-y)z
+     &   0.0,
+     &   0.0,
+     &   0.0,
+     &   0.577350269190,
+     &   0.777493219315,0.444693317871,0.444693317871,
+     &   0.912509096867,0.289246562758,0.289246562758,
+     &   0.314196994183,0.671297344270,0.671297344270,
+     &   0.982972302707,0.129933544765,0.129933544765,
+     &   0.525118572443,0.159041710538,0.525118572443,
+     &   0.836036015482,0.836036015482,0.159041710538,
+C     (-x)(-y)(-z)
+     &   -0.577350269190,
+     &   -0.777493219315,-0.444693317871,-0.444693317871,
+     &   -0.912509096867,-0.289246562758,-0.289246562758,
+     &   -0.314196994183,-0.671297344270,-0.671297344270,
+     &   -0.982972302707,-0.129933544765,-0.129933544765,
+     &   -0.525118572443,-0.159041710538,-0.525118572443,
+     &   -0.836036015482,-0.836036015482,-0.159041710538/
+
+      DATA THRES /1.0D-03/
+C     
+      PI=DATAN(1.0D+00)*4.D+00
+      PIX4=DATAN(1.0D+00)*16.D+00
+      LUOUT=6
+      CUTOFF = 1.0D-10 
+
+C     Temporary until new joda is fixed
+c      IFLAGS2(104)=4
+C     
+C     MAXIMUM CORE AVAILABLE FOR THIS CALCULATION
+C     
+C     Begin output from the DFT module
+      WRITE(LUOUT,1000)
+ 1000 FORMAT(/'               ********** HYBRID HF-DFT **********')
+C     
+C     Output control
+      IPRINT=IFLAGS(1)
+C     Print only results
+      IF(IPRINT.EQ.1) IPRINT=0
+C     Print intermediate information
+      IF(IPRINT.GT.1) IPRINT=1
+C     
+      IF(IPRINT.EQ.1)THEN
+         IF(IUHF.EQ.1) THEN
+            WRITE(LUOUT,1010)
+         ELSE
+            WRITE(LUOUT,1020)
+         ENDIF
+      ENDIF
+ 1010 FORMAT(/'     THE CALCULATION IS UHF')
+ 1020 FORMAT(/'     THE CALCULATION IS RHF')
+C     
+C     Get the total number of centers
+      CALL GETREC(20,'JOBARC','NATOMS  ',1,NATOMS)
+C     
+C     Get nuclear repusion energy
+      CALL GETREC(20,'JOBARC','NUCREP  ',IINTFP,REPULS)
+C     
+C     Get the number of unique atoms, (orbits), in the full point group
+      CALL GETREC(20,'JOBARC','FULLNORB',1,IUATMS)
+C     
+C     Get the number of unique atoms, (orbits), in the computational 
+C     point group
+      CALL GETREC(20,'JOBARC','COMPNORB',1,IUCATMS)
+C     
+C     The atomic number of each center
+      INUC=1
+C     The coordinates of each center
+      ICOORD=INUC+NATOMS + mod(natoms,2)
+C     The number of atoms in each orbit in the full point group
+      IPOPF=ICOORD+3*NATOMS*IINTFP
+C     The number of atoms in each orbit in the computational point group
+      IPOPC=IPOPF+IUATMS + mod(IUATMS,2)
+C     The atoms sorted by full point group orbits
+      IMEMBF=IPOPC+IUCATMS + mod(IUCATMS,2)
+C     The atoms sorted by computational point group orbits
+      IMEMBC=IMEMBF+NATOMS + mod(natoms,2)
+C     
+C     Starting point of remaining memory
+      ISTART1=IMEMBC+NATOMS + mod(natoms,2)
+C     
+C     Get the number of atoms in a full point group orbit
+      CALL GETREC(20,'JOBARC','FULLPOPV',IUATMS,ICORE(IPOPF))
+C     Get the number of atoms in a computational point group orbit
+      CALL GETREC(20,'JOBARC','COMPPOPV',IUCATMS,ICORE(IPOPC))
+C     Get the sorted list of atoms for the full point group
+      CALL GETREC(20,'JOBARC','FULLMEMB',NATOMS,ICORE(IMEMBF))
+C     Get the sorted list of atoms for the computational point group
+      CALL GETREC(20,'JOBARC','COMPMEMB',NATOMS,ICORE(IMEMBC))
+C     
+C     Get the atomic numbers and coordinates
+      CALL GETREC(20,'JOBARC','ATOMCHRG',NATOMS,ICORE(INUC))
+      CALL GETREC(20,'JOBARC','COORD',3*IINTFP*NATOMS,ICORE(ICOORD))
+C     
+C     Get the full point group
+      CALL GETREC(20,'JOBARC','FULLPTGP',IINTFP,PGRP)
+C     
+      WRITE(LUOUT,3010) PGRP
+ 3010 FORMAT(/'The Full Point Group is ',A4)
+C     
+      IF(IPRINT.EQ.1)THEN
+         WRITE(LUOUT,1100) IUATMS
+      ENDIF
+ 1100 FORMAT('  THERE ARE',I4,' UNIQUE ATOMS IN THE FULL POINT GROUP')
+C     
+C     Get the computational point group
+      CALL GETREC(20,'JOBARC','COMPPTGP',IINTFP,PGRP)
+C     
+      WRITE(LUOUT,3020) PGRP
+ 3020 FORMAT(/'The Computational Point Group is ',A4)
+C     
+      IF(IPRINT.EQ.1)THEN
+         WRITE(LUOUT,1102) IUCATMS
+      ENDIF
+ 1102 FORMAT('  THERE ARE',I4,
+     &   ' UNIQUE ATOMS IN THE COMPUTATIONAL POINT GROUP')
+C     
+C     Set flag for reading integral files
+C     Read all files present, IIII, IIJJ and IJIJ
+      ISYMC1=0
+C     Read only IIII
+      IF(PGRP.EQ.'C1  ') ISYMC1=1
+C     
+C     Get number of basis functions
+      CALL GETREC(20,'JOBARC','NAOBASFN',1,NBAS)
+C     
+      IF(IPRINT.EQ.1)THEN
+         WRITE(LUOUT,1030) NBAS
+      ENDIF
+ 1030 FORMAT(/'     THE NUMBER OF ATOMIC BASIS FUNCTIONS IS',I5)
+C     
+C     Get number of irreducible representations.
+      CALL GETREC(20,'JOBARC','COMPNIRR',1,NIRREP)
+C     Get number of symmetry orbitals in each irrep
+      CALL GETREC(20,'JOBARC','NUMBASIR',NIRREP,NSOIRP)
+C     
+C     Get alpha and beta occupation
+      CALL GETREC(20,'JOBARC','OCCUPYA',NIRREP,NOCC(1))
+      NOCCA=0
+      DO 10 I=1,NIRREP
+         NOCCA=NOCCA+NOCC(I)
+ 10   CONTINUE
+      IF(IUHF.EQ.1) THEN
+         CALL GETREC(20,'JOBARC','OCCUPYB',NIRREP,NOCC(9))
+         NOCCB=0
+         DO 20 I=9,NIRREP+8
+            NOCCB=NOCCB+NOCC(I)
+ 20      CONTINUE
+      ELSE
+         NOCCB=NOCCA
+      ENDIF
+C     
+      IF(IPRINT.EQ.1)THEN
+         WRITE(LUOUT,1040) NOCCA
+         WRITE(LUOUT,1050) NOCCB
+      ENDIF
+ 1040 FORMAT(/'     THE ALPHA OCCUPATION IS',I4)
+ 1050 FORMAT('     THE BETA  OCCUPATION IS',I4)
+
+      NELECTRON = NOCCA + NOCCB
+C     
+C     Determine the symmetry elements in the computational point
+C     group.
+C     
+      ISYMXY=0
+      ISYMXZ=0
+      ISYMYZ=0
+      ISYMRX=0
+      ISYMRY=0
+      ISYMRZ=0
+      ISYMI=0
+C     
+      IF(PGRP.EQ.'D2h ')THEN
+         ISYMXY=1
+         ISYMXZ=1
+         ISYMYZ=1
+         ISYMRX=1
+         ISYMRY=1
+         ISYMRZ=1
+         ISYMI=1
+C     
+      ELSEIF(PGRP.EQ.'C2h ')THEN
+         ISYMXY=1
+         ISYMRZ=1
+         ISYMI=1
+C     
+      ELSEIF(PGRP.EQ.'C2v ')THEN
+         ISYMXZ=1
+         ISYMYZ=1
+         ISYMRZ=1
+      ELSEIF(PGRP.EQ.'D2  ')THEN
+         ISYMRX=1
+         ISYMRY=1
+         ISYMRZ=1
+C     
+      ELSEIF(PGRP.EQ.'C2  ')THEN
+         ISYMRZ=1
+C     
+      ELSEIF(PGRP.EQ.'C i ')THEN
+         ISYMI=1
+C     
+      ELSEIF(PGRP.EQ.'C s ')THEN
+         ISYMXY=1
+      ENDIF
+C
+C     First get the atomic numbers of the atoms, the number of 
+C     primitive functions for each unique atom, the coordinates for 
+C     each unique atom, the total number of primitive functions for 
+C     the molecule, the total number of primitive coefficients for the 
+C     molecule, the number of different angular momenta for each unique
+C     atom (NUMOM(IUCATMS), the largest number of angular momenta for a
+C     single atom (NTANGM).
+C     
+C     The number for primitive functions for each unique atom
+      NUFCT=ISTART1
+C     The number of angular momentum shells for each unique atom
+      NUMOM=NUFCT+IUCATMS + mod(IUCATMS,2)
+C     The number of primitive functions for each atom(Changed to give a 
+C     offset;Ajith 01/2001)
+      NFCT=NUMOM+IUCATMS + mod(IUCATMS,2)
+C     The number of angular momentum shells for each atom
+      NANGMOM=NFCT+NATOMS + mod(NATOMS,2)
+C     Array of atomic names
+      IATMNAM=NANGMOM+NATOMS + mod(NATOMS,2)
+C     The number of AOs for each unique atom
+      NAOUATM=IATMNAM+IUCATMS*IINTFP
+C     Number of AOs for each atom (Changed to give a offset;Ajith 01/2001)
+      NAOATM=NAOUATM+IUCATMS + mod(IUCATMS,2)
+C
+C The following additions are made to generate ab intio correlation 
+C potentials. It is convenient to have the angular momentum components
+C and number of contracted functions for each shell: to conveniently
+C generate identical loop structure to integral derivative code to
+C the facilitate the retrival of the two particle density. Ajith 01/2001
+C
+C Angular momentum components of each symm. unique atom
+C     
+      IANGMOMSHL = NAOATM + IUCATMS + mod(IUCATMS,2)
+C
+C Number of contracted functions for each shell    
+C
+      ICONFUNSHL = IANGMOMSHL+MAXSHELL*IUCATMS+MOD(MAXSHELL*IUCATMS, 2)
+C
+C Number of primitives for each shell
+C
+      IPRMFUNSHL = ICONFUNSHL+MAXSHELL*IUCATMS+MOD(MAXSHELL*IUCATMS, 2)
+C
+C Number of shells on each symmetry unique atom
+C
+      INPRIMSHL = IPRMFUNSHL+MAXSHELL*IUCATMS+MOD(MAXSHELL*IUCATMS, 2)
+C
+C Number of shells for each sym. unique atoms
+C     
+      IANGMOMTSHL = INPRIMSHL + IUCATMS + MOD(IUCATMS, 2)
+C
+C Number of angular momentum components for all atoms
+C
+      ICONFUNTSHL = IANGMOMTSHL+NATOMS*MAXSHELL+MOD(NATOMS*MAXSHELL,2)
+C
+C Number of contracted functions for all atoms
+      
+      IOFFSETPRM = ICONFUNTSHL+NATOMS*MAXSHELL+ MOD(NATOMS*MAXSHELL,2)
+C 
+C Offset to the number of primtives on each atom and shell
+C
+      IOFFSETCON = IOFFSETPRM+IUCATMS*MAXSHELL+MOD(IUCATMS*MAXSHELL,2)
+C
+C Offset to the number of contracted functions on each atom and shell
+C
+      IOFFSETSHL  = IOFFSETCON+IUCATMS*MAXSHELL+MOD(IUCATMS*MAXSHELL,2)
+C
+C Offset to the number of contracted functions for all atoms
+C
+      IMAP_SHL2CNT = IOFFSETSHL+NATOMS*MAXSHELL+ MOD(NATOMS*MAXSHELL,2)
+C
+C A map of shell to atom centers
+C
+      IPRMFUNTSHL  = IMAP_SHL2CNT+NATOMS*MAXSHELL + 
+     &               MOD(NATOMS*MAXSHELL,2)
+C
+C Offset to the number of primitive functions for all atoms
+C
+      ISTART1      = IPRMFUNTSHL+NATOMS*MAXSHELL + 
+     &               MOD(NATOMS*MAXSHELL,2)
+C
+      IF (ISTART1.GE.MAXCOR) CALL INSMEM('HYBRD1',ISTART1,MAXCOR)
+C     
+      CALL BASIS(IUCATMS,NATOMS,ITFCT,LNP1,LNPO,NTANGM,ICORE(IMEMBC),
+     &   ICORE(INUC),ICORE(NFCT),ICORE(NUFCT),ICORE(NANGMOM),
+     &   ICORE(NUMOM),ICORE(IATMNAM),ICORE(ICOORD),ICORE(IPOPC),
+     &   ICORE(NAOATM),ICORE(NAOUATM),ICORE(IANGMOMSHL),
+     &   ICORE(ICONFUNSHL),ICORE(IPRMFUNSHL),IPRINT,ISHL, 
+     &   ICORE(INPRIMSHL),ICORE(IANGMOMTSHL),
+     &   ICORE(ICONFUNTSHL),ICORE(IOFFSETPRM),ICORE(IOFFSETCON),
+     &   ICORE(IOFFSETSHL),MAXSHELL,NUNQSHL,NTOTSHL)
+C     
+C     Now fill the ao to primitive transformation, alpha and angular 
+C     momentum matrices.
+C
+C     Get number of symmetry adapted basis functions
+C     is different from nbas if spherical=on
+      CALL GETREC(20,'JOBARC','NBASTOT ',1,NBASP)
+      NVRTA=NBASP-NOCCA
+      NVRTB=NBASP-NOCCB
+C     
+C     The number of primitive functions for each angular momentum
+C     shell in each atom
+      NMOMFCT=ISTART1
+C     The number of atomic orbitals for each angular momentum
+C     shell in each atom
+      NMOMAO=NMOMFCT+NATOMS*NTANGM + mod(NATOMS*NTANGM,2)
+C     The alpha matrix, (exponential factor).
+      IALPHA=NMOMAO+NATOMS*NTANGM + mod(NATOMS*NTANGM,2)
+C
+C     C1 MO coefficients
+      ICOEFFA=IALPHA+ITFCT*IINTFP
+      ICOEFFB=ICOEFFA+NBASP*NBAS*IINTFP
+C     C1 density matrices
+      IDENSA=ICOEFFB+NBASP*NBAS*IINTFP
+      IDENSB=IDENSA+NBAS*NBAS*IINTFP
+C     Primitive coefficient matrix
+      IPCOEFFA=IDENSB+NBAS*NBAS*IINTFP
+      IPCOEFFB=IPCOEFFA+NBASP*ITFCT*IINTFP
+      IPCOEFF=IPCOEFFB+NBASP*ITFCT*IINTFP
+C     Scratch space for reading MOL file and renormalization
+      ISCR1=IPCOEFF+ITFCT*IINTFP*NBAS
+      ISCR2=ISCR1+LNP1*IINTFP
+      ISTOP=ISCR2+LNPO*IINTFP
+C     
+C Note that in prim several arrays that are required in correlation
+C potential work being reinitilized. Ajith Perera 01/2001
+C
+      IF(ISTOP.GE.MAXCOR) CALL INSMEM('HYBRD2',ISTOP,MAXCOR)
+C     
+      CALL PRIM(NATOMS,IUCATMS,ITFCT,NBAS,LNP1,LNPO,NTANGM,
+     &   ICORE(IPOPC),ICORE(NFCT),ICORE(NANGMOM),ICORE(NMOMFCT),
+     &   ICORE(NMOMAO),ICORE(IMEMBC),ICORE(IANGMOMSHL),
+     &   ICORE(IPRMFUNSHL),ICORE(ICONFUNSHL),ICORE(ICONFUNTSHL), 
+     &   ICORE(INPRIMSHL),ICORE(IMAP_SHL2CNT),ICORE(IPRMFUNTSHL),
+     &   ICORE(IALPHA),ICORE(IPCOEFF),ICORE(NAOATM),ICORE(ISCR1),
+     &   ICORE(ISCR2),MAXSHELL,ISHL,MAXANG)
+C     
+C Calculate exchange energy Dimension of AO density matrix and
+C allocate memory for  various density matrices. These are needed
+C Correlation potential development works. See the mkden routine 
+C to find out what actaully goes into these arrays. 01/2001, Ajith Perera
+C
+      ICOEF     = ISCR1
+      ISCFDENST = ICOEF     + NBASP*NBASP*IINTFP
+      ISCFDENSD = ISCFDENST + NBAS*NBAS*IINTFP
+      IRELDENST = ISCFDENSD + NBAS*NBAS*IINTFP
+      IRELDENSD = IRELDENST + NBAS*NBAS*IINTFP
+      IFOCKMAT  = IRELDENSD + NBAS*NBAS*IINTFP
+      ITRANSMAT = IFOCKMAT  + NBASP*NBASP*IINTFP
+      ITMPMAT   = ITRANSMAT + NBASP*NBAS*IINTFP
+      ISTART1   = ITMPMAT   + NBAS*NBAS*IINTFP
+C
+      IF(ISTART1.GE.MAXCOR) CALL INSMEM('HYBRD3',ISTART1,MAXCOR)
+C     
+      IFLG=1
+      CALL MKDEN(ICORE(ICOEF), ICORE(IDENSA), ICORE(ISCFDENST),
+     &           ICORE(IRELDENST), ICORE(IFOCKMAT), ICORE(ITRANSMAT), 
+     &           ICORE(ITMPMAT), NBAS, NBASP, NOCC, IFLG, ONEP_ENERGY)
+C
+      IF(IUHF.EQ.1)THEN
+         IFLG=2
+         CALL MKDEN(ICORE(ICOEF), ICORE(IDENSB), ICORE(ISCFDENSD), 
+     &              ICORE(IRELDENSD), ICORE(IFOCKMAT), ICORE(ITRANSMAT),
+     &              ICORE(ITMPMAT), NBAS, NBASP, NOCC, IFLG, 
+     &              ONEP_ENERGY)
+      ENDIF
+C     
+C     Buffer length for reading integrals
+      ILNBUF=600
+C     Scratch for reading in integrals
+      NBUF=ISTART1
+C     Scratch for reading in labels
+      NIBUF=NBUF+ILNBUF*IINTFP
+C     Alpha density matrix contracted for one electron integrals
+      IDENSAA=NIBUF+ILNBUF+ mod(ILNBUF,2)
+C     Beta density matrix contracted for one electron integrals
+      IDENSBB=IDENSAA+NBASP*(NBASP+1)*IINTFP/2
+C     Alpha density matrix contracted for coulomb integrals
+      ICDENSA=IDENSBB+NBASP*(NBASP+1)*IINTFP/2
+C     Beta density matrix contracted for coulomb integrals
+      ICDENSB=ICDENSA+NBASP*NBASP*IINTFP
+C     Array for mapping C1 to symmetry in the makmap routine.
+      IMAP=ICDENSB+NBASP*NBASP*IINTFP
+      ISTART1=IMAP+NBAS*NBAS*IINTFP
+
+      IF(ISTART1.GE.MAXCOR) CALL INSMEM('HYBRD4',ISTART1,MAXCOR)
+C
+      CALL EXCHANGE(NBASP,ILNBUF,ICORE(NBUF),
+     &   ICORE(NIBUF),IUHF,EEX,EHAR,ESCF,ICORE(IDENSA),
+     &   ICORE(IDENSB),ICORE(IDENSAA),ICORE(IDENSBB),
+     &   ICORE(ICDENSA),ICORE(ICDENSB),REPULS,ISYMC1,
+     &   ICORE(IMAP))
+C    
+      CALL GETREC(20,'JOBARC','SCFENEG ',IINTFP,SCFENEG)
+      ERRENG=SCFENEG-ESCF
+      IF(DABS(ERRENG).GT.1.D-08)THEN
+C     
+C     Print a warning
+         WRITE(LUOUT,2121) ERRENG
+ 2121 FORMAT('The SCF value differs from the VSCF value by',
+     &   F14.7)
+C     
+      ENDIF
+      IFLG=0
+C
+C  Scratch arrays for sorting MO vectors 
+CC$$$  ICNTR= IPCOEFF + ITFCT*IINTFP*NBAS
+C
+CSSS      ICNTR   = NBUF   +  ITFCT*IINTFP*NBAS
+CSSS      ICOEFF  = ICNTR  +  NBAS + mod(nbas,2)
+      ICOEFF  = NBUF
+      ICNTR   = ICOEFF +  NBASP*NBAS*IINTFP
+      IXOCC   = ICNTR  +  NBAS + mod(nbas,2)      
+      IDORDR  = IXOCC  +  2*NBASP*IINTFP
+      IORDR   = IDORDR +  NBASP*IINTFP
+      IXNAT   = IORDR  +  NBASP*IINTFP
+      ISTART1 = IXNAT  +  NBASP*IINTFP
+      
+      IF(ISTART1.GE.MAXCOR) CALL INSMEM('HYBRD5',ISTART1,MAXCOR)
+
+      CALL GETREC(0,"JOBARC","AONTORBA",LEN,SCR)
+      IF (LEN .GT.0) THEN
+          ISCR1   = ISTART1
+          ISCR2   = ISCR1 + NBAS*NBAS*IINTFP
+          ISCR3   = ISCR2 + NBAS*IINTFP
+          ISCR4   = ISCR3 + NBAS*NBASP*IINTFP
+          ISCR5   = ISCR4 + NBAS*NBASP*IINTFP
+          ISCR6   = ISCR5 + NBASP*IINTFP
+          ISTART1 = ISCR6
+          IF(ISTART1.GE.MAXCOR) CALL INSMEM('HYBRD5',ISTART1,MAXCOR)
+          
+          CALL GET_NATORB(ICORE(ISCR1),ICORE(ISCR2),ICORE(ISCR3),
+     &                    ICORE(ISCR4),ICORE(ISCR5),ICORE(IORDR),
+     &                    ICORE(IXOCC),NBAS,NBASP,1,IUHF)
+          IF (IUHF .EQ. 1) THEN 
+             CALL GET_NATORB(ICORE(ISCR1),ICORE(ISCR2),ICORE(ISCR3),
+     &                       ICORE(ISCR4),ICORE(ISCR5),ICORE(IORDR),
+     &                       ICORE(IXOCC),NBAS,NBASP,2,IUHF)
+          ENDIF 
+      ENDIF 
+      IEVALS = ISTART1 
+      IF (LEN .GT. 0) IEVALS  = ISCR1 
+      ISTART1 = IEVALS +  NBASP*IINTFP
+C
+C Get MO vectors in correct order in C1 symmetry
+C     
+      CALL GTAO(IFLG,NATOMS,NBAS,NBASP,NTANGM,ICORE(ICNTR),
+     &   ICORE(ICOEFF),ICORE(ICOEFFA),ICORE(NANGMOM),
+     &   ICORE(NMOMAO),ICORE(NAOATM),ICORE(IXOCC),ICORE(IDORDR),
+     &   ICORE(IORDR),ICORE(IEVALS),LEN,1,IPRINT)
+C
+C Form the C1 primitive coefficient vector
+      CALL XGEMM('N','N',ITFCT,NBASP,NBAS,1.0D+00,ICORE(IPCOEFF),
+     &   ITFCT,ICORE(ICOEFFA),NBAS,0.0D+00,ICORE(IPCOEFFA),ITFCT)
+C     
+      IF(IUHF.EQ.1)THEN
+C     
+C Beta
+         IFLG=1
+C     
+C Scratch arrays for sorting MO vectors 
+         ICOEFF  = ISTART1
+         ICNTR   = ICOEFF + NBASP*NBAS*IINTFP
+         ISTART1 = ICNTR +  NBAS
+C     
+         IF(ISTART1.GE.MAXCOR) CALL INSMEM('HYBRD6',ISTART1,MAXCOR)
+C     
+         CALL GTAO(IFLG,NATOMS,NBAS,NBASP,NTANGM,ICORE(ICNTR),
+     &      ICORE(ICOEFF),ICORE(ICOEFFB),ICORE(NANGMOM),
+     &      ICORE(NMOMAO),ICORE(NAOATM),ICORE(IXOCC),ICORE(IDORDR),
+     &      ICORE(IORDR),ICORE(IEVALS),LEN,2,IPRINT)
+C     
+C     Form the C1 primitive coefficient vector
+         CALL XGEMM('N','N',ITFCT,NBASP,NBAS,1.0D+00,ICORE(IPCOEFF),
+     &      ITFCT,ICORE(ICOEFFB),NBAS,0.0D+00,ICORE(IPCOEFFB),ITFCT)
+C     
+      ENDIF
+C     
+C We need contraction coefficients in intgrt_twoden (correlation
+C potentials); Ajith Perera 01/2001. Remove dummy and ghost atoms 
+C from molecule
+C
+      INUCTR  = ISTART1
+      ISTART1 = INUCTR + NATOMS + mod(natoms,2)
+      NATMS   = NATOMS
+C
+      CALL REMOVE(NATOMS,NATMS,NTANGM,ICORE(INUC),ICORE(ICOORD),
+     &   ICORE(NANGMOM),ICORE(NMOMFCT),ICORE(INUCTR))
+C     
+C     Number of radial points
+      NRADPT=50 
+C     Dimension of primitive density matrix
+      ITFCT2=ITFCT*ITFCT
+C     Set up some scratch arrays for the integration routine
+      IATMXVC=ISTART1
+      IATMYVC=IATMXVC+NATOMS*NATOMS*IINTFP
+      IATMZVC=IATMYVC+NATOMS*NATOMS*IINTFP
+      IRI=IATMZVC+NATOMS*NATOMS*IINTFP
+      IRIJ=IRI+NATOMS*IINTFP
+      IWTINTR=IRIJ+NATOMS*NATOMS*IINTFP
+      ITOTWT=IWTINTR+NATOMS*IINTFP
+      IXCDNT=ITOTWT+194*NRADPT*IINTFP
+      IYCDNT=IXCDNT+194*NRADPT*NATOMS*IINTFP
+      IZCDNT=IYCDNT+194*NRADPT*NATOMS*IINTFP
+      IRSQRD=IZCDNT+194*NRADPT*NATOMS*IINTFP
+      IFCTDEN=IRSQRD+194*NRADPT*NATOMS*IINTFP
+      IFCTGRX=IFCTDEN+ITFCT*IINTFP
+      IFCTGRY=IFCTGRX+ITFCT*IINTFP
+      IFCTGRZ=IFCTGRY+ITFCT*IINTFP
+      IAIJ=IFCTGRZ+ITFCT*IINTFP
+      IBSLRD=IAIJ+NATOMS*NATOMS*IINTFP
+      IXBSL=IBSLRD+NATOMS*IINTFP
+      IORDLST=IXBSL+NATOMS*IINTFP
+      IXGVLA=IORDLST+IUATMS + mod(IUATMS,2)
+      IYGVLA=IXGVLA+NBASP*IINTFP
+      IZGVLA=IYGVLA+NBASP*IINTFP
+      IANGXV=IZGVLA+NBASP*IINTFP
+      IANGYV=IANGXV+8*IINTFP
+      IANGZV=IANGYV+8*IINTFP
+C     R value for each grid point
+      IRRR=IANGZV+8*IINTFP
+      IEND=IRRR+194*NRADPT*NATOMS*IINTFP
+C
+C Ajith Perera 01/2001
+C The grid point centered on each nuclei
+C
+      IXGRDPT = IEND
+      IYGRDPT = IXGRDPT + 194*NRADPT*NATOMS*IINTFP      
+      IZGRDPT = IYGRDPT + 194*NRADPT*NATOMS*IINTFP      
+C
+C The product and repulsion integrals
+C
+      IREPLSN = IZGRDPT + 194*NRADPT*NATOMS*IINTFP      
+      IPRDFUN = IREPLSN + NBAS*NBAS*IINTFP      
+C
+C The scratch space for temporary arrays
+C       
+      IKINTIC = IPRDFUN + NBAS*NBAS*IINTFP      
+      ITMP1   = IKINTIC + NBAS*NBAS*IINTFP
+      ITMP2   = ITMP1   + LNP1*LNP1*IINTFP
+      ITMP3   = ITMP2   + LNP1*LNP1*IINTFP
+      IANGWT  = ITMP3   + LNP1*LNP1*IINTFP
+C
+C Allocate space for angular and radial weights. This is needed for 
+C correlation hole related work. 09/2001
+C
+      IRADWT  = IANGWT + 194*IINTFP
+      IVALMO  = IRADWT + NRADPT*IINTFP
+      ISTATR1 = IVALMO
+C     
+      IF(ISTART1.GE.MAXCOR) CALL INSMEM('HYBRD12',ISTART1,MAXCOR)
+C
+C Reserve whatever memory left to strore the components of the 
+C two particle density. 
+C 
+      ILEFT = (MAXCOR  - ISTART1)/IINTFP
+C
+C     Initialize functional values
+      FTOTELE=0.D+00
+      FXALPHA=0.D+00
+      FBECKE=0.D+00
+      flda=0.d+00
+      FELYP=0.D+00
+      CORLN_POT= 0.0D+00
+C     
+C     Create ordered list for integrating only over unique atoms
+      CALL ORDLST(IUATMS,NATOMS,ICORE(IORDLST),ICORE(IMEMBF),
+     &   ICORE(IPOPF),ICORE(INUCTR))
+C
+C     Get constants for functionals
+      CALL CONSTANTS
+C
+C     Number of iterations of the equation which creates the 'fuzzy'
+C     boundary
+      NITR=4
+      cutoff=1.d-10
+      IF(PGRP.EQ.'C1  ') IUATMS=NATOMS
+C
+C     Loop over symmetry unique nuclei
+C
+      DO NCNTR=1, IUATMS
+C     
+         IF(PGRP.EQ.'C1  ')THEN
+            NCNTR1=NCNTR
+         ELSE
+            NCNTR1=ICORE(IORDLST+NCNTR-1)
+         ENDIF
+C
+C         IF (ICORE(INUC+NCNTR1-1).EQ.110) GOTO 30
+C
+C     Determine which quadrants are unique and the symmetry factor 
+C     to multiply final integral by.
+C
+         CALL SYMFCT(ISYMYZ,ISYMXZ,ISYMXY,ISYMRX,ISYMRY,ISYMRZ,ISYMI,
+     &      NATOMS,NCNTR1,ICORE(ICOORD),IQ1,IQ2,IQ3,IQ4,IQ5,IQ6,IQ7,
+     $      IQ8,IFACT)
+C     
+C     Determine the grid points for NCNTR1
+C
+         CALL GRDPT(ICORE(INUC),NCNTR1,NATOMS,ATMRAD,WGHT,XDAT,YDAT,
+     $      ZDAT,ICORE(ICOORD),ICORE(IATMXVC),ICORE(IATMYVC),
+     $      ICORE(IATMZVC),ICORE(IRI),ICORE(IRIJ),ICORE(IWTINTR),
+     $      ICORE(ITOTWT),ICORE(IXCDNT),ICORE(IYCDNT),ICORE(IZCDNT),
+     $      ICORE(IRSQRD),IQ1,IQ2,IQ3,IQ4,IQ5,IQ6,IQ7,IQ8,IFACT,
+     $      NRADPT,ICORE(IAIJ),ICORE(IBSLRD),BSLRDII,NITR,NAPTS,
+     $      ICORE(IRRR),ICORE(IXGRDPT),ICORE(IYGRDPT),ICORE(IZGRDPT),
+     $      ICORE(IANGWT),ICORE(IRADWT))
+         WRITE(6,*)
+C     
+C     Integrate over center, NCNTR1
+C
+            CALL INTGRT_ONEDEN(NCNTR1,NATOMS,ITFCT,NTANGM,IANGX,IANGY,
+     &         IANGZ,ICORE(ITOTWT),ICORE(IXCDNT),ICORE(IYCDNT),
+     &         ICORE(IZCDNT),ICORE(IRSQRD),ICORE(IALPHA),ICORE(NANGMOM),
+     $         ICORE(NMOMFCT),ICORE(IFCTDEN),ICORE(IFCTGRX),
+     $         ICORE(IFCTGRY),ICORE(IFCTGRZ),ICORE(IPOPF),IUCATMS,
+     $         IFACT,IUHF,NRADPT,TOTELE,XALPHA,BECKE,DLDA,
+     &         ELYP,CUTOFF,NAPTS,
+     $         NCNTR,NOCCA,NOCCB,ICORE(IPCOEFFA),ICORE(IPCOEFFB),
+     $         ICORE(IVALMO),ICORE(IXGVLA),ICORE(IYGVLA),ICORE(IZGVLA),
+     $         ICORE(IANGXV),ICORE(IANGYV),ICORE(IANGZV),MAXANG,
+     $         ICORE(IRRR),PGRP)
+C     
+C Integrate two particle density to plot correlation potentials
+C
+      POTNS = .FALSE.
+      INTS  = .TRUE.
+      IF (POTNS) THEN
+            CALL COR_POTNS(NCNTR1,NATOMS,ITFCT,NBASP,NBAS,LNP1,
+     &         ICORE(IPOPC),IUATMS,NAPTS,NRADPT,CUTOFF,ICORE(ICOORD),
+     &         ICORE(ITOTWT), ICORE(IALPHA),ICORE(IPCOEFF),
+     &         ICORE(IXGRDPT),ICORE(IYGRDPT),ICORE(IZGRDPT),NUNQSHL,
+     &         ICORE(INPRIMSHL),ICORE(IANGMOMSHL),ICORE(ICONFUNSHL),
+     &         ICORE(IPRMFUNSHL),ICORE(IANGMOMTSHL),ICORE(NUFCT),
+     &         ICORE(NAOUATM),ICORE(ICONFUNTSHL),ICORE(IMAP_SHL2CNT),
+     &         ICORE(IPRMFUNTSHL),ICORE(IOFFSETPRM),ICORE(IOFFSETCON),
+     &         ICORE(IOFFSETSHL),ICORE(IREPLSN),ICORE(IPRDFUN),
+     &         ICORE(IKINTIC),ICORE(ITMP1),ICORE(ITMP2),
+     &         ICORE(ITMP3),ICORE(ISCFDENST),ICORE(IRELDENST),
+     &         ICORE(ISCFDENSD),ICORE(IRELDENSD),ICORE(IANGWT), 
+     &         ICORE(IRADWT),ICORE(INUC),ICORE(ISTART1),ILEFT,
+     &         NTOTSHL,IFACT,ONEP_ENERGY,COR_POTNL_R)
+      ELSE IF (INTS) THEN
+
+#ifdef _NOSKIP
+            CALL RN_INTS_NEW(NCNTR1,NATOMS,ITFCT,NBASP,NBAS,LNP1,
+     &         ICORE(IPOPC),IUATMS,NAPTS,NRADPT,CUTOFF,ICORE(ICOORD),
+     &         ICORE(ITOTWT), ICORE(IALPHA),ICORE(IPCOEFF),
+     &         ICORE(IXGRDPT),ICORE(IYGRDPT),ICORE(IZGRDPT),NUNQSHL,
+     &         ICORE(INPRIMSHL),ICORE(IANGMOMSHL),ICORE(ICONFUNSHL),
+     &         ICORE(IPRMFUNSHL),ICORE(IANGMOMTSHL),ICORE(NUFCT),
+     &         ICORE(NAOUATM),ICORE(ICONFUNTSHL),ICORE(IMAP_SHL2CNT),
+     &         ICORE(IPRMFUNTSHL),ICORE(IOFFSETPRM),ICORE(IOFFSETCON),
+     &         ICORE(IOFFSETSHL),ICORE(IREPLSN),ICORE(IPRDFUN),
+     &         ICORE(IKINTIC),ICORE(ITMP1),ICORE(ITMP2),
+     &         ICORE(ITMP3),ICORE(ISCFDENST),ICORE(IRELDENST),
+     &         ICORE(ISCFDENSD),ICORE(IRELDENSD),ICORE(IANGWT),
+     &         ICORE(IRADWT),ICORE(INUC),ICORE(ISTART1),ILEFT,
+     &         NTOTSHL,IFACT,ONEP_ENERGY,COR_POTNL_R)
+#endif 
+            CALL RN_INTS(NCNTR1,NATOMS,ITFCT,NTANGM,IANGX,IANGY,
+     &         IANGZ,ICORE(ITOTWT),ICORE(IXCDNT),ICORE(IYCDNT),
+     &         ICORE(IZCDNT),ICORE(IRSQRD),ICORE(ICOORD),
+     &         ICORE(IXGRDPT),ICORE(IYGRDPT),ICORE(IZGRDPT), 
+     &         ICORE(IALPHA),ICORE(NANGMOM),
+     &         ICORE(NMOMFCT),ICORE(IFCTDEN),ICORE(IFCTGRX),
+     &         ICORE(IFCTGRY),ICORE(IFCTGRZ),ICORE(IPOPF),IUCATMS,
+     &         IFACT,IUHF,NRADPT,XALPHA,BECKE,DLDA,
+     &         ELYP,CUTOFF,NAPTS,NCNTR,NOCCA,NOCCB,NBASP,
+     &         ICORE(IPCOEFFA),ICORE(IPCOEFFB),ICORE(IVALMO),
+     &         ICORE(IXGVLA),ICORE(IYGVLA),ICORE(IZGVLA),
+     &         ICORE(IANGXV),ICORE(IANGYV),ICORE(IANGZV),
+     &         ICORE(IXOCC),ICORE(IXNAT),MAXANG,ICORE(IRRR),PGRP,
+     &         NELEC_COM,RMOM_T,RMOM_D)
+      ENDIF 
+
+C$$$            ENDDO
+C Let's write out a formatted file of correlation potential for 
+C each point. I am not sure yet how to get a correlation potential
+C for a molecule. But, I know how to do it for each symmetry 
+C unique atmos (There is however no problems for atom)!!! 
+C
+C$$$            CORLN_POT = COR_POTNL_R + CORLN_POT 
+C$$$
+C$$$            CALL WRITECORLNPOT(NRADPT, NAPTS, NCNTR1, IUATMS, NATOMS,
+C$$$     &                         ICORE(IXGRDPT), ICORE(IYGRDPT),
+C$$$     &                         ICORE(IYGRDPT), ICORE(ICOORD), 
+C$$$     &                         CORLN_POT)
+C     
+C Print the value of the integrated density
+C
+C     Symmetry multiplication factor
+      FACT=REAL(IFACT)
+
+      WRITE(6,*)
+      WRITE(6,"(9X,2A)") '------------------------------',
+     &                       '--------------------------------'
+      WRITE(6,"(9X,2A)") " The expectation value of moments",
+     &                   " operators from total density"
+      WRITE(6,"(2X,2A)") '------------------------------',
+     &                 '-----------------------------------------------'
+      WRITE(6,"(2x,2A)") "    <r^-3>     <r^-2>     <r^-1>     <r^0>",
+     &                   "      <r^1>      <r^2>      <r^3> "
+
+      WRITE(6,"(2x,7(3X,ES8.2E2))") (RMOM_T(I)*FACT, I=1,7)
+
+      WRITE(6,"(2X,2A)") '------------------------------',
+     &                 '-----------------------------------------------'
+
+      IF (RMOM_D(4) .GT. THRES) SPIN_DENS=.TRUE.
+      WRITE(6,*)
+      IF (SPIN_DENS) THEN
+      WRITE(6,"(9X,2A)") '------------------------------',
+     &                       '--------------------------------'
+      WRITE(6,"(9X,2A)") " The expectation value of moments",
+     &                   " operators from spin density"
+      WRITE(6,"(2X,2A)") '------------------------------',
+     &                 '-----------------------------------------------'
+      WRITE(6,"(2x,2A)") "    <r^-3>     <r^-2>     <r^-1>     <r^0>",
+     &                   "      <r^1>      <r^2>      <r^3> "
+
+      WRITE(6,"(2x,7(3X,ES8.2E2))") (RMOM_D(I)*FACT, I=1,7)
+
+      WRITE(6,"(2X,2A)") '------------------------------',
+     &                 '-----------------------------------------------'
+      ENDIF 
+  
+CSSS#ifdef _DNOPROPS
+         WRITE(LUOUT,2001) NCNTR1,TOTELE
+ 2001    FORMAT('The Electron Density for atom',i3,' integrates to ',
+     &      F14.7,' electrons')
+      ENDDO
+      CALL aces_fin 
+
+      STOP
+      END

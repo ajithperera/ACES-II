@@ -1,0 +1,1438 @@
+
+              ****************************************************
+              * ACES : Advanced Concepts in Electronic Structure *
+              *                    Ver. 2.6.0                    *
+              *               Release Candidate: 2               *
+              ****************************************************
+
+                             Quantum Theory Project
+                             University of Florida
+                             Gainesville, FL  32611
+ @ACES_INIT_RTE: Build-specific parameters:
+                 bytes per integer =  4
+                 bytes per double  =  8
+                 recls per integer =  4
+
+ @DFILES: FILE MAPPING FROM ZMAT HEADER:
+ JOBARC -> /scr/yau/ACESII/test/tmp.JOBARC
+ JAINDX -> /scr/yau/ACESII/test/tmp.JAINDX
+ OPTARC -> /scr/yau/ACESII/test/tmp.OPTARC
+
+
+
+                      ACES STATE VARIABLE REGISTRATION LOG
+     ----------------------------------------------------------------------
+     The ACES State Variables were initialized.
+     Updating (RESTART,OFF): 'OFF' converts to 'OFF' -> 0
+     Updating (BASIS,6-31G*): String copy succeeded.
+     Updating (OPT_MAXCYC,2): 50 -> 2
+     ----------------------------------------------------------------------
+
+
+                       ACES STATE VARIABLE VALIDATION LOG
+     ----------------------------------------------------------------------
+     Updating (COORDINATES,INTERNAL): 'INTERNAL' converts to 'INTERNAL' -> 0
+     Updating (GEOM_OPT,partial): 'partial' converts to 'PARTIAL' -> 1
+     Updating (OPT_METHOD,manr): 'manr' converts to 'MANR' -> 3
+     Updating (PROGRAM,aces2): 'aces2' converts to 'ACES2' -> 2
+     Updating (GRAD_CALC,analytical): 'analytical' converts to 'ANALYTICAL' -> 0
+     Updating (DERIV_LEV,first): 'first' converts to 'ON' -> 1
+     Updating (CC_EXTRAPOL,DIIS): 'DIIS' converts to 'DIIS' -> 1
+     Updating (ORBITALS,standard): 'standard' converts to 'STANDARD' -> 0
+     Updating (PERT_ORB,standard): 'standard' converts to 'STANDARD' -> 0
+     Updating (ESTATE_TOL,5): -1 -> 5
+     Updating (HBARABCD,OFF): 'OFF' converts to 'OFF' -> 1
+     Updating (HBARABCI,OFF): 'OFF' converts to 'OFF' -> 1
+     Updating (ABCDFULL,ON): 'ON' converts to 'ON' -> 1
+     Updating (CACHE_RECS,45): -1 -> 45
+     Updating (FILE_RECSIZ,16384): -1 -> 16384
+     ----------------------------------------------------------------------
+
+          ASV#   ASV KEY DEFINITION =    CURRENT [   DEFAULT] UNITS
+          ------------------------------------------------------------
+            1:                PRINT =          0 [         0] 
+            2:            CALCLEVEL =          0 [         0] 
+            3:            DERIV_LEV =          1 [        -1] 
+            4:              CC_CONV =          7 [         7] (tol)
+
+            5:             SCF_CONV =          7 [         7] (tol)
+            6:            XFORM_TOL =         11 [        11] (tol)
+            7:            CC_MAXCYC =          0 [         0] cycles
+            8:           LINDEP_TOL =          5 [         5] 
+
+            9:                  RDO =         -1 [        -1] 
+           10:           SCF_EXTRAP =          1 [         1] 
+           11:            REFERENCE =          0 [         0] 
+           12:          CC_EXPORDER =          0 [         0] 
+
+           13:             TAMP_SUM =          0 [         0] 
+           14:            NTOP_TAMP =         15 [        15] 
+           15:              DAMPSCF =         20 [        20] x 0.01
+           16:           SCF_MAXCYC =        150 [       150] cycles
+
+           18:                PROPS =          0 [         0] 
+           19:              DENSITY =          0 [         0] 
+           20:          SCF_EXPORDE =          6 [         6] 
+           21:          CC_EXTRAPOL =          1 [         1] 
+
+           22:            BRUECKNER =          0 [         0] 
+           23:               XFIELD =          0 [         0] x 10-6
+           24:               YFIELD =          0 [         0] x 10-6
+           25:               ZFIELD =          0 [         0] x 10-6
+
+           26:            SAVE_INTS =          0 [         0] 
+           28:               CHARGE =          0 [         0] 
+           29:          MULTIPLICTY =          1 [         1] 
+           30:          CPHF_CONVER =         12 [        12] (tol)
+
+           31:          CPHF_MAXCYC =         64 [        64] cycles
+           35:               INCORE =          0 [         0] 
+           36:          MEMORY_SIZE =   15000000 [  15000000] Words
+           37:          FILE_RECSIZ =      16384 [        -1] Words
+
+           38:                NONHF =          0 [         0] 
+           39:             ORBITALS =          0 [        -1] 
+           40:          SCF_EXPSTAR =          8 [         8] 
+           41:          LOCK_ORBOCC =          0 [         0] 
+
+           42:          FILE_STRIPE =          0 [         0] 
+           43:               DOHBAR =          0 [         0] 
+           44:           CACHE_RECS =         45 [        -1] 
+           45:                GUESS =          0 [         0] 
+
+           46:           JODA_PRINT =          0 [         0] 
+           47:           OPT_METHOD =          3 [         0] 
+           48:          CONVERGENCE =          4 [         4] H/bohr
+           49:          EIGENVECTOR =          1 [         1] 
+
+           50:              NEGEVAL =          2 [         2] 
+           51:          CURVILINEAR =          0 [         0] 
+           52:          STP_SIZ_CTL =          0 [         0] 
+           53:             MAX_STEP =        300 [       300] millibohr
+
+           54:            VIBRATION =          0 [         0] 
+           55:            EVAL_HESS =          0 [         0] # of cyc.
+           56:            INTEGRALS =          1 [         1] 
+           57:          FD_STEPSIZE =          0 [         0] 10-4 bohr
+
+           58:               POINTS =          0 [         0] 
+           59:          CONTRACTION =          1 [         1] 
+           60:             SYMMETRY =          0 [         0] 
+           62:            SPHERICAL =          0 [         0] 
+
+           63:          RESET_FLAGS =          0 [         0] 
+           64:             PERT_ORB =          0 [         2] 
+           65:             GENBAS_1 =          0 [         0] 
+           66:             GENBAS_2 =          0 [         0] 
+
+           67:             GENBAS_3 =          0 [         0] 
+           68:          COORDINATES =          0 [         3] 
+           69:            CHECK_SYM =          1 [         1] 
+           70:            SCF_PRINT =          0 [         0] 
+
+           71:                  ECP =          0 [         0] 
+           72:              RESTART =          0 [         1] 
+           73:            TRANS_INV =          0 [         0] 
+           74:          HFSTABILITY =          0 [         0] 
+
+           75:             ROT_EVEC =          0 [         0] 
+           76:           BRUCK_CONV =          4 [         4] (tol)
+           78:                UNITS =          0 [         0] 
+           79:          FD_USEGROUP =          0 [         0] 
+
+           80:           FD_PROJECT =          0 [         0] 
+           83:                VTRAN =          0 [         0] 
+           84:             HF2_FILE =          1 [         1] 
+           85:             SUBGROUP =          0 [         0] 
+
+           86:           SUBGRPAXIS =          0 [         0] 
+           87:               EXCITE =          0 [         0] 
+           88:            ZETA_CONV =         12 [        12] (tol)
+           90:           TREAT_PERT =          0 [         0] 
+
+           91:          ESTATE_PROP =          0 [         0] 
+           92:           OPT_MAXCYC =          2 [        50] 
+           93:             ABCDTYPE =          0 [         0] 
+           95:           AO_LADDERS =          1 [         1] 
+
+           96:                 FOCK =          0 [         0] 
+           97:          ESTATE_MAXC =         20 [        20] 
+           98:           ESTATE_TOL =          5 [        -1] (tol)
+           99:            TURBOMOLE =          0 [         0] 
+
+          100:           GAMMA_ABCD =          0 [         0] 
+          101:            ZETA_TYPE =          1 [         1] 
+          102:          ZETA_MAXCYC =         50 [        50] 
+          103:             RESRAMAN =          0 [         0] 
+
+          104:                  PSI =          0 [         0] 
+          105:             GEOM_OPT =          1 [         0] 
+          106:             EXTERNAL =          0 [         0] 
+          107:          HESS_UPDATE =          2 [         0] 
+
+          108:         INIT_HESSIAN =          0 [         0] 
+          109:          EXTRAPOLATE =          0 [         0] 
+          201:              EA_CALC =          0 [         0] 
+          203:                 TDHF =          0 [         0] 
+
+          204:           FUNCTIONAL =          4 [         4] 
+          205:           EOM_MAXCYC =         50 [        50] cycles
+          206:              EOMPROP =          0 [         0] 
+          207:             ABCDFULL =          1 [         0] 
+
+          208:           INTGRL_TOL =         14 [        14] (tol)
+          209:             DAMP_TYP =          0 [         0] 
+          210:             DAMP_TOL =         10 [        10] x 0.01
+          211:              LSHF_A1 =          0 [         0] x 0.01
+
+          212:              LSHF_B1 =          0 [         0] x 0.01
+          213:             POLYRATE =          0 [         0] 
+          214:              IP_CALC =          0 [         0] 
+          216:            IP_SEARCH =          0 [         0] 
+
+          217:               EOMREF =          0 [         0] 
+          218:              SOLVENT =          0 [         0] 
+          219:            EE_SEARCH =          0 [         0] 
+          220:            EOM_PRJCT =          0 [         0] 
+
+          221:               NEWVRT =          0 [         0] 
+          222:             HBARABCD =          1 [         0] 
+          223:             HBARABCI =          1 [         0] 
+          224:             NT3EOMEE =          0 [         0] 
+
+          225:              NOREORI =          0 [         0] 
+          227:               KS_POT =          0 [         0] 
+          228:             DIP_CALC =          0 [         0] 
+          230:             DEA_CALC =          0 [         0] 
+
+          232:              PROGRAM =          2 [         0] 
+          233:                CCR12 =          0 [         0] 
+          234:            EOMXFIELD =          0 [         0] x 10-6
+          235:            EOMYFIELD =          0 [         0] x 10-6
+
+          236:            EOMZFIELD =          0 [         0] x 10-6
+          237:              INSERTF =          0 [         0] 
+          238:            GRAD_CALC =          0 [         2] 
+          239:            IMEM_SIZE =    3000000 [   3000000] Words
+
+          240:              MAKERHF =          0 [         0] 
+          241:           GLOBAL_MEM =          0 [         0] Words
+          242:             PRP_INTS =          0 [         0] 
+          243:           TRUNC_ORBS =          0 [         0] 
+
+          244:             FNO_KEEP =          0 [         0] percent
+          245:             FNO_BSSE =          0 [         0] 
+          246:              NATURAL =          0 [         0] 
+          248:              UNO_REF =          0 [         0] 
+
+          249:           UNO_CHARGE =          0 [         0] 
+          250:             UNO_MULT =          1 [         1] 
+          251:                RAMAN =          0 [         0] 
+          252:            KUCHARSKI =          0 [         0] 
+
+          253:             SCF_TYPE =          0 [         0] 
+          254:               DIRECT =          0 [         0] 
+          255:         SINGLE_STORE =          0 [         0] 
+          ------------------------------------------------------------
+
+                         ACES STATE VARIABLES (STRINGS)
+          ------------------------------------------------------------
+          BASIS = 6-31G*
+          OCCUPATION = [ESTIMATED BY SCF]
+          ------------------------------------------------------------
+   3 entries found in Z-matrix 
+
+ Job Title : Use of OPT_MAXCYC and % cards
+
+  There are  2 unique internal coordinates.
+  Of these,  2 will be optimized.
+   User supplied Z-matrix: 
+--------------------------------------------------------------------------------
+       SYMBOL    BOND      LENGTH    ANGLE     ANGLE     DIHED     ANGLE
+                  TO      (ANGST)    WRT      (DEG)      WRT      (DEG)
+--------------------------------------------------------------------------------
+        H    
+        O          1         R    
+        H          2         R          1        A    
+                  *Initial values for internal coordinates* 
+                      Name             Value
+                        R               1.000000
+                        A             105.000000
+--------------------------------------------------------------------------------
+  @symmetry-i, Coordinates after  COM shift 
+     -0.102141098579      0.000000000000     -1.811350367057
+     -0.102141098579      0.000000000000      0.078375621522
+      1.723194038399      0.000000000000      0.567472697391
+   Rotational constants (in cm-1): 
+     8.72500       13.28728       25.41092
+   Principal axis orientation for molecule:
+       -1.499220425274    1.021646256147    0.000000000000
+        0.000000000000   -0.128746037096    0.000000000000
+        1.499220425274    1.021646256147    0.000000000000
+********************************************************************************
+   The full molecular point group is C2v .
+   The largest Abelian subgroup of the full molecular point group is C2v .
+   The computational point group is C2v .
+********************************************************************************
+--------------------------------------------------------------------------------
+   Analysis of internal coordinates specified by Z-matrix 
+--------------------------------------------------------------------------------
+   *The nuclear repulsion energy is    8.80034 a.u.
+   *There are   2 degrees of freedom within the tot. symm. molecular subspace.
+   *Z-matrix requests optimization of   2 coordinates.
+   *The optimization is unconstrained and your Z-matrix is great.
+--------------------------------------------------------------------------------
+         -----------------------------------------------
+         Cartesian coordinates corresponding to internal 
+                 coordinate input (Bohr) 
+ ----------------------------------------------------------------
+ Z-matrix   Atomic            C o o r d i n a t e s
+  Symbol    Number           X              Y              Z
+ ----------------------------------------------------------------
+     H         1         0.00000000    -1.49922043     1.02164626
+     O         8         0.00000000     0.00000000    -0.12874604
+     H         1         0.00000000     1.49922043     1.02164626
+ ----------------------------------------------------------------
+   Interatomic distance matrix (Angstroms) 
+
+                 H             O             H    
+                [ 1]        [ 2]        [ 3]
+  H    [ 1]     0.00000
+  O    [ 2]     1.00000     0.00000
+  H    [ 3]     1.58671     1.00000     0.00000
+@ACES2: Executing "rm -f FILES"
+@ACES2: Executing "xjoda"
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+ @ACES2: INITIALIZATION DUMP
+   mopac_guess =  F
+   direct =  F
+   plain_scf =  T
+   nddo_guess =  F
+   hf_scf =  T
+   dirmp2 =  F
+   fno =  F
+   geomopt =  T
+   raman =  F
+   vibfreq =  F
+   analytical_gradient =  T
+   mrcc =  F
+   integral command is "xvmol"
+   derivative-integral command is "xvdint"
+ @ACES2: END INITIALIZATION DUMP
+ @ACES2: Beginning main opt_an loop. Iteration  1
+@ACES2: Executing "xvmol"
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+ One- and two-electron integrals over symmetry-adapted AOs are calculated.
+
+ @READIN: Cartesian gaussians are used.
+NAMN: H #1  0.000000000 -1.499220425  1.021646256
+NAMN: O #2  0.000000000  0.000000000 -0.128746037
+             19 SYMMETRY ADAPTED BASIS FUNCTIONS 
+  @READIN-I, Nuclear repulsion energy :    8.8003426462 a.u.
+  required memory for a1 array  8903380 words 
+  required memory for a2 array  140266 words 
+@ACES_MALLOC: allocated >= 34 MB of core memory
+  @TWOEL-I,       1378 integrals of symmetry type  I I I I
+  @TWOEL-I,       1620 integrals of symmetry type  I J I J
+  @TWOEL-I,       1097 integrals of symmetry type  I I J J
+  @TWOEL-I,        348 integrals of symmetry type  I J K L
+  @TWOEL-I, Total number of 2-e integrals       4443.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.05 (      0.0)   0: 0: 0.92 (      0.9)   0: 0: 1.1 (      1.1)
+@ACES2: Executing "xvmol2ja"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144875520 204875775
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.02 (      0.0)   0: 0: 0.01 (      0.0)   0: 0: 0.0 (      0.0)
+@ACES2: Executing "xvscf"
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+ @VSCF-I, There are  19 functions in the AO basis.
+
+ @VSCF-I, There are  4 irreducible representations.
+
+
+       Irrep        # of functions
+         1                 10
+         2                  3
+         3                  5
+         4                  1
+
+  @VSCF-I, Parameters for SCF calculation: 
+             SCF reference function:  RHF
+       Maximum number of iterations:  150
+          Full symmetry point group: C2v 
+          Computational point group: C2v 
+             Initial density matrix: CORE                   
+          SCF convergence tolerance: 10**(- 7)
+           Convergence acceleration: RPP
+               Latest start for RPP:   8
+                          RPP order:   6
+
+  @SYMSIZ-I, Symmetry integral information:
+       There are   4 (aa|aa) symmetry combinations.
+       There are   6 (ab|ab) symmetry combinations.
+       There are   6 (aa|bb) symmetry combinations.
+ 
+       The (aa|aa) integrals require       3287 words.
+       The (ab|ab) integrals require       3759 words.
+       The (aa|bb) integrals require       1321 words.
+       The integrals require       8367 words.
+ 
+  @SYMSIZ-I, Memory information: 
+       Full in-core PK list formation:     762930
+             Maximum memory available:   15000000
+
+  @SYMSIZ-I, Selecting full in-core PK list formation.
+
+@ACES_MALLOC: allocated >= 3 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Occupancies from core Hamiltonian:
+
+          Alpha population by irrep:   3    1    1    0
+           Beta population by irrep:   3    1    1    0
+
+
+  --------------------------------------------------------------------
+  Iteration         Total Energy            Largest Density Difference
+  --------------------------------------------------------------------
+       0           -68.8428137935              0.0000000000E+00
+       1           -70.6151093639              0.7033395382E+01
+ @SCFIT: occupancy changed
+       2           -73.4624417144              0.7308114887E+01
+       3           -74.4163645080              0.3754321337E+01
+       4           -75.2789510635              0.3592662799E+01
+       5           -75.7004025692              0.7483162260E+00
+       6           -75.8868862609              0.6281507017E+00
+       7           -75.9601302574              0.3008391496E+00
+       8           -75.9884630503              0.1903116992E+00
+       9           -76.0054497245              0.7048637214E-01
+      10           -76.0054510118              0.9532214256E-03
+      11           -76.0054510838              0.2138424585E-03
+      12           -76.0054510841              0.2099871426E-04
+      13           -76.0054510841              0.3348693614E-05
+      14           -76.0054510841              0.3972715181E-06
+      15           -76.0054510841              0.1452088776E-06
+ 
+@VSCF-I, SCF has converged.
+
+     E(SCF)=       -76.0054510841              0.1352729440E-07
+
+
+
+      Trace of projected alpha density matrix =   1.000000000
+
+      Alpha part of wavefunction is symmetric.
+
+
+  @EVLOUT-I, There are MOs which are solely made up of f and/or higher
+             angular momentum AOs.  Analysis for these cases is not yet
+             implemented.  These orbitals will have "----" as the symmetry.
+
+  ORBITAL EIGENVALUES (ALPHA)  (1H = 27.2113957 eV)
+
+       MO #        E(hartree)               E(eV)           FULLSYM    COMPSYM
+       ----   --------------------   --------------------   -------   ---------
+    1     1         -20.5683493774        -559.6934938052      A1        A1 (1)
+    2     2          -1.3204657162         -35.9317151120      A1        A1 (1)
+    3    14          -0.6849358573         -18.6380606415      B1        B1 (3)
+    4     3          -0.5621795377         -15.2976898550      A1        A1 (1)
+    5    11          -0.4950299093         -13.4704547460      B2        B2 (2)
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    6     4           0.2011151172           5.4726230357      A1        A1 (1)
+    7    15           0.2922038131           7.9512735825      B1        B1 (3)
+    8    16           1.0062817591          27.3823311324      B1        B1 (3)
+    9     5           1.1002897161          29.9404188489      A1        A1 (1)
+   10     6           1.1487666739          31.2595445301      A1        A1 (1)
+   11    12           1.1679817362          31.7824131933      B2        B2 (2)
+   12    17           1.3696315154          37.2695851287      B1        B1 (3)
+   13     7           1.4296748969          38.9034493418      A1        A1 (1)
+   14     8           2.0319996939          55.2935477330      A1        A1 (1)
+   15    19           2.0434852545          55.6060858682    ----      ---- (4)
+   16    13           2.0755485865          56.4785738808      B2        B2 (2)
+   17     9           2.5707266241          69.9530594041      A1        A1 (1)
+   18    18           2.8732212338          78.1843599266      B1        B1 (3)
+   19    10           3.9493689294         107.4678407034      A1        A1 (1)
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.05 (      0.1)   0: 0: 0.10 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xvdint"
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+@ACES_MALLOC: allocated >= 45 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ One- and two-electron integral derivatives are calculated
+ for RHF gradients and dipole moments.
+ Cartesian gaussians are used.
+
+  Cartesian Coordinates
+  ---------------------
+
+  Total number of coordinates:  9
+
+
+   1   H #1 1   x      0.0000000000
+   2            y     -1.4992204253
+   3            z      1.0216462561
+
+   4   H #1 2   x      0.0000000000
+   5            y      1.4992204253
+   6            z      1.0216462561
+
+   7   O #2     x      0.0000000000
+   8            y      0.0000000000
+   9            z     -0.1287460371
+
+
+  Symmetry Coordinates
+  --------------------
+
+  Number of coordinates in each symmetry:   3  2  3  1
+   1   H #1  y    2  -  5
+   2   H #1  z    3  +  6
+   3   O #2  z    9
+   4   H #1  x    1  +  4
+   5   O #2  x    7
+   6   H #1  y    2  +  5
+   7   H #1  z    3  -  6
+   8   O #2  y    8
+   9   H #1  x    1  -  4
+ Translational invariance is used.
+
+                         H #1 y    -0.0821811037
+                         H #1 z     0.0580471287
+                         O #2 z    -0.0580471287
+
+
+ H #1 1     0.0000000000           -0.0410905519            0.0290235643
+ H #1 2     0.0000000000            0.0410905519            0.0290235643
+ O #2       0.0000000000            0.0000000000           -0.0580471287
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.03 (      0.0)   0: 0: 0.27 (      0.3)   0: 0: 0.3 (      0.3)
+ACES2: Total elapsed time is        2.5 seconds
+@ACES2: Executing "xjoda"
+   JODA beginning optimization cycle #  1.
+   Internal coordinate forces and energy gradients (atomic units): 
+           R       dV/dR             R       dV/dR             R       dV/dR
+ [R    ]  1.88973  0.05027 [R    ]  1.88973  0.05027 [A    ]  1.83260  0.00376
+   There are  0 Negative Eigenvalues.
+   There are  0 Negative Eigenvalues.
+   MANR scale factor for NR step is 0.922 for R    .
+   Summary of Optimization Cycle: 
+   The maximum unscaled step is:    0.06722.
+   Scale factor set to:  1.00000.
+   Forces are in hartree/bohr and hartree/radian.
+   Parameter values are in Angstroms and degrees.
+--------------------------------------------------------------------------
+  Parameter     dV/dR           Step          Rold            Rnew
+--------------------------------------------------------------------------
+    R       0.0502677531   -0.0245143938    1.0000000000    0.9754856062
+    A       0.0037575337   -0.8611632987  105.0000000000  104.1388367013
+--------------------------------------------------------------------------
+  Minimum force:  0.003757534 / RMS force:  0.035643836
+ Updating structure...
+  @symmetry-i, Coordinates after  COM shift 
+     -0.100027172335      0.000000000000     -1.765445691628
+     -0.100027172335      0.000000000000      0.077954809938
+      1.687530577242      0.000000000000      0.528246605449
+   Rotational constants (in cm-1): 
+     9.17683       14.12674       26.19013
+   Principal axis orientation for molecule:
+       -1.453993385623    1.006333523171    0.000000000000
+        0.000000000000   -0.126816353826    0.000000000000
+        1.453993385623    1.006333523171    0.000000000000
+         -----------------------------------------------
+         Cartesian coordinates corresponding to internal 
+                 coordinate input (Bohr) 
+ ----------------------------------------------------------------
+ Z-matrix   Atomic            C o o r d i n a t e s
+  Symbol    Number           X              Y              Z
+ ----------------------------------------------------------------
+     H         1         0.00000000    -1.45399339     1.00633352
+     O         8         0.00000000     0.00000000    -0.12681635
+     H         1         0.00000000     1.45399339     1.00633352
+ ----------------------------------------------------------------
+   Interatomic distance matrix (Angstroms) 
+
+                 H             O             H    
+                [ 1]        [ 2]        [ 3]
+  H    [ 1]     0.00000
+  O    [ 2]     0.97549     0.00000
+  H    [ 3]     1.53884     0.97549     0.00000
+ @ACES2: Beginning main opt_an loop. Iteration  2
+@ACES2: Executing "xvmol"
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+ One- and two-electron integrals over symmetry-adapted AOs are calculated.
+
+ @READIN: Cartesian gaussians are used.
+NAMN: H #1  0.000000000 -1.453993386  1.006333523
+NAMN: O #2  0.000000000  0.000000000 -0.126816354
+  @READIN-I, Nuclear repulsion energy :    9.0234919145 a.u.
+  required memory for a1 array  8903380 words 
+  required memory for a2 array  140266 words 
+@ACES_MALLOC: allocated >= 34 MB of core memory
+  @TWOEL-I,       1378 integrals of symmetry type  I I I I
+  @TWOEL-I,       1620 integrals of symmetry type  I J I J
+  @TWOEL-I,       1097 integrals of symmetry type  I I J J
+  @TWOEL-I,        348 integrals of symmetry type  I J K L
+  @TWOEL-I, Total number of 2-e integrals       4443.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.03 (      0.0)   0: 0: 0.93 (      0.9)   0: 0: 1.0 (      1.0)
+@ACES2: Executing "xvmol2ja"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144875520 204875775
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.04 (      0.0)   0: 0: 0.01 (      0.0)   0: 0: 0.0 (      0.0)
+@ACES2: Executing "xvscf"
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+          Alpha population by irrep:   3    1    1    0
+           Beta population by irrep:   3    1    1    0
+
+
+@ACES_MALLOC: allocated >= 3 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ @SORTHO-I, Orthonormalizing initial guess. 
+  --------------------------------------------------------------------
+  Iteration         Total Energy            Largest Density Difference
+  --------------------------------------------------------------------
+       0           -76.0040634091              0.0000000000E+00
+       1           -76.0090032027              0.1889687111E+00
+       2           -76.0091318266              0.1593093190E-01
+       3           -76.0091492749              0.3960520571E-02
+       4           -76.0091524853              0.1285210989E-02
+       5           -76.0091525843              0.2039848078E-03
+       6           -76.0091525889              0.5710778718E-04
+       7           -76.0091525891              0.1434813744E-04
+       8           -76.0091525891              0.2459141132E-05
+       9           -76.0091525891              0.4637938353E-06
+ 
+@VSCF-I, SCF has converged.
+
+     E(SCF)=       -76.0091525891              0.6194098634E-07
+
+
+
+      Trace of projected alpha density matrix =   1.000000000
+
+      Alpha part of wavefunction is symmetric.
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.09 (      0.1)   0: 0: 0.07 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xvdint"
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+@ACES_MALLOC: allocated >= 45 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ One- and two-electron integral derivatives are calculated
+ for RHF gradients and dipole moments.
+ Cartesian gaussians are used.
+
+  Cartesian Coordinates
+  ---------------------
+
+  Total number of coordinates:  9
+
+
+   1   H #1 1   x      0.0000000000
+   2            y     -1.4539933856
+   3            z      1.0063335232
+
+   4   H #1 2   x      0.0000000000
+   5            y      1.4539933856
+   6            z      1.0063335232
+
+   7   O #2     x      0.0000000000
+   8            y      0.0000000000
+   9            z     -0.1268163538
+
+
+  Symmetry Coordinates
+  --------------------
+
+  Number of coordinates in each symmetry:   3  2  3  1
+   1   H #1  y    2  -  5
+   2   H #1  z    3  +  6
+   3   O #2  z    9
+   4   H #1  x    1  +  4
+   5   O #2  x    7
+   6   H #1  y    2  +  5
+   7   H #1  z    3  -  6
+   8   O #2  y    8
+   9   H #1  x    1  -  4
+ Translational invariance is used.
+
+                         H #1 y    -0.0441504935
+                         H #1 z     0.0365698466
+                         O #2 z    -0.0365698466
+
+
+ H #1 1     0.0000000000           -0.0220752467            0.0182849233
+ H #1 2     0.0000000000            0.0220752467            0.0182849233
+ O #2       0.0000000000            0.0000000000           -0.0365698466
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.00 (      0.0)   0: 0: 0.30 (      0.3)   0: 0: 0.3 (      0.3)
+ACES2: Total elapsed time is        4.3 seconds
+@ACES2: Executing "xjoda"
+   JODA beginning optimization cycle #  2.
+   Retrieving information from last optimization cycle.
+   Internal coordinate forces and energy gradients (atomic units): 
+           R       dV/dR             R       dV/dR             R       dV/dR
+ [R    ]  1.84340  0.02865 [R    ]  1.84340  0.02865 [A    ]  1.81757 -0.00157
+   Hessian from cycle  1 read.
+   BFGS update using last two gradients and previous step.
+   There are  0 Negative Eigenvalues.
+   There are  0 Negative Eigenvalues.
+   MANR scale factor for NR step is 0.905 for R    .
+   Summary of Optimization Cycle: 
+   The maximum unscaled step is:    0.08109.
+   Scale factor set to:  1.00000.
+   Forces are in hartree/bohr and hartree/radian.
+   Parameter values are in Angstroms and degrees.
+--------------------------------------------------------------------------
+  Parameter     dV/dR           Step          Rold            Rnew
+--------------------------------------------------------------------------
+    R       0.0286518428   -0.0299281874    0.9754856062    0.9455574189
+    A      -0.0015715944    0.7660560807  104.1388367013  104.9048927820
+--------------------------------------------------------------------------
+  Minimum force:  0.001571594 / RMS force:  0.020290367
+ *Maximum number of optimization steps exceeded.
+ @ACES_EXIT: An ACES error has occurred.
+             return status =  1
+
+              ****************************************************
+              * ACES : Advanced Concepts in Electronic Structure *
+              *                    Ver. 2.6.0                    *
+              *               Release Candidate: 2               *
+              ****************************************************
+
+                             Quantum Theory Project
+                             University of Florida
+                             Gainesville, FL  32611
+ @ACES_INIT_RTE: Build-specific parameters:
+                 bytes per integer =  4
+                 bytes per double  =  8
+                 recls per integer =  4
+
+ @DFILES: FILE MAPPING FROM ZMAT HEADER:
+ JOBARC -> /scr/yau/ACESII/test/tmp.JOBARC
+ JAINDX -> /scr/yau/ACESII/test/tmp.JAINDX
+ OPTARC -> /scr/yau/ACESII/test/tmp.OPTARC
+
+
+
+ @ACES_JA_INIT: WARNING - The job archive was not finalized by the previous
+                ACES Member Executable. Any records added by that process have
+                been lost.
+
+
+   JODA beginning optimization cycle #  2.
+   Retrieving information from last optimization cycle.
+   Internal coordinate forces and energy gradients (atomic units): 
+           R       dV/dR             R       dV/dR             R       dV/dR
+ [R    ]  1.84340  0.02865 [R    ]  1.84340  0.02865 [A    ]  1.81757 -0.00157
+   Hessian from cycle  1 read.
+   BFGS update using last two gradients and previous step.
+   There are  0 Negative Eigenvalues.
+   There are  0 Negative Eigenvalues.
+   MANR scale factor for NR step is 0.905 for R    .
+   Summary of Optimization Cycle: 
+   The maximum unscaled step is:    0.08109.
+   Scale factor set to:  1.00000.
+   Forces are in hartree/bohr and hartree/radian.
+   Parameter values are in Angstroms and degrees.
+--------------------------------------------------------------------------
+  Parameter     dV/dR           Step          Rold            Rnew
+--------------------------------------------------------------------------
+    R       0.0286518428   -0.0299281874    0.9754856062    0.9455574189
+    A      -0.0015715944    0.7660560807  104.1388367013  104.9048927820
+--------------------------------------------------------------------------
+  Minimum force:  0.001571594 / RMS force:  0.020290367
+ Updating structure...
+  @symmetry-i, Coordinates after  COM shift 
+     -0.096623097235      0.000000000000     -1.712575425249
+     -0.096623097235      0.000000000000      0.074269002855
+      1.630101373916      0.000000000000      0.533872757166
+   Rotational constants (in cm-1): 
+     9.75957       14.88037       28.35998
+   Principal axis orientation for molecule:
+       -1.416695700878    0.967069749914    0.000000000000
+        0.000000000000   -0.121868403224    0.000000000000
+        1.416695700878    0.967069749914    0.000000000000
+         -----------------------------------------------
+         Cartesian coordinates corresponding to internal 
+                 coordinate input (Bohr) 
+ ----------------------------------------------------------------
+ Z-matrix   Atomic            C o o r d i n a t e s
+  Symbol    Number           X              Y              Z
+ ----------------------------------------------------------------
+     H         1         0.00000000    -1.41669570     0.96706975
+     O         8         0.00000000     0.00000000    -0.12186840
+     H         1         0.00000000     1.41669570     0.96706975
+ ----------------------------------------------------------------
+   Interatomic distance matrix (Angstroms) 
+
+                 H             O             H    
+                [ 1]        [ 2]        [ 3]
+  H    [ 1]     0.00000
+  O    [ 2]     0.94556     0.00000
+  H    [ 3]     1.49937     0.94556     0.00000
+@ACES2: Executing "rm -f FILES"
+@ACES2: Executing "xjoda"
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+ @ACES2: INITIALIZATION DUMP
+   mopac_guess =  F
+   direct =  F
+   plain_scf =  T
+   nddo_guess =  F
+   hf_scf =  T
+   dirmp2 =  F
+   fno =  F
+   geomopt =  T
+   raman =  F
+   vibfreq =  F
+   analytical_gradient =  T
+   mrcc =  F
+   integral command is "xvmol"
+   derivative-integral command is "xvdint"
+ @ACES2: END INITIALIZATION DUMP
+ @ACES2: Beginning main opt_an loop. Iteration  1
+@ACES2: Executing "xvmol"
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+ One- and two-electron integrals over symmetry-adapted AOs are calculated.
+
+ @READIN: Cartesian gaussians are used.
+NAMN: H #1  0.000000000 -1.416695701  0.967069750
+NAMN: O #2  0.000000000  0.000000000 -0.121868403
+             19 SYMMETRY ADAPTED BASIS FUNCTIONS 
+  @READIN-I, Nuclear repulsion energy :    9.3072669273 a.u.
+  required memory for a1 array  8903380 words 
+  required memory for a2 array  140266 words 
+@ACES_MALLOC: allocated >= 34 MB of core memory
+  @TWOEL-I,       1378 integrals of symmetry type  I I I I
+  @TWOEL-I,       1620 integrals of symmetry type  I J I J
+  @TWOEL-I,       1097 integrals of symmetry type  I I J J
+  @TWOEL-I,        348 integrals of symmetry type  I J K L
+  @TWOEL-I, Total number of 2-e integrals       4443.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.04 (      0.0)   0: 0: 0.92 (      0.9)   0: 0: 1.1 (      1.1)
+@ACES2: Executing "xvmol2ja"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144875520 204875775
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.04 (      0.0)   0: 0: 0.01 (      0.0)   0: 0: 0.0 (      0.0)
+@ACES2: Executing "xvscf"
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+          Alpha population by irrep:   3    1    1    0
+           Beta population by irrep:   3    1    1    0
+
+
+@ACES_MALLOC: allocated >= 3 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ @SORTHO-I, Orthonormalizing initial guess. 
+  --------------------------------------------------------------------
+  Iteration         Total Energy            Largest Density Difference
+  --------------------------------------------------------------------
+       0           -76.0021526881              0.0000000000E+00
+       1           -76.0104570308              0.2924908999E+00
+       2           -76.0106875129              0.2653723821E-01
+       3           -76.0107209878              0.6211740128E-02
+       4           -76.0107271201              0.1688175790E-02
+       5           -76.0107274122              0.3968975696E-03
+       6           -76.0107274223              0.1037403486E-03
+       7           -76.0107274224              0.1133757397E-04
+       8           -76.0107274224              0.1878727619E-05
+       9           -76.0107274224              0.2305626938E-06
+ 
+@VSCF-I, SCF has converged.
+
+     E(SCF)=       -76.0107274224              0.5585281604E-07
+
+
+
+      Trace of projected alpha density matrix =   1.000000000
+
+      Alpha part of wavefunction is symmetric.
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.05 (      0.1)   0: 0: 0.10 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xvdint"
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+@ACES_MALLOC: allocated >= 45 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ One- and two-electron integral derivatives are calculated
+ for RHF gradients and dipole moments.
+ Cartesian gaussians are used.
+
+  Cartesian Coordinates
+  ---------------------
+
+  Total number of coordinates:  9
+
+
+   1   H #1 1   x      0.0000000000
+   2            y     -1.4166957009
+   3            z      0.9670697499
+
+   4   H #1 2   x      0.0000000000
+   5            y      1.4166957009
+   6            z      0.9670697499
+
+   7   O #2     x      0.0000000000
+   8            y      0.0000000000
+   9            z     -0.1218684032
+
+
+  Symmetry Coordinates
+  --------------------
+
+  Number of coordinates in each symmetry:   3  2  3  1
+   1   H #1  y    2  -  5
+   2   H #1  z    3  +  6
+   3   O #2  z    9
+   4   H #1  x    1  +  4
+   5   O #2  x    7
+   6   H #1  y    2  +  5
+   7   H #1  z    3  -  6
+   8   O #2  y    8
+   9   H #1  x    1  -  4
+ Translational invariance is used.
+
+                         H #1 y     0.0051845617
+                         H #1 z    -0.0008936219
+                         O #2 z     0.0008936219
+
+
+ H #1 1     0.0000000000            0.0025922808           -0.0004468109
+ H #1 2     0.0000000000           -0.0025922808           -0.0004468109
+ O #2       0.0000000000            0.0000000000            0.0008936219
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.02 (      0.0)   0: 0: 0.28 (      0.3)   0: 0: 0.3 (      0.3)
+ACES2: Total elapsed time is        1.8 seconds
+@ACES2: Executing "xjoda"
+   JODA beginning optimization cycle #  3.
+   Retrieving information from last optimization cycle.
+   Internal coordinate forces and energy gradients (atomic units): 
+           R       dV/dR             R       dV/dR             R       dV/dR
+ [R    ]  1.78684 -0.00233 [R    ]  1.78684 -0.00233 [A    ]  1.83094 -0.00219
+   Hessian from cycle  2 read.
+   BFGS update using last two gradients and previous step.
+   There are  0 Negative Eigenvalues.
+   There are  0 Negative Eigenvalues.
+   MANR scale factor for NR step is 1.006 for R    .
+   Summary of Optimization Cycle: 
+   The maximum unscaled step is:    0.00909.
+   Scale factor set to:  1.00000.
+   Forces are in hartree/bohr and hartree/radian.
+   Parameter values are in Angstroms and degrees.
+--------------------------------------------------------------------------
+  Parameter     dV/dR           Step          Rold            Rnew
+--------------------------------------------------------------------------
+    R      -0.0023275796    0.0019719258    0.9455574189    0.9475293446
+    A      -0.0021898384    0.4244890340  104.9048927820  105.3293818159
+--------------------------------------------------------------------------
+  Minimum force:  0.002189838 / RMS force:  0.002259759
+ Updating structure...
+  @symmetry-i, Coordinates after  COM shift 
+     -0.096631008652      0.000000000000     -1.716863572873
+     -0.096631008652      0.000000000000      0.073707254579
+      1.630234845225      0.000000000000      0.547076255292
+   Rotational constants (in cm-1): 
+     9.71493       14.73467       28.51665
+   Principal axis orientation for molecule:
+       -1.423682656251    0.964409546812    0.000000000000
+        0.000000000000   -0.121533169179    0.000000000000
+        1.423682656251    0.964409546812    0.000000000000
+         -----------------------------------------------
+         Cartesian coordinates corresponding to internal 
+                 coordinate input (Bohr) 
+ ----------------------------------------------------------------
+ Z-matrix   Atomic            C o o r d i n a t e s
+  Symbol    Number           X              Y              Z
+ ----------------------------------------------------------------
+     H         1         0.00000000    -1.42368266     0.96440955
+     O         8         0.00000000     0.00000000    -0.12153317
+     H         1         0.00000000     1.42368266     0.96440955
+ ----------------------------------------------------------------
+   Interatomic distance matrix (Angstroms) 
+
+                 H             O             H    
+                [ 1]        [ 2]        [ 3]
+  H    [ 1]     0.00000
+  O    [ 2]     0.94753     0.00000
+  H    [ 3]     1.50676     0.94753     0.00000
+ @ACES2: Beginning main opt_an loop. Iteration  2
+@ACES2: Executing "xvmol"
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+ One- and two-electron integrals over symmetry-adapted AOs are calculated.
+
+ @READIN: Cartesian gaussians are used.
+NAMN: H #1  0.000000000 -1.423682656  0.964409547
+NAMN: O #2  0.000000000  0.000000000 -0.121533169
+  @READIN-I, Nuclear repulsion energy :    9.2868997718 a.u.
+  required memory for a1 array  8903380 words 
+  required memory for a2 array  140266 words 
+@ACES_MALLOC: allocated >= 34 MB of core memory
+  @TWOEL-I,       1378 integrals of symmetry type  I I I I
+  @TWOEL-I,       1620 integrals of symmetry type  I J I J
+  @TWOEL-I,       1097 integrals of symmetry type  I I J J
+  @TWOEL-I,        348 integrals of symmetry type  I J K L
+  @TWOEL-I, Total number of 2-e integrals       4443.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.03 (      0.0)   0: 0: 0.94 (      0.9)   0: 0: 1.0 (      1.0)
+@ACES2: Executing "xvmol2ja"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144875520 204875775
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.05 (      0.0)   0: 0: 0.00 (      0.0)   0: 0: 0.0 (      0.0)
+@ACES2: Executing "xvscf"
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+          Alpha population by irrep:   3    1    1    0
+           Beta population by irrep:   3    1    1    0
+
+
+@ACES_MALLOC: allocated >= 3 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ @SORTHO-I, Orthonormalizing initial guess. 
+  --------------------------------------------------------------------
+  Iteration         Total Energy            Largest Density Difference
+  --------------------------------------------------------------------
+       0           -76.0106724186              0.0000000000E+00
+       1           -76.0107439332              0.7590336240E-02
+       2           -76.0107454963              0.1261292177E-02
+       3           -76.0107455996              0.2517776355E-03
+       4           -76.0107456230              0.9740360068E-04
+       5           -76.0107456243              0.2981800813E-04
+       6           -76.0107456244              0.6076523141E-05
+       7           -76.0107456244              0.1226014058E-05
+       8           -76.0107456244              0.1531316930E-06
+ 
+@VSCF-I, SCF has converged.
+
+     E(SCF)=       -76.0107456244              0.6533564523E-07
+
+
+
+      Trace of projected alpha density matrix =   1.000000000
+
+      Alpha part of wavefunction is symmetric.
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.08 (      0.1)   0: 0: 0.07 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xvdint"
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+@ACES_MALLOC: allocated >= 45 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ One- and two-electron integral derivatives are calculated
+ for RHF gradients and dipole moments.
+ Cartesian gaussians are used.
+
+  Cartesian Coordinates
+  ---------------------
+
+  Total number of coordinates:  9
+
+
+   1   H #1 1   x      0.0000000000
+   2            y     -1.4236826563
+   3            z      0.9644095468
+
+   4   H #1 2   x      0.0000000000
+   5            y      1.4236826563
+   6            z      0.9644095468
+
+   7   O #2     x      0.0000000000
+   8            y      0.0000000000
+   9            z     -0.1215331692
+
+
+  Symmetry Coordinates
+  --------------------
+
+  Number of coordinates in each symmetry:   3  2  3  1
+   1   H #1  y    2  -  5
+   2   H #1  z    3  +  6
+   3   O #2  z    9
+   4   H #1  x    1  +  4
+   5   O #2  x    7
+   6   H #1  y    2  +  5
+   7   H #1  z    3  -  6
+   8   O #2  y    8
+   9   H #1  x    1  -  4
+ Translational invariance is used.
+
+                         H #1 y     0.0001227158
+                         H #1 z     0.0006754366
+                         O #2 z    -0.0006754366
+
+
+ H #1 1     0.0000000000            0.0000613579            0.0003377183
+ H #1 2     0.0000000000           -0.0000613579            0.0003377183
+ O #2       0.0000000000            0.0000000000           -0.0006754366
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.03 (      0.0)   0: 0: 0.26 (      0.3)   0: 0: 0.3 (      0.3)
+ACES2: Total elapsed time is        3.6 seconds
+@ACES2: Executing "xjoda"
+   JODA beginning optimization cycle #  4.
+   Retrieving information from last optimization cycle.
+   Internal coordinate forces and energy gradients (atomic units): 
+           R       dV/dR             R       dV/dR             R       dV/dR
+ [R    ]  1.79057  0.00016 [R    ]  1.79057  0.00016 [A    ]  1.83834 -0.00055
+   Hessian from cycle  3 read.
+   BFGS update using last two gradients and previous step.
+   There are  0 Negative Eigenvalues.
+   There are  0 Negative Eigenvalues.
+   MANR scale factor for NR step is 0.999 for R    .
+   Summary of Optimization Cycle: 
+   The maximum unscaled step is:    0.00276.
+   Scale factor set to:  1.00000.
+   Forces are in hartree/bohr and hartree/radian.
+   Parameter values are in Angstroms and degrees.
+--------------------------------------------------------------------------
+  Parameter     dV/dR           Step          Rold            Rnew
+--------------------------------------------------------------------------
+    R       0.0001560332   -0.0001685905    0.9475293446    0.9473607541
+    A      -0.0005474349    0.1561566609  105.3293818159  105.4855384769
+--------------------------------------------------------------------------
+  Minimum force:  0.000156033 / RMS force:  0.000402512
+ Updating structure...
+  @symmetry-i, Coordinates after  COM shift 
+     -0.096541276468      0.000000000000     -1.716821314776
+     -0.096541276468      0.000000000000      0.073430922883
+      1.628720998527      0.000000000000      0.551419580618
+   Rotational constants (in cm-1): 
+     9.71690       14.70935       28.62906
+   Principal axis orientation for molecule:
+       -1.424907600255    0.962514402836    0.000000000000
+        0.000000000000   -0.121294346519    0.000000000000
+        1.424907600255    0.962514402836    0.000000000000
+         -----------------------------------------------
+         Cartesian coordinates corresponding to internal 
+                 coordinate input (Bohr) 
+ ----------------------------------------------------------------
+ Z-matrix   Atomic            C o o r d i n a t e s
+  Symbol    Number           X              Y              Z
+ ----------------------------------------------------------------
+     H         1         0.00000000    -1.42490760     0.96251440
+     O         8         0.00000000     0.00000000    -0.12129435
+     H         1         0.00000000     1.42490760     0.96251440
+ ----------------------------------------------------------------
+   Interatomic distance matrix (Angstroms) 
+
+                 H             O             H    
+                [ 1]        [ 2]        [ 3]
+  H    [ 1]     0.00000
+  O    [ 2]     0.94736     0.00000
+  H    [ 3]     1.50806     0.94736     0.00000
+ @ACES2: Beginning main opt_an loop. Iteration  3
+@ACES2: Executing "xvmol"
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+ One- and two-electron integrals over symmetry-adapted AOs are calculated.
+
+ @READIN: Cartesian gaussians are used.
+NAMN: H #1  0.000000000 -1.424907600  0.962514403
+NAMN: O #2  0.000000000  0.000000000 -0.121294347
+  @READIN-I, Nuclear repulsion energy :    9.2881880350 a.u.
+  required memory for a1 array  8903380 words 
+  required memory for a2 array  140266 words 
+@ACES_MALLOC: allocated >= 34 MB of core memory
+  @TWOEL-I,       1378 integrals of symmetry type  I I I I
+  @TWOEL-I,       1620 integrals of symmetry type  I J I J
+  @TWOEL-I,       1097 integrals of symmetry type  I I J J
+  @TWOEL-I,        348 integrals of symmetry type  I J K L
+  @TWOEL-I, Total number of 2-e integrals       4443.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.04 (      0.0)   0: 0: 0.92 (      0.9)   0: 0: 1.0 (      1.0)
+@ACES2: Executing "xvmol2ja"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144875520 204875775
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.02 (      0.0)   0: 0: 0.03 (      0.0)   0: 0: 0.0 (      0.0)
+@ACES2: Executing "xvscf"
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+          Alpha population by irrep:   3    1    1    0
+           Beta population by irrep:   3    1    1    0
+
+
+@ACES_MALLOC: allocated >= 3 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ @SORTHO-I, Orthonormalizing initial guess. 
+  --------------------------------------------------------------------
+  Iteration         Total Energy            Largest Density Difference
+  --------------------------------------------------------------------
+       0           -76.0107416444              0.0000000000E+00
+       1           -76.0107463242              0.4438415722E-02
+       2           -76.0107464737              0.6211837953E-03
+       3           -76.0107464880              0.1788483459E-03
+       4           -76.0107464909              0.2708828051E-04
+       5           -76.0107464913              0.1944345821E-04
+       6           -76.0107464913              0.2445663338E-05
+       7           -76.0107464913              0.3521581792E-06
+ 
+@VSCF-I, SCF has converged.
+
+     E(SCF)=       -76.0107464913              0.2684697042E-07
+
+
+
+      Trace of projected alpha density matrix =   1.000000000
+
+      Alpha part of wavefunction is symmetric.
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.09 (      0.1)   0: 0: 0.06 (      0.1)   0: 0: 0.2 (      0.2)
+@ACES2: Executing "xvdint"
+ @ACES_COM_SYMINF: direct product table =
+  1  2  3  4
+  2  1  4  3
+  3  4  1  2
+  4  3  2  1
+@ACES_MALLOC: allocated >= 45 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ One- and two-electron integral derivatives are calculated
+ for RHF gradients and dipole moments.
+ Cartesian gaussians are used.
+
+  Cartesian Coordinates
+  ---------------------
+
+  Total number of coordinates:  9
+
+
+   1   H #1 1   x      0.0000000000
+   2            y     -1.4249076003
+   3            z      0.9625144028
+
+   4   H #1 2   x      0.0000000000
+   5            y      1.4249076003
+   6            z      0.9625144028
+
+   7   O #2     x      0.0000000000
+   8            y      0.0000000000
+   9            z     -0.1212943465
+
+
+  Symmetry Coordinates
+  --------------------
+
+  Number of coordinates in each symmetry:   3  2  3  1
+   1   H #1  y    2  -  5
+   2   H #1  z    3  +  6
+   3   O #2  z    9
+   4   H #1  x    1  +  4
+   5   O #2  x    7
+   6   H #1  y    2  +  5
+   7   H #1  z    3  -  6
+   8   O #2  y    8
+   9   H #1  x    1  -  4
+ Translational invariance is used.
+
+                         H #1 y    -0.0000359135
+                         H #1 z     0.0000875540
+                         O #2 z    -0.0000875540
+
+
+ H #1 1     0.0000000000           -0.0000179567            0.0000437770
+ H #1 2     0.0000000000            0.0000179567            0.0000437770
+ O #2       0.0000000000            0.0000000000           -0.0000875540
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.03 (      0.0)   0: 0: 0.27 (      0.3)   0: 0: 0.3 (      0.3)
+ACES2: Total elapsed time is        5.3 seconds
+@ACES2: Executing "xjoda"
+   JODA beginning optimization cycle #  5.
+   Retrieving information from last optimization cycle.
+   Internal coordinate forces and energy gradients (atomic units): 
+           R       dV/dR             R       dV/dR             R       dV/dR
+ [R    ]  1.79025  0.00004 [R    ]  1.79025  0.00004 [A    ]  1.84107 -0.00004
+   Hessian from cycle  4 read.
+   BFGS update using last two gradients and previous step.
+   There are  0 Negative Eigenvalues.
+   There are  0 Negative Eigenvalues.
+   MANR scale factor for NR step is 1.000 for R    .
+   Summary of Optimization Cycle: 
+   The maximum unscaled step is:    0.00027.
+   Scale factor set to:  1.00000.
+   Forces are in hartree/bohr and hartree/radian.
+   Parameter values are in Angstroms and degrees.
+--------------------------------------------------------------------------
+  Parameter     dV/dR           Step          Rold            Rnew
+--------------------------------------------------------------------------
+    R       0.0000407946   -0.0000411627    0.9473607541    0.9473195915
+    A      -0.0000429165    0.0141990655  105.4855384769  105.4997375424
+--------------------------------------------------------------------------
+  Minimum force:  0.000040795 / RMS force:  0.000041869
+--------------------------------------------------------------------------------
+   RMS gradient is below .10000E-03.
+   Convergence criterion satisfied.  Optimization completed.
+--------------------------------------------------------------------------------
+   Interatomic distance matrix (Angstroms) 
+
+                 H             O             H    
+                [ 1]        [ 2]        [ 3]
+  H    [ 1]     0.00000
+  O    [ 2]     0.94736     0.00000
+  H    [ 3]     1.50806     0.94736     0.00000
+
+   Summary of optimized internal coordinates
+   (Angstroms and degrees)
+
+R    =     0.9473607541
+A    =   105.4855384769
+
+   Frequencies of the updated Hessian at convergence:
+
+    0.i    0.i    0.     0.     0.     0.  1829.  4120.  5321. 
+
+   Warning: Frequencies based on the updated Hessian are not very accurate.
+            A separate frequency calculation is required to get correct values.
+
+
+
+ @ACES2: The ACES2 program has completed successfully in  7 seconds.
+
+

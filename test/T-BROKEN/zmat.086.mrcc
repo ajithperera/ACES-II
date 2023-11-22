@@ -1,0 +1,65 @@
+NO3 DIP-TDA intersystem crossing in NO3 triplet manifold
+O
+N 1 R*
+O 2 R* 1 A
+O 2 R* 1 A 3 D180
+
+R    =     1.3614563558
+A=120
+D180=180.0
+
+*ACES2
+!restart
+BASIS=3-21G
+CHARGE=-1
+DROPMO=1-4,CALC=CCSD
+DIP_CALC=TDA,DIP_SYM=0-0-0-0/3-3-3-3
+MAX_STEP=20
+
+*mrcc_gen
+closed_shell_calc=scf
+isc_crossing=dip isc_state1=1 isc_sym1=1 isc_mult1=3
+isc_state2=2 isc_sym2=3 isc_mult2=3
+isc_penalty=5
+*end
+
+Comments
+The max-step size is set to 20 because we are close to the intersection already
+This also allows a large isc_penalty 5 -> 10^5
+CALC is set to CCSD to get all proper integrals transformed
+but is set to SCF in the mrcc_gen namelist.
+
+TEST.DAT
+d TOTENERG
+ -0.276586675580E+03
+d COORD
+    -2.238600617408
+     0.000000000000
+     1.292456669068
+     0.000000000000
+     0.000000000000
+     0.000000000000
+     0.000000000000
+     0.000000000000
+    -2.584913338137
+     2.238600617408
+     0.000000000000
+     1.292456669068
+d E_AVG
+  0.740300052586E+00
+d NUCDIPOL
+     0.000000000000
+     0.000000000000
+     0.000000000000
+d NUCREP
+  0.107876441183E+03
+d PARENERG
+ -0.277269530862E+03
+d REFDIPOL
+     0.000000000000
+     0.000000000000
+     0.000000000008
+d SCFENEG
+ -0.277269530862E+03
+d TOTENER2
+ -0.276586675580E+03

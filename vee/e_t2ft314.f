@@ -1,0 +1,202 @@
+      SUBROUTINE E_T2FT314(W,CORE,IADW,
+     1                     IRPI,IRPJ,IRPK,IRPIJ,IRPIK,IRPJK,
+     1                     I,J,K,ISPIN,ICLLVL,IMODE,IRREPX)
+      IMPLICIT INTEGER (A-Z)
+      DOUBLE PRECISION W(1),CORE(1)
+      INTEGER DIRPRD,VRT,POP
+      DIMENSION IADW(8)
+      DIMENSION IADFVO(8),LENFVO(8)
+C
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPA(255),IRREPB(255),
+     1                DIRPRD(8,8)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON /SYM/    POP(8,2),VRT(8,2),NTAA,NTBB,NF1AA,NF2AA,
+     1                NF1BB,NF2BB
+C
+      COMMON /T3OFF/  IOFFVV(8,8,10),IOFFOO(8,8,10),IOFFVO(8,8,4)
+      COMMON /T2ILIS/ LIST2I1,LIST2I2,LIST2I3
+C
+      INDEX(I) = I*(I-1)/2
+C
+C     ROUTINE TO COMPUTE INCLUSION OF F*T3 AAA OR F*T3 BBB IN T2 AA 
+C     OR T2 BB.
+C
+C     W IS (C<D,A) REPRESENTATION OF T3 (A<C<D). NOTE THAT THIS
+C     ROUTINE MUST BE CALLED BEFORE T2T314 SINCE THE LATTER TRANSPOSES
+C     AND DESTROYS W.
+C
+C
+C     ***** HACK JOB HERE ***** (specific to noniterative eom).
+C
+C     --- LIST NUMBERS FOR D2T2 INCREMENTS/GAMMA(IJ,AB). ---
+C
+C     --- 1. CCSDT-n Energy Calculations. ---
+C
+      IF(ICLLVL.GE.13.AND.ICLLVL.LE.18)THEN
+c       IF(ISPIN.EQ.1)THEN
+c       LIST2I = LIST2I1
+c       ELSE
+c       LIST2I = LIST2I2
+c       ENDIF
+cc     LIST2I = 60 + ISPIN
+       LIST2I = 406 + ISPIN
+      ENDIF
+C
+C     --- 2. CCSD(T), QCISD(T) gradient calculations. ---
+C
+      IF(ICLLVL.EQ.21.OR.ICLLVL.EQ.22)THEN
+      IF(IMODE.EQ.1)THEN
+C     GAMMA(IJ,AB)
+      LIST2I = 113 + ISPIN
+      ENDIF
+      IF(IMODE.EQ.2)THEN
+C     LAMBDA(IJ,AB)
+      LIST2I = LIST2I1 - 1 + ISPIN
+      ENDIF
+      ENDIF
+C
+C     --- TOTAL LENGTH OF INTERMEDIATE. ---
+C
+      IF(ISPIN.EQ.1)THEN
+      LENF = NTAA
+      ELSE
+      LENF = NTBB
+      ENDIF
+C
+C     --- ADDRESSES AND LENGTHS OF SYMMETRY BLOCKS OF INTERMEDIATE. ---
+C
+C     IADFVO = 1
+      DO   10 IRPC=1,NIRREP
+      LENFVO(IRPC) = VRT(IRPC,ISPIN) * POP(IRPC,ISPIN)
+      IF(IRPC.EQ.1)THEN
+      IADFVO(IRPC) = 1
+      ELSE
+      IADFVO(IRPC) = IADFVO(IRPC-1) + LENFVO(IRPC-1)
+      ENDIF
+   10 CONTINUE
+C
+C     --- Read Fock matrix/intermediate/T1 vector. ---
+C
+C     IADFVO = 1
+C
+C     CCSDT-1a.
+      IF(ICLLVL.EQ.13)THEN
+      CALL GETLST(CORE(IADFVO(1)),1,1,2,2 + ISPIN,93)
+      ENDIF
+C     CCSDT-1b, CCSDT-2, CCSDT-3, CCSDT-4, CCSDT.
+      IF(ICLLVL.GE.14.AND.ICLLVL.LE.18)THEN
+      CALL GETLST(CORE(IADFVO(1)),1,1,2,    ISPIN,93)
+      ENDIF
+C     CCSD(T), QCISD(T) gradient calculations.
+      IF(ICLLVL.EQ.21.OR.ICLLVL.EQ.22)THEN
+      IF(IMODE.EQ.1)THEN
+      CALL GETLST(CORE(IADFVO(1)),1,1,2,    ISPIN,90)
+      ENDIF
+      IF(IMODE.EQ.2)THEN
+      CALL GETLST(CORE(IADFVO(1)),1,1,2,2 + ISPIN,93)
+      CALL SSCAL(LENF, 0.5D+00,CORE(IADFVO(1)),1)
+      ENDIF
+      ENDIF
+C
+C      AB  AB                      ABC
+C     D   T    =    SUM  F(C,K)   T       I<J<K   W(A<B,C) * F(C,K)
+C      IJ  IJ       K,C            IJK
+C
+C     --- SET ADDRESS FOR D2T2 MATRIX. ---
+C
+      IRPC  = IRPK
+      IRPAB = DIRPRD(IRREPX,IRPIJ)
+      IADT2 = IADFVO(1) + LENF
+      LENT2 = IRPDPD(IRPAB,ISPIN)
+C
+      CALL ZERO(CORE(IADT2),LENT2)
+     
+ 
+      CALL MATVEC(W(IADW(IRPC)),
+     1            CORE(IADFVO(IRPC) + (K-1)*VRT(IRPC,ISPIN)),
+     1            CORE(IADT2),LENT2,VRT(IRPC,ISPIN),0,0)
+C
+C     --- READ T2 INCREMENT, ADD CURRENT PIECE, AND WRITE SUM BACK ---
+C     ---                      TO DISK.                            ---
+C
+      IADT2I = IADT2 + LENT2
+      IF(IRPIJ.NE.1)THEN
+      IJ = (J-1)*POP(IRPI,ISPIN) + I
+      ELSE
+      IJ = INDEX(J-1) + I
+      ENDIF
+      CALL GETLST(CORE(IADT2I),IOFFOO(IRPJ,IRPIJ,ISPIN)+IJ,
+     1            1,1,IRPIJ,LIST2I)
+      CALL   VADD(CORE(IADT2I),CORE(IADT2I),CORE(IADT2),
+     1            IRPDPD(IRPAB,ISPIN), 1.0D+00)
+      CALL PUTLST(CORE(IADT2I),IOFFOO(IRPJ,IRPIJ,ISPIN)+IJ,
+     1            1,1,IRPIJ,LIST2I)
+C
+C
+C      AB  AB                      ABC
+C     D   T    =  - SUM  F(C,J)   T       I<J<K   W(A<B,C) * F(C,J)
+C      IK  IK       J,C            IJK
+C
+C     --- SET ADDRESS FOR D2T2 MATRIX. ---
+C
+      IRPC  = IRPJ
+      IRPAB = DIRPRD(IRREPX,IRPIK)
+      IADT2 = IADFVO(1) + LENF
+      LENT2 = IRPDPD(IRPAB,ISPIN)
+C
+      CALL ZERO(CORE(IADT2),LENT2)
+      CALL MATVEC(W(IADW(IRPC)),
+     1            CORE(IADFVO(IRPC) + (J-1)*VRT(IRPC,ISPIN)),
+     1            CORE(IADT2),LENT2,VRT(IRPC,ISPIN),0,0)
+C
+C     --- READ T2 INCREMENT, ADD CURRENT PIECE, AND WRITE SUM BACK ---
+C     ---                      TO DISK.                            ---
+C
+      IADT2I = IADT2 + LENT2
+      IF(IRPIK.NE.1)THEN
+      IK = (K-1)*POP(IRPI,ISPIN) + I
+      ELSE
+      IK = INDEX(K-1) + I
+      ENDIF
+      CALL GETLST(CORE(IADT2I),IOFFOO(IRPK,IRPIK,ISPIN)+IK,
+     1            1,1,IRPIK,LIST2I)
+      CALL   VADD(CORE(IADT2I),CORE(IADT2I),CORE(IADT2),
+     1            IRPDPD(IRPAB,ISPIN),-1.0D+00)
+      CALL PUTLST(CORE(IADT2I),IOFFOO(IRPK,IRPIK,ISPIN)+IK,
+     1            1,1,IRPIK,LIST2I)
+C
+C      AB  AB                      ABC
+C     D   T    =    SUM  F(C,I)   T       I<J<K   W(A<B,C) * F(C,I)
+C      JK  JK       I,C            IJK
+C
+C     --- SET ADDRESS FOR D2T2 MATRIX. ---
+C
+      IRPC  = IRPI
+      IRPAB = DIRPRD(IRREPX,IRPJK)
+      IADT2 = IADFVO(1) + LENF
+      LENT2 = IRPDPD(IRPAB,ISPIN)
+C
+      CALL ZERO(CORE(IADT2),LENT2)
+      CALL MATVEC(W(IADW(IRPC)),
+     1            CORE(IADFVO(IRPC) + (I-1)*VRT(IRPC,ISPIN)),
+     1            CORE(IADT2),LENT2,VRT(IRPC,ISPIN),0,0)
+C
+C     --- READ T2 INCREMENT, ADD CURRENT PIECE, AND WRITE SUM BACK ---
+C     ---                      TO DISK.                            ---
+C
+      IADT2I = IADT2 + LENT2
+      IF(IRPJK.NE.1)THEN
+      JK = (K-1)*POP(IRPJ,ISPIN) + J
+      ELSE
+      JK = INDEX(K-1) + J
+      ENDIF
+      CALL GETLST(CORE(IADT2I),IOFFOO(IRPK,IRPJK,ISPIN)+JK,
+     1            1,1,IRPJK,LIST2I)
+      CALL   VADD(CORE(IADT2I),CORE(IADT2I),CORE(IADT2),
+     1            IRPDPD(IRPAB,ISPIN), 1.0D+00)
+      CALL PUTLST(CORE(IADT2I),IOFFOO(IRPK,IRPJK,ISPIN)+JK,
+     1            1,1,IRPJK,LIST2I)
+C
+      RETURN
+      END

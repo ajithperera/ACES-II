@@ -1,0 +1,32 @@
+TEST-HFDFT
+X
+H    1  RX
+H    2  Rhh*  1   A
+CL   2  Rcl*  1   A  3   D
+
+RX   =           1.000000
+Rhh  =           1.184000
+A    =          90.000000
+Rcl  =           1.464000
+D    =         180.000000
+
+*ACES2(REFERENCE=RHF
+BASIS=CC-PVDZ
+GRAD_CALC=ANALYTICAL
+SYM=OFF
+TRANS_INV=IGNORE
+OPT_MAXCYC=1
+MEM_SIZ=1GB,
+#GEOM_OPT=FULL,
+#OPT_METHOD=EVFTS,INIT_HESSIAN=FCMINT,OPT_MAXCYC=100
+SPHERICAL=ON,SCF_TYPE=HFDFT,MULTI=2,REF=UHF)
+
+*SCF
+ KS=ON
+
+*INTGRT
+ kspot=hf
+ func=becke,lyp
+ ksmem=150000000
+*end 
+

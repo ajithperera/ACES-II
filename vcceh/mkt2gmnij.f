@@ -1,0 +1,63 @@
+C
+      SUBROUTINE MKT2GMNIJ(W, T, Z, ISPIN, DISSYW, DISSYT,
+     &                     NUMSYW, NUMSYT, IRREPWR, IRREPTR,
+     &                     IRREPGR, TMP, IOFFSET, IRSTART, FACT)
+C
+      IMPLICIT DOUBLE PRECISION (A-H, O-Z)
+      INTEGER DISSYT, DISSYW, DIRPRD, POP, VRT
+      CHARACTER*8 SPCASE(3)
+      DIMENSION W(DISSYW, NUMSYW), T(DISSYT, NUMSYT), Z(NUMSYW, NUMSYT)
+      DIMENSION TMP(1)
+C
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPA(255),IRREPB(255),DIRPRD(8,8)
+      COMMON /SYM/ POP(8,2),VRT(8,2),
+     &             NTAA,NTBB,NF1AA,NF1BB,NF2AA,NF2BB
+      COMMON /FLAGS/ IFLAGS(100)
+      COMMON /FILES/ LUOUT,MOINTS
+C
+C Common blocks used in the quadratic term
+C
+      COMMON /QADINTI/ INTIMI, INTIAE, INTIME
+      COMMON /QADINTG/ INGMNAA, INGMNBB, INGMNAB, INGABAA,
+     &                 INGABBB, INGABAB, INGMCAA, INGMCBB,
+     &                 INGMCABAB, INGMCBABA, INGMCBAAB,
+     &                 INGMCABBA
+      COMMON /APERTT1/ IAPRT1AA
+      COMMON /BPERTT1/ IBPRT1AA
+      COMMON /APERTT2/ IAPRT2AA1, IAPRT2BB1, IAPRT2AB1, IAPRT2AB2, 
+     &                 IAPRT2AB3, IAPRT2AB4, IAPRT2AA2, IAPRT2BB2,
+     &                 IAPRT2AB5 
+C     
+      DATA ZILCH, ONE, TWO /0.0D0, 1.0D0, 2.0D0/
+      DATA SPCASE /'AAAA =  ', 'BBBB =  ','ABAB =  '/
+C
+C Pick up appropriate lists of T2(IJ, EF) and Hbar(MN, EF)
+C
+      NLIST1 = (IAPRT2AA2 - 1) + ISPIN
+      NLISTG = (INGMNAA - 1)   + ISPIN
+      NLISTW = 13 + ISPIN
+C
+      CALL GETLST(W, 1, NUMSYW, 2, IRREPWR, NLISTW)
+      CALL GETLST(T, 1, NUMSYT, 1, IRREPTR, NLIST1)
+C     
+      CALL ZERO(Z, NUMSYW*NUMSYT)
+C
+C Perform the multiflication to form the intermediate G(MN, IJ)
+C
+      CALL XGEMM('T', 'N', NUMSYW, NUMSYT, DISSYW, FACT, W, DISSYW,
+     &            T, DISSYT, ONE, Z, NUMSYW)
+C
+C Save the results on file
+C
+         IF (IFLAGS(1) .GE. 20) THEN
+C
+            NSIZE = NUMSYW*NUMSYT
+            CALL HEADER('Checksum @-T2QGMNIJ per sym. block', 0, LUOUT)
+C            
+            WRITE(LUOUT, *) SPCASE(ISPIN), SDOT(NSIZE, Z, 1, Z, 1)
+         ENDIF
+C
+      CALL PUTLST(Z, 1, NUMSYT, 2, IRREPGR, NLISTG)
+C
+      RETURN
+      END

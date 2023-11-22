@@ -1,0 +1,26 @@
+ROHF direct MBPT(2)
+H
+O 1 R
+H 2 R 1 A
+
+R=1.07
+A=106.
+
+*ACES2
+!sym
+basis=3-21G*,SPHERICAL=OFF
+ref=rohf,fock=ao,direct,integrals=gamess,calc=mbpt(2)
+
+*GAMESS
+SCHWRZ=T
+FDIFF=T
+
+TEST.DAT
+d TOTENERG
+ -0.757007094873E+02   0.1E-08
+d NUCREP
+  0.822255779017E+01   0.1E-08
+d SCFENEG
+ -0.755700884594E+02   0.1E-08
+d S2SCF
+ -0.159872115546E-13   0.1E-08

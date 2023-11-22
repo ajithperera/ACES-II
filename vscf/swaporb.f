@@ -1,0 +1,17 @@
+      SUBROUTINE SWAPORB(A,SCR,N,I1,I2)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION A(N,N),SCR(N)
+C
+      DO 10 I=1,N
+      SCR(I) = A(I,I1)
+   10 CONTINUE
+C
+      DO 20 I=1,N
+      A(I,I1) = A(I,I2)
+   20 CONTINUE
+C
+      DO 30 I=1,N
+      A(I,I2) = SCR(I)
+   30 CONTINUE
+      RETURN
+      END

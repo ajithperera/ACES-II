@@ -1,0 +1,183 @@
+      subroutine T2HHT2SQ(NO,NU,TI,O2,T2,VO2,V,T2N)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      INTEGER A,B,C,E,F
+      logical print
+      common/flags/iflags(100)
+      COMMON/NN/NO2,NO3,NO4,NU2,NU3,NU4,NOU,NO2U,NO3U,NOU2,NOU3,NO2U2
+      common/timeinfo/timein,timenow,timetot,timenew
+      DIMENSION TI(NU,NU,NO),O2(NO,NU,NU,NO),T2(NO,NU,NU,NO),
+     *VO2(NO,NU,NU,NO),T2N(NO,NU,NU,NO),V(NU,NU,NU,NU)
+      DATA ZERO/0.0D+0/,ONE/1.0D+0/TWO/2.0D+0/,FOUR/4.0D+0/,
+     *     EIGHT/8.0D+0/,HALF/0.5D+0/
+      print=iflags(1).gt.12
+c1111111111111111111111111111111111111111111111111111111111111111
+      call ro2hpp(0,no,nu,ti,o2)
+      call rinthh(1,no,vo2)
+      call transq(vo2,no)
+      call rdov4(1,nu,no,ti,v)
+      call mtrans(v,no,7)
+      call vecmul(vo2,no2,two)
+      call transq(vo2,no)
+      call matmul(v,  vo2,ti,no2,1,   no2,1,1)
+      call vecmul(vo2,no2,half)
+      call mtrans(v,no,7)
+      call matmul(v,  vo2,ti,no2,1,   no2,0,0)
+      call matmul(ti,o2, t2n,no, nou2,no, 0,1)
+      call timer(1)
+      if(print)write(6,6501)timenew
+c      call zclock('dgr  24 ',1)
+6501  format('Diagram no.24 required',f15.2,'  seconds')
+c22222222222222222222222222222222222222222222222222222222222222
+      call transq(o2,nou)
+      call insitu(nu,no,no,nu,ti,o2,13)
+      call matmul(v,vo2,t2,no3,no,no,1,1)
+      call transq(t2n,nou)
+c t2n:phhp
+      call insitu(nu,no,no,nu,ti,t2n,13)
+      call matmul(t2,o2,t2n,no2,nu2,no2,0,0)
+      call insitu(no,no,nu,nu,ti,t2n,13)
+      call transq(t2n,nou)
+      call timer(1)
+      if(print)write(6,6502)timenew
+c      call zclock('dgr  25 ',1)
+c      call zclock(1)
+ 6502 format('Diagram no.25 required',f15.2,'  seconds')
+c33333333333333333333333333333333333333333333333333333333333333333
+      call rintvo(1,no,nu,ti,vo2)
+      call insitu(no,nu,nu,no,ti,vo2,13)
+      call matmul(vo2,v,t2,nu2,no2,no2,1,0)
+      call insitu(nu,nu,no,no,ti,t2,13)
+c t2:hpp(a)h
+      call insitu(no,no,nu,nu,ti,o2,13)
+      call transq(o2,nou)
+      call insitu(no,nu,nu,no,ti,o2,12)
+      call vecmul(o2,no2u2,two)
+      call matmul(t2,o2,t2n,nou,nou,nou,0,0)
+      call vecmul(o2,no2u2,half)
+      call tranmd(o2,nu,no,nu,no,13)
+      call matmul(t2,o2,t2n,nou,nou,nou,0,1)
+      call tranmd(o2,nu,no,nu,no,13)
+      call mtrans(v,no,7)
+      call matmul(vo2,v,t2,nu2,no2,no2,1,0)
+      call symt21(v,no,no,no,no,23)
+      call rintvo(2,no,nu,ti,vo2)
+      call insitu(no,nu,nu,no,ti,vo2,13)
+      call matmul(vo2,v,t2,nu2,no2,no2,0,1)
+      call insitu(nu,nu,no,no,ti,t2,13)
+      call matmul(t2,o2,t2n,nou,nou,nou,0,1)
+      call tranmd(o2,nu,no,nu,no,13)
+      call tranmd(t2n,no,nu,nu,no,23)
+      call matmul(t2,o2,t2n,nou,nou,nou,0,1)
+      call tranmd(o2,nu,no,nu,no,13)
+      call tranmd(t2n,no,nu,nu,no,23)
+      call timer(1)
+      if(print)write(6,6503)timenew
+c      call zclock('dgr  26 ',1)
+ 6503 format('Diagram no.26 required',f15.2,'  seconds')
+c      goto 999
+c4444444444444444444444444444444444444444444444444444444444444
+c4444444444444444444444444444444444444444444444444444444444444
+      call rintvo(1,no,nu,ti,vo2)
+      call matmul(vo2,o2,t2,nou,nou,nou,1,0)
+      call tranmd(o2,nu,no,nu,no,13)
+      call vecmul(o2,no2u2,half)
+      call matmul(vo2,o2,t2,nou,nou,nou,0,1)
+      call vecmul(o2,no2u2,two)
+      call tranmd(o2,nu,no,nu,no,13)
+      call rintvo(2,no,nu,ti,vo2)
+      call vecmul(vo2,no2u2,half)
+      call matmul(vo2,o2,t2,nou,nou,nou,0,1)
+      call rdov4(1,nu,no,ti,v)
+      call tranmd(o2,nu,no,nu,no,13)
+      call tranmd(t2,no,nu,nu,no,23)
+      call matmul(vo2,o2,t2,nou,nou,nou,0,1)
+      call tranmd(o2,nu,no,nu,no,13)
+      call tranmd(t2,no,nu,nu,no,23)
+c
+      call insitu(no,nu,nu,no,ti,t2,13)
+      call insitu(no,nu,nu,no,ti,t2n,13)
+      call matmul(t2,v,t2n,nu2,no2,no2,0,0)
+      call insitu(nu,nu,no,no,ti,t2n,13)
+      call timer(1)
+      if(print)write(6,6504)timenew
+c      call zclock('dgr  27 ',1)
+ 6504 format('Diagram no.27 required',f15.2,'  seconds')
+c555555555555555555555555555555555555555555555555555555555555
+      call rintvo(5,no,nu,ti,t2)
+      call insitu(no,nu,nu,no,ti,t2,13)
+      call insitu(nu,no,nu,no,ti,o2,12)
+csak3
+      call tranmd(t2,nu,nu,no,no,12)
+      call symt21(o2,no,nu,nu,no,23)
+      call matmul(o2,t2,ti,no,no,nou2,1,0)
+      call desm21(o2,no,nu,nu,no,23)
+      call transq(ti,no)
+      call matmul(o2,ti,t2n,nou2,no,no,0,1)
+      call timer(1)
+      if(print)write(6,6505)timenew
+c      call zclock('dgr  28 ',1)
+ 6505 format('Diagram no.28 required',f15.2,'  seconds')
+c666666666666666666666666666666666666666666666666666666666666666
+      call transq(o2,nou)
+      call insitu(nu,no,no,nu,ti,o2,13)
+      call tranmd(o2,no,no,nu,nu,12)
+      call rinthh(2,no2,t2)
+      call mtrans(t2,no,13)
+      call symt21(t2,no,no,no,no,13)
+      call mtrans(v,no,7)
+c v:hhhh,t2:hh(a)hh(a),
+      call matmul(v,t2,vo2,no2,no2,no2,1,1)
+      call desm21(t2,no,no,no,no,13)
+      call mtrans(v,no,7)
+      call matmul(v,t2,vo2,no2,no2,no2,0,0)
+      call mtrans(vo2,no,10)
+      call mtrans(t2,no,8)
+      call matmul(v,t2,vo2,no2,no2,no2,0,0)
+      call mtrans(vo2,no,3)
+c
+      call tranmd(t2n,no,nu,nu,no,23)
+      call transq(t2n,nou)
+      call insitu(nu,no,no,nu,ti,t2n,13)
+      call matmul(vo2,o2,t2n,no2,nu2,no2,0,0)
+      call insitu(no,no,nu,nu,ti,t2n,13)
+      call transq(t2n,nou)
+      call tranmd(t2n,no,nu,nu,no,23)
+      call timer(1)
+      if(print)write(6,6506)timenew
+c      call zclock('dgr  29 ',1)
+ 6506 format('Diagram no.29 required',f15.2,'  seconds')
+c7777777777777777777777777777777777777777777777777777777777777777
+      call rintvo(5,no,nu,ti,t2)
+      call insitu(no,nu,nu,no,ti,t2,12)
+      call insitu(no,no,nu,nu,ti,o2,13)
+      call transq(o2,nou)
+      call tranmd(o2,no,nu,nu,no,23)
+      call matmul(o2,t2,vo2,nou,nou,nou,1,1)
+      call tranmd(t2,nu,no,nu,no,13)
+      call symt21(o2,no,nu,nu,no,23)
+      call matmul(o2,t2,vo2,nou,nou,nou,0,0)
+      call tranmd(t2,nu,no,nu,no,13)
+      call desm21(o2,no,nu,nu,no,23)
+c vo2:hpph,o2:hpph
+      call insitu(no,nu,nu,no,ti,o2,12)
+      call matmul(vo2,o2,t2n,nou,nou,nou,0,0)
+      call vecmul(o2,no2u2,half)
+      call tranmd(o2,nu,no,nu,no,13)
+      call matmul(vo2,o2,t2n,nou,nou,nou,0,1)
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+      call insitu(nu,no,nu,no,ti,o2,12)
+      call matmul(o2,t2,vo2,nou,nou,nou,1,1)
+      call vecmul(o2,no2u2,two)
+      call tranmd(t2n,no,nu,nu,no,23)
+      call insitu(no,nu,nu,no,ti,o2,12)
+      call matmul(vo2,o2,t2n,nou,nou,nou,0,1)
+      call tranmd(t2n,no,nu,nu,no,23)
+      call tranmd(o2,nu,no,nu,no,13)
+      call matmul(vo2,o2,t2n,nou,nou,nou,0,1)
+      call timer(1)
+      if(print)write(6,6507)timenew
+      call zclock('t2hht2sq',1)
+ 6507 format('Diagram no.30 required',f15.2,'  seconds')
+ 999  continue
+      RETURN
+      END

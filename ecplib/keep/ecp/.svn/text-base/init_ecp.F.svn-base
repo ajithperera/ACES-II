@@ -1,0 +1,102 @@
+C init_ecp: initializes ecp data
+
+      subroutine init_ecp(charges)
+
+      use ecpcom
+      use basiscom
+      use statar, only: ncnorb
+
+      implicit none
+
+      include "lengths.h"
+      include "CI1PRB.h"
+      include "CI2PRB.h"
+      include "CL2PRB.h"
+      include "CS1PRB.h"
+
+C arguments
+      double precision :: charges(nat)
+
+C local variables
+      integer :: orb,atype,atypenum,primidx,shtype,shnum,
+     &           i,j,maxshell,nel_rm,core(nat)
+
+C if basis set is uninitialized, initialize now
+      if (.not.allocated(primofs)) then
+
+C       allocate largest possible spaces
+        allocate(primofs(norb+1),aoofs(norb),atid(norb),shelltype(norb),
+     &           alpha(mxprtp*norb),cc(mxprtp*norb))
+
+C       read through basis
+        primofs(1)=1
+        primofs(2)=1
+        aoofs(1)=1
+        orb=1
+        do atype=1,ncntyp
+          do atypenum=1,nrcnt(atype)
+            primidx=0
+            do shtype = 1, mshcnt(atype)
+              do shnum = 1, kshcnt(shtype, atype)
+c               copy the exponents and coefficients
+                do i = 1, nuc(shnum,shtype,atype)
+                  alpha(primofs(orb+1))=auc(primidx+i,atype)
+                  cc(primofs(orb+1))=cgc(primidx+i,1,atype)
+                  primofs(orb+1)=primofs(orb+1)+1
+                end do
+
+C               update AO parameters
+                shelltype(orb)=shtype
+                atid(orb)=ncnorb(aoofs(orb))
+                aoofs(orb+1)=aoofs(orb)+shtype*(shtype+1)/2
+                primofs(orb+2)=primofs(orb+1)
+                orb=orb+1
+
+C               update primitive pointer
+                primidx=primidx+nuc(shnum,shtype,atype)
+              end do
+            end do
+          end do
+        end do
+        nunique=orb-1
+
+#ifdef _DEBUG_LVL0
+        write(6,*)
+        write(6,*)'alpha',alpha(1:primofs(nunique+1))
+        write(6,*)'cc',cc(1:primofs(nunique+1))
+        write(6,*)'primofs',primofs(1:(nunique+1))
+        write(6,*)'aoofs',aoofs(1:nunique)
+        write(6,*)'shelltype',shelltype(1:nunique)
+        write(6,*)'atid',atid(1:nunique)
+#endif
+
+C initialize ecp specification
+        if (ecpbas.eq.'sbasis') ecpbas=sbasis
+        core=0
+        maxshell=maxval(shelltype(1:nunique))-1
+        call flush(6)
+        call ecp_spec(maxshell,ecpbas,"ECPBAS",core,
+     &                alpha,cc,primofs,aoofs,
+     &                shelltype,atid,nunique,norb)
+
+        return
+C process the core adjustments
+C CURRENTLY NOT WORKING
+        charges=charges-core
+        nel_rm=sum(core)
+        nel=nel-nel_rm
+        if (lrstrc) then
+          n2abso=n2abso-nel_rm/2
+          n0abso=n0abso+nel_rm/2
+        else
+          n1aso=n1aso-nel_rm/2
+          n1bso=n1bso-nel_rm/2
+          n0aso=n0aso+nel_rm/2
+          n0bso=n0bso+nel_rm/2
+        end if
+
+      end if
+
+      return
+      end subroutine
+

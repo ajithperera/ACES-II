@@ -1,0 +1,118 @@
+#!/bin/ksh
+
+# 1. change the name in the CVS repository (and tell active developers)
+# 2. change the name in the (local) CVS/Entries file
+# 3. change the file name
+
+lastlist=7
+
+# moved NUMT3 parameter to an include file
+list[7]="librt3/getallt3.f librt3/getlist.f librt3/putallt3.f librt3/putlist.f \
+vcc5t/getallt3.f vcc5t/getlist.f vcc5t/putallt3.f vcc5t/putlist.f \
+vcc5t/nonit3.f lambda/getlist.f"
+
+# increased dimensions to match new vector code
+list[6]="gamess/INTER.f gamess/gamess.f"
+
+# synchronized vmol/ecp/vdint parameters
+list[5]="ecp/ecpabl.f \
+vdint/c1driv.f vdint/c2driv.f vdint/cntinn.f vdint/cntout.f vdint/dipini.f \
+vdint/g1driv.f vdint/g2driv.f vdint/giadrv.f vdint/odcdrv.f"
+
+# fixed RICs for transition states
+list[4]="joda/compkmat.f"
+
+# moved center, basis, and work dim parameters to include files
+list[3]="\
+vdint/abainp.f vdint/aotoao.f vdint/avekfs.f vdint/avena1.f vdint/avena2.f \
+vdint/c10cal.f vdint/c10ini.f vdint/c1ecal.f vdint/c1eini.f vdint/c1hcal.f \
+vdint/c1hini.f vdint/c2ecal.f vdint/c2eini.f vdint/c2hcal.f vdint/c2hini.f \
+vdint/cint0.f  vdint/cint1.f  vdint/cint2.f  vdint/cordif.f vdint/crsinp.f \
+vdint/cshpri.f vdint/ctrinp.f vdint/czrinp.f vdint/dasym1.f vdint/dasym2.f \
+vdint/dasym3.f vdint/dasym4.f vdint/derone.f vdint/derout.f vdint/dertaa.f \
+vdint/dertab.f vdint/detbas.f vdint/detpert.f vdint/dfock.f vdint/dipavr.f \
+vdint/dipint.f vdint/dipnuc.f vdint/dmgavr.f vdint/dp0pri.f vdint/dp1pri.f \
+vdint/dplunk.f vdint/drsym1.f vdint/drsym2.f vdint/dsodrv.f vdint/dsout2.f \
+vdint/dsym1.f  vdint/dsym1a.f vdint/dsym2.f  vdint/dsym2a.f vdint/efint.f  \
+vdint/excoef.f vdint/expcar.f vdint/expsph.f vdint/fcint.f  vdint/fsym2a.f \
+vdint/fsym2b.f vdint/fsym3b.f vdint/g10cal.f vdint/g10ini.f vdint/g1eini.f \
+vdint/g2hcal.f vdint/g2hini.f vdint/gfock.f  vdint/giacoe.f vdint/giaone.f \
+vdint/giavec.f vdint/giint1.f vdint/giint2.f vdint/giint3.f vdint/giint4.f \
+vdint/gplunk.f vdint/gsym2.f  vdint/gsym3.f  vdint/herdis.f vdint/heri.f   \
+vdint/hernai.f vdint/intexp.f vdint/mszavr.f vdint/nmr1dr.f vdint/nmr2dr.f \
+vdint/nucrep.f vdint/odcvec.f vdint/onedrv.f vdint/paovec.f vdint/pblock.f \
+vdint/pricar.f vdint/prigrd.f vdint/prihes.f vdint/psorg.f  vdint/ptprnt.f \
+vdint/qu0pri.f vdint/quaavr.f vdint/quaint.f vdint/quanuc.f vdint/r000.f   \
+vdint/readin.f vdint/resinp.f vdint/rxpint.f vdint/saoord.f vdint/sdint.f  \
+vdint/setdep.f vdint/setgd.f  vdint/setper.f vdint/sym1n.f  vdint/sym1s.f  \
+vdint/sym2.f   vdint/symout.f vdint/sympro.f vdint/trachs.f vdint/tracor.f \
+vdint/tradip.f vdint/tragrd.f vdint/trahes.f vdint/twoexp.f vdint/twoodc.f \
+vdint/vdint.f  vdint/wrtund.f"
+
+# hardcoded 600 to maxbasfn (in /ACTORB/ and /DENST3/)
+list[2]="\
+librt3/mkd314.f librt3/mkd32.f librt3/mkd33.f \
+vcc5t/mkd314.f vcc5t/mkd32.f vcc5t/mkd33.f \
+vcc5t/trps14.f vcc5t/trps2.f vcc5t/trps3.f vcc5t/trps.f \
+trp/dot314.f trp/dot32.f trp/dot33.f \
+trp/dvt314.f trp/dvt32.f trp/dvt33.f \
+trp/prtden.f"
+
+# hardcoded 600 to maxbasfn (in /SYMM2/)
+list[1]="\
+vscf/ab2sd.f   vscf/ab2sd2.f   vscf/dmpjob.f   vscf/dorpp.f    vscf/drnewvrt.f \
+vscf/ehtgss.f  vscf/mkener.f   vscf/mkeval.f   vscf/mkfock.f   vscf/mkfock2.f  \
+vscf/mkfull.f  vscf/osphase.f  vscf/pkchan.f   vscf/pkchan1.f  vscf/pkchan2.f  \
+vscf/pkchan3.f vscf/pksort.f   vscf/pksort21.f vscf/pksort22.f vscf/pksort23.f \
+vscf/qrhfadd.f vscf/qrhfit.f   vscf/qrhfit2.f  vscf/qrhfpop.f  vscf/reload.f   \
+vscf/s2calc.f  vscf/sortho.f   vscf/sorthoi.f  vscf/srtalc.f   vscf/symsiz.f   \
+vscf/uno_ref.f vscf/uno_ref2.f vscf/reorev.f   vscf/reorevl.f  vscf/setup.f    \
+vscf/setupb.f"
+
+# hardcoded 255 to maxbasfn
+list[0]="\
+dens/qrhfset.f dens/qrhfset2.f \
+lambda/oslinic.f \
+libr/fsiodrv.f libr/qrhfset.f \
+vcc/osinic.f \
+vdint/qrhfset.f \
+vscf/ehtdmpmos.f"
+
+tmp=tmp.$$
+
+if test "x$1" = "x"
+then ilist=0
+else test $1 -le $lastlist && ilist=$1 && lastlist=$1
+fi
+
+while test $ilist -le $lastlist
+do for oldf in ${list[ilist]}
+   do dir=`dirname ${oldf}`
+      base=`basename ${oldf%.f}`
+      test -d $dir || continue # skip this file if the directory does not exist
+      if test -f "${oldf},v"
+      then suff_f="f,v"	# this is the CVS repository
+           suff_F="F,v"
+      else suff_f="f"	# this is a development directory
+           suff_F="F"
+           if test -f $dir/CVS/Entries
+           then printf "Updating $dir/CVS/Entries... "
+                cp -i $dir/CVS/Entries $dir/CVS/Entries.bak && \
+                sed "s/^\/$base\.f/\/$base\.F/" $dir/CVS/Entries > $tmp && \
+                mv $tmp $dir/CVS/Entries && \
+                rm $dir/CVS/Entries.bak || echo FAILED
+           fi
+      fi
+      if test -f $dir/$base.$suff_F
+      then echo "$dir/$base.$suff_F already exists"
+      else if test -f $dir/$base.$suff_f
+           then echo "Renaming $dir/$base.$suff_f -> $dir/$base.$suff_F"
+                mv $dir/$base.$suff_f $dir/$base.$suff_F
+           fi
+      fi
+   done
+   let ilist+=1
+done
+
+echo "$0 finished"
+

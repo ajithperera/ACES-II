@@ -1,0 +1,24 @@
+      
+c
+      SUBROUTINE GETH(HCORE,BUF,IBUF,MAX,ILNBUF)
+C------
+C geth reads the original one-electron integrals. used only with RFSCF
+c 
+c Piotr Rozyczko
+c------
+      IMPLICIT NONE
+      INTEGER MAX,I,IBUF,NUT,LUINT,ILNBUF
+      DOUBLE PRECISION HCORE,BUF
+      DIMENSION HCORE(MAX),BUF(ILNBUF),IBUF(ILNBUF)
+      PARAMETER(LUINT=10)
+C
+      CALL LOCATE(LUINT,'ONEHAMIL')
+      CALL ZERO(HCORE,MAX)
+    1 READ(LUINT)BUF,IBUF,NUT
+      DO 10 I=1,NUT
+         HCORE(IBUF(I))=BUF(I)
+   10 CONTINUE
+      IF(NUT.EQ.ILNBUF) GOTO 1
+c
+      RETURN
+      END

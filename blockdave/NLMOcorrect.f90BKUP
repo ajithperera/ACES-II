@@ -1,0 +1,85 @@
+subroutine NLMOcorrect(cVals,cEVECS,Nsize,NUMSOL)
+  integer,intent(in)::IUHF,Nsize
+  integer,intent(inout)::NUMSOL
+  double precision,intent(inout)::cVals(NUMSOL),cEVECs(Nsize,NUMSOL)
+
+  double precision::THRESH,
+  integer::zz,SSPIN,ICOUNT,IIRREP,AIRREP,I,A
+CHARACTER*12 STRINGI(2), STRINGA(2)
+LOGICAL incQM1, FIRST
+  double precision::SCR(Nsize)
+  double precision::bkupeVecs(NSize,NUMSOL),bkupeVals(NUMSOL)
+  integer::QM1count
+
+
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPS(255,2),DIRPRD(8,8)
+      COMMON /SYM/ POP(8,2),VRT(8,2),NT(2),NFMI(2),NFEA(2)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON/ROOTS/EIGVAL(100,8),EIGVAL_T(100,8),OSCSTR(100,8),
+     &             BGN(100,8),BGN_IRP(100,8),END(100,8),
+     &             END_IRP(100,8),NATURE
+!! First, read in QM1 information
+
+
+!! Then determine origin of largest magnitude of excitation;
+!! if 'i' is not in QM1, omit that root
+STRINGI(1)='I  [I_SYM]  '
+STRINGI(2)='i  [i_SYM]  '
+STRINGA(1)='A  [A_SYM]  '
+STRINGA(2)='a  [a_SYM]  '
+      THRESH = 0.05D0
+bkupeVecs=0.0d0
+bkupeVals=0.0d0
+   do zz=1,NUMSOL
+
+
+      DO SSPIN = 1, 1+IUHF
+        WRITE(6,1300)
+        IF (SSPIN .EQ. 1) THEN
+          WRITE(6,*)'   SINGLE EXCITATION COEFFICIENTS AA'
+        ELSE
+          WRITE(6,*)'   SINGLE EXCITATION COEFFICIENTS BB'
+        ENDIF
+        FIRST =.TRUE.
+!        CALL GETLST(SCR, zz, 1, 1, SSPIN, 94)
+        SCR=cEVECS(1+(SSPIN-1)*(NSize/2):(NSize/2)+(NSize/2)*(SSPIN-1),zz)
+        ICOUNT = 1
+        DO IIRREP = 1, NIRREP
+          AIRREP=DIRPRD(IIRREP,IRREPX)
+          DO 1 I = 1, POP(IIRREP, SSPIN)
+            DO 2 A = 1, VRT(AIRREP,SSPIN)
+              IF (ABS(SCR(ICOUNT)).GT.THRESH) THEN
+                IF (FIRST) THEN
+                  WRITE(6,999) STRINGI(SSPIN), STRINGA(SSPIN)
+  999             FORMAT(6X,A12,3X,A12)
+                  WRITE(6,*)
+                ENDIF
+                FIRST =.FALSE.
+                WRITE(6, 1001) I, IIRREP, A, AIRREP, SCR(ICOUNT)
+              ENDIF
+              ICOUNT = ICOUNT + 1
+    2       CONTINUE
+    1     CONTINUE
+        ENDDO
+ 1001   FORMAT(3X,I4,3X, ' [',I1,'],  ',1X, I4,3X, ' [',I1,']   ;',
+     $       10X, F12.6)
+       enddo
+
+! Both alpha and beta portion of vector inside QM1; so
+! save this vector and value
+       if (incQM1) then ! vector in QM1:: save
+          QM1count=QM1count+1
+          bkupeVecs(:,QM1count)=cVecs(:,zz)
+          bkupeVals(QM1count)=cVals(zz)
+       endif
+  enddo
+
+  print*,'** Number of vectors inside QM1:',QM1count
+  Call Dzero(cVals,NUMSOL)
+  Call Dzero(cVecs,Nsize)
+  cVecs=bkupeVecs
+  cVals=bkupeVals
+  NUMSOL=QM1count
+
+end subroutine

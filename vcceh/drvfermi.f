@@ -1,0 +1,98 @@
+C
+      SUBROUTINE DRVFERMI (FERMINT, MAXCOR, MAXCENT, NATOM, NAO, NMAX,
+     &                     NUCDEG, SYMTRN, IRREPERT, IUHF)
+C
+C Symmetry adapt Fermi-contact integrals
+C
+      IMPLICIT DOUBLE PRECISION (A-H, O-Z)
+      DIMENSION FERMINT(MAXCOR), SYMTRN(6*MAXCENT, 6*MAXCENT),
+     &          NUCDEG(MAXCENT), IRREPERT(6*MAXCENT)
+C
+      LOGICAL JFC, JPSO, JSD, YESNO, NUCLEI
+      INTEGER DIRPRD
+      CHARACTER*80 FNAME
+C
+      COMMON /FLAGS/ IFLAGS(100)
+      COMMON /MACHSP/ IINTLN, IFLTLN, IINTFP, IALONE, IBITWD
+      COMMON /FILES/ LUOUT, MOINTS
+      COMMON /NMR/JFC, JPSO, JSD, NUCLEI
+      COMMON /PERT/NTPERT, NPERT(8), IPERT(8)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPA(255),IRREPB(255),DIRPRD(8,8)
+C
+      IONE   = 1
+      ISTART = 1
+      I000   = 1
+      IRWND  = 0
+      IZER   = 0
+      IPRINT = IFLAGS(1)
+      NSIZE  = NAO*NAO
+      NLTRN  = NAO*(NAO + 1)/2
+C
+c      CALL GFNAME('DERINT  ', FNAME, ILENGTH)
+c      INQUIRE(FILE = FNAME(1:ILENGTH), EXIST=YESNO)
+c      IF (YESNO) THEN
+         IENTER = 0
+          IOFF  = 0
+c      ELSE
+c         IENTER = 1
+c         IOFF   = 0
+c      ENDIF
+C        
+      DO 5 IRREP = 1, NIRREP
+C
+C Create the MOIO pointers for output integral lists
+C
+         INPERT = NPERT(IRREP)
+C
+         IF (INPERT .NE. 0) THEN
+            CALL UPDMOI(INPERT, NLTRN, IRREP, 398, IENTER, IOFF)
+            IENTER = 0
+         ENDIF
+C
+ 5    CONTINUE
+C
+      CALL ZERO(FERMINT, MAXCOR)
+C
+      DO 10 IATOM = 1, NMAX
+C
+         IDEGN = NUCDEG(IATOM)
+         NTSIZE =  IDEGN*NSIZE
+C
+         I010 = I000 + IDEGN*NSIZE
+         I020 = I010 + IDEGN*NSIZE
+         I030 = I020 + NLTRN
+C
+         IF (I030 .GE. MAXCOR) CALL ERREX       
+C  
+         ISTEP = IZER
+C
+         DO 20 JATOM = 1, NUCDEG(IATOM)
+C
+            CALL SEEKLB ('   DEN  ', IERR, IRWND, 30) 
+            IF (IERR .NE. 0) CALL ERREX
+            I000 =  I000 + ISTEP*NSIZE
+            CALL LOADINT (FERMINT(I000), NATOM, NSIZE, NAO, IUHF)
+C     
+            IF (IPRINT .GE. 40) THEN
+               CALL HEADER ('FERMI-CONTACT INTEGRALS', -1, 6)
+               CALL TAB (LUOUT, FERMINT(I000), NAO, NAO, NAO, NAO)
+            ENDIF
+C
+            IRWND = IONE 
+            ISTEP = IONE
+C
+ 20      CONTINUE
+C
+         I000 = 1
+C
+         CALL FERMIADAPT (FERMINT(I000), FERMINT(I010), FERMINT(I020),
+     &                    SYMTRN, NATOM, NAO, MAXCENT, IDEGN, ISTART,
+     &                    NSIZE, NTSIZE, IRREPERT, NLTRN)
+C
+         ISTART = ISTART + IDEGN
+C
+ 10   CONTINUE
+C
+      RETURN
+      END

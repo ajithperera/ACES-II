@@ -1,0 +1,182 @@
+
+2.6.0-RELEASE:
+ - added QC logic to the out-of-core SCF algorithm, which crashed without it
+ - allowed HF-SCF polarizability calcs when PROPS=EOM_NLO
+ - allowed GUESS=READ_SO_MOS without a GUESS file
+ - trapped CCSD(T) gradients with ABCDTYPE=AOBASIS
+ - trapped gradient calculations on h basis functions and above
+ - trapped I/O errors on TGUESS file
+ - fixed NDDO open-file error for geom opts and finite difference frequencies
+ - fixed uninitialized data defects in a2proc, nddo, dens, and vcceh
+ - fixed memory and porting defects in fno
+ - fixed memory defects in out-of-core vscf algorithm
+ - fixed restrictive assertions on findif calcs with FD_IRREPS set
+ - fixed a defect in triples from a recent merge
+ - fixed DROPMO processing for SCF-only calculations
+ - fixed QRHF first-order property calculations
+ - fixed a KS defect that the SCF energy was updated iff KSPRINT=.TRUE.
+ - increased the number of AOs that can contribute to an SO
+ - increased the maximum number of atoms from 40 to 96
+ - split mrcc.src/mbtools into two directories mbtools and mbdiag
+
+2.6.0-RC2:
+ - reimplemented FNOs (keywords have changed)
+ - fixed a memory allocation defect that affected large triples calcs
+ - fixed mrcc to allow heaps below the stack
+ - fixed many uninitialized data defects
+ - fixed defect with xgeev when the code is supposed to crash but does not
+ - fixed alignment defect in vmol2ja for odd numbers of AOs
+ - fixed defect with missing LINEAR record and finite difference calcs
+ - added RHF and UHF quadratic convergence acceleration to vscf (SCF_EXTRAP=QC)
+ - added a prep filter to override IBM's mpif.h file with INTEGER*4 types
+ - added a prep filter to move .F files to .FPP
+ - added a make goal to preprocess only (and not to compile, link, or build)
+ - added an a2proc module (factor) to factorize integer arguments
+
+2.6.0-RC1:
+ - fixed (fatal) minimal basis defect in lambda
+ - fixed correlated HFSTAB/DROPMO calcs with no instabs and for SP energies
+ - fixed TS searching with STP_SIZ_CTL=TRUST_RADIUS
+ - fixed dummy atom defect in large molecules
+ - fixed symmetry handling for D2 molecules
+ - fixed TGUESS defect when orbital occupations change for a given point group
+ - fixed (intermittent) data corruption of dropped MO calculations
+ - fixed precision defect in geometry optimization logic
+ - fixed RIC for the Cxv point group
+ - fixed SCF properties defect
+ - fixed GUESS=NDDO defect in vscf
+ - fixed numerical gradient optimizations from int coords when GEOM_OPT=FULL
+ - fixed joda so it can run multiple times after a vibfreq calc with ISOMASS
+ - fixed the unreasonable size of the vdint binary (due to ECP gradients)
+ - fixed GUESS=READ_AO_MOS defect
+ - fixed GUESS file parsing for RHF references
+ - fixed ROHF SINGLE_STORE gradients
+ - fixed BLAS defects in CC gradients with minimal basis sets
+ - fixed the molden interface when the first two atoms are switched
+ - fixed the molden interface for non-RHF references
+ - fixed stack defect in dens (unused, dynamically allocated array)
+ - fixed memory defects in SINGLE_STORE paths
+ - fixed memory defect in vmol2ja for odd numbers of AOs on 32-bit machines
+ - fixed memory defect in a2proc hyperchem interface
+ - fixed memory defect in GAMESS integral derivatives
+ - fixed memory defect in SCF w.r.t. BWCC
+ - fixed memory defect in vdint
+ - fixed initialization defect in SCF for HF stability analyses
+ - fixed X1 port
+ - trapped ABCDTYPE=AOBASIS gradients with DROPMO
+ - increased primitives-per-shell parameter in vdint
+ - increased performance of GAMESS on the X1
+ - removed the parentheses requirement for negative integers in value tokens
+ - added the '>' range delimiter for backward compatibility (in DROPMO et al.)
+ - added @RANK@ and @PROCS@ macros to gemini (aliases of @GRANK@ and @GPROCS@)
+ - added formation of the SCF gradient during correlated gradient calculations
+ - added f and g functions to GUESS=READ_AO_MOS (from OLDAOMOS file)
+ - added COORDINATES=AUTO (now default) to select internals or Cartesians
+ - added EXTRAP#OLATE = [ *NONE*, GRADIENT, ENERGY, COMBO ]
+ - changed OPT_METHOD=MANRTS to MAEVFTS
+ - changed NEGEVAL=SWITCH to ABSVAL and ="-> RFA" to RFA
+ - switched the *VSCF KS flag default to TRUE
+ - a2proc: removed tau2 and rstfndf modules and added zerorec module
+ - increased I/O efficiency for small JOBARC records
+ - enabled putrec to zero records without requiring an input array of zeroes
+ - enhanced RIC logic
+
+2.5.0-RELEASE:
+ - replaced -f with -z and added -b for ZMAT and GENBAS files in gemini
+ - added a GAMESS integral-direct HF-SCF gradient member executable
+ - added dropmo capabilities to Brueckner calculations
+ - fixed non-HF processing in dens
+ - fixed GEOM_OPT=FULL so it optimizes everything (even without asterisks)
+ - fixed incore option for vee and added it to lambda, dens, anti, and bcktrn
+ - fixed many defects in mrcc
+ - fixed GENBAS decimal precision defect
+ - flipped JODADONE at the end of a numerical frequency calculation
+ - increased the default number of HF instabilities to look for
+ - symmetrized the polarizability matrix in vcceh for Raman intensities
+ - symmetrized T2 during DIIS for RHF calculations
+ - created a library of wrappers (MPW) for MPI routines that recast integers
+ - combined vmol and vdint basis set limit parameter files
+ - revamped memory addressing between FORTRAN and C
+
+2.5.0-RC2:
+ - recalibrated test data to account for new SCF initial guess logic
+ - removed .d temporary makefiles after using them with FAST=0
+ - added a memory resizing module to a2proc
+ - added new options for the INCORE keyword
+ - added dynamic memory management to RIC processing in joda
+ - added approximate frequencies of the updated Hessian for geom opts
+ - added some memory checks for processing triples
+ - fixed EE/DROPMO/AOBASIS major defect
+ - fixed case-sensitive atomic symbols in Z-matrix
+ - fixed many uninitialized data defects
+ - fixed isytyp lookups in t1ring subroutines
+ - fixed memory segfault for vcc's incore list processing
+ - fixed joda memory defect in MOPAC Hessians
+ - fixed GAMMA_ABCD for AOBASIS grads (the S^2 expectation value might be wrong)
+ - fixed a problem with g shells in ERD
+ - renamed the SYM_CHECK keyword to CHECK_SYM (avoiding a conflict with SYM)
+
+2.4.1-RC1: (technically 2.5.0-RC1)
+ - attempted to fix bad optimization stepping when the Z matrix is poor
+ - extended ABCDTYPE=AOBASIS capabilities to an.gradients
+ - extended SINGLE_STORE (non-redundant list) capabilities to an.gradients
+ - enhanced TGUESS creation logic (for vcc)
+ - updated the SCF initial guess logic
+ - reduced amount of I/O in vcc's DIIS algorithm
+ - moved dtran and squint to the permanent archive
+ - added RICs for transition state searches
+ - added Norbert Flocke's ERD direct integral library
+ - added ZMAT.BAS, which caches the basis set in a file much smaller than GENBAS
+ - added QST and LST stepping algorithms for transition state searching
+ - added script (xreleng) for pre-packaging exported source
+ - added a trap for spin multiplicities less than 1
+ - added a trap for Z-matrices without a title line
+ - added a MOPAC member executable (called by xaces2 with INIT_HESSIAN=MOPAC)
+ - changed vscf to read GAMESS control variables from a *GAMESS namelist in ZMAT
+ - added integral-direct MBPT(2) energy paths to xaces2
+ - added a HyperChem interface module to a2proc (EXTERNAL=HYPERCHEM)
+ - added an EXTERNAL keyword that controls external interfacing
+ - added an NDDO member executable (that requires FORTRAN 90)
+ - added response densities to props
+ - increased the number of basis functions that vdint can address
+ - consolidated all references to the maximum number of basis functions
+ - fixed vprops stack work array
+ - fixed symmet3 calls in bcktrn when there is nothing to do
+ - fixed /ABCD/ common block declaration in anti
+ - fixed /SYMM2/ common block vscf(_ks) to allow more than 600 basis functions
+ - fixed many read-before-write defects
+ - fixed unformatted direct access file I/O in vprops
+ - fixed minv hang in vmol2ja with calls to dgetrf/dgetri
+ - fixed some f90 module handling in GNUmakefile
+ - fixed Cray PVP/NV1 timer interoperability defect
+ - SV1 fixes:
+    o fixed scaling defect in aces_malloc
+    o fixed FORTRAN -> C string passing in joda
+    o fixed file removes
+    o fixed vea/vee logic defect
+
+2.4.0-RELEASE:
+ - fixed vdint initialization defect
+ - fixed eigenvector reordering defect in vscf
+ - fixed ghost atom nuclear repulsion defect
+
+2.4.0-RC3:
+ - updated Kohn-Sham gradients with all of the bug fixes from the integrator
+ - added threaded MPI includes on IBMs
+ - added force constants to JOBARC
+ - finalized JOBARC after TDHF
+ - reimplemented a2proc test module
+ - reimplemented test suite
+ - fixed sdot declaration in KS gradient code
+ - added divide-by-zero trap in MRCC Gram-Schmidt orthogonalization routine
+
+2.4.0-RC2:
+ - fixed xp_(aces2|vscf|dirmp2) cd_noderank defect
+ - fixed premature HFSTAB=FOLLOW death
+ - fixed symcor inversion center defect
+ - added macro substitution to gemini executable string
+ - added @GPROCS@ and @HPROCS@ macros to gemini pattern parser
+
+2.4.0-RC1:
+ - reset CHANGELOG
+

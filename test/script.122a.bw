@@ -1,0 +1,33 @@
+test -n "$USERDIR" || exit 1
+
+cat <<. >ZMAT
+METHYLENE
+C
+H 1 R
+H 1 R 2 A
+
+R=1.0895
+A=131.48
+
+*ACES2
+!sym
+BASIS=CC-PVDZ,spherical=off
+NON-HF=ON,DROPMO=1,CALC=CCSD
+
+.
+cat <<. >bwdata
+2220
+2202
+.
+ln -s $GENBAS . || exit 1
+xaces2 || exit 1
+touch MOINTS MOABCD # BWCC deletes the storage files, which crashes xa2proc
+
+exit 0
+TEST.DAT
+d TOTENERG
+ -0.390045763450E+02   0.1E-08
+d NUCREP
+  0.609485510081E+01   0.1E-08
+d SCFENEG
+ -0.388636088928E+02   0.1E-08

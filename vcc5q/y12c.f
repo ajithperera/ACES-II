@@ -1,0 +1,868 @@
+      SUBROUTINE Y12C(CORE,MAXCOR,IUHF)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      INTEGER DISSIZ,DISSIZA,DISSIZB
+      INTEGER POP,VRT,DIRPRD
+      DIMENSION CORE(1),DISSIZ(8),DISSIZA(8),DISSIZB(8),NDIS(8)
+      DIMENSION IOFFW(8)
+C
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /SYM/    POP(8,2),VRT(8,2),NT(2),NFMI(2),NFEA(2)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPS(255,2),DIRPRD(8,8)
+      COMMON /INFO/   NOCA,NOCB,NVRTA,NVRTB
+      COMMON /T3OFF/  IOFFVV(8,8,10),IOFFOO(8,8,10),IOFFVO(8,8,4)
+C
+      INDEX(I) = I * (I-1)/2
+C
+      WRITE(6,1000)
+ 1000 FORMAT(' @Y12C-I, Y3 * Y3 contributions. ')
+C
+C     MNJL = - (MBCJ * LBCN - NBCJ * LBCN)
+C     mnjl = - (mbcj * lbcn - nbcj * lbcn)
+C
+      DO  200 ISPIN=1,IUHF+1
+C
+C     Read and sort y3 ring intermediates.
+C
+C     We read MBCJ as (C,M,B,J). Sort to (C,B,M,J).
+C
+      LEN = 0
+      DO   10 IRREP=1,NIRREP
+      LEN = LEN + IRPDPD(IRREP,8+ISPIN) * IRPDPD(IRREP,8+ISPIN)
+   10 CONTINUE
+C
+      I000 = 1
+      I010 = I000 + LEN
+      I020 = I010 + LEN
+      I030 = I020 +   2 * (NOCA * NOCB + NVRTA * NVRTB)
+C
+      NEED = IINTFP * I030
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+ 1020 FORMAT(' @Y12C-I, Insufficient memory. Need ',I15,' . Got ',I15)
+      STOP 'Y12C'
+      ENDIF
+C
+C     Get the whole list at I010.
+C
+      CALL GETALL(CORE(I010),LEN,1,53+ISPIN)
+C
+C     Sort to different order : CBMJ is at I000.
+C
+      CALL SSTGEN(CORE(I010),CORE(I000),LEN,
+     1            VRT(1,ISPIN),POP(1,ISPIN),VRT(1,ISPIN),POP(1,ISPIN),
+     1            CORE(I020),1,'1324')
+C
+C     We perform the matrix multiply :
+C
+C     W(MJ,LN) = W(CB,MJ) * W(CB,LN)
+C
+      LNIJKL = 0
+      DO   30 IRREP=1,NIRREP
+      DISSIZ(IRREP) = 0
+      NDIS(IRREP)   = 0
+      DO   20 JRREP=1,NIRREP
+      KRREP = DIRPRD(IRREP,JRREP)
+      DISSIZ(IRREP) = DISSIZ(IRREP) 
+     1                 + POP(JRREP,ISPIN) * POP(KRREP,ISPIN)
+      NDIS(IRREP)   = NDIS(IRREP) 
+     1                 + VRT(JRREP,ISPIN) * VRT(KRREP,ISPIN)
+   20 CONTINUE
+      LNIJKL = LNIJKL + DISSIZ(IRREP) * DISSIZ(IRREP)
+   30 CONTINUE
+C
+      I020 = I010 + LNIJKL
+C
+      NEED = IINTFP * I020
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y12C'
+      ENDIF
+C
+      IOFFY3 = I000
+      DO   40 IRPBC=1,NIRREP
+C
+      IF(IRPBC.EQ.1)THEN
+      IOFFW(IRPBC) = I010
+      ELSE
+      IOFFW(IRPBC) = IOFFW(IRPBC-1) + DISSIZ(IRPBC-1)*DISSIZ(IRPBC-1)
+      ENDIF
+C
+      CALL XGEMM('T','N',DISSIZ(IRPBC),DISSIZ(IRPBC),NDIS(IRPBC),
+     1            4.0D+00,
+     1            CORE(IOFFY3),NDIS(IRPBC),
+     1            CORE(IOFFY3),NDIS(IRPBC),0.0D+00,
+     1            CORE(IOFFW(IRPBC)),DISSIZ(IRPBC))
+C
+      IOFFY3 = IOFFY3 + DISSIZ(IRPBC) *   NDIS(IRPBC)
+C
+   40 CONTINUE
+C
+C     We have W(MJ,LN) at I010. Convert to W(MN,JL).
+C
+      I030 = I020 + LNIJKL
+      I040 = I030 + 2 * (NOCA*NOCB + NOCA*NOCB)
+C     (MJ,LN) ---> (ML,JN)
+      CALL SSTGEN(CORE(I010),CORE(I020),LNIJKL,
+     1            POP(1,ISPIN),POP(1,ISPIN),POP(1,ISPIN),POP(1,ISPIN),
+     1            CORE(I030),1,'1324')
+C     (ML,JN) ---> (MN,JL)
+      CALL SSTGEN(CORE(I020),CORE(I010),LNIJKL,
+     1            POP(1,ISPIN),POP(1,ISPIN),POP(1,ISPIN),POP(1,ISPIN),
+     1            CORE(I030),1,'1432')
+C
+      DO  190 IRPJL=1,NIRREP
+      IRPMN = IRPJL
+C
+C     Get a symmetry block of Y12(MN,JL) at I020.
+C
+      I030 = I020 + IRPDPD(IRPJL,2+ISPIN) * IRPDPD(IRPJL,2+ISPIN)
+      NEED = IINTFP * I030
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y12C'
+      ENDIF
+C
+      CALL GETLIST(CORE(I020),1,IRPDPD(IRPJL,2+ISPIN),1,IRPJL,9+ISPIN)
+C
+      DO  180 IRPL =1,NIRREP
+      IRPJ = DIRPRD(IRPJL,IRPL)
+C
+      IF(IRPJ.GT.IRPL) GOTO 180
+C
+      DO  170 IRPN =1,NIRREP
+      IRPM = DIRPRD(IRPMN,IRPN)
+C
+      IF(IRPM.GT.IRPN) GOTO 170
+C
+      IF(IRPJL.EQ.1)THEN
+C
+      IF(POP(IRPL,ISPIN).GE.2.AND.POP(IRPN,ISPIN).GE.2)THEN
+C
+      DO   80 L=2,POP(IRPL,ISPIN)
+      DO   70 J=1,L-1
+      DO   60 N=2,POP(IRPN,ISPIN)
+      DO   50 M=1,N-1
+C
+      JLL = IOFFOO(IRPL,IRPJL,ISPIN) + INDEX(L-1) + J
+      MLN = IOFFOO(IRPN,IRPMN,ISPIN) + INDEX(N-1) + M
+C
+      MLNJLL = (JLL - 1)*IRPDPD(IRPMN,2+ISPIN) + MLN
+C
+      JL = IOFFOO(IRPL,IRPJL,2+ISPIN) + (L-1)*POP(IRPJ,ISPIN) + J
+      MN = IOFFOO(IRPN,IRPMN,2+ISPIN) + (N-1)*POP(IRPM,ISPIN) + M
+      NM = IOFFOO(IRPM,IRPMN,2+ISPIN) + (M-1)*POP(IRPN,ISPIN) + N
+C
+      MNJL = IOFFW(IRPJL) + (JL - 1)*DISSIZ(IRPMN) + MN - 1
+      NMJL = IOFFW(IRPJL) + (JL - 1)*DISSIZ(IRPMN) + NM - 1
+      
+      CORE(I020 + MLNJLL - 1) = CORE(I020 + MLNJLL - 1) -
+     1                          CORE(MNJL) + CORE(NMJL)
+C
+   50 CONTINUE
+   60 CONTINUE
+   70 CONTINUE
+   80 CONTINUE
+C
+      ENDIF
+C
+      ELSE
+C
+      IF(POP(IRPL,ISPIN).GE.1.AND.POP(IRPN,ISPIN).GE.1.AND.
+     1   POP(IRPJ,ISPIN).GE.1.AND.POP(IRPM,ISPIN).GE.1)THEN
+C
+      DO  120 L=1,POP(IRPL,ISPIN)
+      DO  110 J=1,POP(IRPJ,ISPIN)
+      DO  100 N=1,POP(IRPN,ISPIN)
+      DO   90 M=1,POP(IRPM,ISPIN)
+C
+      JLL = IOFFOO(IRPL,IRPJL,ISPIN) + (L-1)*POP(IRPJ,ISPIN) + J
+      MLN = IOFFOO(IRPN,IRPMN,ISPIN) + (N-1)*POP(IRPM,ISPIN) + M
+C
+      MLNJLL = (JLL - 1)*IRPDPD(IRPMN,2+ISPIN) + MLN
+C
+      JL = IOFFOO(IRPL,IRPJL,2+ISPIN) + (L-1)*POP(IRPJ,ISPIN) + J
+      MN = IOFFOO(IRPN,IRPMN,2+ISPIN) + (N-1)*POP(IRPM,ISPIN) + M
+      NM = IOFFOO(IRPM,IRPMN,2+ISPIN) + (M-1)*POP(IRPN,ISPIN) + N
+C
+      MNJL = IOFFW(IRPJL) + (JL - 1)*DISSIZ(IRPMN) + MN - 1
+      NMJL = IOFFW(IRPJL) + (JL - 1)*DISSIZ(IRPMN) + NM - 1
+      
+      CORE(I020 + MLNJLL - 1) = CORE(I020 + MLNJLL - 1) -
+     1                          CORE(MNJL) + CORE(NMJL)
+C
+   90 CONTINUE
+  100 CONTINUE
+  110 CONTINUE
+  120 CONTINUE
+C
+      ENDIF
+C
+      ENDIF
+C
+  170 CONTINUE
+  180 CONTINUE
+C
+      CALL PUTLIST(CORE(I020),1,IRPDPD(IRPJL,2+ISPIN),1,IRPJL,9+ISPIN)
+C
+  190 CONTINUE
+C
+  200 CONTINUE
+C
+C     MNJL = - (MbcJ * LbcN - NbcJ * LbcN)
+C     mnjl = - (mBCj * lBCn - nBCj * lBCn)
+C
+      DO  400 ISPIN=1,IUHF+1
+C
+      IF(ISPIN.EQ.1)THEN
+      ISPIN1 = 1
+      ISPIN2 = 2
+      ELSE
+      ISPIN1 = 2
+      ISPIN2 = 1
+      ENDIF
+C
+C     Read and sort y3 ring intermediates.
+C
+C     We read MbcJ as (c,M,b,J). Sort to (c,b,M,J).
+C
+      LEN = 0
+      DO  210 IRREP=1,NIRREP
+      LEN = LEN + IRPDPD(IRREP,13-ISPIN) * IRPDPD(IRREP,13-ISPIN)
+  210 CONTINUE
+C
+      I000 = 1
+      I010 = I000 + LEN
+      I020 = I010 + LEN
+      I030 = I020 +   2 * (NOCA * NOCB + NVRTA * NVRTB)
+C
+      NEED = IINTFP * I030
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y12C'
+      ENDIF
+C
+C     Get the whole list at I010.
+C
+      IF(IUHF.GT.0)THEN
+      CALL GETALL(CORE(I010),LEN,1,60-ISPIN)
+      ELSE
+      CALL GETALL(CORE(I010),LEN,1,60-ISPIN-1)
+      ENDIF
+C
+C     Sort to different order : cbMJ is at I000.
+C
+      CALL SSTGEN(CORE(I010),CORE(I000),LEN,
+     1        VRT(1,ISPIN2),POP(1,ISPIN1),VRT(1,ISPIN2),POP(1,ISPIN1),
+     1            CORE(I020),1,'1324')
+C
+C     We perform the matrix multiply :
+C
+C     W(MJ,LN) = W(cb,MJ) * W(cb,LN)
+C
+      LNIJKL = 0
+      DO  230 IRREP=1,NIRREP
+      DISSIZ(IRREP) = 0
+      NDIS(IRREP)   = 0
+      DO  220 JRREP=1,NIRREP
+      KRREP = DIRPRD(IRREP,JRREP)
+      DISSIZ(IRREP) = DISSIZ(IRREP) 
+     1                 + POP(JRREP,ISPIN) * POP(KRREP,ISPIN)
+      NDIS(IRREP)   = NDIS(IRREP) 
+     1                 + VRT(JRREP,ISPIN2) * VRT(KRREP,ISPIN2)
+  220 CONTINUE
+      LNIJKL = LNIJKL + DISSIZ(IRREP) * DISSIZ(IRREP)
+  230 CONTINUE
+C
+      I020 = I010 + LNIJKL
+C
+      NEED = IINTFP * I020
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y12C'
+      ENDIF
+C
+      IOFFY3 = I000
+      DO  240 IRPBC=1,NIRREP
+C
+      IF(IRPBC.EQ.1)THEN
+      IOFFW(IRPBC) = I010
+      ELSE
+      IOFFW(IRPBC) = IOFFW(IRPBC-1) + DISSIZ(IRPBC-1)*DISSIZ(IRPBC-1)
+      ENDIF
+C
+      CALL XGEMM('T','N',DISSIZ(IRPBC),DISSIZ(IRPBC),NDIS(IRPBC),
+     1            4.0D+00,
+     1            CORE(IOFFY3),NDIS(IRPBC),
+     1            CORE(IOFFY3),NDIS(IRPBC),0.0D+00,
+     1            CORE(IOFFW(IRPBC)),DISSIZ(IRPBC))
+C
+      IOFFY3 = IOFFY3 + DISSIZ(IRPBC) *   NDIS(IRPBC)
+C
+  240 CONTINUE
+C
+C     We have W(MJ,LN) at I010. Convert to W(MN,JL).
+C
+      I030 = I020 + LNIJKL
+      I040 = I030 + 2 * (NOCA*NOCB + NOCA*NOCB)
+C     (MJ,LN) ---> (ML,JN)
+      CALL SSTGEN(CORE(I010),CORE(I020),LNIJKL,
+     1            POP(1,ISPIN),POP(1,ISPIN),POP(1,ISPIN),POP(1,ISPIN),
+     1            CORE(I030),1,'1324')
+C     (ML,JN) ---> (MN,JL)
+      CALL SSTGEN(CORE(I020),CORE(I010),LNIJKL,
+     1            POP(1,ISPIN),POP(1,ISPIN),POP(1,ISPIN),POP(1,ISPIN),
+     1            CORE(I030),1,'1432')
+C
+      DO  390 IRPJL=1,NIRREP
+      IRPMN = IRPJL
+C
+C     Get a symmetry block of Y12(MN,JL) at I020.
+C
+      I030 = I020 + IRPDPD(IRPJL,2+ISPIN) * IRPDPD(IRPJL,2+ISPIN)
+      NEED = IINTFP * I030
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y12C'
+      ENDIF
+C
+      CALL GETLIST(CORE(I020),1,IRPDPD(IRPJL,2+ISPIN),1,IRPJL,9+ISPIN)
+C
+      DO  380 IRPL =1,NIRREP
+      IRPJ = DIRPRD(IRPJL,IRPL)
+C
+      IF(IRPJ.GT.IRPL) GOTO 380
+C
+      DO  370 IRPN =1,NIRREP
+      IRPM = DIRPRD(IRPMN,IRPN)
+C
+      IF(IRPM.GT.IRPN) GOTO 370
+C
+      IF(IRPJL.EQ.1)THEN
+C
+      IF(POP(IRPL,ISPIN).GE.2.AND.POP(IRPN,ISPIN).GE.2)THEN
+C
+      DO  280 L=2,POP(IRPL,ISPIN)
+      DO  270 J=1,L-1
+      DO  260 N=2,POP(IRPN,ISPIN)
+      DO  250 M=1,N-1
+C
+      JLL = IOFFOO(IRPL,IRPJL,ISPIN) + INDEX(L-1) + J
+      MLN = IOFFOO(IRPN,IRPMN,ISPIN) + INDEX(N-1) + M
+C
+      MLNJLL = (JLL - 1)*IRPDPD(IRPMN,2+ISPIN) + MLN
+C
+      JL = IOFFOO(IRPL,IRPJL,2+ISPIN) + (L-1)*POP(IRPJ,ISPIN) + J
+      MN = IOFFOO(IRPN,IRPMN,2+ISPIN) + (N-1)*POP(IRPM,ISPIN) + M
+      NM = IOFFOO(IRPM,IRPMN,2+ISPIN) + (M-1)*POP(IRPN,ISPIN) + N
+C
+      MNJL = IOFFW(IRPJL) + (JL - 1)*DISSIZ(IRPMN) + MN - 1
+      NMJL = IOFFW(IRPJL) + (JL - 1)*DISSIZ(IRPMN) + NM - 1
+      
+      CORE(I020 + MLNJLL - 1) = CORE(I020 + MLNJLL - 1) -
+     1                          CORE(MNJL) + CORE(NMJL)
+C
+  250 CONTINUE
+  260 CONTINUE
+  270 CONTINUE
+  280 CONTINUE
+C
+      ENDIF
+C
+      ELSE
+C
+      IF(POP(IRPL,ISPIN).GE.1.AND.POP(IRPN,ISPIN).GE.1.AND.
+     1   POP(IRPJ,ISPIN).GE.1.AND.POP(IRPM,ISPIN).GE.1)THEN
+C
+      DO  320 L=1,POP(IRPL,ISPIN)
+      DO  310 J=1,POP(IRPJ,ISPIN)
+      DO  300 N=1,POP(IRPN,ISPIN)
+      DO  290 M=1,POP(IRPM,ISPIN)
+C
+      JLL = IOFFOO(IRPL,IRPJL,ISPIN) + (L-1)*POP(IRPJ,ISPIN) + J
+      MLN = IOFFOO(IRPN,IRPMN,ISPIN) + (N-1)*POP(IRPM,ISPIN) + M
+C
+      MLNJLL = (JLL - 1)*IRPDPD(IRPMN,2+ISPIN) + MLN
+C
+      JL = IOFFOO(IRPL,IRPJL,2+ISPIN) + (L-1)*POP(IRPJ,ISPIN) + J
+      MN = IOFFOO(IRPN,IRPMN,2+ISPIN) + (N-1)*POP(IRPM,ISPIN) + M
+      NM = IOFFOO(IRPM,IRPMN,2+ISPIN) + (M-1)*POP(IRPN,ISPIN) + N
+C
+      MNJL = IOFFW(IRPJL) + (JL - 1)*DISSIZ(IRPMN) + MN - 1
+      NMJL = IOFFW(IRPJL) + (JL - 1)*DISSIZ(IRPMN) + NM - 1
+      
+      CORE(I020 + MLNJLL - 1) = CORE(I020 + MLNJLL - 1) -
+     1                          CORE(MNJL) + CORE(NMJL)
+C
+  290 CONTINUE
+  300 CONTINUE
+  310 CONTINUE
+  320 CONTINUE
+C
+      ENDIF
+C
+      ENDIF
+C
+  370 CONTINUE
+  380 CONTINUE
+C
+      CALL PUTLIST(CORE(I020),1,IRPDPD(IRPJL,2+ISPIN),1,IRPJL,9+ISPIN)
+C
+  390 CONTINUE
+C
+  400 CONTINUE
+C
+C     ABAB
+C
+C     MnJl = - MBCJ * lBCn
+C
+C     Read and sort y3 ring intermediates.
+C
+      LEN = 0
+      DO  410 IRREP=1,NIRREP
+      LEN = LEN + IRPDPD(IRREP,9) * IRPDPD(IRREP,9)
+  410 CONTINUE
+C
+C     MBCJ
+C
+      I000 = 1
+      I010 = I000 + LEN
+      I020 = I010 + LEN
+      I030 = I020 +   2 * (NOCA * NOCB + NVRTA * NVRTB)
+C
+      NEED = IINTFP * I030
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y12C'
+      ENDIF
+C
+C     Get the whole list at I010.
+C
+      CALL GETALL(CORE(I010),LEN,1,54)
+C
+C     Sort to different order : CBMJ is at I000.
+C
+      CALL SSTGEN(CORE(I010),CORE(I000),LEN,
+     1        VRT(1,1),POP(1,1),VRT(1,1),POP(1,1),
+     1        CORE(I020),1,'1324')
+C
+C     lBCn
+C
+      LEN = 0
+      DO  420 IRREP=1,NIRREP
+      LEN = LEN + IRPDPD(IRREP,11) * IRPDPD(IRREP,11)
+  420 CONTINUE
+C
+      I020 = I010 + LEN
+      I030 = I020 + LEN
+      I040 = I030 +   2 * (NOCA * NOCB + NVRTA * NVRTB)
+C
+      NEED = IINTFP * I040
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y12C'
+      ENDIF
+C
+C     Get the whole list at I020.
+C
+      CALL GETALL(CORE(I020),LEN,1,58)
+C
+C     Sort to different order : CBln is at I010.
+C
+      CALL SSTGEN(CORE(I020),CORE(I010),LEN,
+     1        VRT(1,1),POP(1,2),VRT(1,1),POP(1,2),
+     1        CORE(I030),1,'1324')
+C
+      LNIJKL = 0
+      DO  440 IRREP=1,NIRREP
+      DISSIZ(IRREP) = IRPDPD(IRREP,14)
+      DISSIZA(IRREP) = 0
+      DISSIZB(IRREP) = 0
+      NDIS(IRREP)   = 0
+      DO  430 JRREP=1,NIRREP
+      KRREP = DIRPRD(IRREP,JRREP)
+      DISSIZA(IRREP) = DISSIZA(IRREP) 
+     1                 + POP(JRREP,1) * POP(KRREP,1)
+      DISSIZB(IRREP) = DISSIZB(IRREP) 
+     1                 + POP(JRREP,2) * POP(KRREP,2)
+      NDIS(IRREP)   = NDIS(IRREP) 
+     1                 + VRT(JRREP,1) * VRT(KRREP,1)
+  430 CONTINUE
+      LNIJKL = LNIJKL + DISSIZA(IRREP) * DISSIZB(IRREP)
+  440 CONTINUE
+C
+      I030 = I020 + LNIJKL
+C
+      NEED = IINTFP * I030
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y12C'
+      ENDIF
+C
+      IOFFY3A = I000
+      IOFFY3B = I010
+      DO  450 IRPBC=1,NIRREP
+C
+      IF(IRPBC.EQ.1)THEN
+      IOFFW(IRPBC) = I020
+      ELSE
+      IOFFW(IRPBC) = IOFFW(IRPBC-1) + DISSIZA(IRPBC-1)*DISSIZB(IRPBC-1)
+      ENDIF
+C
+      CALL XGEMM('T','N',DISSIZA(IRPBC),DISSIZB(IRPBC),NDIS(IRPBC),
+     1            4.0D+00,
+     1            CORE(IOFFY3A),NDIS(IRPBC),
+     1            CORE(IOFFY3B),NDIS(IRPBC),0.0D+00,
+     1            CORE(IOFFW(IRPBC)),DISSIZA(IRPBC))
+C
+      IOFFY3A = IOFFY3A + DISSIZA(IRPBC) *   NDIS(IRPBC)
+      IOFFY3B = IOFFY3B + DISSIZB(IRPBC) *   NDIS(IRPBC)
+C
+  450 CONTINUE
+C
+C     We have (MJ,ln) at I020. Form (Mn,Jl) in two steps :
+C     (MJ,ln) ---> (Ml,Jn) ---> (Mn,Jl)
+C
+      I030 = I020 + LNIJKL
+      I040 = I030 + LNIJKL
+      I050 = I040 + 2 * (NOCA*NOCB + NOCA*NOCB)
+C
+      NEED = IINTFP * I050
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y12C'
+      ENDIF
+C
+      CALL SSTGEN(CORE(I020),CORE(I030),LNIJKL,
+     1        POP(1,1),POP(1,1),POP(1,2),POP(1,2),
+     1        CORE(I040),1,'1324')
+      CALL SSTGEN(CORE(I030),CORE(I020),LNIJKL,
+     1        POP(1,1),POP(1,2),POP(1,1),POP(1,2),
+     1        CORE(I040),1,'1432')
+C
+C     We now have (Mn,Jl) at I020. Sum into Y12 intermediate, noting
+C     the offset is based on irpdpd(irpjl,14) (ie not ioffw as defined
+C     above).
+C
+      IOFFWR = I020
+      DO  590 IRPJL=1,NIRREP
+      IRPMN = IRPJL
+C
+C     Get a symmetry block of Y12(Mn,Jl) at I030.
+C
+      I040 = I030 + IRPDPD(IRPJL,14) * IRPDPD(IRPJL,14)
+      NEED = IINTFP * I040
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y12C'
+      ENDIF
+C
+      CALL GETLIST(CORE(I030),1,IRPDPD(IRPJL,14),1,IRPJL,12)
+C
+      CALL VADD(CORE(I030),CORE(I030),CORE(IOFFWR),
+     1          IRPDPD(IRPJL,14)*IRPDPD(IRPJL,14),-1.0D+00)
+C
+      CALL PUTLIST(CORE(I030),1,IRPDPD(IRPJL,14),1,IRPJL,12)
+C
+      IOFFWR = IOFFWR + IRPDPD(IRPJL,14)*IRPDPD(IRPJL,14)
+  590 CONTINUE
+C
+C     ABAB
+C
+C     MnJl = - MbcJ * lbcn
+C
+C     Read and sort y3 ring intermediates.
+C
+      LEN = 0
+      DO  610 IRREP=1,NIRREP
+      LEN = LEN + IRPDPD(IRREP,12) * IRPDPD(IRREP,12)
+  610 CONTINUE
+C
+C     MbcJ
+C
+      I000 = 1
+      I010 = I000 + LEN
+      I020 = I010 + LEN
+      I030 = I020 +   2 * (NOCA * NOCB + NVRTA * NVRTB)
+C
+      NEED = IINTFP * I030
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y12C'
+      ENDIF
+C
+C     Get the whole list at I010.
+C
+      IF(IUHF.GT.0)THEN
+      CALL GETALL(CORE(I010),LEN,1,59)
+      ELSE
+      CALL GETALL(CORE(I010),LEN,1,58)
+      ENDIF
+C
+C     Sort to different order : cbMJ is at I000.
+C
+      CALL SSTGEN(CORE(I010),CORE(I000),LEN,
+     1        VRT(1,2),POP(1,1),VRT(1,2),POP(1,1),
+     1        CORE(I020),1,'1324')
+C
+C     lbcn
+C
+      LEN = 0
+      DO  620 IRREP=1,NIRREP
+      LEN = LEN + IRPDPD(IRREP,10) * IRPDPD(IRREP,10)
+  620 CONTINUE
+C
+      I020 = I010 + LEN
+      I030 = I020 + LEN
+      I040 = I030 +   2 * (NOCA * NOCB + NVRTA * NVRTB)
+C
+      NEED = IINTFP * I040
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y12C'
+      ENDIF
+C
+C     Get the whole list at I020.
+C
+      IF(IUHF.GT.0)THEN
+      CALL GETALL(CORE(I020),LEN,1,55)
+      ELSE
+      CALL GETALL(CORE(I020),LEN,1,54)
+      ENDIF
+C
+C     Sort to different order : cbln is at I010.
+C
+      CALL SSTGEN(CORE(I020),CORE(I010),LEN,
+     1        VRT(1,2),POP(1,2),VRT(1,2),POP(1,2),
+     1        CORE(I030),1,'1324')
+C
+      LNIJKL = 0
+      DO  640 IRREP=1,NIRREP
+      DISSIZ(IRREP) = IRPDPD(IRREP,14)
+      DISSIZA(IRREP) = 0
+      DISSIZB(IRREP) = 0
+      NDIS(IRREP)   = 0
+      DO  630 JRREP=1,NIRREP
+      KRREP = DIRPRD(IRREP,JRREP)
+      DISSIZA(IRREP) = DISSIZA(IRREP) 
+     1                 + POP(JRREP,1) * POP(KRREP,1)
+      DISSIZB(IRREP) = DISSIZB(IRREP) 
+     1                 + POP(JRREP,2) * POP(KRREP,2)
+      NDIS(IRREP)   = NDIS(IRREP) 
+     1                 + VRT(JRREP,2) * VRT(KRREP,2)
+  630 CONTINUE
+      LNIJKL = LNIJKL + DISSIZA(IRREP) * DISSIZB(IRREP)
+  640 CONTINUE
+C
+      I030 = I020 + LNIJKL
+C
+      NEED = IINTFP * I030
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y12C'
+      ENDIF
+C
+      IOFFY3A = I000
+      IOFFY3B = I010
+      DO  650 IRPBC=1,NIRREP
+C
+      IF(IRPBC.EQ.1)THEN
+      IOFFW(IRPBC) = I020
+      ELSE
+      IOFFW(IRPBC) = IOFFW(IRPBC-1) + DISSIZA(IRPBC-1)*DISSIZB(IRPBC-1)
+      ENDIF
+C
+      CALL XGEMM('T','N',DISSIZA(IRPBC),DISSIZB(IRPBC),NDIS(IRPBC),
+     1            4.0D+00,
+     1            CORE(IOFFY3A),NDIS(IRPBC),
+     1            CORE(IOFFY3B),NDIS(IRPBC),0.0D+00,
+     1            CORE(IOFFW(IRPBC)),DISSIZA(IRPBC))
+C
+      IOFFY3A = IOFFY3A + DISSIZA(IRPBC) *   NDIS(IRPBC)
+      IOFFY3B = IOFFY3B + DISSIZB(IRPBC) *   NDIS(IRPBC)
+C
+  650 CONTINUE
+C
+C     We have (MJ,ln) at I020. Form (Mn,Jl) in two steps :
+C     (MJ,ln) ---> (Ml,Jn) ---> (Mn,Jl)
+C
+      I030 = I020 + LNIJKL
+      I040 = I030 + LNIJKL
+      I050 = I040 + 2 * (NOCA*NOCB + NOCA*NOCB)
+C
+      NEED = IINTFP * I050
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y12C'
+      ENDIF
+C
+      CALL SSTGEN(CORE(I020),CORE(I030),LNIJKL,
+     1        POP(1,1),POP(1,1),POP(1,2),POP(1,2),
+     1        CORE(I040),1,'1324')
+      CALL SSTGEN(CORE(I030),CORE(I020),LNIJKL,
+     1        POP(1,1),POP(1,2),POP(1,1),POP(1,2),
+     1        CORE(I040),1,'1432')
+C
+C     We now have (Mn,Jl) at I020. Sum into Y12 intermediate, noting
+C     the offset is based on irpdpd(irpjl,14) (ie not ioffw as defined
+C     above).
+C
+      IOFFWR = I020
+      DO  790 IRPJL=1,NIRREP
+      IRPMN = IRPJL
+C
+C     Get a symmetry block of Y12(Mn,Jl) at I030.
+C
+      I040 = I030 + IRPDPD(IRPJL,14) * IRPDPD(IRPJL,14)
+      NEED = IINTFP * I040
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y12C'
+      ENDIF
+C
+      CALL GETLIST(CORE(I030),1,IRPDPD(IRPJL,14),1,IRPJL,12)
+C
+      CALL VADD(CORE(I030),CORE(I030),CORE(IOFFWR),
+     1          IRPDPD(IRPJL,14)*IRPDPD(IRPJL,14),-1.0D+00)
+C
+      CALL PUTLIST(CORE(I030),1,IRPDPD(IRPJL,14),1,IRPJL,12)
+C
+      IOFFWR = IOFFWR + IRPDPD(IRPJL,14)*IRPDPD(IRPJL,14)
+  790 CONTINUE
+C
+C     MnJl = - (- nBcJ * lBcM)
+C
+C     Read and sort y3 ring intermediates.
+C
+      LEN = 0
+      DO  810 IRREP=1,NIRREP
+      LEN = LEN + IRPDPD(IRREP,11) * IRPDPD(IRREP,12)
+  810 CONTINUE
+C
+C     nBcJ
+C
+      I000 = 1
+      I010 = I000 + LEN
+      I020 = I010 + LEN
+      I030 = I020 +   2 * (NOCA * NOCB + NVRTA * NVRTB)
+C
+      NEED = IINTFP * I030
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y12C'
+      ENDIF
+C
+C     Get the whole list at I010.
+C
+      IF(IUHF.GT.0)THEN
+      CALL GETALL(CORE(I010),LEN,1,57)
+      ELSE
+      CALL GETALL(CORE(I010),LEN,1,56)
+      ENDIF
+C
+C     Sort to different order : cBnJ is at I000.
+C
+      CALL SSTGEN(CORE(I010),CORE(I000),LEN,
+     1        VRT(1,2),POP(1,2),VRT(1,1),POP(1,1),
+     1        CORE(I020),1,'1324')
+C
+      LNIJKL = 0
+      DO  840 IRREP=1,NIRREP
+      DISSIZ(IRREP) = IRPDPD(IRREP,14)
+      NDIS(IRREP)   = 0
+      DO  830 JRREP=1,NIRREP
+      KRREP = DIRPRD(IRREP,JRREP)
+      NDIS(IRREP)   = NDIS(IRREP) 
+     1                 + VRT(JRREP,1) * VRT(KRREP,2)
+  830 CONTINUE
+      LNIJKL = LNIJKL + DISSIZ(IRREP) * DISSIZ(IRREP)
+  840 CONTINUE
+C
+      I020 = I010 + LNIJKL
+C
+      NEED = IINTFP * I020
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y12C'
+      ENDIF
+C
+      IOFFY3 = I000
+      DO  850 IRPBC=1,NIRREP
+C
+      IF(IRPBC.EQ.1)THEN
+      IOFFW(IRPBC) = I010
+      ELSE
+      IOFFW(IRPBC) = IOFFW(IRPBC-1) + DISSIZ(IRPBC-1)*DISSIZ(IRPBC-1)
+      ENDIF
+C
+      CALL XGEMM('T','N',DISSIZ(IRPBC),DISSIZ(IRPBC),NDIS(IRPBC),
+     1            4.0D+00,
+     1            CORE(IOFFY3),NDIS(IRPBC),
+     1            CORE(IOFFY3),NDIS(IRPBC),0.0D+00,
+     1            CORE(IOFFW(IRPBC)),DISSIZ(IRPBC))
+C
+      IOFFY3 = IOFFY3 + DISSIZ(IRPBC) *   NDIS(IRPBC)
+C
+  850 CONTINUE
+C
+C     We have (nJ,lM) at I010. Form (Mn,Jl) in several steps :
+C     (nJ,lM) ---> (nM,lJ) ---> (Mn,lJ) ---> (Mn,Jl)
+C
+      I030 = I020 + LNIJKL
+      I040 = I030 + 2 * (NOCA*NOCB + NOCA*NOCB)
+C
+      NEED = IINTFP * I040
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y12C'
+      ENDIF
+C
+      CALL SSTGEN(CORE(I010),CORE(I020),LNIJKL,
+     1        POP(1,2),POP(1,1),POP(1,2),POP(1,1),
+     1        CORE(I030),1,'1432')
+C
+      IOFFWR = I020
+      DO  860 IRREP=1,NIRREP
+C
+      I040 = I030 + IRPDPD(IRREP,14)
+      I050 = I040 + IRPDPD(IRREP,14)
+      I060 = I050 + IRPDPD(IRREP,14)
+C
+      CALL SYMTR3(IRREP,POP(1,2),POP(1,1),IRPDPD(IRREP,14),
+     1            IRPDPD(IRREP,14),CORE(IOFFWR),
+     1            CORE(I030),CORE(I040),CORE(I050))
+C
+      CALL SYMTR1(IRREP,POP(1,2),POP(1,1),IRPDPD(IRREP,14),
+     1            CORE(IOFFWR),
+     1            CORE(I030),CORE(I040),CORE(I050))
+C
+      IOFFWR = IOFFWR + IRPDPD(IRREP,14) * IRPDPD(IRREP,14)
+C
+  860 CONTINUE
+C
+C     We now have (Mn,Jl) at I020. Sum into Y12 intermediate.
+C
+      IOFFWR = I020
+      DO  990 IRPJL=1,NIRREP
+      IRPMN = IRPJL
+C
+C     Get a symmetry block of Y12(Mn,Jl) at I030.
+C
+      I040 = I030 + IRPDPD(IRPJL,14) * IRPDPD(IRPJL,14)
+      NEED = IINTFP * I040
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y12C'
+      ENDIF
+C
+      CALL GETLIST(CORE(I030),1,IRPDPD(IRPJL,14),1,IRPJL,12)
+C
+      CALL VADD(CORE(I030),CORE(I030),CORE(IOFFWR),
+     1          IRPDPD(IRPJL,14)*IRPDPD(IRPJL,14), 1.0D+00)
+C
+      CALL PUTLIST(CORE(I030),1,IRPDPD(IRPJL,14),1,IRPJL,12)
+C
+      IOFFWR = IOFFWR + IRPDPD(IRPJL,14)*IRPDPD(IRPJL,14)
+  990 CONTINUE
+      RETURN
+      END

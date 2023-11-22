@@ -1,0 +1,6520 @@
+C 19 SEP 05 - MWS - FORMS,GENRAL: PART OF THE H+I CHANGES MADE
+C  5 JUL 05 - MWS - SELECT NEW ATOM,BASIS,EFP,PCM,DAF DIMENSIONS
+C  1 JUN 05 - TJP - DSPDFV,DIRFCK: FIX, INCLUDE UHF,ROHF,GVB PARTS
+C 13 FEB 05 - MWS - PAD COMMON BLOCK NSHEL, ROOT
+C  7 SEP 04 - MWS - DIRFCKV: CHANGE INTEGRAL UNPACKING LOOP
+C  7 SEP 04 - TJP - DIRFCKV: CHANGE DIMENSIONS IN DIRFCKV BY ONE
+C  4 NOV 03 - TJP - ADD DIRFCKV,GENRAL,FORMSV,XYZINTV,RT123V
+C 26 MAR 03 - KRG - TFTRI,MTARBR: USE DSYMM INSTEAD OF DGEMM
+C 26 MAR 02 - CMC - CRAY COMPILER BUG REQUIRES DIRECTIVES IN JKXYZV
+C 12 NOV 98 - MWS - REMOVE *ALL, *AMD, *ARD, *CEL, *CVX, *VAX SUPPORT
+C 13 APR 98 - AR,AR,AJL - FUJITSU USES STANDARD DGEMM MATRIX OPERATIONS
+C 14 AUG 95 - JF  - CHANGES FOR NEC SX3 VECTORIZATION
+C 26 JUL 95 - MWS - REMOVE DREAL
+C 11 NOV 94 - MWS - REMOVE SOME FTNCHEK WARNINGS
+C 10 AUG 94 - MWS - INCREASE NUMBER OF DAF RECORDS
+C 21 JUL 94 - MWS - ADD DSPDFV,JDXYZV,JKGNMV,JKXYZV; DELETE SPDD,TRNRK
+C  1 JUN 94 - MWS - DELETE TRNSIM
+C 11 MAR 94 - FM  - HSTARU: CRAY VECTOR LENGTH FROM 64 TO 128
+C  5 APR 94 - MWS - ADD A VARIABLE TO MACHSW, INCLUDE MRTRBR
+C 15 JUN 92 - MWS - DELETE SUBROUTINE MTATBS
+C 12 MAR 92 - MWS - REDIMENSION TO 500 ATOMS
+C 10 JAN 92 - TLW - CHANGE REWINDS TO CALL SEQREW
+C  8 JAN 92 - TLW - MAKE WRITES PARALLEL; ADD COMMON PAR
+C  8 JAN 92 - CWS - VAX SUPPORT: USE DGEMM IF DXML PRESENT, OTHERWISE
+C                   USE MXMULT, INCLUDE VECTORIZED HSTARU ROUTINE
+C 28 AUG 91 - RHN - ADDED FUJITSU (*FUJ) SUPPORT
+C  9 AUG 91 - TLW - REDIMENSION FORMS FOR F AND G FUCTIONS
+C 14 JUL 91 - MWS - GLDIAG: JACOBI NEEDS STORAGE FOR ALL VECTORS
+C 29 JAN 91 - TLW - GLDIAG: CHANGED COMMON DIAGSW TO MACHSW AND
+C                   ADDED ICORFL
+C 13 NOV 90 - FJ  - FIX AMDAHL VERSION IN TFSQB,TFTRI
+C  2 NOV 90 - MWS - CHANGE /INDEX/ TO /INTDEX/
+C 23 MAR 90 - MWS - GLDIAG CALLS JACDIA IF KDIAG=3
+C  5 DEC 89 - MWS - IBM COMPILER BUG REQUIRES DIRECTIVES IN SPDD.
+C 21 OCT 89 - DAVID MULLALLY AND MWS - FORMS,SPDD,JDDSPD: VECTORIZE
+C                   ON IJ WHEN LONGER THAN KL, REMOVE DIRECTIVES.
+C  8 AUG 89 - MWS - DELETE VECTORIZED SLVLEQ ROUTINE
+C 20 JUL 89 - TLW - ADDED *ARD LINES, AND ROUTINE MXMULT
+C  5 JUL 89 - FJ  - ADDED AMDAHL (*AMD) SUPPORT (SSL II AND VOCL)
+C 22 MAY 89 - MWS - ADD FPS MODEL 500 (*CEL) SUPPORT (VAST-2 LIBRARY)
+C 21 FEB 89 - STE - CRAY DIRECTIVES IN FORMS AND SPDD
+C 17 FEB 89 - MWS - CHANGE GLDIAG TO USE IBM'S ESSL VERSION 3.
+C 19 JAN 89 - MWS - ADD VECTORIZED JDDSPD
+C 11 OCT 88 - MWS - PASS WORKING STORAGE TO TRNRK AND TRNSIM
+C 12 SEP 88 - JAM - ADD CONVEX (*CVX) AND ALLIANT (*ALL) SUPPORT
+C  8 JUN 88 - MWS - ADD VECTORIZED TRNSIM AND TRNRK ROUTINES
+C  1 JUN 88 - MWS - ADD VECTORIZED SPDD ROUTINE
+C 22 MAY 88 - MWS - ADD VECTORIZED FORMS ROUTINE
+C 11 MAY 88 - MWS AND RICHARD WALSH - ADD CRAY SUPPORT
+C  7 APR 88 - MWS - NEW MODULE CREATED TO SUPPORT VECTOR MACHINES.
+C*MODULE VECTOR
+C  ---------------------------------------------------------------
+C  THIS CODE SHOULD NOT BE COMPILED ON SCALAR MACHINES.
+C  ---------------------------------------------------------------
+C  THE SUBROUTINES IN THIS MODULE HAVE THE **SAME** NAMES AS OTHER
+C  SUBROUTINES IN OTHER GAMESS MODULES, SHOWN ON THE *DECK CARDS.
+C  THESE VECTORIZED ROUTINES ARE INTENDED TO REPLACE THEIR SCALAR
+C  COUTERPARTS ON VECTOR MACHINES.  THIS IS DONE BY LOADING THESE
+C  ROUTINES **BEFORE** THE OBJECT CODE FOR THEIR SCALAR VERSIONS.
+C  ---------------------------------------------------------------
+C  SUPPORTED MACHINES ARE
+C      *CRY - CRAY RESEARCH
+C      *FUJ - FUJITSU VECTOR PROCESSORS
+C      *IBM - IBM 3090 SERIES WITH VECTOR FACILITY
+C      *NEC - NEC SX-3 SUPER-UX
+C  ---------------------------------------------------------------
+C  SCALAR MACHINES ABORT IN CASE THIS IS ACCIDENTALLY COMPILED.
+C  ---------------------------------------------------------------
+C  THERE USED TO BE DIRECTIVES LIKE THIS
+C         CDIR$ IVDEP
+C         C$DIR NO_RECURRENCE
+C         CVD$  NODEPCHK
+C         *VOCL LOOP,NOVREC
+C  IN FRONT OF THE SCALAR LOOPS IN FORMS,SPDD,JDDSPD.
+C  IN CASE I WANT THEM AGAIN, WE KEEP THESE COMMENTS HERE.
+C  CDIR$  DIRECTIVES ARE FOR CRAY MACHINES
+C  C$DIR  DIRECTIVES ARE FOR CONVEX
+C  CVD$   DIRECTIVES ARE FOR THE VAST PREPROCESSOR
+C         (ALLIANT, FPS 500)
+C  *VOCL  DIRECTIVES ARE FOR AMDAHL/FUJITSU
+C  CDEC$  DIRECTIVES ARE FOR VAX (ONLY INHIBITOR DIRECTIVES USED)
+C  ---------------------------------------------------------------
+C*MODULE VECTOR  *DECK DSPDFV       (GRD2C)
+      SUBROUTINE xDSPDFV(NG,NR,IJKLG,GIJKL,FIJKL,SIJKL,XYZ,
+     1 FIXYZ,FJXYZ,FKXYZ,FLXYZ,SIIXYZ,SJJXYZ,SKKXYZ,SLLXYZ,
+     2 SIJXYZ,SIKXYZ,SILXYZ,SJKXYZ,SJLXYZ,SKLXYZ,
+     3 XY,XZ,YZ,X,Y,Z,SJ,SK,SL,DIJSI,DIJSJ,DKLSK,DKLSL,DAB)
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      LOGICAL IS,JS,KS,LS
+      LOGICAL IJS,IJKS,IJKLS
+      LOGICAL IIEQJJ,KKEQLL,IJEQKL,IJGTKL,IJLTKL
+      LOGICAL SPI,SPJ,SPK,SPL,SPIJ,SPKL,SPIJKL
+      LOGICAL SKIPI,SKIPJ,SKIPK,SKIPL
+      LOGICAL OUT,DBG,USE_SYM
+      COMMON /xDSHLNO/ LIT,LJT,LKT,LLT,LOCI,LOCJ,LOCK,LOCL,
+     *                MINI,MINJ,MINK,MINL,MAXI,MAXJ,MAXK,MAXL,
+     *                NIJ,IJD,KLD,IJ,KL
+      COMMON /xDSHLT / RTOL,DTOL,VTOL1,VTOL2,VTOLS,OUT,DBG
+      COMMON/xDERSKP/IIAT,JJAT,KKAT,LLAT,SKIPI,SKIPJ,SKIPK,SKIPL
+      COMMON/xDERPAR/IDER,JDER,KDER,LDER,NDER
+      COMMON/xDERSHL/FD(12),SD(78)
+      COMMON/xSHLEQU/IIEQJJ,KKEQLL,IJEQKL,IJGTKL,IJLTKL,USE_SYM
+      COMMON/xSHLTYP/SPI,SPJ,SPK,SPL,SPIJ,SPKL,SPIJKL
+      DIMENSION GIJKL(1),FIJKL(12,1),SIJKL(78,1),IJKLG(4,1)
+      DIMENSION DAB(1)
+      DIMENSION    XYZ(NG*NR,1)
+      DIMENSION  FIXYZ(NG*NR,1), FJXYZ(NG*NR,1)
+      DIMENSION  FKXYZ(NG*NR,1), FLXYZ(NG*NR,1)
+      DIMENSION SIIXYZ(NG*NR,1),SJJXYZ(NG*NR,1)
+      DIMENSION SKKXYZ(NG*NR,1),SLLXYZ(NG*NR,1)
+      DIMENSION SIJXYZ(NG*NR,1),SIKXYZ(NG*NR,1)
+      DIMENSION SILXYZ(NG*NR,1),SJKXYZ(NG*NR,1)
+      DIMENSION SJLXYZ(NG*NR,1),SKLXYZ(NG*NR,1)
+      DIMENSION XY(NG*NR),XZ(NG*NR),YZ(NG*NR)
+      DIMENSION  X(NG*NR), Y(NG*NR), Z(NG*NR)
+      DIMENSION SJ(NG*NR),SK(NG*NR),SL(NG*NR)
+      DIMENSION DIJSI(NG*NR),DIJSJ(NG*NR),DKLSK(NG*NR),DKLSL(NG*NR)
+C
+      DIMENSION FDUM((MAXI+1)*(MAXJ+1)*(MAXK+1)*(MAXL+1)*2)
+      DIMENSION FDTMP((MAXI+1)*(MAXJ+1)*(MAXK+1)*(MAXL+1)*2,12)
+      DIMENSION TMPSL((MAXI+1)*(MAXJ+1)*(MAXK+1)*(MAXL+1)*2,NG*NR)
+C
+      PARAMETER (ZERO=0.0D+00)
+C
+C     ----- FIND IJKLNMAX -----
+C     LET'S COMPUTE IJKLNMAX AHEAD OF TIME SO WE CAN REMOVE THE
+C     VECTOR DEPENDENCE AND COLLAPSE QUAD-LOOPS INTO SINGLE LOOPS.
+C     (ALL STORES IN THIS ROUTINE ARE DEPENDENT ONLY ON IJKLN)
+C
+      IJKLN=0
+      DO I=MINI,MAXI
+        JMAX=MAXJ
+        IF(IIEQJJ) JMAX=I
+        DO J=MINJ,JMAX
+          KMAX=MAXK
+          IF(IJEQKL) KMAX=I
+          DO K=MINK,KMAX
+            LMAX=MAXL
+            IF(KKEQLL           ) LMAX=K
+            IF(IJEQKL.AND.K.EQ.I) LMAX=J
+            DO L=MINL,LMAX
+              IJKLN=IJKLN+1
+            END DO
+          END DO
+        END DO
+      END DO
+      IJKLNMAX=IJKLN
+C
+      IF(SPIJKL) GO TO 1000
+C
+C     ----- NO SHARED EXPONENTS ; SUM UP ( IX * IY * IZ ) -----
+C
+      IF(NDER.LT.1) GO TO 700
+C
+C     ----- GRADIENT : COMPUTE VALUES -----
+C
+      IJKLN=0
+      DUMFD1 =ZERO
+      DUMFD2 =ZERO
+      DUMFD3 =ZERO
+      DUMFD4 =ZERO
+      DUMFD5 =ZERO
+      DUMFD6 =ZERO
+      DUMFD7 =ZERO
+      DUMFD8 =ZERO
+      DUMFD9 =ZERO
+      DUMFD10 =ZERO
+      DUMFD11 =ZERO
+      DUMFD12 =ZERO
+      DO 590 IJKLN=1,IJKLNMAX
+        NN=IJKLG(1,IJKLN)
+        NX=IJKLG(2,IJKLN)
+        NY=IJKLG(3,IJKLN)
+        NZ=IJKLG(4,IJKLN)
+        DUMFXI =ZERO
+        DUMFYI =ZERO
+        DUMFZI =ZERO
+        DUMFXJ =ZERO
+        DUMFYJ =ZERO
+        DUMFZJ =ZERO
+        DUMFXK =ZERO
+        DUMFYK =ZERO
+        DUMFZK =ZERO
+        DUMFXL =ZERO
+        DUMFYL =ZERO
+        DUMFZL =ZERO
+        DO 540 IGR=1,NG*NR
+          DUMXY=XYZ(IGR,NX)*XYZ(IGR,NY)
+          DUMXZ=XYZ(IGR,NX)*XYZ(IGR,NZ)
+          DUMYZ=XYZ(IGR,NY)*XYZ(IGR,NZ)
+          IF(SKIPI) GO TO 500
+            DUMFXI =DUMFXI + FIXYZ(IGR,NX)*DUMYZ
+            DUMFYI =DUMFYI + FIXYZ(IGR,NY)*DUMXZ
+            DUMFZI =DUMFZI + FIXYZ(IGR,NZ)*DUMXY
+  500     IF(SKIPJ) GO TO 510
+            DUMFXJ =DUMFXJ + FJXYZ(IGR,NX)*DUMYZ
+            DUMFYJ =DUMFYJ + FJXYZ(IGR,NY)*DUMXZ
+            DUMFZJ =DUMFZJ + FJXYZ(IGR,NZ)*DUMXY
+  510     IF(SKIPK) GO TO 520
+            DUMFXK =DUMFXK + FKXYZ(IGR,NX)*DUMYZ
+            DUMFYK =DUMFYK + FKXYZ(IGR,NY)*DUMXZ
+            DUMFZK =DUMFZK + FKXYZ(IGR,NZ)*DUMXY
+  520     IF(SKIPL) GO TO 530
+            DUMFXL =DUMFXL + FLXYZ(IGR,NX)*DUMYZ
+            DUMFYL =DUMFYL + FLXYZ(IGR,NY)*DUMXZ
+            DUMFZL =DUMFZL + FLXYZ(IGR,NZ)*DUMXY
+  530     CONTINUE
+  540   CONTINUE
+        IF(SKIPI) GO TO 550
+          DUMFD1=DUMFD1+DAB(NN)*DUMFXI
+          DUMFD2=DUMFD2+DAB(NN)*DUMFYI
+          DUMFD3=DUMFD3+DAB(NN)*DUMFZI
+  550   IF(SKIPJ) GO TO 560
+          DUMFD4=DUMFD4+DAB(NN)*DUMFXJ
+          DUMFD5=DUMFD5+DAB(NN)*DUMFYJ
+          DUMFD6=DUMFD6+DAB(NN)*DUMFZJ
+  560   IF(SKIPK) GO TO 570
+          DUMFD7=DUMFD7+DAB(NN)*DUMFXK
+          DUMFD8=DUMFD8+DAB(NN)*DUMFYK
+          DUMFD9=DUMFD9+DAB(NN)*DUMFZK
+  570   IF(SKIPL) GO TO 580
+          DUMFD10=DUMFD10+DAB(NN)*DUMFXL
+          DUMFD11=DUMFD11+DAB(NN)*DUMFYL
+          DUMFD12=DUMFD12+DAB(NN)*DUMFZL
+  580   CONTINUE
+  590 CONTINUE
+C
+C     ----- GRADIENT:STORE VALUES -----
+C       MOVE THE STORES OUT OF THE LOOP TO PREVENT
+C       LIMITATIONS BY CRITICAL VALUES
+C
+      IF(SKIPI) GO TO 600
+        FD( 1)=FD(1)+DUMFD1
+        FD( 2)=FD(2)+DUMFD2
+        FD( 3)=FD(3)+DUMFD3
+  600 IF(SKIPJ) GO TO 620
+        FD( 4)=FD(4)+DUMFD4
+        FD( 5)=FD(5)+DUMFD5
+        FD( 6)=FD(6)+DUMFD6
+  620 IF(SKIPK) GO TO 640
+        FD( 7)=FD(7)+DUMFD7
+        FD( 8)=FD(8)+DUMFD8
+        FD( 9)=FD(9)+DUMFD9
+  640 IF(SKIPL) GO TO 660
+        FD(10)=FD(10)+DUMFD10
+        FD(11)=FD(11)+DUMFD11
+        FD(12)=FD(12)+DUMFD12
+  660 CONTINUE
+C
+C     ----- ZEROTH AND FIRST DERIVATIVE INTEGRALS -----
+C             CALCULATE VALUES
+C
+  700 IF(.NOT.OUT) RETURN
+C
+      DO 940 IJKLN=1,IJKLNMAX
+        NN=IJKLG(1,IJKLN)
+        NX=IJKLG(2,IJKLN)
+        NY=IJKLG(3,IJKLN)
+        NZ=IJKLG(4,IJKLN)
+        DUM=ZERO
+        DUMFXI =ZERO
+        DUMFYI =ZERO
+        DUMFZI =ZERO
+        DUMFXJ =ZERO
+        DUMFYJ =ZERO
+        DUMFZJ =ZERO
+        DUMFXK =ZERO
+        DUMFYK =ZERO
+        DUMFZK =ZERO
+        DUMFXL =ZERO
+        DUMFYL =ZERO
+        DUMFZL =ZERO
+        DO 890 IGR=1,NG*NR
+          DUM=DUM+XYZ(IGR,NX)*XYZ(IGR,NY)*XYZ(IGR,NZ)
+          DUMXY=XYZ(IGR,NX)*XYZ(IGR,NY)
+          DUMXZ=XYZ(IGR,NX)*XYZ(IGR,NZ)
+          DUMYZ=XYZ(IGR,NY)*XYZ(IGR,NZ)
+          IF(SKIPI) GO TO 850
+            DUMFXI =DUMFXI + FIXYZ(IGR,NX)*DUMYZ
+            DUMFYI =DUMFYI + FIXYZ(IGR,NY)*DUMXZ
+            DUMFZI =DUMFZI + FIXYZ(IGR,NZ)*DUMXY
+  850     IF(SKIPJ) GO TO 860
+            DUMFXJ =DUMFXJ + FJXYZ(IGR,NX)*DUMYZ
+            DUMFYJ =DUMFYJ + FJXYZ(IGR,NY)*DUMXZ
+            DUMFZJ =DUMFZJ + FJXYZ(IGR,NZ)*DUMXY
+  860     IF(SKIPK) GO TO 870
+            DUMFXK =DUMFXK + FKXYZ(IGR,NX)*DUMYZ
+            DUMFYK =DUMFYK + FKXYZ(IGR,NY)*DUMXZ
+            DUMFZK =DUMFZK + FKXYZ(IGR,NZ)*DUMXY
+  870     IF(SKIPL) GO TO 880
+            DUMFXL =DUMFXL + FLXYZ(IGR,NX)*DUMYZ
+            DUMFYL =DUMFYL + FLXYZ(IGR,NY)*DUMXZ
+            DUMFZL =DUMFZL + FLXYZ(IGR,NZ)*DUMXY
+  880     CONTINUE
+  890   CONTINUE
+        FDUM(IJKLN)=DUM
+        IF(SKIPI) GO TO 900
+          FDTMP(IJKLN,1)=DUMFXI
+          FDTMP(IJKLN,2)=DUMFYI
+          FDTMP(IJKLN,3)=DUMFZI
+  900   IF(SKIPJ) GO TO 910
+          FDTMP(IJKLN,4)=DUMFXJ
+          FDTMP(IJKLN,5)=DUMFYJ
+          FDTMP(IJKLN,6)=DUMFZJ
+  910   IF(SKIPK) GO TO 920
+          FDTMP(IJKLN,7)=DUMFXK
+          FDTMP(IJKLN,8)=DUMFYK
+          FDTMP(IJKLN,9)=DUMFZK
+  920   IF(SKIPL) GO TO 930
+          FDTMP(IJKLN,10)=DUMFXL
+          FDTMP(IJKLN,11)=DUMFYL
+          FDTMP(IJKLN,12)=DUMFZL
+  930   CONTINUE
+  940 CONTINUE
+C
+C     ----- ZEROTH AND FIRST DERIVATIVE INTEGRALS -----
+C     ----- STORE VALUES -----
+C
+      DO IJKLN=1,IJKLNMAX
+        NN=IJKLG(1,IJKLN)
+        GIJKL(NN)=GIJKL(NN)+FDUM(IJKLN)
+        IF(SKIPI) GO TO 950
+          FIJKL( 1,NN)=FIJKL( 1,NN)+FDTMP(IJKLN,1)
+          FIJKL( 2,NN)=FIJKL( 2,NN)+FDTMP(IJKLN,2)
+          FIJKL( 3,NN)=FIJKL( 3,NN)+FDTMP(IJKLN,3)
+  950   IF(SKIPJ) GO TO 960
+          FIJKL( 4,NN)=FIJKL( 4,NN)+FDTMP(IJKLN,4)
+          FIJKL( 5,NN)=FIJKL( 5,NN)+FDTMP(IJKLN,5)
+          FIJKL( 6,NN)=FIJKL( 6,NN)+FDTMP(IJKLN,6)
+  960   IF(SKIPK) GO TO 970
+          FIJKL( 7,NN)=FIJKL( 7,NN)+FDTMP(IJKLN,7)
+          FIJKL( 8,NN)=FIJKL( 8,NN)+FDTMP(IJKLN,8)
+          FIJKL( 9,NN)=FIJKL( 9,NN)+FDTMP(IJKLN,9)
+  970   IF(SKIPL) GO TO 980
+          FIJKL(10,NN)=FIJKL(10,NN)+FDTMP(IJKLN,10)
+          FIJKL(11,NN)=FIJKL(11,NN)+FDTMP(IJKLN,11)
+          FIJKL(12,NN)=FIJKL(12,NN)+FDTMP(IJKLN,12)
+  980   CONTINUE
+      END DO
+      RETURN
+C
+ 1000 CONTINUE
+C
+C     ----- SHARED EXPONENTS ; FORM ( IX * IY * IZ ) -----
+C
+C     ----- COMPUTE SL(IGR) AHEAD OF TIME -----
+C
+      IJKLN=0
+      DO I=MINI,MAXI
+        IS=SPI.AND.I.EQ.1
+        JMAX=MAXJ
+        IF(IIEQJJ) JMAX=I
+        KMAX=MAXK
+        IF(IJEQKL) KMAX=I
+        DO J=MINJ,JMAX
+          JS=SPJ.AND.J.EQ.1
+          IJS=IS.OR.JS
+          IF(IJS) THEN
+            DO IGR=1,NG*NR
+              IF(JS.AND.IS) THEN
+                SJ(IGR)=DIJSJ(IGR)*DIJSI(IGR)
+              ELSE IF(JS) THEN
+                SJ(IGR)=DIJSJ(IGR)
+              ELSE IF(IS) THEN
+                SJ(IGR)=DIJSI(IGR)
+              ENDIF
+            END DO
+          ENDIF
+          DO K=MINK,KMAX
+            KS=SPK.AND.K.EQ.1
+            IJKS=IJS.OR.KS
+            IF(IJKS) THEN
+              DO IGR=1,NG*NR
+                IF(KS.AND.IJS) THEN
+                  SK(IGR)=DKLSK(IGR)*SJ(IGR)
+                ELSE IF(KS) THEN
+                  SK(IGR)=DKLSK(IGR)
+                ELSE IF(IJS) THEN
+                  SK(IGR)=SJ(IGR)
+                ENDIF
+              END DO
+            ENDIF
+            LMAX=MAXL
+            IF(KKEQLL           ) LMAX=K
+            IF(IJEQKL.AND.K.EQ.I) LMAX=J
+            DO L=MINL,LMAX
+              IJKLN=IJKLN+1
+              LS=SPL.AND.L.EQ.1
+              IJKLS=IJKS.OR.LS
+              IF (.NOT.IJKLS) THEN
+                DO IGR=1,NG*NR
+                  TMPSL(IJKLN,IGR)=1
+                END DO
+              ELSE
+                DO IGR=1,NG*NR
+                  IF(LS.AND.IJKS) THEN
+                    SL(IGR)=DKLSL(IGR)*SK(IGR)
+                  ELSE IF(LS) THEN
+                    SL(IGR)=DKLSL(IGR)
+                  ELSE IF(IJKS) THEN
+                    SL(IGR)=SK(IGR)
+                  ENDIF
+                  TMPSL(IJKLN,IGR)=SL(IGR)
+                END DO
+              ENDIF
+            END DO  ! END OF L LOOP
+          END DO    ! END OF K LOOP
+        END DO      ! END OF J LOOP
+      END DO        ! END OF I LOOP
+C
+      IF(NDER.LT.1) GO TO 3000
+C
+C
+C     ----- GRADIENT : COMPUTE VALUES -----
+C
+      DUMFD1 =ZERO
+      DUMFD2 =ZERO
+      DUMFD3 =ZERO
+      DUMFD4 =ZERO
+      DUMFD5 =ZERO
+      DUMFD6 =ZERO
+      DUMFD7 =ZERO
+      DUMFD8 =ZERO
+      DUMFD9 =ZERO
+      DUMFD10 =ZERO
+      DUMFD11 =ZERO
+      DUMFD12 =ZERO
+      DO IGR=1,NG*NR
+        DUMFXI =ZERO
+        DUMFYI =ZERO
+        DUMFZI =ZERO
+        DUMFXJ =ZERO
+        DUMFYJ =ZERO
+        DUMFZJ =ZERO
+        DUMFXK =ZERO
+        DUMFYK =ZERO
+        DUMFZK =ZERO
+        DUMFXL =ZERO
+        DUMFYL =ZERO
+        DUMFZL =ZERO
+        DO IJKLN=1,IJKLNMAX
+          NN=IJKLG(1,IJKLN)
+          NX=IJKLG(2,IJKLN)
+          NY=IJKLG(3,IJKLN)
+          NZ=IJKLG(4,IJKLN)
+          DABNN = DAB(NN)
+          DUMXY=DABNN*XYZ(IGR,NX)*XYZ(IGR,NY)*TMPSL(IJKLN,IGR)
+          DUMXZ=DABNN*XYZ(IGR,NX)*XYZ(IGR,NZ)*TMPSL(IJKLN,IGR)
+          DUMYZ=DABNN*XYZ(IGR,NY)*XYZ(IGR,NZ)*TMPSL(IJKLN,IGR)
+          IF(.NOT. SKIPI) THEN
+            DUMFXI =DUMFXI + FIXYZ(IGR,NX)*DUMYZ
+            DUMFYI =DUMFYI + FIXYZ(IGR,NY)*DUMXZ
+            DUMFZI =DUMFZI + FIXYZ(IGR,NZ)*DUMXY
+          END IF
+          IF(.NOT. SKIPJ) THEN
+            DUMFXJ =DUMFXJ + FJXYZ(IGR,NX)*DUMYZ
+            DUMFYJ =DUMFYJ + FJXYZ(IGR,NY)*DUMXZ
+            DUMFZJ =DUMFZJ + FJXYZ(IGR,NZ)*DUMXY
+          END IF
+          IF(.NOT. SKIPK) THEN
+            DUMFXK =DUMFXK + FKXYZ(IGR,NX)*DUMYZ
+            DUMFYK =DUMFYK + FKXYZ(IGR,NY)*DUMXZ
+            DUMFZK =DUMFZK + FKXYZ(IGR,NZ)*DUMXY
+          END IF
+          IF(.NOT. SKIPL) THEN
+            DUMFXL =DUMFXL + FLXYZ(IGR,NX)*DUMYZ
+            DUMFYL =DUMFYL + FLXYZ(IGR,NY)*DUMXZ
+            DUMFZL =DUMFZL + FLXYZ(IGR,NZ)*DUMXY
+          END IF
+        END DO
+        IF(.NOT. SKIPI) THEN
+          DUMFD1=DUMFD1 + DUMFXI
+          DUMFD2=DUMFD2 + DUMFYI
+          DUMFD3=DUMFD3 + DUMFZI
+        END IF
+        IF(.NOT. SKIPJ) THEN
+          DUMFD4=DUMFD4 + DUMFXJ
+          DUMFD5=DUMFD5 + DUMFYJ
+          DUMFD6=DUMFD6 + DUMFZJ
+        END IF
+        IF(.NOT. SKIPK) THEN
+          DUMFD7=DUMFD7 + DUMFXK
+          DUMFD8=DUMFD8 + DUMFYK
+          DUMFD9=DUMFD9 + DUMFZK
+        END IF
+        IF(.NOT. SKIPL) THEN
+          DUMFD10=DUMFD10 + DUMFXL
+          DUMFD11=DUMFD11 + DUMFYL
+          DUMFD12=DUMFD12 + DUMFZL
+        END IF
+      END DO
+C
+C     ----- GRADIENT:STORE VALUES -----
+C
+      IF(.NOT. SKIPI) THEN
+        FD( 1) = FD( 1) + DUMFD1
+        FD( 2) = FD( 2) + DUMFD2
+        FD( 3) = FD( 3) + DUMFD3
+      END IF
+      IF(.NOT. SKIPJ) THEN
+        FD( 4) = FD( 4) + DUMFD4
+        FD( 5) = FD( 5) + DUMFD5
+        FD( 6) = FD( 6) + DUMFD6
+      END IF
+      IF(.NOT. SKIPK) THEN
+        FD( 7) = FD( 7) + DUMFD7
+        FD( 8) = FD( 8) + DUMFD8
+        FD( 9) = FD( 9) + DUMFD9
+      END IF
+      IF(.NOT. SKIPL) THEN
+        FD(10) = FD(10) + DUMFD10
+        FD(11) = FD(11) + DUMFD11
+        FD(12) = FD(12) + DUMFD12
+      END IF
+C
+ 3000 CONTINUE
+C
+C     ----- ZEROTH AND FIRST DERIVATIVE INTEGRALS -----
+C     ----- COMPUTE VALUES -----
+C
+      IF(.NOT.OUT) RETURN
+C
+      DO IJKLN=1,IJKLNMAX
+        NX=IJKLG(2,IJKLN)
+        NY=IJKLG(3,IJKLN)
+        NZ=IJKLG(4,IJKLN)
+        DUM    =ZERO
+        DUMFXI =ZERO
+        DUMFYI =ZERO
+        DUMFZI =ZERO
+        DUMFXJ =ZERO
+        DUMFYJ =ZERO
+        DUMFZJ =ZERO
+        DUMFXK =ZERO
+        DUMFYK =ZERO
+        DUMFZK =ZERO
+        DUMFXL =ZERO
+        DUMFYL =ZERO
+        DUMFZL =ZERO
+        DO IGR=1,NG*NR
+          DUMXY=XYZ(IGR,NX)*XYZ(IGR,NY)*TMPSL(IJKLN,IGR)
+          DUMXZ=XYZ(IGR,NX)*XYZ(IGR,NZ)*TMPSL(IJKLN,IGR)
+          DUMYZ=XYZ(IGR,NY)*XYZ(IGR,NZ)*TMPSL(IJKLN,IGR)
+          DUM=DUM+XYZ(IGR,NX)*DUMYZ
+          IF(.NOT. SKIPI) THEN
+            DUMFXI =DUMFXI + FIXYZ(IGR,NX)*DUMYZ
+            DUMFYI =DUMFYI + FIXYZ(IGR,NY)*DUMXZ
+            DUMFZI =DUMFZI + FIXYZ(IGR,NZ)*DUMXY
+          END IF
+          IF(.NOT. SKIPJ) THEN
+            DUMFXJ =DUMFXJ + FJXYZ(IGR,NX)*DUMYZ
+            DUMFYJ =DUMFYJ + FJXYZ(IGR,NY)*DUMXZ
+            DUMFZJ =DUMFZJ + FJXYZ(IGR,NZ)*DUMXY
+          END IF
+          IF(.NOT. SKIPK) THEN
+            DUMFXK =DUMFXK + FKXYZ(IGR,NX)*DUMYZ
+            DUMFYK =DUMFYK + FKXYZ(IGR,NY)*DUMXZ
+            DUMFZK =DUMFZK + FKXYZ(IGR,NZ)*DUMXY
+          END IF
+          IF(.NOT. SKIPL) THEN
+            DUMFXL =DUMFXL + FLXYZ(IGR,NX)*DUMYZ
+            DUMFYL =DUMFYL + FLXYZ(IGR,NY)*DUMXZ
+            DUMFZL =DUMFZL + FLXYZ(IGR,NZ)*DUMXY
+          END IF
+        END DO
+        FDUM(IJKLN)=DUM
+        IF(.NOT. SKIPI) THEN
+          FDTMP(IJKLN,1)=DUMFXI
+          FDTMP(IJKLN,2)=DUMFYI
+          FDTMP(IJKLN,3)=DUMFZI
+        END IF
+        IF(.NOT. SKIPJ) THEN
+          FDTMP(IJKLN,4)=DUMFXJ
+          FDTMP(IJKLN,5)=DUMFYJ
+          FDTMP(IJKLN,6)=DUMFZJ
+        END IF
+        IF(.NOT. SKIPK) THEN
+          FDTMP(IJKLN,7)=DUMFXK
+          FDTMP(IJKLN,8)=DUMFYK
+          FDTMP(IJKLN,9)=DUMFZK
+        END IF
+        IF(.NOT. SKIPL) THEN
+          FDTMP(IJKLN,10)=DUMFXL
+          FDTMP(IJKLN,11)=DUMFYL
+          FDTMP(IJKLN,12)=DUMFZL
+        END IF
+      END DO
+C
+C     ----- ZEROTH AND FIRST DERIVATIVE INTEGRALS -----
+C     ----- STORE VALUES -----
+C
+      DO IJKLN=1,IJKLNMAX
+        NN=IJKLG(1,IJKLN)
+        GIJKL(NN)=GIJKL(NN)+FDUM(IJKLN)
+        IF(.NOT. SKIPI) THEN
+          FIJKL( 1,NN)=FIJKL( 1,NN)+FDTMP(IJKLN,1)
+          FIJKL( 2,NN)=FIJKL( 2,NN)+FDTMP(IJKLN,2)
+          FIJKL( 3,NN)=FIJKL( 3,NN)+FDTMP(IJKLN,3)
+        END IF
+        IF(.NOT. SKIPJ) THEN
+          FIJKL( 4,NN)=FIJKL( 4,NN)+FDTMP(IJKLN,4)
+          FIJKL( 5,NN)=FIJKL( 5,NN)+FDTMP(IJKLN,5)
+          FIJKL( 6,NN)=FIJKL( 6,NN)+FDTMP(IJKLN,6)
+        END IF
+        IF(.NOT. SKIPK) THEN
+          FIJKL( 7,NN)=FIJKL( 7,NN)+FDTMP(IJKLN,7)
+          FIJKL( 8,NN)=FIJKL( 8,NN)+FDTMP(IJKLN,8)
+          FIJKL( 9,NN)=FIJKL( 9,NN)+FDTMP(IJKLN,9)
+        END IF
+        IF(.NOT. SKIPL) THEN
+          FIJKL(10,NN)=FIJKL(10,NN)+FDTMP(IJKLN,10)
+          FIJKL(11,NN)=FIJKL(11,NN)+FDTMP(IJKLN,11)
+          FIJKL(12,NN)=FIJKL(12,NN)+FDTMP(IJKLN,12)
+        END IF
+      END DO
+C
+      RETURN
+      END
+C*MODULE VECTOR  *DECK FORMS        (INT2A)
+*VOCL TOTAL,SCALAR
+      SUBROUTINE vxFORMS(GHONDO)
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C
+      DIMENSION GHONDO(*)
+      DIMENSION GG(784)
+C
+      COMMON /xDENS  / DKL(784),DIJ(784)
+      COMMON /xINTDEX/ IJGT(784),IJX(784),IJY(784),IJZ(784),IK(784),
+     *                KLGT(784),KLX(784),KLY(784),KLZ(784)
+      COMMON /xSHLNOS/ QQ4,LIT,LJT,LKT,LLT,LOCI,LOCJ,LOCK,LOCL,
+     *                MINI,MINJ,MINK,MINL,MAXI,MAXJ,MAXK,MAXL,
+     *                NIJ,IJ,KL,IJKL
+      COMMON /xROOT  / XX,U(13),W(13),NROOTS
+      COMMON /xXYZ   / XIN(2401,13),YIN(2401,13),ZIN(2401,13)
+C
+C     SAMPLE VECTOR LENGTHS FOR VARIOUS IJ OR KL SHELL TYPES ARE
+C     DS = 6*1=6  PP=3*3=9, DD=6*6=36, DP=6*3=18, AND SO ON.
+C     THE VALUE FOR IBM WAS OPTIMIZED, OTHERS ARE EDUCATED (?) GUESSES.
+C
+      PARAMETER (NVECT=7) !*CRY
+*IBM  PARAMETER (NVECT=7)
+*FUJ  PARAMETER (NVECT=7)
+*NEC  PARAMETER (NVECT=7)
+C
+C     ----- FORM INTEGRALS OVER FUNCTIONS -----
+C
+C     THE COMPUTATION OF GG(K) IS VECTORIZABLE, WHILE THE
+C     COMPUTATION OF GHONDO(N)=GHONDO(N)+... IS DATA DEPENDENT.
+C
+      GO TO (100,200,300,400,500,600,700,800,900,1000,1100,1200,1300),
+     *                           NROOTS
+C
+C     SCALAR CODE FOR NROOTS=1
+C
+  100 CONTINUE
+CDEC$ NOVECTOR
+      DO 140 I = 1,IJ
+         D1 = DIJ(I)
+         NX = IJX(I)
+         NY = IJY(I)
+         NZ = IJZ(I)
+         N1 = IJGT(I)
+         KMAX = IK(I)
+*VDIR NOVECTOR
+         DO 130 K = 1,KMAX
+            MX = NX+KLX(K)
+            MY = NY+KLY(K)
+            MZ = NZ+KLZ(K)
+            N = N1+KLGT(K)
+            GHONDO(N) = GHONDO(N)
+     *            + (XIN(MX,1)*YIN(MY,1)*ZIN(MZ,1))*D1*DKL(K)
+  130    CONTINUE
+  140 CONTINUE
+      RETURN
+C
+C     SCALAR CODE FOR NROOTS=2
+C
+  200 CONTINUE
+CDEC$ NOVECTOR
+      DO 240 I = 1,IJ
+         D1 = DIJ(I)
+         NX = IJX(I)
+         NY = IJY(I)
+         NZ = IJZ(I)
+         N1 = IJGT(I)
+*VDIR NOVECTOR
+         KMAX = IK(I)
+         DO 230 K = 1,KMAX
+            MX = NX+KLX(K)
+            MY = NY+KLY(K)
+            MZ = NZ+KLZ(K)
+            N = N1+KLGT(K)
+            GHONDO(N) = GHONDO(N)
+     *             +(XIN(MX,1)*YIN(MY,1)*ZIN(MZ,1)
+     *             + XIN(MX,2)*YIN(MY,2)*ZIN(MZ,2))*D1*DKL(K)
+  230    CONTINUE
+  240 CONTINUE
+      RETURN
+C
+C     CODE FOR NROOTS=3.  BOTH VECTOR AND SCALAR CODE
+C
+  300 CONTINUE
+      KMAX = IK(IJ)
+      IF(IK(1).EQ.KMAX  .AND.  IJ.GE.KMAX
+     *                  .AND.  IJ.GE.NVECT) GO TO 360
+CDEC$ NOVECTOR
+      DO 340 I = 1,IJ
+         D1 = DIJ(I)
+         NX = IJX(I)
+         NY = IJY(I)
+         NZ = IJZ(I)
+         N1 = IJGT(I)
+         KMAX = IK(I)
+         IF(KMAX.GE.NVECT) THEN
+*VOCL LOOP,VECTOR
+            DO 310 K = 1,KMAX
+               MX = NX+KLX(K)
+               MY = NY+KLY(K)
+               MZ = NZ+KLZ(K)
+               GG(K) = (XIN(MX,1)*YIN(MY,1)*ZIN(MZ,1)
+     *                + XIN(MX,2)*YIN(MY,2)*ZIN(MZ,2)
+     *                + XIN(MX,3)*YIN(MY,3)*ZIN(MZ,3))*D1*DKL(K)
+*VDIR NOVECTOR
+  310       CONTINUE
+            DO 320 K = 1,KMAX
+               N = N1+KLGT(K)
+               GHONDO(N) = GHONDO(N) + GG(K)
+  320       CONTINUE
+*VDIR NOVECTOR
+         ELSE
+            DO 330 K = 1,KMAX
+               MX = NX+KLX(K)
+               MY = NY+KLY(K)
+               MZ = NZ+KLZ(K)
+               N = N1+KLGT(K)
+               GHONDO(N) = GHONDO(N)
+     *                +(XIN(MX,1)*YIN(MY,1)*ZIN(MZ,1)
+     *                + XIN(MX,2)*YIN(MY,2)*ZIN(MZ,2)
+     *                + XIN(MX,3)*YIN(MY,3)*ZIN(MZ,3))*D1*DKL(K)
+  330       CONTINUE
+         END IF
+  340 CONTINUE
+      RETURN
+C
+  360 CONTINUE
+CDEC$ NOVECTOR
+      DO 390 K = 1,KMAX
+         D1 = DKL(K)
+         NX = KLX(K)
+         NY = KLY(K)
+         NZ = KLZ(K)
+         N1 = KLGT(K)
+*VOCL LOOP,VECTOR
+         DO 370 I = 1,IJ
+            MX = NX+IJX(I)
+            MY = NY+IJY(I)
+            MZ = NZ+IJZ(I)
+            GG(I) = (XIN(MX,1)*YIN(MY,1)*ZIN(MZ,1)
+     *             + XIN(MX,2)*YIN(MY,2)*ZIN(MZ,2)
+     *             + XIN(MX,3)*YIN(MY,3)*ZIN(MZ,3))*D1*DIJ(I)
+  370    CONTINUE
+*VDIR NOVECTOR
+         DO 380 I = 1,IJ
+            N = N1+IJGT(I)
+            GHONDO(N) = GHONDO(N) + GG(I)
+  380    CONTINUE
+  390 CONTINUE
+      RETURN
+C
+C     VECTOR CODE FOR NROOTS=4
+C
+  400 CONTINUE
+      KMAX = IK(IJ)
+      IF(IK(1).EQ.KMAX  .AND.  IJ.GT.KMAX) GO TO 460
+C
+CDEC$ NOVECTOR
+      DO 440 I = 1,IJ
+         D1 = DIJ(I)
+         NX = IJX(I)
+         NY = IJY(I)
+         NZ = IJZ(I)
+         N1 = IJGT(I)
+         KMAX = IK(I)
+*VOCL LOOP,VECTOR
+         DO 410 K = 1,KMAX
+            MX = NX+KLX(K)
+            MY = NY+KLY(K)
+            MZ = NZ+KLZ(K)
+            GG(K) = (XIN(MX,1)*YIN(MY,1)*ZIN(MZ,1)
+     *             + XIN(MX,2)*YIN(MY,2)*ZIN(MZ,2)
+     *             + XIN(MX,3)*YIN(MY,3)*ZIN(MZ,3)
+     *             + XIN(MX,4)*YIN(MY,4)*ZIN(MZ,4))*D1*DKL(K)
+  410    CONTINUE
+*VDIR NOVECTOR
+         DO 420 K = 1,KMAX
+            N = N1 + KLGT(K)
+            GHONDO(N) = GHONDO(N) + GG(K)
+  420    CONTINUE
+  440 CONTINUE
+      RETURN
+C
+  460 CONTINUE
+CDEC$ NOVECTOR
+      DO 490 K = 1,KMAX
+         D1 = DKL(K)
+         NX = KLX(K)
+         NY = KLY(K)
+         NZ = KLZ(K)
+         N1 = KLGT(K)
+*VOCL LOOP,VECTOR
+         DO 470 I = 1,IJ
+            MX = NX+IJX(I)
+            MY = NY+IJY(I)
+            MZ = NZ+IJZ(I)
+            GG(I) = (XIN(MX,1)*YIN(MY,1)*ZIN(MZ,1)
+     *             + XIN(MX,2)*YIN(MY,2)*ZIN(MZ,2)
+     *             + XIN(MX,3)*YIN(MY,3)*ZIN(MZ,3)
+     *             + XIN(MX,4)*YIN(MY,4)*ZIN(MZ,4))*D1*DIJ(I)
+  470    CONTINUE
+*VDIR NOVECTOR
+         DO 480 I = 1,IJ
+            N = N1+IJGT(I)
+            GHONDO(N) = GHONDO(N) + GG(I)
+  480    CONTINUE
+  490 CONTINUE
+      RETURN
+C
+C     VECTOR CODE FOR NROOTS=5
+C
+  500 CONTINUE
+      KMAX = IK(IJ)
+      IF(IK(1).EQ.KMAX  .AND.  IJ.GT.KMAX) GO TO 560
+C
+CDEC$ NOVECTOR
+      DO 540 I = 1,IJ
+         D1 = DIJ(I)
+         NX = IJX(I)
+         NY = IJY(I)
+         NZ = IJZ(I)
+         N1 = IJGT(I)
+         KMAX = IK(I)
+*VOCL LOOP,VECTOR
+         DO 510 K = 1,KMAX
+            MX = NX+KLX(K)
+            MY = NY+KLY(K)
+            MZ = NZ+KLZ(K)
+            GG(K) = (XIN(MX,1)*YIN(MY,1)*ZIN(MZ,1)
+     *             + XIN(MX,2)*YIN(MY,2)*ZIN(MZ,2)
+     *             + XIN(MX,3)*YIN(MY,3)*ZIN(MZ,3)
+     *             + XIN(MX,4)*YIN(MY,4)*ZIN(MZ,4)
+     *             + XIN(MX,5)*YIN(MY,5)*ZIN(MZ,5))*D1*DKL(K)
+  510    CONTINUE
+*VDIR NOVECTOR
+         DO 520 K = 1,KMAX
+            N = N1+KLGT(K)
+            GHONDO(N) = GHONDO(N) + GG(K)
+  520    CONTINUE
+  540 CONTINUE
+      RETURN
+C
+  560 CONTINUE
+CDEC$ NOVECTOR
+      DO 590 K = 1,KMAX
+         D1 = DKL(K)
+         NX = KLX(K)
+         NY = KLY(K)
+         NZ = KLZ(K)
+         N1 = KLGT(K)
+*VOCL LOOP,VECTOR
+         DO 570 I = 1,IJ
+            MX = NX+IJX(I)
+            MY = NY+IJY(I)
+            MZ = NZ+IJZ(I)
+            GG(I) = (XIN(MX,1)*YIN(MY,1)*ZIN(MZ,1)
+     *             + XIN(MX,2)*YIN(MY,2)*ZIN(MZ,2)
+     *             + XIN(MX,3)*YIN(MY,3)*ZIN(MZ,3)
+     *             + XIN(MX,4)*YIN(MY,4)*ZIN(MZ,4)
+     *             + XIN(MX,5)*YIN(MY,5)*ZIN(MZ,5))*D1*DIJ(I)
+  570    CONTINUE
+*VDIR NOVECTOR
+         DO 580 I = 1,IJ
+            N = N1+IJGT(I)
+            GHONDO(N) = GHONDO(N) + GG(I)
+  580    CONTINUE
+  590 CONTINUE
+      RETURN
+C
+C     VECTOR CODE FOR NROOTS=6
+C
+  600 CONTINUE
+      KMAX = IK(IJ)
+      IF(IK(1).EQ.KMAX  .AND.  IJ.GT.KMAX) GO TO 660
+C
+CDEC$ NOVECTOR
+      DO 640 I = 1,IJ
+         D1 = DIJ(I)
+         NX = IJX(I)
+         NY = IJY(I)
+         NZ = IJZ(I)
+         N1 = IJGT(I)
+         KMAX = IK(I)
+*VOCL LOOP,VECTOR
+         DO 610 K = 1,KMAX
+            MX = NX+KLX(K)
+            MY = NY+KLY(K)
+            MZ = NZ+KLZ(K)
+            GG(K) = (XIN(MX,1)*YIN(MY,1)*ZIN(MZ,1)
+     *             + XIN(MX,2)*YIN(MY,2)*ZIN(MZ,2)
+     *             + XIN(MX,3)*YIN(MY,3)*ZIN(MZ,3)
+     *             + XIN(MX,4)*YIN(MY,4)*ZIN(MZ,4)
+     *             + XIN(MX,5)*YIN(MY,5)*ZIN(MZ,5)
+     *             + XIN(MX,6)*YIN(MY,6)*ZIN(MZ,6))*D1*DKL(K)
+  610    CONTINUE
+*VDIR NOVECTOR
+         DO 620 K = 1,KMAX
+            N = N1+KLGT(K)
+            GHONDO(N) = GHONDO(N) + GG(K)
+  620    CONTINUE
+  640 CONTINUE
+      RETURN
+C
+  660 CONTINUE
+CDEC$ NOVECTOR
+      DO 690 K = 1,KMAX
+         D1 = DKL(K)
+         NX = KLX(K)
+         NY = KLY(K)
+         NZ = KLZ(K)
+         N1 = KLGT(K)
+*VOCL LOOP,VECTOR
+         DO 670 I = 1,IJ
+            MX = NX+IJX(I)
+            MY = NY+IJY(I)
+            MZ = NZ+IJZ(I)
+            GG(I) = (XIN(MX,1)*YIN(MY,1)*ZIN(MZ,1)
+     *             + XIN(MX,2)*YIN(MY,2)*ZIN(MZ,2)
+     *             + XIN(MX,3)*YIN(MY,3)*ZIN(MZ,3)
+     *             + XIN(MX,4)*YIN(MY,4)*ZIN(MZ,4)
+     *             + XIN(MX,5)*YIN(MY,5)*ZIN(MZ,5)
+     *             + XIN(MX,6)*YIN(MY,6)*ZIN(MZ,6))*D1*DIJ(I)
+  670    CONTINUE
+*VDIR NOVECTOR
+         DO 680 I = 1,IJ
+            N = N1+IJGT(I)
+            GHONDO(N) = GHONDO(N) + GG(I)
+  680    CONTINUE
+  690 CONTINUE
+      RETURN
+C
+C     VECTOR CODE FOR NROOTS=7
+C
+  700 CONTINUE
+      KMAX = IK(IJ)
+      IF(IK(1).EQ.KMAX  .AND.  IJ.GT.KMAX) GO TO 760
+C
+CDEC$ NOVECTOR
+      DO 740 I = 1,IJ
+         D1 = DIJ(I)
+         NX = IJX(I)
+         NY = IJY(I)
+         NZ = IJZ(I)
+         N1 = IJGT(I)
+         KMAX = IK(I)
+*VOCL LOOP,VECTOR
+         DO 710 K = 1,KMAX
+            MX = NX+KLX(K)
+            MY = NY+KLY(K)
+            MZ = NZ+KLZ(K)
+            GG(K) = (XIN(MX,1)*YIN(MY,1)*ZIN(MZ,1)
+     *             + XIN(MX,2)*YIN(MY,2)*ZIN(MZ,2)
+     *             + XIN(MX,3)*YIN(MY,3)*ZIN(MZ,3)
+     *             + XIN(MX,4)*YIN(MY,4)*ZIN(MZ,4)
+     *             + XIN(MX,5)*YIN(MY,5)*ZIN(MZ,5)
+     *             + XIN(MX,6)*YIN(MY,6)*ZIN(MZ,6)
+     *             + XIN(MX,7)*YIN(MY,7)*ZIN(MZ,7))*D1*DKL(K)
+  710    CONTINUE
+*VDIR NOVECTOR
+         DO 720 K = 1,KMAX
+            N = N1+KLGT(K)
+            GHONDO(N) = GHONDO(N) + GG(K)
+  720    CONTINUE
+  740 CONTINUE
+      RETURN
+C
+  760 CONTINUE
+CDEC$ NOVECTOR
+      DO 790 K = 1,KMAX
+         D1 = DKL(K)
+         NX = KLX(K)
+         NY = KLY(K)
+         NZ = KLZ(K)
+         N1 = KLGT(K)
+*VOCL LOOP,VECTOR
+         DO 770 I = 1,IJ
+            MX = NX+IJX(I)
+            MY = NY+IJY(I)
+            MZ = NZ+IJZ(I)
+            GG(I) = (XIN(MX,1)*YIN(MY,1)*ZIN(MZ,1)
+     *             + XIN(MX,2)*YIN(MY,2)*ZIN(MZ,2)
+     *             + XIN(MX,3)*YIN(MY,3)*ZIN(MZ,3)
+     *             + XIN(MX,4)*YIN(MY,4)*ZIN(MZ,4)
+     *             + XIN(MX,5)*YIN(MY,5)*ZIN(MZ,5)
+     *             + XIN(MX,6)*YIN(MY,6)*ZIN(MZ,6)
+     *             + XIN(MX,7)*YIN(MY,7)*ZIN(MZ,7))*D1*DIJ(I)
+  770    CONTINUE
+*VDIR NOVECTOR
+         DO 780 I = 1,IJ
+            N = N1+IJGT(I)
+            GHONDO(N) = GHONDO(N) + GG(I)
+  780    CONTINUE
+  790 CONTINUE
+      RETURN
+C
+C     VECTOR CODE FOR NROOTS=8
+C
+  800 CONTINUE
+      KMAX = IK(IJ)
+      IF(IK(1).EQ.KMAX  .AND.  IJ.GT.KMAX) GO TO 860
+C
+CDEC$ NOVECTOR
+      DO 840 I = 1,IJ
+         D1 = DIJ(I)
+         NX = IJX(I)
+         NY = IJY(I)
+         NZ = IJZ(I)
+         N1 = IJGT(I)
+         KMAX = IK(I)
+*VOCL LOOP,VECTOR
+         DO 810 K = 1,KMAX
+            MX = NX+KLX(K)
+            MY = NY+KLY(K)
+            MZ = NZ+KLZ(K)
+            GG(K) = (XIN(MX,1)*YIN(MY,1)*ZIN(MZ,1)
+     *             + XIN(MX,2)*YIN(MY,2)*ZIN(MZ,2)
+     *             + XIN(MX,3)*YIN(MY,3)*ZIN(MZ,3)
+     *             + XIN(MX,4)*YIN(MY,4)*ZIN(MZ,4)
+     *             + XIN(MX,5)*YIN(MY,5)*ZIN(MZ,5)
+     *             + XIN(MX,6)*YIN(MY,6)*ZIN(MZ,6)
+     *             + XIN(MX,7)*YIN(MY,7)*ZIN(MZ,7)
+     *             + XIN(MX,8)*YIN(MY,8)*ZIN(MZ,8))*D1*DKL(K)
+  810    CONTINUE
+*VDIR NOVECTOR
+         DO 820 K = 1,KMAX
+            N = N1+KLGT(K)
+            GHONDO(N) = GHONDO(N) + GG(K)
+  820    CONTINUE
+  840 CONTINUE
+      RETURN
+C
+  860 CONTINUE
+CDEC$ NOVECTOR
+      DO 890 K = 1,KMAX
+         D1 = DKL(K)
+         NX = KLX(K)
+         NY = KLY(K)
+         NZ = KLZ(K)
+         N1 = KLGT(K)
+*VOCL LOOP,VECTOR
+         DO 870 I = 1,IJ
+            MX = NX+IJX(I)
+            MY = NY+IJY(I)
+            MZ = NZ+IJZ(I)
+            GG(I) = (XIN(MX,1)*YIN(MY,1)*ZIN(MZ,1)
+     *             + XIN(MX,2)*YIN(MY,2)*ZIN(MZ,2)
+     *             + XIN(MX,3)*YIN(MY,3)*ZIN(MZ,3)
+     *             + XIN(MX,4)*YIN(MY,4)*ZIN(MZ,4)
+     *             + XIN(MX,5)*YIN(MY,5)*ZIN(MZ,5)
+     *             + XIN(MX,6)*YIN(MY,6)*ZIN(MZ,6)
+     *             + XIN(MX,7)*YIN(MY,7)*ZIN(MZ,7)
+     *             + XIN(MX,8)*YIN(MY,8)*ZIN(MZ,8))*D1*DIJ(I)
+  870    CONTINUE
+*VDIR NOVECTOR
+         DO 880 I = 1,IJ
+            N = N1+IJGT(I)
+            GHONDO(N) = GHONDO(N) + GG(I)
+  880    CONTINUE
+  890 CONTINUE
+      RETURN
+C
+C     VECTOR CODE FOR NROOTS=9
+C
+  900 CONTINUE
+      KMAX = IK(IJ)
+      IF(IK(1).EQ.KMAX  .AND.  IJ.GT.KMAX) GO TO 960
+C
+CDEC$ NOVECTOR
+      DO 940 I = 1,IJ
+         D1 = DIJ(I)
+         NX = IJX(I)
+         NY = IJY(I)
+         NZ = IJZ(I)
+         N1 = IJGT(I)
+         KMAX = IK(I)
+*VOCL LOOP,VECTOR
+         DO 910 K = 1,KMAX
+            MX = NX+KLX(K)
+            MY = NY+KLY(K)
+            MZ = NZ+KLZ(K)
+            GG(K) = (XIN(MX,1)*YIN(MY,1)*ZIN(MZ,1)
+     *             + XIN(MX,2)*YIN(MY,2)*ZIN(MZ,2)
+     *             + XIN(MX,3)*YIN(MY,3)*ZIN(MZ,3)
+     *             + XIN(MX,4)*YIN(MY,4)*ZIN(MZ,4)
+     *             + XIN(MX,5)*YIN(MY,5)*ZIN(MZ,5)
+     *             + XIN(MX,6)*YIN(MY,6)*ZIN(MZ,6)
+     *             + XIN(MX,7)*YIN(MY,7)*ZIN(MZ,7)
+     *             + XIN(MX,8)*YIN(MY,8)*ZIN(MZ,8)
+     *             + XIN(MX,9)*YIN(MY,9)*ZIN(MZ,9))*D1*DKL(K)
+  910    CONTINUE
+*VDIR NOVECTOR
+         DO 920 K = 1,KMAX
+            N = N1+KLGT(K)
+            GHONDO(N) = GHONDO(N) + GG(K)
+  920    CONTINUE
+  940 CONTINUE
+      RETURN
+C
+  960 CONTINUE
+CDEC$ NOVECTOR
+      DO 990 K = 1,KMAX
+         D1 = DKL(K)
+         NX = KLX(K)
+         NY = KLY(K)
+         NZ = KLZ(K)
+         N1 = KLGT(K)
+*VOCL LOOP,VECTOR
+         DO 970 I = 1,IJ
+            MX = NX+IJX(I)
+            MY = NY+IJY(I)
+            MZ = NZ+IJZ(I)
+            GG(I) = (XIN(MX,1)*YIN(MY,1)*ZIN(MZ,1)
+     *             + XIN(MX,2)*YIN(MY,2)*ZIN(MZ,2)
+     *             + XIN(MX,3)*YIN(MY,3)*ZIN(MZ,3)
+     *             + XIN(MX,4)*YIN(MY,4)*ZIN(MZ,4)
+     *             + XIN(MX,5)*YIN(MY,5)*ZIN(MZ,5)
+     *             + XIN(MX,6)*YIN(MY,6)*ZIN(MZ,6)
+     *             + XIN(MX,7)*YIN(MY,7)*ZIN(MZ,7)
+     *             + XIN(MX,8)*YIN(MY,8)*ZIN(MZ,8)
+     *             + XIN(MX,9)*YIN(MY,9)*ZIN(MZ,9))*D1*DIJ(I)
+  970    CONTINUE
+*VDIR NOVECTOR
+         DO 980 I = 1,IJ
+            N = N1+IJGT(I)
+            GHONDO(N) = GHONDO(N) + GG(I)
+  980    CONTINUE
+  990 CONTINUE
+      RETURN
+C        CODE FOR NROOTS=10,11,12,13 NOT YET PROVIDED
+ 1000 CONTINUE
+ 1100 CONTINUE
+ 1200 CONTINUE
+ 1300 CONTINUE
+      WRITE(6,*) 'VECTORIZED -FORMS- HAS NO CODE FOR NROOTS=',NROOTS
+      call aces_exit(1)
+      RETURN
+      END
+C*MODULE VECTOR  *DECK GLDIAG       (EIGEN)
+      SUBROUTINE xGLDIAG(LDVECT,NVECT,NDIM,H,WRK,EIG,VECTOR,IERR,IWRK)
+C
+C     ----- GENERAL ROUTINE TO DIAGONALIZE A MATRIX -----
+C     IF KDIAG = 0, USE A ROUTINE FROM THE VECTOR LIBRARY,
+C                   IF AVAILABLE, OR EVVRSP OTHERWISE.
+C              = 1, USE EVVRSP
+C              = 2, USE GIVEIS
+C              = 3, USE JACOBI
+C     THIS ROUTINE DOES NOT REPLACE EIGEN, ONLY THE SUBROUTINE
+C     'GLDIAG' CONTAINED WITHIN EIGEN.SRC
+C
+C           LDVECT = ROW DIMENSION OF VECTOR
+C           NDIM   = DIMENSION (ORDER) OF MATRIX TO BE SOLVED
+C           NVECT  = NUMBER OF VECTORS DESIRED
+C           H      = MATRIX TO BE DIAGONALIZED
+C           WRK    = N*8 W.P. REAL WORDS OF SCRATCH SPACE
+C           EIG    = EIGENVECTORS (OUTPUT)
+C           VECTOR = EIGENVECTORS (OUTPUT)
+C           IERR   = ERROR FLAG (OUTPUT)
+C           IWRK   = N INTEGER WORDS OF SCRATCH SPACE
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C
+      DIMENSION VECTOR(LDVECT,*),WRK(NDIM,8),EIG(NDIM),H(*),IWRK(NDIM)
+C
+      LOGICAL USEEVV,GOPARR,DSKWRK,MASWRK
+C
+      COMMON /xIOFILE/ IR,IW,IP,IJK,IPK,IDAF,NAV,IODA(950)
+      COMMON /xFMCOM / XX(1)
+      COMMON /xMACHSW/ KDIAG,ICORFL,IXDR
+      COMMON /xPAR   / ME,MASTER,NPROC,IBTYP,IPTIM,GOPARR,DSKWRK,MASWRK
+C
+      IERR = 0
+      USEEVV=.FALSE.
+C
+C         -------- USE VECTORIZED LIBRARY ROUTINE -----
+C
+      IF(KDIAG.LE.0) THEN
+C
+C        THE FOLLOWING IBM CODE USES RELEASE 3 OF THE ESSL. IF YOU
+C           NEED AN ESSL RELEASE 1 OR 2 VERSION SEND E-MAIL TO MWS.
+C        IBM'S ESSL DSPEV IS SLIGHTLY FASTER THAN EVVRSP FOR SMALLER
+C           MATRICES, BUT RATHER SLOWER FOR BIGGER ONES.
+C        IBM'S ESSL DSPSV OUTPERFORMS EVVRSP FOR SINGLE ROOT EXTRACTION.
+C
+*IBM     IF(NVECT.EQ.0) THEN
+*IBM        IOPT=20
+*IBM        CALL DSPEV(IOPT,H,EIG,VECTOR,LDVECT,NDIM,WRK,2*NDIM)
+*IBM     END IF
+C
+*IBM     IF(NVECT.EQ.NDIM) THEN
+*IBM        IF(NDIM.LT.300) THEN
+*IBM           IOPT=21
+*IBM           CALL DSPEV(IOPT,H,EIG,VECTOR,LDVECT,NDIM,WRK,2*NDIM)
+*IBM        ELSE
+*IBM           USEEVV=.TRUE.
+*IBM        END IF
+*IBM     END IF
+C
+*IBM     IF(NVECT.GT.0  .AND.  NVECT.LT.NDIM) THEN
+*IBM        IOPT=21
+*IBM        CALL VALFM(LOADFM)
+*IBM        LWRK = LOADFM + 1
+*IBM        LAST = LWRK   + 9*NDIM
+*IBM        NEED = LAST-LOADFM
+*IBM        CALL GETFM(NEED)
+*IBM        CALL DSPSV(IOPT,H,EIG,VECTOR,LDVECT,NDIM,NVECT,
+*IBM *                 XX(LWRK),9*NDIM)
+*IBM        CALL RETFM(NEED)
+*IBM     END IF
+C
+         USEEVV=.TRUE. !*CRY
+*FUJ     USEEVV=.TRUE.
+*NEC     USEEVV=.TRUE.
+      END IF
+C
+C         ------ USE STEVE ELBERT'S EVVRSP ROUTINES -----
+C
+      IF(USEEVV .OR. KDIAG.EQ.1  .OR.  KDIAG.GT.3) THEN
+         LENH = (NDIM*NDIM+NDIM)/2
+         KORDER =0
+         CALL xEVVRSP(IW,NDIM,NVECT,LENH,LDVECT,H,WRK,IWRK,EIG,VECTOR
+     *              ,KORDER,IERR)
+      END IF
+C
+C         ------ USE MODIFIED EISPAK ROUTINE -----
+C
+      IF(KDIAG.EQ.2)
+     *   CALL xGIVEIS(NDIM,NVECT,LDVECT,H,WRK,IWRK,EIG,VECTOR,IERR)
+C
+C         ------ USE A JACOBI ROTATION ROUTINE -----
+C
+      IF(KDIAG.EQ.3) THEN
+         IF(NVECT.EQ.NDIM) THEN
+            CALL xJACDG(H,VECTOR,EIG,IWRK,WRK,LDVECT,NDIM)
+         ELSE
+            IF (MASWRK) WRITE(IW,9000) NDIM,NVECT,LDVECT
+            call aces_exit(1)
+         END IF
+      END IF
+      RETURN
+C
+ 9000 FORMAT(1X,'IN -GLDIAG-, NDIM,NVECT,LDVECT=',3I8/
+     *       1X,'THE JACOBI CODE CANNOT COPE WITH NDIM.NE.NVECT!'/
+     *       1X,'SO THIS RUN DOES NOT PERMIT KDIAG=3.')
+      END
+C*MODULE VECTOR  *DECK JDXYZV       (GRD2C)
+      SUBROUTINE xJDXYZV(GI,GIJ,GIJK,GIJKL,HIJK,HIJKL,FIJK,FIJKL,
+     1 NG,NIMAX,NJMAX,NKMAX,NLMAX,NI,NJ,NK,NL,AAI,AAJ,AAK,AAL,
+     2 FI,FJ,FK,FL,SII,SJJ,SKK,SLL,SIJ,SIK,SIL,SJK,SJL,SKL)
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      LOGICAL SKIPI,SKIPJ,SKIPK,SKIPL
+      LOGICAL IS,JS,KS,LS
+      COMMON/xDERSKP/IIAT,JJAT,KKAT,LLAT,SKIPI,SKIPJ,SKIPK,SKIPL
+C
+C     ----- VERSION 1 -----
+C
+      DIMENSION GIJKL(NG,NLMAX,NKMAX*NJMAX*NIMAX)
+      DIMENSION  GIJK(NG,NLMAX,NKMAX,NJMAX*NIMAX)
+      DIMENSION   GIJ(NG,NLMAX*NKMAX,NJMAX,NIMAX)
+      DIMENSION    GI(NG,NLMAX*NKMAX*NJMAX,NIMAX)
+      DIMENSION HIJKL(NG,NLMAX,NKMAX*NJMAX,NIMAX)
+      DIMENSION  HIJK(NG,NLMAX,NKMAX,NJMAX,NIMAX)
+      DIMENSION FIJKL(NG,NLMAX,NKMAX,NJMAX,NIMAX)
+      DIMENSION  FIJK(NG,NLMAX,NKMAX,NJMAX*NIMAX)
+      DIMENSION   AAI(NG)
+      DIMENSION   AAJ(NG)
+      DIMENSION   AAK(NG)
+      DIMENSION   AAL(NG)
+      DIMENSION    FI(NG,NLMAX*NKMAX*NJMAX,NIMAX)
+      DIMENSION    FJ(NG,NLMAX*NKMAX,NJMAX,NIMAX)
+      DIMENSION    FK(NG,NLMAX,NKMAX,NJMAX*NIMAX)
+      DIMENSION    FL(NG,NLMAX,NKMAX*NJMAX*NIMAX)
+      DIMENSION   SII(NG,NLMAX*NKMAX*NJMAX,NIMAX)
+      DIMENSION   SJJ(NG,NLMAX*NKMAX,NJMAX,NIMAX)
+      DIMENSION   SKK(NG,NLMAX,NKMAX,NJMAX*NIMAX)
+      DIMENSION   SLL(NG,NLMAX,NKMAX*NJMAX*NIMAX)
+      DIMENSION   SIJ(NG,NLMAX*NKMAX,NJMAX,NIMAX)
+      DIMENSION   SIK(NG,NLMAX,NKMAX,NJMAX,NIMAX)
+      DIMENSION   SIL(NG,NLMAX,NKMAX*NJMAX,NIMAX)
+      DIMENSION   SJK(NG,NLMAX,NKMAX,NJMAX,NIMAX)
+      DIMENSION   SJL(NG,NLMAX,NKMAX,NJMAX,NIMAX)
+      DIMENSION   SKL(NG,NLMAX,NKMAX,NJMAX*NIMAX)
+C
+      IS=NI.EQ.1
+      JS=NJ.EQ.1
+      KS=NK.EQ.1
+      LS=NL.EQ.1
+C
+C     ----- FIRST DERIVATIVES ONLY -----
+C
+      IF(SKIPI) GO TO 1030
+C
+C     ----- -FI- ONLY -----
+C
+      DO 1010 IG =1,NG
+        DO 1010 LKJ=1,NLMAX*NKMAX*NJMAX
+           FI(IG,LKJ,1)=  GI(IG,LKJ,2)*AAI(IG)
+ 1010 CONTINUE
+      IF(IS) GO TO 1030
+      DO 1020 IG =1,NG
+        DO 1020 I  =2,NI
+          DO 1020 LKJ=1,NLMAX*NKMAX*NJMAX
+             FI(IG,LKJ,I)= GI(IG,LKJ,I+1)*AAI(IG)
+     1              -GI(IG,LKJ,I-1)*(I-1)
+ 1020 CONTINUE
+C
+ 1030 IF(SKIPJ) GO TO 1130
+C
+C     ----- -FJ- ONLY -----
+C
+      DO 1110 IG=1,NG
+        DO 1110 I =1,NIMAX
+          DO 1110 LK=1,NLMAX*NKMAX
+             FJ(IG,LK,1,I)=  GIJ(IG,LK,2,I)*AAJ(IG)
+ 1110 CONTINUE
+      IF(JS) GO TO 1130
+      DO 1120 IG=1,NG
+        DO 1120 I =1,NIMAX
+          DO 1120 J =2,NJ
+            DO 1120 LK=1,NLMAX*NKMAX
+               FJ(IG,LK,J,I)= GIJ(IG,LK,J+1,I)*AAJ(IG)
+     1               -GIJ(IG,LK,J-1,I)*(J-1)
+ 1120 CONTINUE
+C
+ 1130 IF(SKIPK) GO TO 1230
+C
+C     ----- -FK- ONLY -----
+C
+      DO 1210 IG=1,NG
+        DO 1210 JI=1,NJMAX*NIMAX
+          DO 1210 L =1,NLMAX
+             FK(IG,L,1,JI)=  GIJK(IG,L,2,JI)*AAK(IG)
+ 1210 CONTINUE
+      IF(KS) GO TO 1230
+      DO 1220 IG=1,NG
+        DO 1220 JI=1,NJMAX*NIMAX
+          DO 1220 K =2,NK
+            DO 1220 L =1,NLMAX
+               FK(IG,L,K,JI)= GIJK(IG,L,K+1,JI)*AAK(IG)
+     1               -GIJK(IG,L,K-1,JI)*(K-1)
+ 1220 CONTINUE
+C
+ 1230 IF(SKIPL) GO TO 1330
+C
+C     ----- -FL- AND -SLL- -----
+C
+      DO 1310 IG =1,NG
+        DO 1310 KJI=1,NKMAX*NJMAX*NIMAX
+           FL(IG,1,KJI)=  GIJKL(IG,2,KJI)*AAL(IG)
+ 1310 CONTINUE
+      IF(LS) GO TO 1330
+      DO 1320 IG =1,NG
+        DO 1320 KJI=1,NKMAX*NJMAX*NIMAX
+          DO 1320 L  =2,NL
+             FL(IG,L,KJI)= GIJKL(IG,L+1,KJI)*AAL(IG)
+     1              -GIJKL(IG,L-1,KJI)*(L-1)
+ 1320 CONTINUE
+C
+ 1330 CONTINUE
+      RETURN
+      END
+*OPTION* -NV
+C     THE ABOVE LINE TURNS OFF VECTORIZATION OF THIS ROUTINE ON NEC-SX3
+C*MODULE VECTOR  *DECK JDDSPD       (HSS2B)
+*VOCL TOTAL,SCALAR
+      SUBROUTINE xJDDSPD(IJ,KL,DIJ,DKL,
+     *                IJGT,KLGT,IJX,KLX,IJY,KLY,IJZ,KLZ,GOUT,
+     *                NFDIJ,NFDKL,NIJKL)
+C
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+C
+      DIMENSION GG(169)
+      DIMENSION DIJ(NFDIJ),DKL(NFDKL),IJGT(NFDIJ),KLGT(NFDKL),
+     *          IJX(NFDIJ),KLX(NFDKL),IJY(NFDIJ),KLY(NFDKL),
+     *          IJZ(NFDIJ),KLZ(NFDKL)
+      DIMENSION GOUT(NIJKL)
+C
+      COMMON /xROOT  / XX,U(13),W(13),NROOTS
+      COMMON /xDDXYZ / XINT(2250),YINT(2250),ZINT(2250)
+C
+C     ----- FORM INTEGRALS OVER FUNCTIONS -----
+C     INTEGRAL TYPES ARE [IJ/KL] [IJ/K'L] [IJ/K''L], WITH OR
+C     WITHOUT VARIOUS 'S ON THE I AND J (NO MORE THAN 2 PRIMES).
+C     TYPE [IJ/K'L'] DOES NOT OCCUR.  SAMPLE VECTOR LENGTHS KL ARE
+C        SS = 1    S'S=PS    = 3    S''S=(S+D)S  =  7
+C        SP = 3    S'P=PP    = 9    S''P=(S+D)P  = 21
+C        DD =36    D'D=(P+F)D=78    D''D=(S+D+G)D=132
+C     WORST CASE IS [D'D'/KL] GIVING IJ = 169 FROM (P+F)**2
+C
+      GO TO (100,200,300,400,500,600),NROOTS
+C
+C     SCALAR CODE FOR NROOTS=1, VECTOR CODE FOR ALL OTHER CASES
+C
+  100 CONTINUE
+CDEC$ NOVECTOR
+      DO 160 I = 1,IJ
+         D1 = DIJ(I)
+         NX = IJX(I)
+         NY = IJY(I)
+         NZ = IJZ(I)
+         N1 = IJGT(I)
+         DO 120 K = 1,KL
+            MX = NX+KLX(K)
+            MY = NY+KLY(K)
+            MZ = NZ+KLZ(K)
+            N = N1+KLGT(K)
+            GOUT(N) = (XINT(MX)*YINT(MY)*ZINT(MZ))*D1*DKL(K) + GOUT(N)
+  120    CONTINUE
+  160 CONTINUE
+      RETURN
+C
+C     CODE FOR NROOTS=2
+C
+  200 CONTINUE
+CDEC$ NOVECTOR
+      DO 260 I = 1,IJ
+         D1 = DIJ(I)
+         NX = IJX(I)
+         NY = IJY(I)
+         NZ = IJZ(I)
+         N1 = IJGT(I)
+*VOCL LOOP,VECTOR
+         DO 220 K = 1,KL
+            MX = NX+KLX(K)
+            MY = NY+KLY(K)
+            MZ = NZ+KLZ(K)
+            GG(K) = (XINT(MX  )*YINT(MY  )*ZINT(MZ  )
+     *              +XINT(MX+1)*YINT(MY+1)*ZINT(MZ+1))*D1*DKL(K)
+  220    CONTINUE
+         DO 240 K = 1,KL
+            N = N1+KLGT(K)
+            GOUT(N) = GOUT(N) + GG(K)
+  240    CONTINUE
+  260 CONTINUE
+      RETURN
+C
+C     CODE FOR NROOTS=3
+C
+  300 CONTINUE
+      IF(IJ.GT.KL) GO TO 350
+C
+CDEC$ NOVECTOR
+      DO 330 I = 1,IJ
+         D1 = DIJ(I)
+         NX = IJX(I)
+         NY = IJY(I)
+         NZ = IJZ(I)
+         N1 = IJGT(I)
+*VOCL LOOP,VECTOR
+         DO 310 K = 1,KL
+            MX = NX+KLX(K)
+            MY = NY+KLY(K)
+            MZ = NZ+KLZ(K)
+            GG(K) = (XINT(MX  )*YINT(MY  )*ZINT(MZ  )
+     *              +XINT(MX+1)*YINT(MY+1)*ZINT(MZ+1)
+     *              +XINT(MX+2)*YINT(MY+2)*ZINT(MZ+2))*D1*DKL(K)
+  310    CONTINUE
+         DO 320 K = 1,KL
+            N = N1+KLGT(K)
+            GOUT(N) = GOUT(N) + GG(K)
+  320    CONTINUE
+  330 CONTINUE
+      RETURN
+C
+  350 CONTINUE
+CDEC$ NOVECTOR
+      DO 380 K = 1,KL
+         D1 = DKL(K)
+         NX = KLX(K)
+         NY = KLY(K)
+         NZ = KLZ(K)
+         N1 = KLGT(K)
+*VOCL LOOP,VECTOR
+         DO 360 I = 1,IJ
+            MX = NX+IJX(I)
+            MY = NY+IJY(I)
+            MZ = NZ+IJZ(I)
+            GG(I) = (XINT(MX  )*YINT(MY  )*ZINT(MZ  )
+     *              +XINT(MX+1)*YINT(MY+1)*ZINT(MZ+1)
+     *              +XINT(MX+2)*YINT(MY+2)*ZINT(MZ+2))*D1*DIJ(I)
+  360    CONTINUE
+         DO 370 I = 1,IJ
+            N = N1+IJGT(I)
+            GOUT(N) = GOUT(N) + GG(I)
+  370    CONTINUE
+  380 CONTINUE
+      RETURN
+C
+C     CODE FOR NROOTS=4
+C
+  400 CONTINUE
+      IF(IJ.GT.KL) GO TO 450
+C
+CDEC$ NOVECTOR
+      DO 430 I = 1,IJ
+         D1 = DIJ(I)
+         NX = IJX(I)
+         NY = IJY(I)
+         NZ = IJZ(I)
+         N1 = IJGT(I)
+*VOCL LOOP,VECTOR
+         DO 410 K = 1,KL
+            MX = NX+KLX(K)
+            MY = NY+KLY(K)
+            MZ = NZ+KLZ(K)
+            GG(K) = (XINT(MX  )*YINT(MY  )*ZINT(MZ  )
+     1              +XINT(MX+1)*YINT(MY+1)*ZINT(MZ+1)
+     2              +XINT(MX+2)*YINT(MY+2)*ZINT(MZ+2)
+     3              +XINT(MX+3)*YINT(MY+3)*ZINT(MZ+3))*D1*DKL(K)
+  410    CONTINUE
+         DO 420 K = 1,KL
+            N = N1+KLGT(K)
+            GOUT(N) = GOUT(N) + GG(K)
+  420    CONTINUE
+  430 CONTINUE
+      RETURN
+C
+  450 CONTINUE
+CDEC$ NOVECTOR
+      DO 480 K = 1,KL
+         D1 = DKL(K)
+         NX = KLX(K)
+         NY = KLY(K)
+         NZ = KLZ(K)
+         N1 = KLGT(K)
+*VOCL LOOP,VECTOR
+         DO 460 I = 1,IJ
+            MX = NX+IJX(I)
+            MY = NY+IJY(I)
+            MZ = NZ+IJZ(I)
+            GG(I) = (XINT(MX  )*YINT(MY  )*ZINT(MZ  )
+     *              +XINT(MX+1)*YINT(MY+1)*ZINT(MZ+1)
+     *              +XINT(MX+2)*YINT(MY+2)*ZINT(MZ+2)
+     *              +XINT(MX+3)*YINT(MY+3)*ZINT(MZ+3))*D1*DIJ(I)
+  460    CONTINUE
+         DO 470 I = 1,IJ
+            N = N1+IJGT(I)
+            GOUT(N) = GOUT(N) + GG(I)
+  470    CONTINUE
+  480 CONTINUE
+      RETURN
+C
+C     CODE FOR NROOTS=5
+C
+  500 CONTINUE
+      IF(IJ.GT.KL) GO TO 550
+C
+CDEC$ NOVECTOR
+      DO 530 I = 1,IJ
+         D1 = DIJ(I)
+         NX = IJX(I)
+         NY = IJY(I)
+         NZ = IJZ(I)
+         N1 = IJGT(I)
+*VOCL LOOP,VECTOR
+         DO 510 K = 1,KL
+            MX = NX+KLX(K)
+            MY = NY+KLY(K)
+            MZ = NZ+KLZ(K)
+            GG(K) = (XINT(MX  )*YINT(MY  )*ZINT(MZ  )
+     *              +XINT(MX+1)*YINT(MY+1)*ZINT(MZ+1)
+     *              +XINT(MX+2)*YINT(MY+2)*ZINT(MZ+2)
+     *              +XINT(MX+3)*YINT(MY+3)*ZINT(MZ+3)
+     *              +XINT(MX+4)*YINT(MY+4)*ZINT(MZ+4))*D1*DKL(K)
+  510    CONTINUE
+         DO 520 K = 1,KL
+            N = N1+KLGT(K)
+            GOUT(N) = GOUT(N) + GG(K)
+  520    CONTINUE
+  530 CONTINUE
+      RETURN
+C
+  550 CONTINUE
+CDEC$ NOVECTOR
+      DO 580 K = 1,KL
+         D1 = DKL(K)
+         NX = KLX(K)
+         NY = KLY(K)
+         NZ = KLZ(K)
+         N1 = KLGT(K)
+*VOCL LOOP,VECTOR
+         DO 560 I = 1,IJ
+            MX = NX+IJX(I)
+            MY = NY+IJY(I)
+            MZ = NZ+IJZ(I)
+            GG(I) = (XINT(MX  )*YINT(MY  )*ZINT(MZ  )
+     *              +XINT(MX+1)*YINT(MY+1)*ZINT(MZ+1)
+     *              +XINT(MX+2)*YINT(MY+2)*ZINT(MZ+2)
+     *              +XINT(MX+3)*YINT(MY+3)*ZINT(MZ+3)
+     *              +XINT(MX+4)*YINT(MY+4)*ZINT(MZ+4))*D1*DIJ(I)
+  560    CONTINUE
+         DO 570 I = 1,IJ
+            N = N1+IJGT(I)
+            GOUT(N) = GOUT(N) + GG(I)
+  570    CONTINUE
+  580 CONTINUE
+      RETURN
+C
+C     CODE FOR NROOTS=6
+C
+  600 CONTINUE
+      IF(IJ.GT.KL) GO TO 650
+C
+CDEC$ NOVECTOR
+      DO 630 I=1,IJ
+         D1 = DIJ(I)
+         NX = IJX(I)
+         NY = IJY(I)
+         NZ = IJZ(I)
+         N1 = IJGT(I)
+*VOCL LOOP,VECTOR
+         DO 610 K = 1,KL
+            MX = NX+KLX(K)
+            MY = NY+KLY(K)
+            MZ = NZ+KLZ(K)
+            GG(K) = (XINT(MX  )*YINT(MY  )*ZINT(MZ  )
+     *              +XINT(MX+1)*YINT(MY+1)*ZINT(MZ+1)
+     *              +XINT(MX+2)*YINT(MY+2)*ZINT(MZ+2)
+     *              +XINT(MX+3)*YINT(MY+3)*ZINT(MZ+3)
+     *              +XINT(MX+4)*YINT(MY+4)*ZINT(MZ+4)
+     *              +XINT(MX+5)*YINT(MY+5)*ZINT(MZ+5))*D1*DKL(K)
+  610    CONTINUE
+         DO 620 K = 1,KL
+            N = N1+KLGT(K)
+            GOUT(N) = GOUT(N) + GG(K)
+  620    CONTINUE
+  630 CONTINUE
+      RETURN
+C
+  650 CONTINUE
+CDEC$ NOVECTOR
+      DO 680 K = 1,KL
+         D1 = DKL(K)
+         NX = KLX(K)
+         NY = KLY(K)
+         NZ = KLZ(K)
+         N1 = KLGT(K)
+*VOCL LOOP,VECTOR
+         DO 660 I = 1,IJ
+            MX = NX+IJX(I)
+            MY = NY+IJY(I)
+            MZ = NZ+IJZ(I)
+            GG(I) = (XINT(MX  )*YINT(MY  )*ZINT(MZ  )
+     *              +XINT(MX+1)*YINT(MY+1)*ZINT(MZ+1)
+     *              +XINT(MX+2)*YINT(MY+2)*ZINT(MZ+2)
+     *              +XINT(MX+3)*YINT(MY+3)*ZINT(MZ+3)
+     *              +XINT(MX+4)*YINT(MY+4)*ZINT(MZ+4)
+     *              +XINT(MX+5)*YINT(MY+5)*ZINT(MZ+5))*D1*DIJ(I)
+  660    CONTINUE
+         DO 670 I = 1,IJ
+            N = N1+IJGT(I)
+            GOUT(N) = GOUT(N) + GG(I)
+  670    CONTINUE
+  680 CONTINUE
+      RETURN
+      END
+C*MODULE VECTOR  *DECK JKGNMV       (GRD2C)
+      SUBROUTINE xJKGNMV(GNM,NG,NMAX,MMAX,B00,B01,B10,C00,D00,F00)
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C
+      LOGICAL NMAXS,NMAXP,MMAXS,MMAXP
+      COMMON /xSHLGNM/NMAXS,NMAXP,MMAXS,MMAXP
+      DIMENSION GNM(NG,NMAX,MMAX)
+      DIMENSION C00(NG),D00(NG),F00(NG)
+      DIMENSION B00(NG,1),B01(NG,1),B10(NG,1)
+C
+C     ----- G(0,0) -----
+C
+      DO 10 IG=1,NG
+   10   GNM(IG,1,1)=F00(IG)
+      IF(NMAXS.AND.MMAXS) RETURN
+      IF(NMAXS) GO TO 30
+C
+C     ----- G(1,0) = C00 * G(0,0) -----
+C
+      DO 20 IG=1,NG
+   20   GNM(IG,2,1)=C00(IG)*GNM(IG,1,1)
+C
+   30 IF(MMAXS) GO TO 60
+C
+C     ----- G(0,1) = D00 * G(0,0) -----
+C
+      DO 40 IG=1,NG
+   40   GNM(IG,1,2)=D00(IG)*GNM(IG,1,1)
+      IF(NMAXS) GO TO 60
+C
+C     ----- G(1,1) = B00 * G(0,0) + D00 * G(1,0) -----
+C
+      DO 50 IG=1,NG
+   50   GNM(IG,2,2)=B00(IG,1)*GNM(IG,1,1)+D00(IG)*GNM(IG,2,1)
+C
+   60 MAX=MAX0(NMAX-1,MMAX-1)
+      DO 70 IG=1,NG
+        DO 70 M=2,MAX
+   70     B00(IG,M)=B00(IG,M-1)+B00(IG,1)
+C
+      IF(NMAXP) GO TO 120
+C
+C     ----- G(N+1,0) = N * B10 * G(N-1,0) + C00 * G(N,0) -----
+C
+      DO 80 IG=1,NG
+        DO 80 N=2,NMAX-1
+   80     B10(IG,N)=B10(IG,N-1)+B10(IG,1)
+      DO 90 IG=1,NG
+        DO 90 N=2,NMAX-1
+   90     GNM(IG,N+1,1)=B10(IG,N-1)*GNM(IG,N-1,1)+C00(IG)*GNM(IG,N,1)
+      IF(MMAXS) GO TO 120
+C
+C     ----- G(N,1) = N * B00 * G(N-1,0) + D00 * G(N,0) -----
+C
+      DO 100 IG=1,NG
+        DO 100 N=2,NMAX-1
+  100     GNM(IG,N+1,2)=B00(IG,N)*GNM(IG,N,1)+D00(IG)*GNM(IG,N+1,1)
+C
+  120 IF(MMAXP) GO TO 170
+C
+C     ----- G(0,M+1) = M * B01 * G(0,M-1) + D00 * G(O,M) -----
+C
+      DO 130 IG=1,NG
+        DO 130 M=2,MMAX-1
+  130     B01(IG,M)=B01(IG,M-1)+B01(IG,1)
+      DO 140 IG=1,NG
+        DO 140 M=2,MMAX-1
+  140     GNM(IG,1,M+1)=B01(IG,M-1)*GNM(IG,1,M-1)+D00(IG)*GNM(IG,1,M)
+      IF(NMAXS) GO TO 170
+C
+C     ----- G(1,M) = M * B00 * G(0,M-1) + C00 * G(0,M) -----
+C
+      DO 150 IG=1,NG
+        DO 150 M=2,MMAX-1
+  150     GNM(IG,2,M+1)=B00(IG,M)*GNM(IG,1,M)+C00(IG)*GNM(IG,1,M+1)
+C
+  170 IF(NMAXP.OR.MMAXP) RETURN
+C
+C     ----- G(N+1,M) = N * B10 * G(N-1,M  ) -----
+C                    +     C00 * G(N  ,M  )
+C                    + M * B00 * G(N  ,M-1)
+C
+      DO 180 IG=1,NG
+        DO 180 N=2,NMAX-1
+          DO 180 M=2,MMAX-1
+            GNM(IG,N+1,M+1)=B10(IG,N-1)*GNM(IG,N-1,M+1)+
+     1                C00(IG    )*GNM(IG,N  ,M+1)+
+     2                B00(IG,M  )*GNM(IG,N  ,M  )
+  180 CONTINUE
+C
+      RETURN
+      END
+C*MODULE VECTOR  *DECK JKXYZV       (GRD2C)
+      SUBROUTINE xJKXYZV(GIJKL,HIJKL,GNKL,HNKL,FNKL,GNM,HNM,
+     1 NG,NMAX,MMAX,NIMAX,NJMAX,NKMAX,NLMAX,DIJ,DKL,EXPNDI,EXPNDK)
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      LOGICAL EXPNDI,EXPNDK
+      DIMENSION GIJKL(NG*NLMAX*NKMAX,NJMAX,NIMAX)
+      DIMENSION HIJKL(NG*NLMAX*NKMAX*NJMAX,NIMAX)
+      DIMENSION  GNKL(NG,NLMAX,NKMAX,NMAX)
+      DIMENSION  HNKL(NG*NLMAX*NKMAX,NMAX)
+      DIMENSION  FNKL(NG*NLMAX*NKMAX*NMAX)
+      DIMENSION   GNM(NG,NMAX,MMAX)
+      DIMENSION   DIJ(NG)
+      DIMENSION   DKL(NG)
+C
+C     ----- G(N,K,L) -----
+C
+      IF (.NOT.EXPNDK) THEN
+C
+CDIR$ NEXTSCALAR
+        DO 30 NK=1,NKMAX
+          DO 10 IG=1,NG
+            DO 10 NL=1,NLMAX
+              DO 10  N=1,NMAX
+   10           GNKL(IG,NL,NK,N)=GNM(IG,N,NL)
+          IF(NK.EQ.NKMAX) GO TO 30
+          MAX=MMAX-NK
+          DO 20 IG=1,NG
+            DO 20  M=1,MAX
+              DO 20  N=1,NMAX
+   20           GNM(IG,N,M)=DKL(IG)*GNM(IG,N,M)+GNM(IG,N,M+1)
+   30   CONTINUE
+C
+      ELSE
+C
+CDIR$ NEXTSCALAR
+        DO 70 NL=1,NLMAX
+          DO 50 IG=1,NG
+            DO 50 NK=1,NKMAX
+              DO 50  N=1,NMAX
+   50           GNKL(IG,NL,NK,N)=GNM(IG,N,NK)
+          IF(NL.EQ.NLMAX) GO TO 70
+          MAX=MMAX-NL
+          DO 60 IG=1,NG
+            DO 60  N=1,NMAX
+              DO 60  M=1,MAX
+   60           GNM(IG,N,M)=DKL(IG)*GNM(IG,N,M)+GNM(IG,N,M+1)
+   70   CONTINUE
+C
+      ENDIF
+C
+C     ----- G(I,J,K,L) -----
+C
+      IF (.NOT.EXPNDI) THEN
+C
+CDIR$ NEXTSCALAR
+        DO 130 NI=1,NIMAX
+          DO 110 IGLKJ=1,NG*NLMAX*NKMAX*NJMAX
+  110       HIJKL(IGLKJ,NI)=FNKL(IGLKJ)
+          IF(NI.EQ.NIMAX) GO TO 130
+          MAX=NMAX-NI
+          DO 120 IG=1,NG
+            DO 120 NL=1,NLMAX
+              DO 120 NK=1,NKMAX
+                DO 120  N=1,MAX
+  120             GNKL(IG,NL,NK,N)=DIJ(IG)*GNKL(IG,NL,NK,N)+
+     1                             GNKL(IG,NL,NK,N+1)
+  130   CONTINUE
+C
+      ELSE
+C
+CDIR$ NEXTSCALAR
+        DO 170 NJ=1,NJMAX
+          DO 150 IGLK=1,NG*NLMAX*NKMAX
+            DO 150 NI=1,NIMAX
+  150         GIJKL(IGLK,NJ,NI)=HNKL(IGLK,NI)
+          IF(NJ.EQ.NJMAX) GO TO 170
+          MAX=NMAX-NJ
+          DO 160 IG=1,NG
+            DO 160 NL=1,NLMAX
+              DO 160 NK=1,NKMAX
+                DO 160  N=1,MAX
+  160             GNKL(IG,NL,NK,N)=DIJ(IG)*GNKL(IG,NL,NK,N)+
+     1                             GNKL(IG,NL,NK,N+1)
+  170   CONTINUE
+      ENDIF
+C
+      RETURN
+      END
+C*MODULE VECTOR  *DECK MTARBR       (MTHLIB)
+      SUBROUTINE xMTARBR(A,NA,B,MB,C,LDC,INCA)
+C
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+C
+      DIMENSION A(*),B(NA,MB),C(LDC,MB)
+C
+      PARAMETER (ZERO=0.0D+00, ONE=1.0D+00)
+*FUJ  PARAMETER (ZERO=0.0D+00, ONE=1.0D+00)
+*IBM  PARAMETER (ZERO=0.0D+00, ONE=1.0D+00)
+*NEC  PARAMETER (ZERO=0.0E+00, ONE=1.0E+00)
+C
+      COMMON /xFMCOM / XX(1)
+C
+C     MATRIX MULTIPLY C = A*B.  A IS SYMMETRIC, B AND C ARE RECTANGULAR
+C
+C PARAMETERS
+C     A     - THE INPUT REAL SYMMETRIC MATRIX OF ORDER NA
+C             STORED IN SYMMETRIC STORAGE MODE.
+C     B     - THE INPUT REAL NA BY MB RECTANGULAR MATRIX
+C     NA    - THE ORDER OF MATRIX A, AND THE LEADING DIMENSION OF B
+C     MB    - THE COLUMN DIMENSION OF MATRICES B AND C
+C     C     - THE OUTPUT PRODUCT NA BY MB MATRIX
+C     LDC   - THE LEADING DIMENSION DIMENSION OF MATRIX C
+C     INCA  - ADDRESS DIFFERENCE OF TWO ADJACENT ELEMENTS OF A
+C
+C     EXPAND A TO SQUARE STORAGE, THEN MULTIPLY.
+C
+      CALL yVALFM(LOADFM)
+      LOC  = LOADFM + 1
+      LAST = LOC    + NA*NA
+      NEED = LAST - LOADFM - 1
+      CALL yGETFM(NEED)
+C
+      CALL xCPYTSQ(A,XX(LOC),NA,INCA)
+C
+      CALL DSYMM('L','U',NA,MB,   ONE,XX(LOC),NA,B,NA,ZERO,C,LDC)
+C
+*FUJ  CALL DSYMM('L','U',NA,MB,   ONE,XX(LOC),NA,B,NA,ZERO,C,LDC)
+C
+*IBM  CALL DSYMM('L','U',NA,MB,   ONE,XX(LOC),NA,B,NA,ZERO,C,LDC)
+C
+*NEC  CALL DSYMM('L','U',NA,MB,   ONE,XX(LOC),NA,B,NA,ZERO,C,LDC)
+C
+      CALL yRETFM(NEED)
+      RETURN
+      END
+C*MODULE VECTOR  *DECK TFSQB        (MTHLIB)
+      SUBROUTINE xTFSQB(V,Q,T,M,N,NDIM)
+C
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+C
+      DIMENSION V(NDIM,M),Q(NDIM,M),T(N)
+C
+      COMMON /xFMCOM / XX(1)
+C
+      PARAMETER (ZERO=0.0D+00, ONE=1.0D+00)
+*FUJ  PARAMETER (ZERO=0.0D+00, ONE=1.0D+00)
+*IBM  PARAMETER (ZERO=0.0D+00, ONE=1.0D+00)
+*NEC  PARAMETER (ZERO=0.0E+00, ONE=1.0E+00)
+C
+C     ----- BACK TRANSFORM THE SQUARE MATRIX V WITH Q -----
+C                          V = Q*V
+C     ON ENTRY, Q IS N X M, AND V IS M X M (M.LE.N)
+C     ON EXIT, V IS N X M.   Q IS UNALTERED.
+C
+C     THE VECTORIZED VERSION GROWS A TEMPORARY MATRIX C,
+C     COMPUTES C=Q*V, AND THEN MOVES C INTO V.
+C
+      CALL yVALFM(LOADFM)
+      LOC  = LOADFM + 1
+      LAST = LOC    + N*M
+      NEED = LAST - LOADFM - 1
+      CALL yGETFM(NEED)
+C
+      CALL XGEMM('N','N',N,M,M,ONE,Q,NDIM,V,NDIM,ZERO,XX(LOC),N)
+C
+*FUJ  CALL DGEMM('N','N',N,M,M,ONE,Q,NDIM,V,NDIM,ZERO,XX(LOC),N)
+C
+*IBM  CALL DGEMM('N','N',N,M,M,ONE,Q,NDIM,V,NDIM,ZERO,XX(LOC),N)
+C
+*NEC  CALL SGEMM('N','N',N,M,M,ONE,Q,NDIM,V,NDIM,ZERO,XX(LOC),N)
+C
+      CALL xCPYSS(XX(LOC),N,V,NDIM,N,M)
+      CALL yRETFM(NEED)
+      RETURN
+      END
+C*MODULE VECTOR  *DECK TFTRI        (MTHLIB)
+      SUBROUTINE xTFTRI(H,F,Q,T,M,N,NDIM)
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C
+      DIMENSION H(*),F(*),Q(NDIM,M),T(N)
+C
+      PARAMETER (ZERO=0.0D+00, ONE=1.0D+00)
+*FUJ  PARAMETER (ZERO=0.0D+00, ONE=1.0D+00)
+*IBM  PARAMETER (ZERO=0.0D+00, ONE=1.0D+00)
+*NEC  PARAMETER (ZERO=0.0E+00, ONE=1.0E+00)
+C
+      COMMON /xFMCOM / XX(1)
+C
+C     ----- TRANSFORM THE TRIANGULAR MATRIX F USING VECTORS Q -----
+C                      H = Q-DAGGER * F * Q
+C     THE ORDER OF THE TRIANGULAR MATRICES H AND F ARE M AND N.
+C
+C     THE VECTORIZED VERSION GROWS 3 TEMPORARY MATRICES, CONVERTS
+C     F TO SQUARE STORAGE, COMPUTES C=F*Q, THEN H=Q-DAGGER*C,
+C     THEN CONVERTS H FROM SQUARE TO TRIANGULAR STORAGE MODE.
+C
+      CALL yVALFM(LOADFM)
+      LOCF = LOADFM + 1
+      LOCH = LOCF   + N*N
+      LOCC = LOCH   + M*M
+      LAST = LOCC   + N*M
+      NEED = LAST   - LOCF
+      CALL yGETFM(NEED)
+C
+      CALL xCPYTSQ(F,XX(LOCF),N,1)
+C
+      CALL DSYMM('L','U',N,M,  ONE,XX(LOCF),N,Q,NDIM,ZERO,XX(LOCC),N)
+      CALL XGEMM('T','N',M,M,N,ONE,Q,NDIM,XX(LOCC),N,ZERO,XX(LOCH),M)
+C
+*FUJ  CALL DSYMM('L','U',N,M,  ONE,XX(LOCF),N,Q,NDIM,ZERO,XX(LOCC),N)
+*FUJ  CALL DGEMM('T','N',M,M,N,ONE,Q,NDIM,XX(LOCC),N,ZERO,XX(LOCH),M)
+C
+*IBM  CALL DSYMM('L','U',N,M,  ONE,XX(LOCF),N,Q,NDIM,ZERO,XX(LOCC),N)
+*IBM  CALL DGEMM('T','N',M,M,N,ONE,Q,NDIM,XX(LOCC),N,ZERO,XX(LOCH),M)
+C
+*NEC  CALL SSYMM('L','U',N,M,  ONE,XX(LOCF),N,Q,NDIM,ZERO,XX(LOCC),N)
+*NEC  CALL SGEMM('T','N',M,M,N,ONE,Q,NDIM,XX(LOCC),N,ZERO,XX(LOCH),M)
+C
+      CALL xCPYSQT(XX(LOCH),H,M,1)
+      CALL yRETFM(NEED)
+      RETURN
+      END
+C*MODULE VECTOR  *DECK CPYSS    CALLED ONLY FROM WITHIN THIS FILE
+      SUBROUTINE xCPYSS(A,LDA,B,LDB,N,M)
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      DIMENSION A(LDA,M),B(LDB,M)
+      PARAMETER (SMALL=1.0D-10, ZERO=0.0D+00)
+C
+C     COPY SQUARE MATRIX A (N X M) TO B, CHECKING FOR SMALL NOS.
+C
+      DO 200 J=1,M
+         DO 100 I=1,N
+            VAL = A(I,J)
+            IF(ABS(VAL).LT.SMALL) VAL=ZERO
+            B(I,J) = VAL
+  100    CONTINUE
+  200 CONTINUE
+      RETURN
+      END
+C*MODULE VECTOR  *DECK DIRFCK       (SCFLIB)
+      SUBROUTINE xDIRFCK(SCFTYP,IA,DA,FA,DB,FB,GHONDO,L2,NINT,NXYZ)
+C
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+C
+      LOGICAL IANDJ,KANDL,SAME,OUT,UROHF
+C
+      DIMENSION IA(*),DA(*),FA(*),DB(*),FB(*),GHONDO(*)
+C
+#include "gamess.par"
+      PARAMETER (ZERO=0.0D+00)
+C
+      COMMON /xDFTPAR/ DFTTYP(20),EXENA,EXENB,EXENC,IDFT34,NAUXFUN,
+     *                                                    NAUXSHL
+      COMMON /xERIOUT/ ISH,JSH,KSH,LSH,LSTRI,LSTRJ,LSTRK,LSTRL
+      COMMON /xGVBWFN/ CICOEF(2,12),F(25),ALPHA(325),BETA(325),NO(10),
+     *                NCO,NSETO,NOPEN,NPAIR,NORB,NCONF(MXAO),NHAM
+      COMMON /xIOFILE/ IR,IW,IP,IS,IPK,IDAF,NAV,IODA(950)
+      COMMON /xMISC  / IANDJ,KANDL,SAME
+      COMMON /xNSHEL / EX(MXGTOT),CS(MXGTOT),CP(MXGTOT),CD(MXGTOT),
+     *                CF(MXGTOT),CG(MXGTOT),
+     *                KSTART(MXSH),KATOM(MXSH),KTYPE(MXSH),KNG(MXSH),
+     *                KLOC(MXSH),KMIN(MXSH),KMAX(MXSH),NSHELL
+      COMMON /xSHLNOS/ QQ4,LIT,LJT,LKT,LLT,LOCI,LOCJ,LOCK,LOCL,
+     *                MINI,MINJ,MINK,MINL,MAXI,MAXJ,MAXK,MAXL,
+     *                NIJX,IJ,KL,IJKL
+      COMMON /xSHLT  / TOL,CUTOFF,OUT,ICOUNT
+C
+      DATA HALF /0.5D+00/
+      DATA RHF,UHF,ROHF/8HRHF     ,8HUHF     ,8HROHF     /
+      DATA GVB/8HGVB     /
+C
+c      DIMENSION VALV((KMAX(ISH)+1)*(KMAX(JSH)+1)*
+c     *               (KMAX(KSH)+1)*(KMAX(LSH)+1)*24)
+c      DIMENSION LOCV((KMAX(ISH)+1)*(KMAX(JSH)+1)*
+c     *               (KMAX(KSH)+1)*(KMAX(LSH)+1)*24,4)
+c      DIMENSION NIJKLV((KMAX(ISH)+1)*(KMAX(JSH)+1)*
+c     *                 (KMAX(KSH)+1)*(KMAX(LSH)+1)*24,6)
+c      DIMENSION VIJKLV((KMAX(ISH)+1)*(KMAX(JSH)+1)*
+c     *                 (KMAX(KSH)+1)*(KMAX(LSH)+1)*24,6)
+      DIMENSION VALV((15+1)*(15+1)*(15+1)*(15+1)*24)
+      DIMENSION LOCV((15+1)*(15+1)*(15+1)*(15+1)*24,4)
+      DIMENSION NIJKLV((15+1)*(15+1)*(15+1)*(15+1)*24,6)
+      DIMENSION VIJKLV((15+1)*(15+1)*(15+1)*(15+1)*24,6)
+C
+      SAME  = ISH .EQ. KSH .AND. JSH .EQ. LSH
+      IANDJ = ISH .EQ. JSH
+      KANDL = KSH .EQ. LSH
+C
+      MINI = KMIN(ISH)
+      MINJ = KMIN(JSH)
+      MINK = KMIN(KSH)
+      MINL = KMIN(LSH)
+      MAXI = KMAX(ISH)
+      MAXJ = KMAX(JSH)
+      MAXK = KMAX(KSH)
+      MAXL = KMAX(LSH)
+      LOCI = KLOC(ISH)-MINI
+      LOCJ = KLOC(JSH)-MINJ
+      LOCK = KLOC(KSH)-MINK
+      LOCL = KLOC(LSH)-MINL
+C
+C     ----- FORM FOCK OPERATOR DIRECTLY FROM INTEGRALS -----
+C     THIS ROUTINE WAS PIECED TOGETHER FROM QOUT AND HSTAR
+C     BY FRANK JENSEN AT ODENSE UNIVERSITY IN MARCH 1990.
+C     SCF FUNCTIONS BESIDES RHF ADDED BY MWS IN AUGUST 1991.
+C
+C     NOTE THAT OFF-DIAGONAL ELEMENTS WILL NEED TO BE HALVED LATER.
+C
+      HFSCAL=DFTTYP(3)
+      UROHF = SCFTYP.EQ.UHF  .OR.  SCFTYP.EQ.ROHF
+      CUTINT = CUTOFF
+C
+      IF(SCFTYP.EQ.GVB) THEN
+         NSHL = NHAM
+         IF(NCO.GT.0) NSHL=NSHL-1
+      END IF
+C
+C     UNPACK AHEAD OF TIME TO ALLOW VECTORIZATION OF BULK OF WORK.
+C     THIS WAS CHANGED BY MIKE SCHMIDT TO EXACTLY RESEMBLE THE
+C     CODE IN THE REAL DIRFCK ROUTINE (SEE SCFLIB) WHEN THE POPLE
+C     INDEXING WAS REMOVED.
+C
+      IJN = 0
+      JMAX = MAXJ
+      NINTORIG = NINT + 1
+      IF (SAME) THEN
+        DO I = MINI,MAXI
+          I_ERIC = (I-MINI)*LSTRI + 1
+          IF (IANDJ) JMAX = I
+          DO 340 J = MINJ,JMAX
+            IJ_ERIC = (J-MINJ)*LSTRJ + I_ERIC
+            LMAX = MAXL
+            IJN = IJN+1
+            KLN=0
+            DO K =  MINK,MAXK
+               IJK_ERIC = (K-MINK)*LSTRK + IJ_ERIC
+               IF (KANDL) LMAX = K
+               LMAX2=LMAX
+               IF( (KLN+1).GT.IJN)THEN
+                 GO TO 340
+               ELSE
+                 LMAX2 = MIN( MINL+(IJN-(KLN+1)), LMAX )
+               ENDIF
+               DO L = MINL,LMAX2
+                  KLN = KLN+1
+                  IJKL_ERIC = (L-MINL)*LSTRL + IJK_ERIC
+                  VAL = GHONDO( IJKL_ERIC )
+                  IF(ABS(VAL).GE.CUTINT) THEN
+                     NINT=NINT+1
+                     NINTCURR=NINT-NINTORIG+1
+                     LOCV(NINTCURR,1) = I
+                     LOCV(NINTCURR,2) = J
+                     LOCV(NINTCURR,3) = K
+                     LOCV(NINTCURR,4) = L
+                     VALV(NINTCURR) = VAL
+                  END IF
+               END DO
+            END DO
+  340     CONTINUE
+        END DO
+C
+C       FOR SAME = .FALSE., THE IF(KLN.GT.IJN)  WILL NEVER OCCUR
+C       SO WE CAN SAFELY STRIP IJN AND KLN OUT OF THE LOOP NEST
+C
+      ELSE   ! .NOT. SAME
+        DO I = MINI,MAXI
+          I_ERIC = (I-MINI)*LSTRI + 1
+          IF (IANDJ) JMAX = I
+          DO J = MINJ,JMAX
+            IJ_ERIC = (J-MINJ)*LSTRJ + I_ERIC
+            LMAX = MAXL
+            DO K =  MINK,MAXK
+               IJK_ERIC = (K-MINK)*LSTRK + IJ_ERIC
+               IF (KANDL) LMAX = K
+               DO L = MINL,LMAX
+                  IJKL_ERIC = (L-MINL)*LSTRL + IJK_ERIC
+                  VAL = GHONDO( IJKL_ERIC )
+                  IF(ABS(VAL).GE.CUTINT) THEN
+                     NINT=NINT+1
+                     NINTCURR=NINT-NINTORIG+1
+                     LOCV(NINTCURR,1) = I
+                     LOCV(NINTCURR,2) = J
+                     LOCV(NINTCURR,3) = K
+                     LOCV(NINTCURR,4) = L
+                     VALV(NINTCURR) = VAL
+                  END IF
+               END DO
+            END DO
+          END DO
+        END DO
+      END IF
+C
+C     NOW WE KNOW THE ACTUAL NUMBER OF LOOPS (NINTMAX).
+C
+      NINTMAX=NINT-NINTORIG+1
+C
+C     NOW USE VALUES TO FIND NIJ,NJK, ETC.
+C     THIS LOOP NOW VECTORIZES QUITE NICELY.
+C
+      DO M=1,NINTMAX
+        II = LOCI + LOCV(M,1)
+        JJ = LOCJ + LOCV(M,2)
+        KK = LOCK + LOCV(M,3)
+        LL = LOCL + LOCV(M,4)
+        VAL = VALV(M)
+C
+        IF (II .LT. JJ) THEN
+          N = II
+          II = JJ
+          JJ = N
+        END IF
+        IF (KK .LT. LL) THEN
+          N = KK
+          KK = LL
+          LL = N
+        END IF
+        IIMINKK = II-KK
+        IF ( IIMINKK .LT. 0 .OR.
+     *          (IIMINKK .EQ. 0 .AND. JJ .LT. LL) ) THEN
+          N = II
+          II = KK
+          KK = N
+          N = JJ
+          JJ = LL
+          LL = N
+        END IF
+C
+        IF(II.EQ.JJ) VAL = VAL*HALF
+        IF(KK.EQ.LL) VAL = VAL*HALF
+        IF(II.EQ.KK  .AND.  JJ.EQ.LL) VAL = VAL*HALF
+C
+        NIJ = IA(II)+JJ
+        NKL = IA(KK)+LL
+        NIK = IA(II)+KK
+        NIL = IA(II)+LL
+        IF(JJ.LT.KK) THEN
+          NJK = IA(KK)+JJ
+        ELSE
+          NJK = IA(JJ)+KK
+        END IF
+        IF(JJ.LT.LL) THEN
+          NJL = IA(LL)+JJ
+        ELSE
+          NJL = IA(JJ)+LL
+        END IF
+        NIJKLV(M,1) = NIJ
+        NIJKLV(M,2) = NKL
+        NIJKLV(M,3) = NIK
+        NIJKLV(M,4) = NIL
+        NIJKLV(M,5) = NJK
+        NIJKLV(M,6) = NJL
+        VALV(M) = VAL
+        IF(SCFTYP.EQ.RHF) THEN
+          IF(NXYZ.EQ.1) THEN
+              VALHFS = VAL*HFSCAL
+              VAL4 = VAL*4
+              VIJKLV(M,1) = VAL4*DA(NKL)
+              VIJKLV(M,2) = VAL4*DA(NIJ)
+              VIJKLV(M,3) = ZERO - VALHFS*DA(NJL)
+              VIJKLV(M,4) = ZERO - VALHFS*DA(NJK)
+              VIJKLV(M,5) = ZERO - VALHFS*DA(NIL)
+              VIJKLV(M,6) = ZERO - VALHFS*DA(NIK)
+          END IF
+        END IF
+      END DO
+C
+C     WE NOW HAVE EVERYTHING READY, PUT INTEGRALS INTO FOCK MATRIX.
+C
+C       HFSCAL DISTINGUISHES CODE FOR HF OR DFT
+C                  IF(HFSCAL .EQ. 1.0D+00) THEN
+C           WE CAN REMOVE THIS TEST BECAUSE MULTIPLYING BY 1.0
+C             DOES NOT CHANGE THE ANSWER FOR HF CASE.
+C
+C                    RHF
+C
+      IF(SCFTYP.EQ.RHF) THEN
+C     NXYZ DISTINGUISHES CODE FOR RHF OR RHF RESPONSE EQUATIONS
+        IF(NXYZ.EQ.1) THEN
+C         REPEATED INDICES ON BOTH DIMENSIONS PREVENTS THIS FROM
+C         VECTORIZING CLEANLY, THUS WE SPLIT IT OFF FROM THE MAIN
+C         COMPUTATION LOOP ABOVE.
+C         THE M LOOP RUNS TERRIBLE IN VECTOR.  *ALWAYS* RUN IT SCALAR.
+          DO N=1,6
+!DIR$ NEXTSCALAR
+            DO M=1,NINTMAX
+              NIJ = NIJKLV(M,N)
+              FA(NIJ) = FA(NIJ) + VIJKLV(M,N)
+            END DO
+          END DO
+        ELSE   ! NXYZ .NE. 1
+          NXYZM1 = NXYZ-1
+          DO M=1,NINTMAX
+            NIJ = (NIJKLV(M,1)-1)*NXYZ+1
+            NKL = (NIJKLV(M,2)-1)*NXYZ+1
+            NIK = (NIJKLV(M,3)-1)*NXYZ+1
+            NIL = (NIJKLV(M,4)-1)*NXYZ+1
+            NJK = (NIJKLV(M,5)-1)*NXYZ+1
+            NJL = (NIJKLV(M,6)-1)*NXYZ+1
+            VALHFS = VALV(M)*HFSCAL
+            VAL4 = VALV(M)*4
+            NIJN = NIJ+NXYZM1
+            NKLN = NKL+NXYZM1
+            NIKN = NIK+NXYZM1
+            NILN = NIL+NXYZM1
+            NJKN = NJK+NXYZM1
+            NJLN = NJL+NXYZM1
+            do i = 0, NXYZM1-1
+               FA(NIJ+i) = FA(NIJ+i)+VAL4*DA(NKL+i)
+               FA(NKL+i) = FA(NKL+i)+VAL4*DA(NIJ+i)
+               FA(NIK+i) = FA(NIK+i)-VALHFS*DA(NJL+i)
+               FA(NIL+i) = FA(NIL+i)-VALHFS*DA(NJK+i)
+               FA(NJK+i) = FA(NJK+i)-VALHFS*DA(NIL+i)
+               FA(NJL+i) = FA(NJL+i)-VALHFS*DA(NIK+i)
+            end do
+          END DO
+        END IF
+C
+C                    UROHF
+C
+C       HFSCAL DISTINGUISHES CODE FOR HF OR DFT
+C                  IF(HFSCAL .EQ. 1.0D+00) THEN
+C           WE CAN REMOVE THIS TEST BECAUSE MULTIPLYING BY 1.0
+C             DOES NOT CHANGE THE ANSWER FOR HF CASE.
+C
+      ELSE IF(UROHF) THEN
+        DO M=1,NINTMAX
+          NIJ = NIJKLV(M,1)
+          NKL = NIJKLV(M,2)
+          NIK = NIJKLV(M,3)
+          NIL = NIJKLV(M,4)
+          NJK = NIJKLV(M,5)
+          NJL = NIJKLV(M,6)
+          VAL = VALV(M)
+          VAL2 = VAL+VAL
+          VAL2HFS = VAL2*HFSCAL
+          VAL4 = VAL*4
+          DUM = VAL4*(DA(NKL)+DB(NKL))
+          FA(NIJ) = FA(NIJ)+DUM
+          FB(NIJ) = FB(NIJ)+DUM
+          DUM = VAL4*(DA(NIJ)+DB(NIJ))
+          FA(NKL) = FA(NKL)+DUM
+          FB(NKL) = FB(NKL)+DUM
+          FA(NIK) = FA(NIK)-VAL2HFS*DA(NJL)
+          FB(NIK) = FB(NIK)-VAL2HFS*DB(NJL)
+          FA(NIL) = FA(NIL)-VAL2HFS*DA(NJK)
+          FB(NIL) = FB(NIL)-VAL2HFS*DB(NJK)
+          FA(NJK) = FA(NJK)-VAL2HFS*DA(NIL)
+          FB(NJK) = FB(NJK)-VAL2HFS*DB(NIL)
+          FA(NJL) = FA(NJL)-VAL2HFS*DA(NIK)
+          FB(NJL) = FB(NJL)-VAL2HFS*DB(NIK)
+        END DO
+C
+C                    GVB
+C
+      ELSE IF(SCFTYP.EQ.GVB) THEN
+        IF(HFSCAL .EQ. 1.0D+00) THEN
+          DO M=1,NINTMAX
+            NIJ = NIJKLV(M,1)
+            NKL = NIJKLV(M,2)
+            NIK = NIJKLV(M,3)
+            NIL = NIJKLV(M,4)
+            NJK = NIJKLV(M,5)
+            NJL = NIJKLV(M,6)
+            VAL = VALV(M)
+            VAL4 = VAL*4
+            IF(NCO.GT.0) THEN
+               FA(NIJ) = FA(NIJ)+VAL4*DA(NKL)
+               FA(NKL) = FA(NKL)+VAL4*DA(NIJ)
+               FA(NIK) = FA(NIK)-VAL *DA(NJL)
+               FA(NIL) = FA(NIL)-VAL *DA(NJK)
+               FA(NJK) = FA(NJK)-VAL *DA(NIL)
+               FA(NJL) = FA(NJL)-VAL *DA(NIK)
+               IOFF1 = L2
+               IOFF2 = L2
+            ELSE
+               IOFF1 = 0
+               IOFF2 = 0
+            END IF
+            DO IFO = 1,NSHL
+               FA(NIJ+IOFF1)    = FA(NIJ+IOFF1)
+     *                     + VAL4*DA(NKL+IOFF2)
+               FA(NKL+IOFF1)    = FA(NKL+IOFF1)
+     *                     + VAL4*DA(NIJ+IOFF2)
+               FA(NIK+IOFF1+L2) = FA(NIK+IOFF1+L2)
+     *                     + VAL *DA(NJL+IOFF2)
+               FA(NIL+IOFF1+L2) = FA(NIL+IOFF1+L2)
+     *                     + VAL *DA(NJK+IOFF2)
+               FA(NJK+IOFF1+L2) = FA(NJK+IOFF1+L2)
+     *                     + VAL *DA(NIL+IOFF2)
+               FA(NJL+IOFF1+L2) = FA(NJL+IOFF1+L2)
+     *                     + VAL *DA(NIK+IOFF2)
+               IOFF1 = IOFF1+L2+L2
+               IOFF2 = IOFF2+L2
+            END DO
+          END DO
+        ELSE
+           WRITE(IW,*)'DIRECT GVB DFT NOT IMPLEMENTED'
+           call aces_exit(1)
+C          I COULDN'T FIGURE OUT THE DO 220 LOOP  :-)
+        END IF
+C
+      END IF
+      RETURN
+      END
+C
+C*MODULE VECTOR  *DECK GENRAL       (INT2A)
+      SUBROUTINE vxGENRAL(GHONDO,DDIJ)
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C
+      DIMENSION GHONDO(*),DDIJ(*)
+C
+      LOGICAL IANDJ,KANDL,SAME,OUT,NORM,DOUBLE,KMAXCHK
+C
+#include "gamess.par"
+C
+      COMMON /xDENS  / DKL(784),DIJ(784)
+      COMMON /xIJGNRL/ AA(MXG2),R(MXG2),X1(MXG2),Y1(MXG2),Z1(MXG2),
+     *                IJD(784)
+      COMMON /xINTDEX/ IJGT(784),IJX(784),IJY(784),IJZ(784),IK(784),
+     *                KLGT(784),KLX(784),KLY(784),KLZ(784)
+      COMMON /xMISC  / IANDJ,KANDL,SAME
+      COMMON /xOUTPUT/ NPRINT,ITOL,ICUT,NORMF,NORMP,NOPK
+      COMMON /xROOT  / XX,U(13),W(13),NROOTS
+      COMMON /xSETINT/ IN(13),KN(13),NI,NJ,NK,NL,NMAX,MMAX,
+     +                BP01,B00,B10,XCP00,XC00,YCP00,YC00,ZCP00,ZC00,F00,
+     +                DXIJ,DYIJ,DZIJ,DXKL,DYKL,DZKL
+c      COMMON /xSHLINF/  AG(MXGSH),CSA(MXGSH),CPA(MXGSH),CDA(MXGSH),
+c     *                CFA(MXGSH),CGA(MXGSH),CHA(MXGSH),CIA(MXGSH),
+c     *                 BG(MXGSH),CSB(MXGSH),CPB(MXGSH),CDB(MXGSH),
+c     *                CFB(MXGSH),CGB(MXGSH),CHB(MXGSH),CIB(MXGSH),
+c     *                 CG(MXGSH),CSC(MXGSH),CPC(MXGSH),CDC(MXGSH),
+c     *                CFC(MXGSH),CGC(MXGSH),CHC(MXGSH),CIC(MXGSH),
+c     *                 DG(MXGSH),CSD(MXGSH),CPD(MXGSH),CDD(MXGSH),
+c     *                CFD(MXGSH),CGD(MXGSH),CHD(MXGSH),CID(MXGSH),
+c     *                XI,YI,ZI,XJ,YJ,ZJ,RRI,XK,YK,ZK,XL,YL,ZL,RRK,
+c     *                NGA,NGB,NGC,NGD
+      COMMON /xSHLINF/  AG(MXGSH),CSA(MXGSH),CPA(MXGSH),CDA(MXGSH),
+     *                CFA(MXGSH),CGA(MXGSH),
+     *                 BG(MXGSH),CSB(MXGSH),CPB(MXGSH),CDB(MXGSH),
+     *                CFB(MXGSH),CGB(MXGSH),
+     *                 CG(MXGSH),CSC(MXGSH),CPC(MXGSH),CDC(MXGSH),
+     *                CFC(MXGSH),CGC(MXGSH),
+     *                 DG(MXGSH),CSD(MXGSH),CPD(MXGSH),CDD(MXGSH),
+     *                CFD(MXGSH),CGD(MXGSH),
+     *                XI,YI,ZI,XJ,YJ,ZJ,RRI,XK,YK,ZK,XL,YL,ZL,RRK,
+     *                NGA,NGB,NGC,NGD
+      COMMON /xSHLNOS/ QQ4,LIT,LJT,LKT,LLT,LOCI,LOCJ,LOCK,LOCL,
+     +                MINI,MINJ,MINK,MINL,MAXI,MAXJ,MAXK,MAXL,
+     +                NIJ,IJ,KL,IJKL
+      COMMON /xSHLT  / TOL,CUTOFF,OUT,ICOUNT
+C
+      DIMENSION IN1(13)
+      DIMENSION MXV(784*(NIJ+1)*(IJ+1))
+      DIMENSION MYV(784*(NIJ+1)*(IJ+1))
+      DIMENSION MZV(784*(NIJ+1)*(IJ+1))
+      DIMENSION NINDV(784*(NIJ+1)*(IJ+1))
+      DIMENSION IJDV(784*(NIJ+1)*(IJ+1))
+      DIMENSION DKLV(784*(NIJ+1)*(IJ+1))
+      DIMENSION NIJV(NIJ+1),NNV(NIJ+1),UV(NIJ+1,13),WV(NIJ+1,13)
+      DIMENSION XINTV(NIJ+1,2401,13),YINTV(NIJ+1,2401,13),
+     *          ZINTV(NIJ+1,2401,13)
+C
+      PARAMETER (SQRT3=1.73205080756888D+00, SQRT5=2.23606797749979D+00,
+     *           SQRT7=2.64575131106459D+00, PI252=34.986836655250D+00,
+     *           ZERO=0.0D+00, HALF=0.5D+00, ONE=1.0D+00)
+C
+C     GENERAL INTEGRAL ROUTINE FOR SPD FUNCTIONS
+C
+      FACTOR = PI252*QQ4
+      NORM = NORMF .NE. 1 .OR. NORMP .NE. 1
+      NI = LIT-1
+      NJ = LJT-1
+      NK = LKT-1
+      NL = LLT-1
+      DXIJ = XI-XJ
+      DYIJ = YI-YJ
+      DZIJ = ZI-ZJ
+      DXKL = XK-XL
+      DYKL = YK-YL
+      DZKL = ZK-ZL
+      NMAX = NI+NJ
+      MMAX = NK+NL
+      MAX = NMAX+1
+      DO 100 I = 1,MAX
+         N = I-1
+         IF (N .LE. NI) IN1(I) = 343*N+1
+         IF (N .GT. NI) IN1(I) = 343*NI+49*(N-NI)+1
+  100 CONTINUE
+      MAX = MMAX+1
+      DO 120 K = 1,MAX
+         N = K-1
+         IF (N .LE. NK) KN(K) = 7*N
+         IF (N .GT. NK) KN(K) = 7*NK+N-NK
+  120 CONTINUE
+C
+C     STORE THE INDICES NEEDED FOR XINT/YINT/ZINT HERE...  THEY
+C     ARE INVARIANT TO KG OR LG LOOPS, AND WERE ORIGINALLY
+C     COMPUTED IN FORMS.  MOVING THEM HERE ELIMINATES A GREAT
+C     DEAL OF UNNECESSARY COMPUTATION.
+C     THE K LOOP VECTORIZES.
+C
+      KMAX = IK(IJ)
+      NCNT = 0
+      IF(NROOTS .GT. 2 .AND.
+     *   IK(1).EQ.KMAX  .AND.  IJ.GT.KMAX) THEN
+        KMAXCHK = .TRUE.
+      ELSE
+        KMAXCHK = .FALSE.
+      END IF
+C
+      DO I = 1,IJ
+        IF (.NOT.KMAXCHK) KMAX = IK(I)
+        DO K = 1,KMAX
+          NCNT = NCNT + 1
+          MXV(NCNT)   = IJX(I)+KLX(K)
+          MYV(NCNT)   = IJY(I)+KLY(K)
+          MZV(NCNT)   = IJZ(I)+KLZ(K)
+          IJDV(NCNT)  = IJD(I)
+          NINDV(NCNT) = IJGT(I)+KLGT(K)
+        END DO
+      END DO
+C
+C     ----- K PRIMITIVE
+C
+      LGMAX = NGD
+      DO 790 KG = 1,NGC
+        AK = CG(KG)
+        BRRK = AK*RRK
+        AKXK = AK*XK
+        AKYK = AK*YK
+        AKZK = AK*ZK
+C
+C        ----- L PRIMITIVE
+C
+        IF (KANDL) LGMAX = KG
+        DO 690 LG = 1,LGMAX
+          AL = DG(LG)
+          B = AK+AL
+          BINV = ONE/B
+          BBRRK = AL*BRRK*BINV
+          IF (BBRRK .LE. TOL) THEN
+            XB = (AKXK+AL*XL)*BINV
+            YB = (AKYK+AL*YL)*BINV
+            ZB = (AKZK+AL*ZL)*BINV
+            BXBK = B*(XB-XK)
+            BYBK = B*(YB-YK)
+            BZBK = B*(ZB-ZK)
+            BXBI = B*(XB-XI)
+            BYBI = B*(YB-YI)
+            BZBI = B*(ZB-ZI)
+C
+C           ----- DENSITY FACTOR
+C
+            DOUBLE=KANDL.AND.KG.NE.LG
+            N = 0
+            MAX = MAXL
+            DUM1 = ZERO
+            DUM2 = ZERO
+            FBINV = FACTOR*BINV
+C
+C           THIS LARGE SERIES OF IF-TESTS WAS CONVERTED INTO
+C           IF-ELSES FOR COMPILER PERFORMANCE AND EASIER
+C           INTERPRETATION.
+C
+            DO 370 K = MINK,MAXK
+               IF ( K .EQ. 1 ) THEN
+                 DUM1 = CSC(KG)*FBINV
+               ELSE IF ( K .EQ. 2 ) THEN
+                 DUM1 = CPC(KG)*FBINV
+               ELSE IF ( K .EQ. 5 ) THEN
+                 DUM1 = CDC(KG)*FBINV
+               ELSE IF ( K .EQ. 11 ) THEN
+                 DUM1 = CFC(KG)*FBINV
+               ELSE IF ( K .EQ. 21 ) THEN
+                 DUM1 = CGC(KG)*FBINV
+               ELSE IF ( K .EQ. 36 ) THEN
+                 print *, 'No H functions.'
+                 call aces_exit(1)
+c                 DUM1 = CHC(KG)*FBINV
+               ELSE IF ( K .EQ. 57 ) THEN
+                 print *, 'No I functions.'
+                 call aces_exit(1)
+c                 DUM1 = CIC(KG)*FBINV
+               ELSE IF (NORM) THEN
+                 IF ( K .EQ. 8 ) THEN
+                   DUM1 = DUM1*SQRT3
+                 ELSE IF ( K .EQ. 14 ) THEN
+                   DUM1 = DUM1*SQRT5
+                 ELSE IF ( K .EQ. 20 ) THEN
+                   DUM1 = DUM1*SQRT3
+                 ELSE IF ( K .EQ. 24 ) THEN
+                   DUM1 = DUM1*SQRT7
+                 ELSE IF ( K .EQ. 30 ) THEN
+                   DUM1 = DUM1*SQRT5/SQRT3
+                 ELSE IF ( K .EQ. 33 ) THEN
+                   DUM1 = DUM1*SQRT3
+                 ELSE IF ( K .GT. 35) THEN
+                   WRITE(6,*) 'NO H OR I NORMALIZATION PROVIDED'
+                   call aces_exit(1)
+                 END IF
+               END IF
+               IF (KANDL) MAX = K
+               DO 360 L = MINL,MAX
+                  IF ( L .EQ. 1 ) THEN
+                    DUM2 = DUM1*CSD(LG)
+                    IF ( DOUBLE ) THEN
+                      IF (K .LE. 1) THEN
+                        DUM2 = DUM2+DUM2
+                      ELSE
+                        DUM2 = DUM2+CSC(KG)*CPD(LG)*FBINV
+                      END IF
+                    END IF
+                  ELSE IF ( L .EQ. 2 ) THEN
+                    DUM2 = DUM1*CPD(LG)
+                    IF (DOUBLE) DUM2 = DUM2+DUM2
+                  ELSE IF ( L .EQ. 5 ) THEN
+                    DUM2 = DUM1*CDD(LG)
+                    IF (DOUBLE) DUM2 = DUM2+DUM2
+                  ELSE IF ( L .EQ. 11 ) THEN
+                    DUM2 = DUM1*CFD(LG)
+                    IF (DOUBLE) DUM2 = DUM2+DUM2
+                  ELSE IF ( L .EQ. 21 ) THEN
+                    DUM2 = DUM1*CGD(LG)
+                    IF (DOUBLE) DUM2 = DUM2+DUM2
+                  ELSE IF ( L .EQ. 36 ) THEN
+                    print *, 'No H functions.'
+                    call aces_exit(1)
+c                    DUM2 = CHD(KG)*FBINV
+                  ELSE IF ( L .EQ. 57 ) THEN
+                    print *, 'No I functions.'
+                    call aces_exit(1)
+c                    DUM2 = CID(KG)*FBINV
+                  ELSE IF ( NORM ) THEN
+                    IF ( L .EQ. 8 ) THEN
+                      DUM2 = DUM2*SQRT3
+                    ELSE IF ( L .EQ. 14 ) THEN
+                      DUM2 = DUM2*SQRT5
+                    ELSE IF ( L .EQ. 20 ) THEN
+                      DUM2 = DUM2*SQRT3
+                    ELSE IF ( L .EQ. 24 ) THEN
+                      DUM2 = DUM2*SQRT7
+                    ELSE IF ( L .EQ. 30 ) THEN
+                      DUM2 = DUM2*SQRT5/SQRT3
+                    ELSE IF ( L .EQ. 33 ) THEN
+                      DUM2 = DUM2*SQRT3
+                    ELSE IF ( L .GT. 35) THEN
+                      WRITE(6,*) 'NO H OR I NORMALIZATION PROVIDED'
+                      call aces_exit(1)
+                    END IF
+                  END IF
+                  N = N+1
+                  DKL(N) = DUM2
+  360          CONTINUE
+  370       CONTINUE
+          END IF
+C
+C     CONVERT DKL TO DKLV FOR USE IN FORMSV.  K LOOP VECTORIZES.
+C
+          KMAX = IK(IJ)
+          NCNT = 0
+          DO 390 I = 1,IJ
+            IF (.NOT.KMAXCHK) KMAX = IK(I)
+            DO 380 K = 1,KMAX
+              NCNT = NCNT + 1
+              DKLV(NCNT) = DKL(K)
+  380       CONTINUE
+  390     CONTINUE
+C
+C         ----- PAIR OF I,J PRIMITIVES
+C         ONCE AGAIN, FIGURE OUT HOW MANY LOOPS TO DO FIRST.
+C         THIS VECTORIZES.
+C
+          NN = 0
+          NIJTOTAL = 0
+          DO 400 N = 1,NIJ
+            DUM = BBRRK+R(N)
+            IF (DUM .LE. TOL) THEN
+              NIJTOTAL = NIJTOTAL + 1
+              NIJV(NIJTOTAL) = N
+              NNV(NIJTOTAL) = NN
+            END IF
+cSSS  400     NN = NN+49
+  400     NN = NN+16
+C
+C         CALL SPECIAL VECTOR VERSION OF RT123.  BY SPLITTING THE
+C         NIJ LOOP WE CAN ADD AN EXTRA DIMENSION TO U AND W AND
+C         VECTORIZE OVER THIS LOOP.
+C
+          IF (NROOTS .LE. 3) THEN
+            DO 450 NNEW = 1,NIJTOTAL
+              N = NIJV(NNEW)
+              NN = NNV(NNEW)
+              DUM = BBRRK+R(N)
+              A = AA(N)
+              AB = A*B
+              AANDB = A+B
+              EXPE = EXP(-DUM)/SQRT(AANDB)
+              RHO = AB/AANDB
+              XA = X1(N)
+              YA = Y1(N)
+              ZA = Z1(N)
+              XX = RHO*((XA-XB)*(XA-XB) + (YA-YB)*(YA-YB)
+     *                                + (ZA-ZB)*(ZA-ZB))
+C
+C              ----- ROOTS AND WEIGHTS FOR QUADRATURE
+C
+              CALL xRT123V(XX,UV,WV,NROOTS,NIJ,NNEW)
+  450       CONTINUE
+C
+C         ELSE CALL THE REGULAR VERSIONS OF ROOT4/5/6.
+C         CALLED MUCH LESS OFTEN... EFFORT TO VECTORIZE FAR EXCEEDS
+C          THE COMPUTATIONAL GAIN.  LEFT IT ALONE.
+C
+          ELSE
+            DO 490 NNEW = 1,NIJTOTAL
+              N = NIJV(NNEW)
+              NN = NNV(NNEW)
+              DUM = BBRRK+R(N)
+              A = AA(N)
+              AB = A*B
+              AANDB = A+B
+              EXPE = EXP(-DUM)/SQRT(AANDB)
+              RHO = AB/AANDB
+              XA = X1(N)
+              YA = Y1(N)
+              ZA = Z1(N)
+              XX = RHO*((XA-XB)*(XA-XB) + (YA-YB)*(YA-YB)
+     *                                + (ZA-ZB)*(ZA-ZB))
+C
+C              ----- ROOTS AND WEIGHTS FOR QUADRATURE
+C
+              IF (NROOTS .EQ. 4) THEN
+                CALL xROOT4
+              ELSE IF (NROOTS .EQ. 5) THEN
+                CALL xROOT5
+              ELSE
+                CALL xROOT6
+              END IF
+              DO 480 M = 1, NROOTS
+                UV(NNEW,M) = U(M)
+                WV(NNEW,M) = W(M)
+  480         CONTINUE
+  490       CONTINUE
+          END IF
+C
+          DO 590 NNEW = 1,NIJTOTAL
+            N = NIJV(NNEW)
+            NN = NNV(NNEW)
+            DUM = BBRRK+R(N)
+            DO 500 I = 1,IJ
+               DIJ(I) = DDIJ(IJD(I)+NN)
+  500       CONTINUE
+            A = AA(N)
+            AB = A*B
+            AANDB = A+B
+            EXPE = EXP(-DUM)/SQRT(AANDB)
+            RHO = AB/AANDB
+            XA = X1(N)
+            YA = Y1(N)
+            ZA = Z1(N)
+            XX = RHO*((XA-XB)*(XA-XB) + (YA-YB)*(YA-YB)
+     *                                + (ZA-ZB)*(ZA-ZB))
+            AXAK = A*(XA-XK)
+            AYAK = A*(YA-YK)
+            AZAK = A*(ZA-ZK)
+            AXAI = A*(XA-XI)
+            AYAI = A*(YA-YI)
+            AZAI = A*(ZA-ZI)
+            C1X = BXBK+AXAK
+            C2X = A*BXBK
+            C3X = BXBI+AXAI
+            C4X = B*AXAI
+            C1Y = BYBK+AYAK
+            C2Y = A*BYBK
+            C3Y = BYBI+AYAI
+            C4Y = B*AYAI
+            C1Z = BZBK+AZAK
+            C2Z = A*BZBK
+            C3Z = BZBI+AZAI
+            C4Z = B*AZAI
+            MM = 0
+            MAX = NMAX+1
+C
+C              COMPUTE TWO-ELECTRON INTEGRALS FOR EACH ROOT
+C
+            DO 520 M = 1,NROOTS
+               U2 = UV(NNEW,M)*RHO
+               F00 = EXPE*WV(NNEW,M)
+               DO 510 I = 1,MAX
+                  IN(I) = IN1(I)+MM
+  510          CONTINUE
+               DUMINV = ONE/(AB+U2*AANDB)
+               DM2INV = HALF*DUMINV
+               BP01 = (A+U2)*DM2INV
+               B00 = U2*DM2INV
+               B10 = (B+U2)*DM2INV
+               XCP00 = (U2*C1X+C2X)*DUMINV
+               XC00 = (U2*C3X+C4X)*DUMINV
+               YCP00 = (U2*C1Y+C2Y)*DUMINV
+               YC00 = (U2*C3Y+C4Y)*DUMINV
+               ZCP00 = (U2*C1Z+C2Z)*DUMINV
+               ZC00 = (U2*C3Z+C4Z)*DUMINV
+               CALL xXYZINTV(NIJ,NNEW,XINTV,YINTV,ZINTV)
+               MM = MM+2401
+  520       CONTINUE
+  590     CONTINUE
+C
+C              ----- FORM (I,J//K,L) INTEGRALS OVER FUNCTIONS
+C
+CDIR$ NOINLINE
+          CALL xFORMSV(GHONDO,DDIJ,XINTV,YINTV,ZINTV,
+     *           NIJTOTAL,NNV,NIJ,784*NIJ*IJ,NROOTS,
+     *           MXV,MYV,MZV,IJDV,NINDV,DKLV,NCNT )
+  690   CONTINUE
+  790 CONTINUE
+C
+      RETURN
+      END
+cmgc 125 25 625
+C*MODULE VECTOR  *DECK FORMSV   CALLED ONLY FROM WITHIN THIS FILE
+      SUBROUTINE xFORMSV(GHONDO,DDIJ,XINTV,YINTV,ZINTV,
+     *  NIJTOTAL,NNV,NIJ,IJDIM,NROOTS,
+     *  MXV,MYV,MZV,IJDV,NINDV,DKLV,NCNT )
+C
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+C
+      PARAMETER (ZERO=0.0D+00)
+C
+      DIMENSION GHONDO(*),DDIJ(*)
+      DIMENSION MXV(IJDIM),MYV(IJDIM),MZV(IJDIM),NNV(NIJ)
+      DIMENSION IJDV(IJDIM),DKLV(IJDIM),GGV(IJDIM),NINDV(IJDIM)
+      DIMENSION XINTV(NIJ+1,2401,13),YINTV(NIJ+1,2401,13),
+     &          ZINTV(NIJ+1,2401,13)
+C
+C     ----- FORM INTEGRALS OVER FUNCTIONS
+C
+      ione = 1
+      do i = ione, NCNT
+         GGV(i) = ZERO
+      end do
+C
+C     THE DO N=1,NIJ LOOP HAS BEEN PULLED IN FROM GENRAL, BUT
+C       ONLY AFTER WE DETERMINE THE HOW MANY LOOPS WE ACTUALLY
+C       NEED TO DO (NIJTOTAL), WHICH IS FIGURED OUT IN GENRAL.
+C     WE BUILD MX,MY,MZ AT THE BEGINNING OF GENRAL NOW, SINCE
+C       THEIR VALUES ARE INVARIANT TO LOOPS THROUGH GENRAL; AT
+C       THE SAME TIME WE DETERMINE NCNT, IJDV, AND NINDV.
+C     DKLV IS BUILT FROM DKL IN GENRAL.
+C     AS A RESULT OF ALL THIS, WE CAN NOW VECTORIZE CLEANLY OVER
+C       NCNT.
+C
+      DO 700 NNEW = 1,NIJTOTAL
+        NN = NNV(NNEW)
+        DO 500 NC = 1,NCNT
+          MX = MXV(NC)
+          MY = MYV(NC)
+          MZ = MZV(NC)
+          DUMGG = ZERO
+          DO L = 1, NROOTS
+            DUMGG = DUMGG + XINTV(NNEW,MX,L)
+     *              *YINTV(NNEW,MY,L)*ZINTV(NNEW,MZ,L)
+          END DO
+          GGV(NC) = GGV(NC) + DUMGG*DDIJ(IJDV(NC)+NN)*DKLV(NC)
+  500   CONTINUE
+  700 CONTINUE
+C
+C     STORE VALUES INTO GHONDO
+C     REPEATED INDICES PREVENTS THIS FROM VECTORIZING, THUS
+C      WE SPLIT IT OFF FROM THE MAIN COMPUTATION LOOP ABOVE.
+C     NO NEED TO LOOP OVER NIJTOTAL HERE, THE UPDATES TO GHONDO
+C      ARE NC-DEPENDENT.  THE GGV ARRAY WILL CONTAIN THE APPROPRIATE
+C      SUMMATION FOR EACH VALUE OF NC.
+C
+      DO 900 NC = 1,NCNT
+        NIND = NINDV(NC)
+        GHONDO(NIND) = GHONDO(NIND) + GGV(NC)
+  900 CONTINUE
+C
+      RETURN
+      END
+C*MODULE VECTOR  *DECK XYZINTV  CALLED ONLY FROM WITHIN THIS FILE
+      SUBROUTINE xXYZINTV(NIJ,NNEW,XINTV,YINTV,ZINTV)
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C
+      LOGICAL N0,N1,M0,M1,FIRST1,FIRST2,FIRST3,FIRST4
+C
+      COMMON /xSETINT/ I(13),K(13),NIMAX,NJMAX,NKMAX,NLMAX,NMAX,MMAX
+     +               ,BP01,B00,B10,XCP00,XC00,YCP00,YC00,ZCP00,ZC00,F00
+     +               ,DXIJ,DYIJ,DZIJ,DXKL,DYKL,DZKL
+C
+      DIMENSION XINTV(NIJ+1,31213),YINTV(NIJ+1,31213),ZINTV(NIJ+1,31213)
+C
+      PARAMETER (ZERO=0.0D+00, ONE=1.0D+00)
+C
+      N0 = NMAX .EQ. 0
+      N1 = NMAX .LE. 1
+      M0 = MMAX .EQ. 0
+      M1 = MMAX .LE. 1
+C
+C     ----- I(0,0) -----
+C
+      I1 = I(1)
+      XINTV(NNEW,I1) = ONE
+      YINTV(NNEW,I1) = ONE
+      ZINTV(NNEW,I1) = F00
+      IF (N0 .AND. M0) RETURN
+      I2 = I(2)
+      K2 = K(2)
+      CP10 = B00
+      IF (.NOT. N0) THEN
+C
+C     ----- I(1,0) -----
+C
+        XINTV(NNEW,I2) = XC00
+        YINTV(NNEW,I2) = YC00
+        ZINTV(NNEW,I2) = ZC00*F00
+        IF (M0) GO TO 120
+      END IF
+C
+C     ----- I(0,1) -----
+C
+      I3 = I1+K2
+      XINTV(NNEW,I3) = XCP00
+      YINTV(NNEW,I3) = YCP00
+      ZINTV(NNEW,I3) = ZCP00*F00
+      IF (.NOT. N0) THEN
+C
+C     ----- I(1,1) -----
+C
+        I3 = I2+K2
+        XINTV(NNEW,I3) = XCP00*XINTV(NNEW,I2)+CP10
+        YINTV(NNEW,I3) = YCP00*YINTV(NNEW,I2)+CP10
+        ZINTV(NNEW,I3) = ZCP00*ZINTV(NNEW,I2)+CP10*F00
+      END IF
+  120 IF (.NOT. N1) THEN
+        C10 = ZERO
+        I3 = I1
+        I4 = I2
+        DO 160 N = 2,NMAX
+          C10 = C10+B10
+C
+C     ----- I(N,0) -----
+C
+          I5 = I(N+1)
+          XINTV(NNEW,I5) = C10*XINTV(NNEW,I3)+XC00*XINTV(NNEW,I4)
+          YINTV(NNEW,I5) = C10*YINTV(NNEW,I3)+YC00*YINTV(NNEW,I4)
+          ZINTV(NNEW,I5) = C10*ZINTV(NNEW,I3)+ZC00*ZINTV(NNEW,I4)
+          IF ( .NOT. M0) THEN
+            CP10 = CP10+B00
+C
+C     ----- I(N,1) -----
+C
+            I3 = I5+K2
+            XINTV(NNEW,I3) = XCP00*XINTV(NNEW,I5)+CP10*XINTV(NNEW,I4)
+            YINTV(NNEW,I3) = YCP00*YINTV(NNEW,I5)+CP10*YINTV(NNEW,I4)
+            ZINTV(NNEW,I3) = ZCP00*ZINTV(NNEW,I5)+CP10*ZINTV(NNEW,I4)
+          END IF
+          I3 = I4
+  160   I4 = I5
+      END IF
+      IF ( .NOT. M1) THEN
+        CP01 = ZERO
+        C01 = B00
+        I3 = I1
+        I4 = I1+K2
+        DO 220 M = 2,MMAX
+          CP01 = CP01+BP01
+C
+C     ----- I(0,M) -----
+C
+          I5 = I1+K(M+1)
+          XINTV(NNEW,I5) = CP01*XINTV(NNEW,I3)+XCP00*XINTV(NNEW,I4)
+          YINTV(NNEW,I5) = CP01*YINTV(NNEW,I3)+YCP00*YINTV(NNEW,I4)
+          ZINTV(NNEW,I5) = CP01*ZINTV(NNEW,I3)+ZCP00*ZINTV(NNEW,I4)
+          IF (.NOT. N0) THEN
+            C01 = C01+B00
+C
+C     ----- I(1,M) -----
+C
+            I3 = I2+K(M+1)
+            XINTV(NNEW,I3) = XC00*XINTV(NNEW,I5)+C01*XINTV(NNEW,I4)
+            YINTV(NNEW,I3) = YC00*YINTV(NNEW,I5)+C01*YINTV(NNEW,I4)
+            ZINTV(NNEW,I3) = ZC00*ZINTV(NNEW,I5)+C01*ZINTV(NNEW,I4)
+          END IF
+          I3 = I4
+  220   I4 = I5
+      END IF
+      IF (.NOT. N1 .AND. .NOT. M1) THEN
+C
+C     ----- I(N,M) -----
+C
+        C01 = B00
+        K3 = K2
+        DO 280 M = 2,MMAX
+          K4 = K(M+1)
+          C01 = C01+B00
+          I3 = I1
+          I4 = I2
+          C10 = B10
+          DO 260 N = 2,NMAX
+            I5 = I(N+1)
+            XINTV(NNEW,I5+K4) = C10*XINTV(NNEW,I3+K4)
+     *           +XC00*XINTV(NNEW,I4+K4)+C01*XINTV(NNEW,I4+K3)
+            YINTV(NNEW,I5+K4) = C10*YINTV(NNEW,I3+K4)
+     *           +YC00*YINTV(NNEW,I4+K4)+C01*YINTV(NNEW,I4+K3)
+            ZINTV(NNEW,I5+K4) = C10*ZINTV(NNEW,I3+K4)
+     *           +ZC00*ZINTV(NNEW,I4+K4)+C01*ZINTV(NNEW,I4+K3)
+            C10 = C10+B10
+            I3 = I4
+  260     I4 = I5
+  280   K3 = K4
+      END IF
+      IF (NJMAX .GT. 0) THEN
+C
+C     ----- I(NI,NJ,M) -----
+C
+        M = 0
+        I5 = I(NMAX+1)
+        FIRST1 = .TRUE.
+        DO 430 WHILE (FIRST1 .OR. M .LE. MMAX)
+          MIN = NIMAX
+          KM = K(M+1)
+          FIRST2 = .TRUE.
+          DO 360 WHILE (FIRST2 .OR. MIN .LT. NMAX)
+            N = NMAX
+            I3 = I5+KM
+            FIRST3 = .TRUE.
+            DO 340 WHILE (FIRST3 .OR. N .GT. MIN)
+              I4 = I(N)+KM
+              XINTV(NNEW,I3) = XINTV(NNEW,I3)+DXIJ*XINTV(NNEW,I4)
+              YINTV(NNEW,I3) = YINTV(NNEW,I3)+DYIJ*YINTV(NNEW,I4)
+              ZINTV(NNEW,I3) = ZINTV(NNEW,I3)+DZIJ*ZINTV(NNEW,I4)
+              I3 = I4
+              N = N-1
+              FIRST3 = .FALSE.
+  340       END DO
+            MIN = MIN+1
+            FIRST2 = .FALSE.
+  360     END DO
+          IF (NIMAX .GT. 0) THEN
+            I3 = 49+KM+I1
+            DO 400 NJ = 1,NJMAX
+              I4 = I3
+              DO 380 NI = 1,NIMAX
+                XINTV(NNEW,I4)=XINTV(NNEW,I4+294)+DXIJ*XINTV(NNEW,I4-49)
+                YINTV(NNEW,I4)=YINTV(NNEW,I4+294)+DYIJ*YINTV(NNEW,I4-49)
+                ZINTV(NNEW,I4)=ZINTV(NNEW,I4+294)+DZIJ*ZINTV(NNEW,I4-49)
+  380         I4 = I4+343
+  400       I3 = I3+49
+          END IF
+          M = M+1
+          FIRST1 = .FALSE.
+  430   END DO
+      END IF
+      IF (NLMAX .GT. 0) THEN
+C
+C     ----- I(NI,NJ,NK,NL) -----
+C
+        I5 = K(MMAX+1)
+        IA = I1
+        NI = 0
+        FIRST4 = .TRUE.
+        DO 580 WHILE (FIRST4 .OR. NI .LE. NIMAX)
+          NJ = 0
+          IB = IA
+          FIRST1 = .TRUE.
+          DO 570 WHILE (FIRST1 .OR. NJ .LE. NJMAX)
+            MIN = NKMAX
+            FIRST2 = .TRUE.
+            DO 530 WHILE (FIRST2 .OR. MIN .LT. MMAX)
+              M = MMAX
+              I3 = IB+I5
+              FIRST3 = .TRUE.
+              DO 520 WHILE (FIRST3 .OR. M .GT. MIN)
+                I4 = IB+K(M)
+                XINTV(NNEW,I3) = XINTV(NNEW,I3)+DXKL*XINTV(NNEW,I4)
+                YINTV(NNEW,I3) = YINTV(NNEW,I3)+DYKL*YINTV(NNEW,I4)
+                ZINTV(NNEW,I3) = ZINTV(NNEW,I3)+DZKL*ZINTV(NNEW,I4)
+                I3 = I4
+                M = M-1
+                FIRST3 = .FALSE.
+  520         END DO
+              MIN = MIN+1
+              FIRST2 = .FALSE.
+  530       END DO
+            IF (NKMAX .GT. 0) THEN
+              I3 = IB+1
+              DO 560 NL = 1,NLMAX
+                I4 = I3
+                DO 540 NK = 1,NKMAX
+                  XINTV(NNEW,I4)= XINTV(NNEW,I4+6)+DXKL*XINTV(NNEW,I4-1)
+                  YINTV(NNEW,I4)= YINTV(NNEW,I4+6)+DYKL*YINTV(NNEW,I4-1)
+                  ZINTV(NNEW,I4)= ZINTV(NNEW,I4+6)+DZKL*ZINTV(NNEW,I4-1)
+                  I4 = I4+7
+  540           END DO
+              I3 = I3+1
+  560         END DO
+            END IF
+            NJ = NJ+1
+            IB = IB+49
+            FIRST1 = .FALSE.
+  570     END DO
+          NI = NI+1
+          IA = IA+343
+          FIRST4 = .FALSE.
+  580   END DO
+      END IF
+C
+      RETURN
+      END
+C*MODULE VECTOR  *DECK RT123V   CALLED ONLY FROM WITHIN THIS FILE
+C
+      SUBROUTINE xRT123V(X,UV,WV,NROOTS,NIJ,NN)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C             *****   VERSION FEBRUARY 13,1975   *****
+      DIMENSION UV(NIJ+1,13),WV(NIJ+1,13)
+      DATA R12,PIE4/2.75255128608411D-01, 7.85398163397448D-01/
+      DATA R22,W22/ 2.72474487139158D+00, 9.17517095361369D-02/
+      DATA R13/     1.90163509193487D-01/
+      DATA R23,W23/ 1.78449274854325D+00, 1.77231492083829D-01/
+      DATA R33,W33/ 5.52534374226326D+00, 5.11156880411248D-03/
+C
+CDIR$ INLINEALWAYS RT123V
+C
+      IF (X .GT. 5.0D+00) GO TO 400
+      IF (X .GT. 1.0D+00) GO TO 280
+      IF (X .GT. 3.0D-07) GO TO 180
+C
+C     X IS APPROXIMATELY ZERO.         NROOTS=1,2, OR 3
+C
+      IF (NROOTS .EQ. 1) THEN
+        UV(NN,1) = 0.5D+00 -X/5.0D+00
+        WV(NN,1) = 1.0D+00 -X/3.0D+00
+      ELSE IF (NROOTS .EQ. 2) THEN
+        UV(NN,1) = 1.30693606237085D-01 -2.90430236082028D-02 *X
+        UV(NN,2) = 2.86930639376291D+00 -6.37623643058102D-01 *X
+        WV(NN,1) = 6.52145154862545D-01 -1.22713621927067D-01 *X
+        WV(NN,2) = 3.47854845137453D-01 -2.10619711404725D-01 *X
+      ELSE  ! NROOTS == 3
+        UV(NN,1) = 6.03769246832797D-02 -9.28875764357368D-03 *X
+        UV(NN,2) = 7.76823355931043D-01 -1.19511285527878D-01 *X
+        UV(NN,3) = 6.66279971938567D+00 -1.02504611068957D+00 *X
+        WV(NN,1) = 4.67913934572691D-01 -5.64876917232519D-02 *X
+        WV(NN,2) = 3.60761573048137D-01 -1.49077186455208D-01 *X
+        WV(NN,3) = 1.71324492379169D-01 -1.27768455150979D-01 *X
+      END IF
+      RETURN
+C
+C     X = 0.0 TO 1.0                   NROOTS=1,2, OR 3
+C
+  180 IF (NROOTS .LT. 3) THEN
+        F1 = ((((((((-8.36313918003957D-08*X+
+     +    1.21222603512827D-06 )*X-
+     +    1.15662609053481D-05 )*X+9.25197374512647D-05 )*X-
+     +    6.40994113129432D-04 )*X+3.78787044215009D-03 )*X-
+     +    1.85185172458485D-02 )*X+7.14285713298222D-02 )*X-
+     +    1.99999999997023D-01 )*X+3.33333333333318D-01
+        WV(NN,1) = (X+X)*F1+EXP(-X)
+        IF (NROOTS .LT. 2) THEN
+          UV(NN,1) = F1/(WV(NN,1)-F1)
+        ELSE
+          UV(NN,1) = (((((((-2.35234358048491D-09*X+
+     +      2.49173650389842D-08)*X-
+     +      4.558315364581D-08)*X-2.447252174587D-06)*X+
+     +      4.743292959463D-05)*X-5.33184749432408D-04 )*X+
+     +      4.44654947116579D-03 )*X-2.90430236084697D-02 )*X+
+     +      1.30693606237085D-01
+          UV(NN,2) = (((((((-2.47404902329170D-08*X+
+     +      2.36809910635906D-07)*X+
+     +      1.835367736310D-06)*X-2.066168802076D-05)*X-
+     +      1.345693393936D-04)*X-5.88154362858038D-05 )*X+
+     +      5.32735082098139D-02 )*X-6.37623643056745D-01 )*X+
+     +      2.86930639376289D+00
+          WV(NN,2) = ((F1-WV(NN,1))*UV(NN,1)+F1)*(1.0D+00+UV(NN,2))/
+     +            (UV(NN,2)-UV(NN,1))
+          WV(NN,1) = WV(NN,1)-WV(NN,2)
+        END IF
+      ELSE
+        UV(NN,1) = ((((((-5.10186691538870D-10*X+
+     +    2.40134415703450D-08)*X-
+     +    5.01081057744427D-07 )*X+7.58291285499256D-06 )*X-
+     +    9.55085533670919D-05 )*X+1.02893039315878D-03 )*X-
+     +    9.28875764374337D-03 )*X+6.03769246832810D-02
+        UV(NN,2) = ((((((-1.29646524960555D-08*X+
+     +    7.74602292865683D-08)*X+
+     +    1.56022811158727D-06 )*X-1.58051990661661D-05 )*X-
+     +    3.30447806384059D-04 )*X+9.74266885190267D-03 )*X-
+     +    1.19511285526388D-01 )*X+7.76823355931033D-01
+        UV(NN,3) = ((((((-9.28536484109606D-09*X-
+     +    3.02786290067014D-07)*X-
+     +    2.50734477064200D-06 )*X-7.32728109752881D-06 )*X+
+     +    2.44217481700129D-04 )*X+4.94758452357327D-02 )*X-
+     +    1.02504611065774D+00 )*X+6.66279971938553D+00
+        F2 = ((((((((-7.60911486098850D-08*X+
+     +    1.09552870123182D-06 )*X-
+     +    1.03463270693454D-05 )*X+8.16324851790106D-05 )*X-
+     +    5.55526624875562D-04 )*X+3.20512054753924D-03 )*X-
+     +    1.51515139838540D-02 )*X+5.55555554649585D-02 )*X-
+     +    1.42857142854412D-01 )*X+1.99999999999986D-01
+        E = EXP(-X)
+        F1 = ((X+X)*F2+E)/3.0D+00
+        WV(NN,1) = (X+X)*F1+E
+        T1 = UV(NN,1)/(UV(NN,1)+1.0D+00)
+        T2 = UV(NN,2)/(UV(NN,2)+1.0D+00)
+        T3 = UV(NN,3)/(UV(NN,3)+1.0D+00)
+        A2 = F2-T1*F1
+        A1 = F1-T1*WV(NN,1)
+        WV(NN,3) = (A2-T2*A1)/((T3-T2)*(T3-T1))
+        WV(NN,2) = (T3*A1-A2)/((T3-T2)*(T2-T1))
+        WV(NN,1) = WV(NN,1)-WV(NN,2)-WV(NN,3)
+      END IF
+      RETURN
+  280 IF (X .GT. 3.0D+00) GO TO 340
+C
+C     X = 1.0 TO 3.0                   NROOTS=1,2, OR 3
+C
+      Y = X-2.0D+00
+      IF (NROOTS .LT. 3) THEN
+        F1 = ((((((((((-1.61702782425558D-10*Y+1.96215250865776D-09 )*Y-
+     +     2.14234468198419D-08 )*Y+2.17216556336318D-07 )*Y-
+     +     1.98850171329371D-06 )*Y+1.62429321438911D-05 )*Y-
+     +     1.16740298039895D-04 )*Y+7.24888732052332D-04 )*Y-
+     +     3.79490003707156D-03 )*Y+1.61723488664661D-02 )*Y-
+     +     5.29428148329736D-02 )*Y+1.15702180856167D-01
+        WV(NN,1) = (X+X)*F1+EXP(-X)
+        IF (NROOTS .LT. 2) THEN
+          UV(NN,1) = F1/(WV(NN,1)-F1)
+          RETURN
+        ELSE
+          UV(NN,1) = (((((((((-6.36859636616415D-12*Y+
+     +     8.47417064776270D-11)*Y-
+     +     5.152207846962D-10)*Y-3.846389873308D-10)*Y+
+     +     8.472253388380D-08)*Y-1.85306035634293D-06 )*Y+
+     +     2.47191693238413D-05 )*Y-2.49018321709815D-04 )*Y+
+     +     2.19173220020161D-03 )*Y-1.63329339286794D-02 )*Y+
+     +     8.68085688285261D-02
+          UV(NN,2) = ((((((((( 1.45331350488343D-10*Y+
+     +     2.07111465297976D-09)*Y-
+     +     1.878920917404D-08)*Y-1.725838516261D-07)*Y+
+     +     2.247389642339D-06)*Y+9.76783813082564D-06 )*Y-
+     +     1.93160765581969D-04 )*Y-1.58064140671893D-03 )*Y+
+     +     4.85928174507904D-02 )*Y-4.30761584997596D-01 )*Y+
+     +     1.80400974537950D+00
+          WV(NN,2) = ((F1-WV(NN,1))*UV(NN,1)+F1)*(1.0D+00+UV(NN,2))/
+     +            (UV(NN,2)-UV(NN,1))
+          WV(NN,1) = WV(NN,1)-WV(NN,2)
+          RETURN
+        END IF
+      ELSE
+        UV(NN,1) = (((((((( 1.44687969563318D-12*Y+
+     +     4.85300143926755D-12)*Y-
+     +     6.55098264095516D-10 )*Y+1.56592951656828D-08 )*Y-
+     +     2.60122498274734D-07 )*Y+3.86118485517386D-06 )*Y-
+     +     5.13430986707889D-05 )*Y+6.03194524398109D-04 )*Y-
+     +     6.11219349825090D-03 )*Y+4.52578254679079D-02
+        UV(NN,2) = ((((((( 6.95964248788138D-10*Y-
+     +     5.35281831445517D-09)*Y-
+     +     6.745205954533D-08)*Y+1.502366784525D-06)*Y+
+     +     9.923326947376D-07)*Y-3.89147469249594D-04 )*Y+
+     +     7.51549330892401D-03 )*Y-8.48778120363400D-02 )*Y+
+     +     5.73928229597613D-01
+        UV(NN,3) = ((((((((-2.81496588401439D-10*Y+
+     +     3.61058041895031D-09)*Y+
+     +     4.53631789436255D-08 )*Y-1.40971837780847D-07 )*Y-
+     +     6.05865557561067D-06 )*Y-5.15964042227127D-05 )*Y+
+     +     3.34761560498171D-05 )*Y+5.04871005319119D-02 )*Y-
+     +     8.24708946991557D-01 )*Y+4.81234667357205D+00
+        F2 = ((((((((((-1.48044231072140D-10*Y+1.78157031325097D-09 )*Y-
+     +     1.92514145088973D-08 )*Y+1.92804632038796D-07 )*Y-
+     +     1.73806555021045D-06 )*Y+1.39195169625425D-05 )*Y-
+     +     9.74574633246452D-05 )*Y+5.83701488646511D-04 )*Y-
+     +     2.89955494844975D-03 )*Y+1.13847001113810D-02 )*Y-
+     +     3.23446977320647D-02 )*Y+5.29428148329709D-02
+        E = EXP(-X)
+        F1 = ((X+X)*F2+E)/3.0D+00
+        WV(NN,1) = (X+X)*F1+E
+        T1 = UV(NN,1)/(UV(NN,1)+1.0D+00)
+        T2 = UV(NN,2)/(UV(NN,2)+1.0D+00)
+        T3 = UV(NN,3)/(UV(NN,3)+1.0D+00)
+        A2 = F2-T1*F1
+        A1 = F1-T1*WV(NN,1)
+        WV(NN,3) = (A2-T2*A1)/((T3-T2)*(T3-T1))
+        WV(NN,2) = (T3*A1-A2)/((T3-T2)*(T2-T1))
+        WV(NN,1) = WV(NN,1)-WV(NN,2)-WV(NN,3)
+      END IF
+      RETURN
+C
+C     X = 3.0 TO 5.0                   NROOTS =1,2, OR 3
+C
+  340 Y = X-4.0D+00
+      IF (NROOTS .EQ. 3) GO TO 380
+      F1 = ((((((((((-2.62453564772299D-11*Y+3.24031041623823D-10 )*Y-
+     +     3.614965656163D-09)*Y+3.760256799971D-08)*Y-
+     +     3.553558319675D-07)*Y+3.022556449731D-06)*Y-
+     +     2.290098979647D-05)*Y+1.526537461148D-04)*Y-
+     +     8.81947375894379D-04 )*Y+4.33207949514611D-03 )*Y-
+     +     1.75257821619926D-02 )*Y+5.28406320615584D-02
+      WV(NN,1) = (X+X)*F1+EXP(-X)
+      IF (NROOTS .EQ. 2) GO TO 360
+      UV(NN,1) = F1/(WV(NN,1)-F1)
+      RETURN
+  360 UV(NN,1) = ((((((((-4.11560117487296D-12*Y+
+     +     7.10910223886747D-11)*Y-
+     +     1.73508862390291D-09 )*Y+5.93066856324744D-08 )*Y-
+     +     9.76085576741771D-07 )*Y+1.08484384385679D-05 )*Y-
+     +     1.12608004981982D-04 )*Y+1.16210907653515D-03 )*Y-
+     +     9.89572595720351D-03 )*Y+6.12589701086408D-02
+      UV(NN,2) = (((((((((-1.80555625241001D-10*Y+
+     +     5.44072475994123D-10)*Y+
+     +     1.603498045240D-08)*Y-1.497986283037D-07)*Y-
+     +     7.017002532106D-07)*Y+1.85882653064034D-05 )*Y-
+     +     2.04685420150802D-05 )*Y-2.49327728643089D-03 )*Y+
+     +     3.56550690684281D-02 )*Y-2.60417417692375D-01 )*Y+
+     +     1.12155283108289D+00
+      WV(NN,2) = ((F1-WV(NN,1))*UV(NN,1)+F1)*(1.0D+00+UV(NN,2))/
+     +        (UV(NN,2)-UV(NN,1))
+      WV(NN,1) = WV(NN,1)-WV(NN,2)
+      RETURN
+  380 UV(NN,1) = ((((((( 1.44265709189601D-11*Y-
+     +     4.66622033006074D-10)*Y+
+     +     7.649155832025D-09)*Y-1.229940017368D-07)*Y+
+     +     2.026002142457D-06)*Y-2.87048671521677D-05 )*Y+
+     +     3.70326938096287D-04 )*Y-4.21006346373634D-03 )*Y+
+     +     3.50898470729044D-02
+      UV(NN,2) = ((((((((-2.65526039155651D-11*Y+
+     +     1.97549041402552D-10)*Y+
+     +     2.15971131403034D-09 )*Y-7.95045680685193D-08 )*Y+
+     +     5.15021914287057D-07 )*Y+1.11788717230514D-05 )*Y-
+     +     3.33739312603632D-04 )*Y+5.30601428208358D-03 )*Y-
+     +     5.93483267268959D-02 )*Y+4.31180523260239D-01
+      UV(NN,3) = ((((((((-3.92833750584041D-10*Y-
+     +     4.16423229782280D-09)*Y+
+     +     4.42413039572867D-08 )*Y+6.40574545989551D-07 )*Y-
+     +     3.05512456576552D-06 )*Y-1.05296443527943D-04 )*Y-
+     +     6.14120969315617D-04 )*Y+4.89665802767005D-02 )*Y-
+     +     6.24498381002855D-01 )*Y+3.36412312243724D+00
+      F2 = ((((((((((-2.36788772599074D-11*Y+2.89147476459092D-10 )*Y-
+     +     3.18111322308846D-09 )*Y+3.25336816562485D-08 )*Y-
+     +     3.00873821471489D-07 )*Y+2.48749160874431D-06 )*Y-
+     +     1.81353179793672D-05 )*Y+1.14504948737066D-04 )*Y-
+     +     6.10614987696677D-04 )*Y+2.64584212770942D-03 )*Y-
+     +     8.66415899015349D-03 )*Y+1.75257821619922D-02
+        E = EXP(-X)
+        F1 = ((X+X)*F2+E)/3.0D+00
+        WV(NN,1) = (X+X)*F1+E
+        T1 = UV(NN,1)/(UV(NN,1)+1.0D+00)
+        T2 = UV(NN,2)/(UV(NN,2)+1.0D+00)
+        T3 = UV(NN,3)/(UV(NN,3)+1.0D+00)
+        A2 = F2-T1*F1
+        A1 = F1-T1*WV(NN,1)
+        WV(NN,3) = (A2-T2*A1)/((T3-T2)*(T3-T1))
+        WV(NN,2) = (T3*A1-A2)/((T3-T2)*(T2-T1))
+        WV(NN,1) = WV(NN,1)-WV(NN,2)-WV(NN,3)
+      RETURN
+  400 IF (X .GT. 15.0D+00) GO TO 560
+      E = EXP(-X)
+      IF (X .GT. 10.0D+00) GO TO 480
+C
+C     X = 5.0 TO 10.0                  NROOTS =1,2, OR 3
+C
+      WV(NN,1) = (((((( 4.6897511375022D-01/X-6.9955602298985D-01)/X +
+     +     5.3689283271887D-01)/X-3.2883030418398D-01)/X +
+     +     2.4645596956002D-01)/X-4.9984072848436D-01)/X -
+     +     3.1501078774085D-06)*E + SQRT(PIE4/X)
+      F1 = (WV(NN,1)-E)/(X+X)
+      IF (NROOTS-2) 420,440,460
+  420 UV(NN,1) = F1/(WV(NN,1)-F1)
+      RETURN
+  440 Y = X-7.5D+00
+      UV(NN,1) =(((((((((((((-1.43632730148572D-16*Y+
+     +     2.38198922570405D-16)*
+     +     Y+1.358319618800D-14)*Y-7.064522786879D-14)*Y-
+     +     7.719300212748D-13)*Y+7.802544789997D-12)*Y+
+     +     6.628721099436D-11)*Y-1.775564159743D-09)*Y+
+     +     1.713828823990D-08)*Y-1.497500187053D-07)*Y+
+     +     2.283485114279D-06)*Y-3.76953869614706D-05 )*Y+
+     +     4.74791204651451D-04 )*Y-4.60448960876139D-03 )*Y+
+     +     3.72458587837249D-02
+      UV(NN,2) =(((((((((((( 2.48791622798900D-14*Y-
+     +     1.36113510175724D-13)*Y-
+     +     2.224334349799D-12)*Y+4.190559455515D-11)*Y-
+     +     2.222722579924D-10)*Y-2.624183464275D-09)*Y+
+     +     6.128153450169D-08)*Y-4.383376014528D-07)*Y-
+     +     2.49952200232910D-06 )*Y+1.03236647888320D-04 )*Y-
+     +     1.44614664924989D-03 )*Y+1.35094294917224D-02 )*Y-
+     +     9.53478510453887D-02 )*Y+5.44765245686790D-01
+      WV(NN,2) = ((F1-WV(NN,1))*UV(NN,1)+F1)*(1.0D+00+UV(NN,2))/
+     +        (UV(NN,2)-UV(NN,1))
+      WV(NN,1) = WV(NN,1)-WV(NN,2)
+      RETURN
+  460 F2 = (F1+F1+F1-E)/(X+X)
+      Y = X-7.5D+00
+      UV(NN,1) =((((((((((( 5.74429401360115D-16*Y+
+     +     7.11884203790984D-16)*Y-
+     +     6.736701449826D-14)*Y-6.264613873998D-13)*Y+
+     +     1.315418927040D-11)*Y-4.23879635610964D-11 )*Y+
+     +     1.39032379769474D-09 )*Y-4.65449552856856D-08 )*Y+
+     +     7.34609900170759D-07 )*Y-1.08656008854077D-05 )*Y+
+     +     1.77930381549953D-04 )*Y-2.39864911618015D-03 )*Y+
+     +     2.39112249488821D-02
+      UV(NN,2) =((((((((((( 1.13464096209120D-14*Y+
+     +     6.99375313934242D-15)*Y-
+     +     8.595618132088D-13)*Y-5.293620408757D-12)*Y-
+     +     2.492175211635D-11)*Y+2.73681574882729D-09 )*Y-
+     +     1.06656985608482D-08 )*Y-4.40252529648056D-07 )*Y+
+     +     9.68100917793911D-06 )*Y-1.68211091755327D-04 )*Y+
+     +     2.69443611274173D-03 )*Y-3.23845035189063D-02 )*Y+
+     +     2.75969447451882D-01
+      UV(NN,3) =(((((((((((( 6.66339416996191D-15*Y+
+     +     1.84955640200794D-13)*Y-
+     +     1.985141104444D-12)*Y-2.309293727603D-11)*Y+
+     +     3.917984522103D-10)*Y+1.663165279876D-09)*Y-
+     +     6.205591993923D-08)*Y+8.769581622041D-09)*Y+
+     +     8.97224398620038D-06 )*Y-3.14232666170796D-05 )*Y-
+     +     1.83917335649633D-03 )*Y+3.51246831672571D-02 )*Y-
+     +     3.22335051270860D-01 )*Y+1.73582831755430D+00
+        T1 = UV(NN,1)/(UV(NN,1)+1.0D+00)
+        T2 = UV(NN,2)/(UV(NN,2)+1.0D+00)
+        T3 = UV(NN,3)/(UV(NN,3)+1.0D+00)
+        A2 = F2-T1*F1
+        A1 = F1-T1*WV(NN,1)
+        WV(NN,3) = (A2-T2*A1)/((T3-T2)*(T3-T1))
+        WV(NN,2) = (T3*A1-A2)/((T3-T2)*(T2-T1))
+        WV(NN,1) = WV(NN,1)-WV(NN,2)-WV(NN,3)
+      RETURN
+C
+C     X = 10.0 TO 15.0                 NROOTS=1,2, OR 3
+C
+  480 WV(NN,1) = (((-1.8784686463512D-01/X+2.2991849164985D-01)/X -
+     +     4.9893752514047D-01)/X-2.1916512131607D-05)*E + SQRT(PIE4/X)
+      F1 = (WV(NN,1)-E)/(X+X)
+      IF (NROOTS-2) 500,520,540
+  500 UV(NN,1) = F1/(WV(NN,1)-F1)
+      RETURN
+  520 UV(NN,1) = ((((-1.01041157064226D-05*X+1.19483054115173D-03)*X -
+     +     6.73760231824074D-02)*X+1.25705571069895D+00)*X + (((-
+     +     8.57609422987199D+03/X+5.91005939591842D+03)/X -
+     +     1.70807677109425D+03)/X+2.64536689959503D+02)/X -
+     +     2.38570496490846D+01)*E + R12/(X-R12)
+      UV(NN,2) = ((( 3.39024225137123D-04*X-9.34976436343509D-02)*X -
+     +     4.22216483306320D+00)*X + (((-2.08457050986847D+03/X -
+     +     1.04999071905664D+03)/X+3.39891508992661D+02)/X -
+     +     1.56184800325063D+02)/X+8.00839033297501D+00)*E + R22/(X-R22)
+      WV(NN,2) = ((F1-WV(NN,1))*UV(NN,1)+F1)*(1.0D+00+UV(NN,2))/
+     +     (UV(NN,2)-UV(NN,1))
+      WV(NN,1) = WV(NN,1)-WV(NN,2)
+      RETURN
+  540 F2 = (F1+F1+F1-E)/(X+X)
+      Y = X-12.5D+00
+      UV(NN,1) = ((((((((((( 4.42133001283090D-16*Y-
+     +     2.77189767070441D-15)*Y-
+     +     4.084026087887D-14)*Y+5.379885121517D-13)*Y+
+     +     1.882093066702D-12)*Y-8.67286219861085D-11 )*Y+
+     +     7.11372337079797D-10 )*Y-3.55578027040563D-09 )*Y+
+     +     1.29454702851936D-07 )*Y-4.14222202791434D-06 )*Y+
+     +     8.04427643593792D-05 )*Y-1.18587782909876D-03 )*Y+
+     +     1.53435577063174D-02
+      UV(NN,2) = ((((((((((( 6.85146742119357D-15*Y-
+     +     1.08257654410279D-14)*Y-
+     +     8.579165965128D-13)*Y+6.642452485783D-12)*Y+
+     +     4.798806828724D-11)*Y-1.13413908163831D-09 )*Y+
+     +     7.08558457182751D-09 )*Y-5.59678576054633D-08 )*Y+
+     +     2.51020389884249D-06 )*Y-6.63678914608681D-05 )*Y+
+     +     1.11888323089714D-03 )*Y-1.45361636398178D-02 )*Y+
+     +     1.65077877454402D-01
+      UV(NN,3) =(((((((((((( 3.20622388697743D-15*Y-
+     +     2.73458804864628D-14)*Y-
+     +     3.157134329361D-13)*Y+8.654129268056D-12)*Y-
+     +     5.625235879301D-11)*Y-7.718080513708D-10)*Y+
+     +     2.064664199164D-08)*Y-1.567725007761D-07)*Y-
+     +     1.57938204115055D-06 )*Y+6.27436306915967D-05 )*Y-
+     +     1.01308723606946D-03 )*Y+1.13901881430697D-02 )*Y-
+     +     1.01449652899450D-01 )*Y+7.77203937334739D-01
+        T1 = UV(NN,1)/(UV(NN,1)+1.0D+00)
+        T2 = UV(NN,2)/(UV(NN,2)+1.0D+00)
+        T3 = UV(NN,3)/(UV(NN,3)+1.0D+00)
+        A2 = F2-T1*F1
+        A1 = F1-T1*WV(NN,1)
+        WV(NN,3) = (A2-T2*A1)/((T3-T2)*(T3-T1))
+        WV(NN,2) = (T3*A1-A2)/((T3-T2)*(T2-T1))
+        WV(NN,1) = WV(NN,1)-WV(NN,2)-WV(NN,3)
+      RETURN
+  560 IF (X .GT. 33.0D+00) GO TO 660
+C
+C     X = 15.0 TO 33.0                 NROOTS=1,2, OR 3
+C
+      E = EXP(-X)
+      WV(NN,1) = (( 1.9623264149430D-01/X-4.9695241464490D-01)/X -
+     +     6.0156581186481D-05)*E + SQRT(PIE4/X)
+      F1 = (WV(NN,1)-E)/(X+X)
+      IF (NROOTS-2) 580,600,620
+  580 UV(NN,1) = F1/(WV(NN,1)-F1)
+      RETURN
+  600 UV(NN,1) = ((((-1.14906395546354D-06*X+1.76003409708332D-04)*X -
+     +     1.71984023644904D-02)*X-1.37292644149838D-01)*X + (-
+     +     4.75742064274859D+01/X+9.21005186542857D+00)/X -
+     +     2.31080873898939D-02)*E + R12/(X-R12)
+      UV(NN,2) = ((( 3.64921633404158D-04*X-9.71850973831558D-02)*X -
+     +     4.02886174850252D+00)*X + (-1.35831002139173D+02/X -
+     +     8.66891724287962D+01)/X+2.98011277766958D+00)*E + R22/(X-R22)
+      WV(NN,2) = ((F1-WV(NN,1))*UV(NN,1)+F1)*(1.0D+00+UV(NN,2))/
+     +     (UV(NN,2)-UV(NN,1))
+      WV(NN,1) = WV(NN,1)-WV(NN,2)
+      RETURN
+  620 F2 = (F1+F1+F1-E)/(X+X)
+      IF (X .GT. 20.0D+00) GO TO 640
+      UV(NN,1) = ((((((-2.43270989903742D-06*X+3.57901398988359D-04)*X -
+     +     2.34112415981143D-02)*X+7.81425144913975D-01)*X -
+     +     1.73209218219175D+01)*X+2.43517435690398D+02)*X + (-
+     +     1.97611541576986D+04/X+9.82441363463929D+03)/X -
+     +     2.07970687843258D+03)*E + R13/(X-R13)
+      UV(NN,2) = (((((-2.62627010965435D-04*X+3.49187925428138D-02)*X -
+     +     3.09337618731880D+00)*X+1.07037141010778D+02)*X -
+     +     2.36659637247087D+03)*X + ((-2.91669113681020D+06/X +
+     +     1.41129505262758D+06)/X-2.91532335433779D+05)/X +
+     +     3.35202872835409D+04)*E + R23/(X-R23)
+      UV(NN,3) = ((((( 9.31856404738601D-05*X-2.87029400759565D-02)*X -
+     +     7.83503697918455D-01)*X-1.84338896480695D+01)*X +
+     +     4.04996712650414D+02)*X + (-1.89829509315154D+05/X +
+     +     5.11498390849158D+04)/X-6.88145821789955D+03)*E + R33/(X-R33)
+        T1 = UV(NN,1)/(UV(NN,1)+1.0D+00)
+        T2 = UV(NN,2)/(UV(NN,2)+1.0D+00)
+        T3 = UV(NN,3)/(UV(NN,3)+1.0D+00)
+        A2 = F2-T1*F1
+        A1 = F1-T1*WV(NN,1)
+        WV(NN,3) = (A2-T2*A1)/((T3-T2)*(T3-T1))
+        WV(NN,2) = (T3*A1-A2)/((T3-T2)*(T2-T1))
+        WV(NN,1) = WV(NN,1)-WV(NN,2)-WV(NN,3)
+      RETURN
+  640 UV(NN,1) = ((((-4.97561537069643D-04*X-5.00929599665316D-02)*X +
+     +     1.31099142238996D+00)*X-1.88336409225481D+01)*X -
+     +     6.60344754467191D+02 /X+1.64931462413877D+02)*E + R13/(X-R13)
+      UV(NN,2) = ((((-4.48218898474906D-03*X-5.17373211334924D-01)*X +
+     +     1.13691058739678D+01)*X-1.65426392885291D+02)*X -
+     +     6.30909125686731D+03 /X+1.52231757709236D+03)*E + R23/(X-R23)
+      UV(NN,3) = ((((-1.38368602394293D-02*X-1.77293428863008D+00)*X +
+     +     1.73639054044562D+01)*X-3.57615122086961D+02)*X -
+     +     1.45734701095912D+04 /X+2.69831813951849D+03)*E + R33/(X-R33)
+        T1 = UV(NN,1)/(UV(NN,1)+1.0D+00)
+        T2 = UV(NN,2)/(UV(NN,2)+1.0D+00)
+        T3 = UV(NN,3)/(UV(NN,3)+1.0D+00)
+        A2 = F2-T1*F1
+        A1 = F1-T1*WV(NN,1)
+        WV(NN,3) = (A2-T2*A1)/((T3-T2)*(T3-T1))
+        WV(NN,2) = (T3*A1-A2)/((T3-T2)*(T2-T1))
+        WV(NN,1) = WV(NN,1)-WV(NN,2)-WV(NN,3)
+      RETURN
+C
+C     X = 33.0 TO INFINITY             NROOTS=1,2, OR 3
+C
+  660 WV(NN,1) = SQRT(PIE4/X)
+      IF (NROOTS-2) 680,700,720
+  680 UV(NN,1) = 0.5D+00/(X-0.5D+00)
+      RETURN
+  700 IF (X .GT. 40.0D+00) GO TO 740
+      E = EXP(-X)
+      UV(NN,1) = (-8.78947307498880D-01*X+1.09243702330261D+01)*E +
+     +     R12/(X-R12)
+      UV(NN,2) = (-9.28903924275977D+00*X+8.10642367843811D+01)*E +
+     +     R22/(X-R22)
+      WV(NN,2) = ( 4.46857389308400D+00*X-7.79250653461045D+01)*E +
+     +     W22*WV(NN,1)
+      WV(NN,1) = WV(NN,1)-WV(NN,2)
+      RETURN
+  720 IF (X .GT. 47.0D+00) GO TO 760
+      E = EXP(-X)
+      UV(NN,1) = ((-7.39058467995275D+00*X+3.21318352526305D+02)*X -
+     +     3.99433696473658D+03)*E + R13/(X-R13)
+      UV(NN,2) = ((-7.38726243906513D+01*X+3.13569966333873D+03)*X -
+     +     3.86862867311321D+04)*E + R23/(X-R23)
+      UV(NN,3) = ((-2.63750565461336D+02*X+1.04412168692352D+04)*X -
+     +     1.28094577915394D+05)*E + R33/(X-R33)
+      WV(NN,3) = ((( 1.52258947224714D-01*X-8.30661900042651D+00)*X +
+     +  1.92977367967984D+02)*X-1.67787926005344D+03)*E + W33*WV(NN,1)
+      WV(NN,2) = (( 6.15072615497811D+01*X-2.91980647450269D+03)*X +
+     +  3.80794303087338D+04)*E + W23*WV(NN,1)
+      WV(NN,1) = WV(NN,1)-WV(NN,2)-WV(NN,3)
+      RETURN
+  740 UV(NN,1) = R12/(X-R12)
+      UV(NN,2) = R22/(X-R22)
+      WV(NN,2) = W22*WV(NN,1)
+      WV(NN,1) = WV(NN,1)-WV(NN,2)
+      RETURN
+  760 UV(NN,1) = R13/(X-R13)
+      UV(NN,2) = R23/(X-R23)
+      UV(NN,3) = R33/(X-R33)
+      WV(NN,2) = W23*WV(NN,1)
+      WV(NN,3) = W33*WV(NN,1)
+      WV(NN,1) = WV(NN,1)-WV(NN,2)-WV(NN,3)
+      RETURN
+      END
+      SUBROUTINE xCPYSQT(B,A,NA,INCA)
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      DIMENSION A(*),B(NA,NA)
+      PARAMETER (SMALL=1.0D-10, ZERO=0.0D+00)
+C
+C     ---- COPY SYMMETRIC, SQUARE B (N X N) TO TRIANGULAR A ----
+C     THE INCREMENT BETWEEN ELEMENTS OF A WILL USUALLY BE 1.
+C     TINY NUMBERS GET ZEROED OUT.
+C
+      IJ=1
+      DO 200 I=1,NA
+         DO 100 J=1,I
+            VAL = B(I,J)
+            IF(ABS(VAL).LT.SMALL) VAL=ZERO
+            A(IJ) = VAL
+            IJ = IJ + INCA
+  100    CONTINUE
+  200 CONTINUE
+      RETURN
+      END
+      SUBROUTINE xCPYTSQ(A,B,NA,INCA)
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      DIMENSION A(*),B(NA,NA)
+C
+C     ---- COPY TRIANGULAR A TO SQUARE B (NA BY NA) ----
+C     THE INCREMENT BETWEEN ELEMENTS OF A WILL USUALLY BE 1.
+C
+      IJ=1
+      DO 200 I=1,NA
+         DO 100 J=1,I
+            B(I,J) = A(IJ)
+            B(J,I) = A(IJ)
+            IJ = IJ + INCA
+  100    CONTINUE
+  200 CONTINUE
+      RETURN
+      END
+      SUBROUTINE xEVVRSP(MSGFL,N,NVECT,LENA,NV,A,B,IND,ROOT,
+     *                  VECT,IORDER,IERR)
+C*
+C*    AUTHOR:  S. T. ELBERT, AMES LABORATORY-USDOE, JUNE 1985
+C*
+C*    PURPOSE -
+C*       FINDS   (ALL) EIGENVALUES    AND    (SOME OR ALL) EIGENVECTORS
+C*                     *    *                                   *
+C*       OF A REAL SYMMETRIC PACKED MATRIX.
+C*            *    *         *
+C*
+C*    METHOD -
+C*       THE METHOD AS PRESENTED IN THIS ROUTINE CONSISTS OF FOUR STEPS:
+C*       FIRST, THE INPUT MATRIX IS REDUCED TO TRIDIAGONAL FORM BY THE
+C*       HOUSEHOLDER TECHNIQUE (ORTHOGONAL SIMILARITY TRANSFORMATIONS).
+C*       SECOND, THE ROOTS ARE LOCATED USING THE RATIONAL QL METHOD.
+C*       THIRD, THE VECTORS OF THE TRIDIAGONAL FORM ARE EVALUATED BY THE
+C*       INVERSE ITERATION TECHNIQUE.  VECTORS FOR DEGENERATE OR NEAR-
+C*       DEGENERATE ROOTS ARE FORCED TO BE ORTHOGONAL.
+C*       FOURTH, THE TRIDIAGONAL VECTORS ARE ROTATED TO VECTORS OF THE
+C*       ORIGINAL ARRAY.
+C*
+C*       THESE ROUTINES ARE MODIFICATIONS OF THE EISPACK 3
+C*       ROUTINES TRED3, TQLRAT, TINVIT AND TRBAK3
+C*
+C*       FOR FURTHER DETAILS, SEE EISPACK USERS GUIDE, B. T. SMITH
+C*       ET AL, SPRINGER-VERLAG, LECTURE NOTES IN COMPUTER SCIENCE,
+C*       VOL. 6, 2-ND EDITION, 1976.  ANOTHER GOOD REFERENCE IS
+C*       THE SYMMETRIC EIGENVALUE PROBLEM BY B. N. PARLETT
+C*       PUBLISHED BY PRENTICE-HALL, INC., ENGLEWOOD CLIFFS, N.J. (1980)
+C*
+C*    ON ENTRY -
+C*       MSGFL  - INTEGER (LOGICAL UNIT NO.)
+C*                FILE WHERE ERROR MESSAGES WILL BE PRINTED.
+C*                IF MSGFL IS 0, ERROR MESSAGES WILL BE PRINTED ON LU 6.
+C*                IF MSGFL IS NEGATIVE, NO ERROR MESSAGES PRINTED.
+C*       N      - INTEGER
+C*                ORDER OF MATRIX A.
+C*       NVECT  - INTEGER
+C*                NUMBER OF VECTORS DESIRED.  0 .LE. NVECT .LE. N.
+C*       LENA   - INTEGER
+C*                DIMENSION OF  A  IN CALLING ROUTINE.  MUST NOT BE LESS
+C*                THAN (N*N+N)/2.
+C*       NV     - INTEGER
+C*                ROW DIMENSION OF VECT IN CALLING ROUTINE.   N .LE. NV.
+C*       A      - WORKING PRECISION REAL (LENA)
+C*                INPUT MATRIX, ROWS OF THE LOWER TRIANGLE PACKED INTO
+C*                LINEAR ARRAY OF DIMENSION N*(N+1)/2.  THE PACKED ORDER
+C*                IS A(1,1), A(2,1), A(2,2), A(3,1), A(3,2), ...
+C*       B      - WORKING PRECISION REAL (N,8)
+C*                SCRATCH ARRAY, 8*N ELEMENTS
+C*       IND    - INTEGER (N)
+C*                SCRATCH ARRAY OF LENGTH N.
+C*       IORDER - INTEGER
+C*                ROOT ORDERING FLAG.
+C*                = 0, ROOTS WILL BE PUT IN ASCENDING ORDER.
+C*                = 2, ROOTS WILL BE PUT IN DESCENDING ORDER.
+C*
+C*    ON EXIT -
+C*       A      - DESTORYED.  NOW HOLDS REFLECTION OPERATORS.
+C*       ROOT   - WORKING PRECISION REAL (N)
+C*                ALL EIGENVALUES IN ASCENDING OR DESCENDING ORDER.
+C*                  IF IORDER = 0, ROOT(1) .LE. ... .LE. ROOT(N)
+C*                  IF IORDER = 2, ROOT(1) .GE. ... .GE. ROOT(N)
+C*       VECT   - WORKING PRECISION REAL (NV,NVECT)
+C*                EIGENVECTORS FOR ROOT(1), ..., ROOT(NVECT).
+C*       IERR   - INTEGER
+C*                = 0 IF NO ERROR DETECTED,
+C*                = K IF ITERATION FOR K-TH EIGENVALUE FAILED,
+C*                = -K IF ITERATION FOR K-TH EIGENVECTOR FAILED.
+C*                (FAILURES SHOULD BE VERY RARE.  CONTACT C. MOLER.)
+C*
+C
+      LOGICAL GOPARR,DSKWRK,MASWRK
+C
+      DOUBLE PRECISION A(LENA)
+      DOUBLE PRECISION B(N,8)
+      DOUBLE PRECISION ROOT(N)
+      DOUBLE PRECISION T
+      DOUBLE PRECISION VECT(NV,*)
+C
+      INTEGER IND(N)
+C
+      COMMON /xPAR   / ME,MASTER,NPROC,IBTYP,IPTIM,GOPARR,DSKWRK,MASWRK
+C
+  900 FORMAT(26H0*** EVVRSP PARAMETERS ***/
+     +       14H ***      N = ,I8,4H ***/
+     +       14H ***  NVECT = ,I8,4H ***/
+     +       14H ***   LENA = ,I8,4H ***/
+     +       14H ***     NV = ,I8,4H ***/
+     +       14H *** IORDER = ,I8,4H ***/
+     +       14H ***   IERR = ,I8,4H ***)
+  901 FORMAT(37H VALUE OF LENA IS LESS THAN (N*N+N)/2)
+  902 FORMAT(39H EQLRAT HAS FAILED TO CONVERGE FOR ROOT,I5)
+  903 FORMAT(18H NV IS LESS THAN N)
+  904 FORMAT(41H EINVIT HAS FAILED TO CONVERGE FOR VECTOR,I5)
+  905 FORMAT(51H VALUE OF IORDER MUST BE 0 (SMALLEST ROOT FIRST) OR
+     *      ,23H 2 (LARGEST ROOT FIRST))
+  906 FORMAT(' VALUE OF N IS LESS THAN OR EQUAL ZERO')
+C
+C-----------------------------------------------------------------------
+C
+      LMSGFL=MSGFL
+      IF (MSGFL .EQ. 0) LMSGFL=6
+      IERR = N - 1
+      IF (N .LE. 0) GO TO 800
+      IERR = N + 1
+      IF ( (N*N+N)/2 .GT. LENA) GO TO 810
+C
+C        REDUCE REAL SYMMETRIC MATRIX A TO TRIDIAGONAL FORM
+C
+      CALL xETRED3(N,LENA,A,B(1,1),B(1,2),B(1,3))
+C
+C        FIND ALL EIGENVALUES OF TRIDIAGONAL MATRIX
+C
+      CALL xEQLRAT(N,B(1,1),B(1,2),B(1,3),ROOT,IND,IERR,B(1,4))
+      IF (IERR .NE. 0) GO TO 820
+C
+C         CHECK THE DESIRED ORDER OF THE EIGENVALUES
+C
+      B(1,3) = IORDER
+      IF (IORDER .EQ. 0) GO TO 300
+         IF (IORDER .NE. 2) GO TO 850
+C
+C         ORDER ROOTS IN DESCENDING ORDER (LARGEST FIRST)...
+C        TURN ROOT AND IND ARRAYS END FOR END
+C
+         DO 210 I = 1, N/2
+            J = N+1-I
+            T = ROOT(I)
+            ROOT(I) = ROOT(J)
+            ROOT(J) = T
+            L = IND(I)
+            IND(I) = IND(J)
+            IND(J) = L
+  210    CONTINUE
+C
+C           FIND I AND J MARKING THE START AND END OF A SEQUENCE
+C           OF DEGENERATE ROOTS
+C
+         I=0
+  220    CONTINUE
+            I = I+1
+            IF (I .GT. N) GO TO 300
+            DO 230 J=I,N
+               IF (ROOT(J) .NE. ROOT(I)) GO TO 240
+  230       CONTINUE
+            J = N+1
+  240       CONTINUE
+            J = J-1
+            IF (J .EQ. I) GO TO 220
+C
+C                    TURN AROUND IND BETWEEN I AND J
+C
+            JSV = J
+            KLIM = (J-I+1)/2
+            DO 250 K=1,KLIM
+               L = IND(J)
+               IND(J) = IND(I)
+               IND(I) = L
+               I = I+1
+               J = J-1
+  250       CONTINUE
+            I = JSV
+         GO TO 220
+C
+  300 CONTINUE
+C
+      IF (NVECT .LE. 0) RETURN
+      IF (NV .LT. N) GO TO 830
+C
+C        FIND EIGENVECTORS OF TRI-DIAGONAL MATRIX VIA INVERSE ITERATION
+C
+      IERR = LMSGFL
+      CALL xEINVIT(NV,N,B(1,1),B(1,2),B(1,3),NVECT,ROOT,IND,
+     +            VECT,IERR,B(1,4),B(1,5),B(1,6),B(1,7),B(1,8))
+      IF (IERR .NE. 0) GO TO 840
+C
+C        FIND EIGENVECTORS OF SYMMETRIC MATRIX VIA BACK TRANSFORMATION
+C
+  400 CONTINUE
+      CALL xETRBK3(NV,N,LENA,A,NVECT,VECT)
+      RETURN
+C
+C        ERROR MESSAGE SECTION
+C
+  800 IF (LMSGFL .LT. 0) RETURN
+      IF (MASWRK) WRITE(LMSGFL,906)
+      GO TO 890
+C
+  810 IF (LMSGFL .LT. 0) RETURN
+      IF (MASWRK) WRITE(LMSGFL,901)
+      GO TO 890
+C
+  820 IF (LMSGFL .LT. 0) RETURN
+      IF (MASWRK) WRITE(LMSGFL,902) IERR
+      GO TO 890
+C
+  830 IF (LMSGFL .LT. 0) RETURN
+      IF (MASWRK) WRITE(LMSGFL,903)
+      GO TO 890
+C
+  840 CONTINUE
+      IF ((LMSGFL .GT. 0).AND.MASWRK) WRITE(LMSGFL,904) -IERR
+      GO TO 400
+C
+  850 IERR=-1
+      IF (LMSGFL .LT. 0) RETURN
+      IF (MASWRK) WRITE(LMSGFL,905)
+      GO TO 890
+C
+  890 CONTINUE
+      IF (MASWRK) WRITE(LMSGFL,900) N,NVECT,LENA,NV,IORDER,IERR
+      RETURN
+      END
+      SUBROUTINE xGIVEIS(N,NVECT,NV,A,B,INDB,ROOT,VECT,IERR)
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      DIMENSION A(*),B(N,8),INDB(N),ROOT(N),VECT(NV,NVECT)
+C
+C     EISPACK-BASED SUBSTITUTE FOR QCPE ROUTINE GIVENS.
+C     FINDS ALL EIGENVALUES AND SOME EIGENVECTORS OF A REAL SYMMETRIC
+C     MATRIX.   AUTHOR.. C. MOLER AND D. SPANGLER, N.R.C.C., 4/1/79.
+C
+C     INPUT..
+C     N     = ORDER OF MATRIX .
+C     NVECT = NUMBER OF VECTORS DESIRED.  0 .LE. NVECT .LE. N .
+C     NV    = LEADING DIMENSION OF VECT .
+C     A     = INPUT MATRIX, COLUMNS OF THE UPPER TRIANGLE PACKED INTO
+C             LINEAR ARRAY OF DIMENSION N*(N+1)/2 .
+C     B     = SCRATCH ARRAY, 8*N ELEMENTS (NOTE THIS IS MORE THAN
+C             PREVIOUS VERSIONS OF GIVENS.)
+C    IND    = INDEX ARRAY OF N ELEMENTS
+C
+C     OUTPUT..
+C     A       DESTROYED .
+C     ROOT  = ALL EIGENVALUES, ROOT(1) .LE. ... .LE. ROOT(N) .
+C             (FOR OTHER ORDERINGS, SEE BELOW.)
+C     VECT  = EIGENVECTORS FOR ROOT(1),..., ROOT(NVECT) .
+C     IERR  = 0 IF NO ERROR DETECTED,
+C           = K IF ITERATION FOR K-TH EIGENVALUE FAILED,
+C           = -K IF ITERATION FOR K-TH EIGENVECTOR FAILED.
+C             (FAILURES SHOULD BE VERY RARE.  CONTACT MOLER.)
+C
+C     CALLS MODIFIED EISPACK ROUTINES TRED3B, IMTQLV, TINVTB, AND
+C     TRBK3B.  THE ROUTINES TRED3B, TINVTB, AND TRBK3B.
+C     THE ORIGINAL EISPACK ROUTINES TRED3, TINVIT, AND TRBAK3
+C     WERE MODIFIED BY THE INTRODUCTION OF TWO ROUTINES FROM THE
+C     BLAS LIBRARY - DDOT AND DAXPY.
+C
+C         IF TINVIT FAILS TO CONVERGE, TQL2 IS CALLED
+C
+C         SEE EISPACK USERS GUIDE, B. T. SMITH ET AL, SPRINGER-VERLAG
+C     LECTURE NOTES IN COMPUTER SCIENCE, VOL. 6, 2-ND EDITION, 1976 .
+C     NOTE THAT IMTQLV AND TINVTB HAVE INTERNAL MACHINE
+C     DEPENDENT CONSTANTS.
+C
+      DATA ONE, ZERO /1.0D+00, 0.0D+00/
+      CALL xTRED3B(N,(N*N+N)/2,A,B(1,1),B(1,2),B(1,3))
+      CALL xIMTQLV(N,B(1,1),B(1,2),B(1,3),ROOT,INDB,IERR,B(1,4))
+      IF (IERR .NE. 0) RETURN
+C
+C     TO REORDER ROOTS...
+C     K = N/2
+C     B(1,3) = 2.0D+00
+C     DO 50 I = 1, K
+C        J = N+1-I
+C        T = ROOT(I)
+C        ROOT(I) = ROOT(J)
+C        ROOT(J) = T
+C 50  CONTINUE
+C
+      IF (NVECT .LE. 0) RETURN
+      CALL xTINVTB(NV,N,B(1,1),B(1,2),B(1,3),NVECT,ROOT,INDB,VECT,IERR,
+     +     B(1,4),B(1,5),B(1,6),B(1,7),B(1,8))
+      IF (IERR .EQ. 0) GO TO 160
+C
+C      IF INVERSE ITERATION GIVES AN ERROR IN DETERMINING THE
+C      EIGENVECTORS, TRY THE QL ALGORITHM IF ALL THE EIGENVECTORS
+C      ARE DESIRED.
+C
+      IF (NVECT .NE. N) RETURN
+      DO 120 I = 1, NVECT
+      DO 100 J = 1, N
+      VECT(I,J) = ZERO
+  100 CONTINUE
+      VECT(I,I) = ONE
+  120 CONTINUE
+      CALL xTQL2 (NV,N,B(1,1),B(1,2),VECT,IERR)
+      DO 140 I = 1, NVECT
+      ROOT(I) = B(I,1)
+  140 CONTINUE
+      IF (IERR .NE. 0) RETURN
+  160 CALL xTRBK3B(NV,N,(N*N+N)/2,A,NVECT,VECT)
+      RETURN
+      END
+      SUBROUTINE xJACDG(A,VEC,EIG,JBIG,BIG,LDVEC,N)
+C
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+C
+      DIMENSION A(*),VEC(LDVEC,N),EIG(N),JBIG(N),BIG(N)
+C
+      PARAMETER (ONE=1.0D+00)
+C
+C     ----- JACOBI DIAGONALIZATION OF SYMMETRIC MATRIX -----
+C     SYMMETRIC MATRIX -A- OF DIMENSION -N- IS DESTROYED ON EXIT.
+C     ALL EIGENVECTORS ARE FOUND, SO -VEC- MUST BE SQUARE,
+C     UNLESS SOMEONE TAKES THE TROUBLE TO LOOK AT -NMAX- BELOW.
+C     -BIG- AND -JBIG- ARE SCRATCH WORK ARRAYS.
+C
+      CALL xVCLR(VEC,1,LDVEC*N)
+      DO 20 I = 1,N
+        VEC(I,I) = ONE
+   20 CONTINUE
+C
+      NB1 = N
+      NB2 = (NB1*NB1+NB1)/2
+      NMIN = 1
+      NMAX = NB1
+C
+      CALL xJACDIA(A,VEC,NB1,NB2,LDVEC,NMIN,NMAX,BIG,JBIG)
+C
+      DO 30 I=1,N
+        EIG(I) = A((I*I+I)/2)
+   30 CONTINUE
+C
+      CALL xJACORD(VEC,EIG,NB1,LDVEC)
+      RETURN
+      END
+      SUBROUTINE xEINVIT(NM,N,D,E,E2,M,W,IND,Z,IERR,
+     &                    RV1,RV2,RV3,RV4,RV6)
+C*
+C*    AUTHORS-
+C*       THIS IS A MODIFICATION OF TINVIT FROM EISPACK EDITION 3
+C*       DATED AUGUST 1983.
+C*       TINVIT IS A TRANSLATION OF THE INVERSE ITERATION TECHNIQUE
+C*       IN THE ALGOL PROCEDURE TRISTURM BY PETERS AND WILKINSON.
+C*       HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 418-439(1971).
+C*       THIS VERSION IS BY S. T. ELBERT (AMES LABORATORY-USDOE)
+C*
+C*    PURPOSE -
+C*       THIS ROUTINE FINDS THOSE EIGENVECTORS OF A TRIDIAGONAL
+C*       SYMMETRIC MATRIX CORRESPONDING TO SPECIFIED EIGENVALUES.
+C*
+C*    METHOD -
+C*       INVERSE ITERATION.
+C*
+C*    ON ENTRY -
+C*       NM     - INTEGER
+C*                MUST BE SET TO THE ROW DIMENSION OF TWO-DIMENSIONAL
+C*                ARRAY PARAMETERS AS DECLARED IN THE CALLING ROUTINE
+C*                DIMENSION STATEMENT.
+C*       N      - INTEGER
+C*       D      - W.P. REAL (N)
+C*                CONTAINS THE DIAGONAL ELEMENTS OF THE INPUT MATRIX.
+C*       E      - W.P. REAL (N)
+C*                CONTAINS THE SUBDIAGONAL ELEMENTS OF THE INPUT MATRIX
+C*                IN ITS LAST N-1 POSITIONS.  E(1) IS ARBITRARY.
+C*       E2     - W.P. REAL (N)
+C*                CONTAINS THE SQUARES OF CORRESPONDING ELEMENTS OF E,
+C*                WITH ZEROS CORRESPONDING TO NEGLIGIBLE ELEMENTS OF E.
+C*                E(I) IS CONSIDERED NEGLIGIBLE IF IT IS NOT LARGER THAN
+C*                THE PRODUCT OF THE RELATIVE MACHINE PRECISION AND THE
+C*                SUM OF THE MAGNITUDES OF D(I) AND D(I-1).  E2(1) MUST
+C*                CONTAIN 0.0 IF THE EIGENVALUES ARE IN ASCENDING ORDER,
+C*                OR 2.0 IF THE EIGENVALUES ARE IN DESCENDING ORDER.
+C*                IF TQLRAT, BISECT, TRIDIB, OR IMTQLV
+C*                HAS BEEN USED TO FIND THE EIGENVALUES, THEIR
+C*                OUTPUT E2 ARRAY IS EXACTLY WHAT IS EXPECTED HERE.
+C*       M      - INTEGER
+C*                THE NUMBER OF SPECIFIED EIGENVECTORS.
+C*       W      - W.P. REAL (M)
+C*                CONTAINS THE M EIGENVALUES IN ASCENDING
+C*                OR DESCENDING ORDER.
+C*       IND    - INTEGER (M)
+C*                CONTAINS IN FIRST M POSITIONS THE SUBMATRIX INDICES
+C*                ASSOCIATED WITH THE CORRESPONDING EIGENVALUES IN W --
+C*                1 FOR EIGENVALUES BELONGING TO THE FIRST SUBMATRIX
+C*                FROM THE TOP, 2 FOR THOSE BELONGING TO THE SECOND
+C*                SUBMATRIX, ETC.
+C*       IERR   - INTEGER (LOGICAL UNIT NUMBER)
+C*                LOGICAL UNIT FOR ERROR MESSAGES
+C*
+C*    ON EXIT -
+C*       ALL INPUT ARRAYS ARE UNALTERED.
+C*       Z      - W.P. REAL (NM,M)
+C*                CONTAINS THE ASSOCIATED SET OF ORTHONORMAL
+C*                EIGENVECTORS. ANY VECTOR WHICH WHICH FAILS TO CONVERGE
+C*                IS LEFT AS IS (BUT NORMALIZED) WHEN ITERATING STOPPED.
+C*       IERR   - INTEGER
+C*                SET TO
+C*                ZERO    FOR NORMAL RETURN,
+C*                -R      IF THE EIGENVECTOR CORRESPONDING TO THE R-TH
+C*                        EIGENVALUE FAILS TO CONVERGE IN 5 ITERATIONS.
+C*                        (ONLY LAST FAILURE TO CONVERGE IS REPORTED)
+C*
+C*       RV1, RV2, RV3, RV4, AND RV6 ARE TEMPORARY STORAGE ARRAYS.
+C*
+C*       RV1    - W.P. REAL (N)
+C*                DIAGONAL ELEMENTS OF U FROM LU DECOMPOSITION
+C*       RV2    - W.P. REAL (N)
+C*                SUPER(1)-DIAGONAL ELEMENTS OF U FROM LU DECOMPOSITION
+C*       RV3    - W.P. REAL (N)
+C*                SUPER(2)-DIAGONAL ELEMENTS OF U FROM LU DECOMPOSITION
+C*       RV4    - W.P. REAL (N)
+C*                ELEMENTS DEFINING L IN LU DECOMPOSITION
+C*       RV6    - W.P. REAL (N)
+C*                APPROXIMATE EIGENVECTOR
+C*
+C*    DIFFERENCES FROM EISPACK 3 -
+C*       EPS3 IS SCALED BY  EPSCAL  (ENHANCES CONVERGENCE, BUT
+C*          LOWERS ACCURACY)!
+C*       ONE MORE ITERATION (MINIMUM 2) IS PERFORMED AFTER CONVERGENCE
+C*          (ENHANCES ACCURACY)!
+C*       REPLACE LOOP WITH PYTHAG WITH SINGLE CALL TO DNRM2!
+C*       IF NOT CONVERGED, USE PERFORMANCE INDEX TO DECIDE ON ERROR
+C*          VALUE SETTING, BUT DO NOT STOP!
+C*       L.U. FOR ERROR MESSAGES PASSED THROUGH IERR
+C*       USE PARAMETER STATEMENTS AND GENERIC INTRINSIC FUNCTIONS
+C*       USE LEVEL 1 BLAS
+C*       USE IF-THEN-ELSE TO CLARIFY LOGIC
+C*       LOOP OVER SUBSPACES MADE INTO DO LOOP.
+C*       LOOP OVER INVERSE ITERATIONS MADE INTO DO LOOP
+C*       ZERO ONLY REQUIRED PORTIONS OF OUTPUT VECTOR
+C*
+C*    NOTE -
+C*       QUESTIONS AND COMMENTS CONCERNING EISPACK SHOULD BE DIRECTED TO
+C*       B. S. GARBOW, APPLIED MATH. DIVISION, ARGONNE NATIONAL LAB.
+C*
+C
+      LOGICAL CONVGD,GOPARR,DSKWRK,MASWRK
+C
+      INTEGER GROUP,I,IERR,ITS,J,JJ,M,N,NM,P,Q,R,S,SUBMAT,TAG
+      INTEGER IND(M)
+C
+      DOUBLE PRECISION D(N),E(N),E2(N),W(M),Z(NM,M)
+      DOUBLE PRECISION RV1(N),RV2(N),RV3(N),RV4(N),RV6(N)
+      DOUBLE PRECISION ANORM,EPS2,EPS3,EPS4,NORM,ORDER,RHO,U,UK,V
+      DOUBLE PRECISION X0,X1,XU
+      DOUBLE PRECISION EPSCAL,GRPTOL,HUNDRD,ONE,TEN,ZERO
+      DOUBLE PRECISION xEPSLON, DASUM, DDOT, DNRM2
+C
+      COMMON /xPAR   / ME,MASTER,NPROC,IBTYP,IPTIM,GOPARR,DSKWRK,MASWRK
+C
+      PARAMETER (ZERO = 0.0D+00, ONE = 1.0D+00, GRPTOL = 0.001D+00)
+      PARAMETER (EPSCAL = 0.5D+00, HUNDRD = 100.0D+00, TEN = 10.0D+00)
+C
+  001 FORMAT(' EIGENVECTOR ROUTINE EINVIT DID NOT CONVERGE FOR VECTOR'
+     *      ,I5,'.  NORM =',1P,E10.2,' PERFORMANCE INDEX =',E10.2/
+     *      ' (AN ERROR HALT WILL OCCUR IF THE PI IS GREATER THAN 100)')
+C
+C-----------------------------------------------------------------------
+C
+      LUEMSG = IERR
+      IERR = 0
+      X0 = ZERO
+      UK = ZERO
+      NORM = ZERO
+      EPS2 = ZERO
+      EPS3 = ZERO
+      EPS4 = ZERO
+      GROUP = 0
+      TAG = 0
+      ORDER = ONE - E2(1)
+      Q = 0
+      DO 930 SUBMAT = 1, N
+         P = Q + 1
+C
+C        .......... ESTABLISH AND PROCESS NEXT SUBMATRIX ..........
+C
+         DO 120 Q = P, N-1
+            IF (E2(Q+1) .EQ. ZERO) GO TO 140
+  120    CONTINUE
+         Q = N
+C
+C        .......... FIND VECTORS BY INVERSE ITERATION ..........
+C
+  140    CONTINUE
+         TAG = TAG + 1
+         ANORM = ZERO
+         S = 0
+C
+         DO 920 R = 1, M
+            IF (IND(R) .NE. TAG) GO TO 920
+            ITS = 1
+            X1 = W(R)
+            IF (S .NE. 0) GO TO 510
+C
+C        .......... CHECK FOR ISOLATED ROOT ..........
+C
+            XU = ONE
+            IF (P .EQ. Q) THEN
+               RV6(P) = ONE
+               CONVGD = .TRUE.
+               GO TO 860
+C
+            END IF
+            NORM = ABS(D(P))
+            DO 500 I = P+1, Q
+               NORM = MAX( NORM, ABS(D(I)) + ABS(E(I)) )
+  500       CONTINUE
+C
+C        .......... EPS2 IS THE CRITERION FOR GROUPING,
+C                   EPS3 REPLACES ZERO PIVOTS AND EQUAL
+C                   ROOTS ARE MODIFIED BY EPS3,
+C                   EPS4 IS TAKEN VERY SMALL TO AVOID OVERFLOW .........
+C
+            EPS2 = GRPTOL * NORM
+            EPS3 = EPSCAL * xEPSLON(NORM)
+            UK = Q - P + 1
+            EPS4 = UK * EPS3
+            UK = EPS4 / SQRT(UK)
+            S = P
+            GROUP = 0
+            GO TO 520
+C
+C        .......... LOOK FOR CLOSE OR COINCIDENT ROOTS ..........
+C
+  510       IF (ABS(X1-X0) .GE. EPS2) THEN
+C
+C                 ROOTS ARE SEPERATE
+C
+               GROUP = 0
+            ELSE
+C
+C                 ROOTS ARE CLOSE
+C
+               GROUP = GROUP + 1
+               IF (ORDER * (X1 - X0) .LE. EPS3) X1 = X0 + ORDER * EPS3
+            END IF
+C
+C        .......... ELIMINATION WITH INTERCHANGES AND
+C                   INITIALIZATION OF VECTOR ..........
+C
+  520       CONTINUE
+C
+            U = D(P) - X1
+            V = E(P+1)
+            RV6(P) = UK
+            DO 550 I = P+1, Q
+               RV6(I) = UK
+               IF (ABS(E(I)) .GT. ABS(U)) THEN
+C
+C                 EXCHANGE ROWS BEFORE ELIMINATION
+C
+C                  *** WARNING -- A DIVIDE CHECK MAY OCCUR HERE IF
+C                      E2 ARRAY HAS NOT BEEN SPECIFIED CORRECTLY .......
+C
+                  XU = U / E(I)
+                  RV4(I) = XU
+                  RV1(I-1) = E(I)
+                  RV2(I-1) = D(I) - X1
+                  RV3(I-1) = E(I+1)
+                  U = V - XU * RV2(I-1)
+                  V = -XU * RV3(I-1)
+C
+               ELSE
+C
+C                    STRAIGHT ELIMINATION
+C
+                  XU = E(I) / U
+                  RV4(I) = XU
+                  RV1(I-1) = U
+                  RV2(I-1) = V
+                  RV3(I-1) = ZERO
+                  U = D(I) - X1 - XU * V
+                  V = E(I+1)
+               END IF
+  550       CONTINUE
+C
+            IF (ABS(U) .LE. EPS3) U = EPS3
+            RV1(Q) = U
+            RV2(Q) = ZERO
+            RV3(Q) = ZERO
+C
+C              DO INVERSE ITERATIONS
+C
+            CONVGD = .FALSE.
+            DO 800 ITS = 1, 5
+               IF (ITS .EQ. 1) GO TO 600
+C
+C                    .......... FORWARD SUBSTITUTION ..........
+C
+                  IF (NORM .EQ. ZERO) THEN
+                     RV6(S) = EPS4
+                     S = S + 1
+                     IF (S .GT. Q) S = P
+                  ELSE
+                     XU = EPS4 / NORM
+                     CALL DSCAL (Q-P+1, XU, RV6(P), 1)
+                  END IF
+C
+C                     ... ELIMINATION OPERATIONS ON NEXT VECTOR
+C
+                  DO 590 I = P+1, Q
+                     U = RV6(I)
+C
+C                         IF RV1(I-1) .EQ. E(I), A ROW INTERCHANGE
+C                         WAS PERFORMED EARLIER IN THE
+C                         TRIANGULARIZATION PROCESS ..........
+C
+C-STE-               IF (RV1(I-1) .EQ. E(I)) THEN
+                     IF (RV1(I-1) .EQ. E(I) .AND. RV4(I) .NE. ONE) THEN
+                        U = RV6(I-1)
+                        RV6(I-1) = RV6(I)
+                     ELSE
+                        U = RV6(I)
+                     END IF
+                     RV6(I) = U - RV4(I) * RV6(I-1)
+  590             CONTINUE
+  600          CONTINUE
+C
+C           .......... BACK SUBSTITUTION
+C
+               RV6(Q) = RV6(Q) / RV1(Q)
+               V = U
+               U = RV6(Q)
+               NORM = ABS(U)
+               DO 620 I = Q-1, P, -1
+                  RV6(I) = (RV6(I) - U * RV2(I) - V * RV3(I)) / RV1(I)
+                  V = U
+                  U = RV6(I)
+                  NORM = NORM + ABS(U)
+  620          CONTINUE
+               IF (GROUP .EQ. 0) GO TO 700
+C
+C                 ....... ORTHOGONALIZE WITH RESPECT TO PREVIOUS
+C                         MEMBERS OF GROUP ..........
+C
+                  J = R
+                  DO 680 JJ = 1, GROUP
+  630                J = J - 1
+                     IF (IND(J) .NE. TAG) GO TO 630
+                     CALL DAXPY(Q-P+1, -DDOT(Q-P+1,RV6(P),1,Z(P,J),1),
+     *                          Z(P,J),1,RV6(P),1)
+  680             CONTINUE
+                  NORM = DASUM(Q-P+1, RV6(P), 1)
+  700          CONTINUE
+C
+               IF (CONVGD) GO TO 840
+               IF (NORM .GE. ONE) CONVGD = .TRUE.
+  800       CONTINUE
+C
+C        .......... NORMALIZE SO THAT SUM OF SQUARES IS
+C                   1 AND EXPAND TO FULL ORDER ..........
+C
+  840       CONTINUE
+C
+            XU = ONE / DNRM2(Q-P+1,RV6(P),1)
+C
+  860       CONTINUE
+            DO 870 I = 1, P-1
+               Z(I,R) = ZERO
+  870       CONTINUE
+            DO 890 I = P,Q
+               Z(I,R) = RV6(I) * XU
+  890       CONTINUE
+            DO 900 I = Q+1, N
+               Z(I,R) = ZERO
+  900       CONTINUE
+C
+            IF (.NOT.CONVGD) THEN
+               CALL xESTPI(RHO,Q-P+1,X1,D(P),E(P),Z(P,R),ANORM)
+               IF (RHO .GE. TEN .AND. LUEMSG .GT. 0 .AND. MASWRK)
+     *             WRITE(LUEMSG,001) R,NORM,RHO
+C
+C               *** SET ERROR -- NON-CONVERGED EIGENVECTOR ..........
+C
+               IF (RHO .GT. HUNDRD) IERR = -R
+            END IF
+C
+            X0 = X1
+  920    CONTINUE
+C
+         IF (Q .EQ. N) GO TO 940
+  930 CONTINUE
+  940 CONTINUE
+      RETURN
+      END
+      SUBROUTINE xEQLRAT(N,DIAG,E,E2IN,D,IND,IERR,E2)
+C*
+C*    AUTHORS -
+C*       THIS IS A MODIFICATION OF ROUTINE EQLRAT FROM EISPACK EDITION 3
+C*       DATED AUGUST 1983.
+C*       TQLRAT IS A TRANSLATION OF THE ALGOL PROCEDURE TQLRAT,
+C*       ALGORITHM 464, COMM. ACM 16, 689(1973) BY REINSCH.
+C*       THIS VERSION IS BY S. T. ELBERT (AMES LABORATORY-USDOE)
+C*
+C*    PURPOSE -
+C*       THIS ROUTINE FINDS THE EIGENVALUES OF A SYMMETRIC
+C*       TRIDIAGONAL MATRIX
+C*
+C*    METHOD -
+C*       RATIONAL QL
+C*
+C*    ON ENTRY -
+C*       N      - INTEGER
+C*                THE ORDER OF THE MATRIX.
+C*       D      - W.P. REAL (N)
+C*                CONTAINS THE DIAGONAL ELEMENTS OF THE INPUT MATRIX.
+C*       E2     - W.P. REAL (N)
+C*                CONTAINS THE SQUARES OF THE SUBDIAGONAL ELEMENTS OF
+C*                THE INPUT MATRIX IN ITS LAST N-1 POSITIONS.
+C*                E2(1) IS ARBITRARY.
+C*
+C*     ON EXIT -
+C*       D      - W.P. REAL (N)
+C*                CONTAINS THE EIGENVALUES IN ASCENDING ORDER.  IF AN
+C*                ERROR EXIT IS MADE, THE EIGENVALUES ARE CORRECT AND
+C*                ORDERED FOR INDICES 1,2,...IERR-1, BUT MAY NOT BE
+C*                THE SMALLEST EIGENVALUES.
+C*       E2     - W.P. REAL (N)
+C*                DESTROYED.
+C*       IERR   - INTEGER
+C*                SET TO
+C*                ZERO       FOR NORMAL RETURN,
+C*                J          IF THE J-TH EIGENVALUE HAS NOT BEEN
+C*                           DETERMINED AFTER 30 ITERATIONS.
+C*
+C*    DIFFERENCES FROM EISPACK 3 -
+C*       G=G+B INSTEAD OF IF(G.EQ.0) G=B ; B=B/4
+C*       F77 BACKWARD LOOPS INSTEAD OF F66 CONSTRUCT
+C*       GENERIC INTRINSIC FUNCTIONS
+C*       ARRARY  IND  ADDED FOR USE BY EINVIT
+C*
+C*    NOTE -
+C*       QUESTIONS AND COMMENTS CONCERNING EISPACK SHOULD BE DIRECTED TO
+C*       B. S. GARBOW, APPLIED MATH. DIVISION, ARGONNE NATIONAL LAB.
+C
+      INTEGER I,J,L,M,N,II,L1,IERR
+      INTEGER IND(N)
+C
+      DOUBLE PRECISION D(N),E(N),E2(N),DIAG(N),E2IN(N)
+      DOUBLE PRECISION B,C,F,G,H,P,R,S,T,xEPSLON
+      DOUBLE PRECISION SCALE,ZERO,ONE
+C
+      PARAMETER (ZERO = 0.0D+00, SCALE= 1.0D+00/64.0D+00, ONE = 1.0D+00)
+C
+C-----------------------------------------------------------------------
+      IERR = 0
+      D(1)=DIAG(1)
+      IND(1) = 1
+      K = 0
+      ITAG = 0
+      IF (N .EQ. 1) GO TO 1001
+C
+      DO 100 I = 2, N
+         D(I)=DIAG(I)
+  100 E2(I-1) = E2IN(I)
+C
+      F = ZERO
+      T = ZERO
+      B = xEPSLON(ONE)
+      C = B *B
+      B = B * SCALE
+      E2(N) = ZERO
+C
+      DO 290 L = 1, N
+         H = ABS(D(L)) + ABS(E(L))
+         IF (T .GE. H) GO TO 105
+            T = H
+            B = xEPSLON(T)
+            C = B * B
+            B = B * SCALE
+  105    CONTINUE
+C     .......... LOOK FOR SMALL SQUARED SUB-DIAGONAL ELEMENT ..........
+         M = L - 1
+  110    M = M + 1
+         IF (E2(M) .GT. C) GO TO 110
+C     .......... E2(N) IS ALWAYS ZERO, SO THERE IS AN EXIT
+C                FROM THE LOOP ..........
+C
+         IF (M .LE. K) GO TO 125
+            IF (M .NE. N) E2IN(M+1) = ZERO
+            K = M
+            ITAG = ITAG + 1
+  125    CONTINUE
+         IF (M .EQ. L) GO TO 210
+C
+C           ITERATE
+C
+         DO 205 J = 1, 30
+C              .......... FORM SHIFT ..........
+            L1 = L + 1
+            S = SQRT(E2(L))
+            G = D(L)
+            P = (D(L1) - G) / (2.0D+00 * S)
+            R = SQRT(P*P+1.0D+00)
+            D(L) = S / (P + SIGN(R,P))
+            H = G - D(L)
+C
+            DO 140 I = L1, N
+  140       D(I) = D(I) - H
+C
+            F = F + H
+C              .......... RATIONAL QL TRANSFORMATION ..........
+            G = D(M) + B
+            H = G
+            S = ZERO
+            DO 200 I = M-1,L,-1
+               P = G * H
+               R = P + E2(I)
+               E2(I+1) = S * R
+               S = E2(I) / R
+               D(I+1) = H + S * (H + D(I))
+               G = D(I) - E2(I) / G   + B
+               H = G * P / R
+  200       CONTINUE
+C
+            E2(L) = S * G
+            D(L) = H
+C              .......... GUARD AGAINST UNDERFLOW IN CONVERGENCE TEST
+            IF (H .EQ. ZERO) GO TO 210
+            IF (ABS(E2(L)) .LE. ABS(C/H)) GO TO 210
+            E2(L) = H * E2(L)
+            IF (E2(L) .EQ. ZERO) GO TO 210
+  205    CONTINUE
+C     .......... SET ERROR -- NO CONVERGENCE TO AN
+C                EIGENVALUE AFTER 30 ITERATIONS ..........
+      IERR = L
+      GO TO 1001
+C
+C           CONVERGED
+C
+  210    P = D(L) + F
+C           .......... ORDER EIGENVALUES ..........
+         I = 1
+         IF (L .EQ. 1) GO TO 250
+            IF (P .LT. D(1)) GO TO 230
+               I = L
+C           .......... LOOP TO FIND ORDERED POSITION
+  220          I = I - 1
+               IF (P .LT. D(I)) GO TO 220
+C
+               I = I + 1
+               IF (I .EQ. L) GO TO 250
+  230       CONTINUE
+            DO 240 II = L, I+1, -1
+               D(II) = D(II-1)
+               IND(II) = IND(II-1)
+  240       CONTINUE
+C
+  250    CONTINUE
+         D(I) = P
+         IND(I) = ITAG
+  290 CONTINUE
+C
+ 1001 RETURN
+      END
+      SUBROUTINE xETRBK3(NM,N,NV,A,M,Z)
+C*
+C*    AUTHORS-
+C*       THIS IS A MODIFICATION OF ROUTINE TRBAK3 FROM EISPACK EDITION 3
+C*       DATED AUGUST 1983.
+C*       EISPACK TRBAK3 IS A TRANSLATION OF THE ALGOL PROCEDURE TRBAK3,
+C*       NUM. MATH. 11, 181-195(1968) BY MARTIN, REINSCH, AND WILKINSON.
+C*       HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 212-226(1971).
+C*       THIS VERSION IS BY S. T. ELBERT (AMES LABORATORY-USDOE)
+C*
+C*    PURPOSE -
+C*       THIS ROUTINE FORMS THE EIGENVECTORS OF A REAL SYMMETRIC
+C*       MATRIX BY BACK TRANSFORMING THOSE OF THE CORRESPONDING
+C*       SYMMETRIC TRIDIAGONAL MATRIX DETERMINED BY  ETRED3.
+C*
+C*    METHOD -
+C*       THE CALCULATION IS CARRIED OUT BY FORMING THE MATRIX PRODUCT
+C*          Q*Z
+C*       WHERE  Q  IS A PRODUCT OF THE ORTHOGONAL SYMMETRIC MATRICES
+C*                Q = PROD(I)[1 - U(I)*.TRANSPOSE.U(I)*H(I)]
+C*       U  IS THE AUGMENTED SUB-DIAGONAL ROWS OF  A  AND
+C*       Z  IS THE SET OF EIGENVECTORS OF THE TRIDIAGONAL
+C*       MATRIX  F  WHICH WAS FORMED FROM THE ORIGINAL SYMMETRIC
+C*       MATRIX  C  BY THE SIMILARITY TRANSFORMATION
+C*                F = Q(TRANSPOSE) C Q
+C*       NOTE THAT ETRBK3 PRESERVES VECTOR EUCLIDEAN NORMS.
+C*
+C*
+C*    COMPLEXITY -
+C*       M*N**2
+C*
+C*    ON ENTRY-
+C*       NM     - INTEGER
+C*                MUST BE SET TO THE ROW DIMENSION OF TWO-DIMENSIONAL
+C*                ARRAY PARAMETERS AS DECLARED IN THE CALLING ROUTINE
+C*                DIMENSION STATEMENT.
+C*       N      - INTEGER
+C*                THE ORDER OF THE MATRIX  A.
+C*       NV     - INTEGER
+C*                MUST BE SET TO THE DIMENSION OF THE ARRAY  A  AS
+C*                DECLARED IN THE CALLING ROUTINE DIMENSION STATEMENT.
+C*       A      - W.P. REAL (NV)
+C*                CONTAINS INFORMATION ABOUT THE ORTHOGONAL
+C*                TRANSFORMATIONS USED IN THE REDUCTION BY  ETRED3  IN
+C*                ITS FIRST  NV = N*(N+1)/2 POSITIONS.
+C*       M      - INTEGER
+C*                THE NUMBER OF EIGENVECTORS TO BE BACK TRANSFORMED.
+C*       Z      - W.P REAL (NM,M)
+C*                CONTAINS THE EIGENVECTORS TO BE BACK TRANSFORMED
+C*                IN ITS FIRST M COLUMNS.
+C*
+C*    ON EXIT-
+C*       Z      - W.P. REAL (NM,M)
+C*                CONTAINS THE TRANSFORMED EIGENVECTORS
+C*                IN ITS FIRST M COLUMNS.
+C*
+C*    DIFFERENCES WITH EISPACK 3 -
+C*       THE TWO INNER LOOPS ARE REPLACED BY DDOT AND DAXPY.
+C*       MULTIPLICATION USED INSTEAD OF DIVISION TO FIND S.
+C*       OUTER LOOP RANGE CHANGED FROM 2,N TO 3,N.
+C*       ADDRESS POINTERS FOR  A  SIMPLIFIED.
+C*
+C*    NOTE -
+C*       QUESTIONS AND COMMENTS CONCERNING EISPACK SHOULD BE DIRECTED TO
+C*       B. S. GARBOW, APPLIED MATH. DIVISION, ARGONNE NATIONAL LAB.
+C
+      INTEGER I,II,IM1,IZ,J,M,N,NM,NV
+C
+      DOUBLE PRECISION A(NV),Z(NM,M)
+      DOUBLE PRECISION H,S,DDOT,ZERO
+C
+      PARAMETER (ZERO = 0.0D+00)
+C
+C-----------------------------------------------------------------------
+C
+      IF (M .EQ. 0) RETURN
+      IF (N .LE. 2) RETURN
+C
+      II=3
+      DO 140 I = 3, N
+         IZ=II+1
+         II=II+I
+         H = A(II)
+         IF (H .EQ. ZERO) GO TO 140
+            IM1 = I - 1
+            DO 130 J = 1, M
+               S = -( DDOT(IM1,A(IZ),1,Z(1,J),1) * H) * H
+               CALL DAXPY(IM1,S,A(IZ),1,Z(1,J),1)
+  130       CONTINUE
+  140 CONTINUE
+      RETURN
+      END
+      SUBROUTINE xETRED3(N,NV,A,D,E,E2)
+C*
+C*    AUTHORS -
+C*       THIS IS A MODIFICATION OF ROUTINE TRED3 FROM EISPACK EDITION 3
+C*       DATED AUGUST 1983.
+C*       EISPACK TRED3 IS A TRANSLATION OF THE ALGOL PROCEDURE TRED3,
+C*       NUM. MATH. 11, 181-195(1968) BY MARTIN, REINSCH, AND WILKINSON.
+C*       HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 212-226(1971).
+C*       THIS VERSION IS BY S. T. ELBERT, AMES LABORATORY-USDOE JUN 1986
+C*
+C*    PURPOSE -
+C*       THIS ROUTINE REDUCES A REAL SYMMETRIC (PACKED) MATRIX, STORED
+C*       AS A ONE-DIMENSIONAL ARRAY, TO A SYMMETRIC TRIDIAGONAL MATRIX
+C*       USING ORTHOGONAL SIMILARITY TRANSFORMATIONS, PRESERVING THE
+C*       INFORMATION ABOUT THE TRANSFORMATIONS IN  A.
+C*
+C*    METHOD -
+C*       THE TRIDIAGONAL REDUCTION IS PERFORMED IN THE FOLLOWING WAY.
+C*       STARTING WITH J=N, THE ELEMENTS IN THE J-TH ROW TO THE
+C*       LEFT OF THE DIAGONAL ARE FIRST SCALED, TO AVOID POSSIBLE
+C*       UNDERFLOW IN THE TRANSFORMATION THAT MIGHT RESULT IN SEVERE
+C*       DEPARTURE FROM ORTHOGONALITY.  THE SUM OF SQUARES  SIGMA  OF
+C*       THESE SCALED ELEMENTS IS NEXT FORMED.  THEN, A VECTOR  U  AND
+C*       A SCALAR
+C*                      H = U(TRANSPOSE) * U / 2
+C*       DEFINE A REFLECTION OPERATOR
+C*                      P = I - U * U(TRANSPOSE) / H
+C*       WHICH IS ORTHOGONAL AND SYMMETRIC AND FOR WHICH THE
+C*       SIMILIARITY TRANSFORMATION  PAP  ELIMINATES THE ELEMENTS IN
+C*       THE J-TH ROW OF  A  TO THE LEFT OF THE SUBDIAGONAL AND THE
+C*       SYMMETRICAL ELEMENTS IN THE J-TH COLUMN.
+C*
+C*       THE NON-ZERO COMPONENTS OF  U  ARE THE ELEMENTS OF THE J-TH
+C*       ROW TO THE LEFT OF THE DIAGONAL WITH THE LAST OF THEM
+C*       AUGMENTED BY THE SQUARE ROOT OF  SIGMA  PREFIXED BY THE SIGN
+C*       OF THE SUBDIAGONAL ELEMENT.  BY STORING THE TRANSFORMED SUB-
+C*       DIAGONAL ELEMENT IN  E(J)  AND NOT OVERWRITING THE ROW
+C*       ELEMENTS ELIMINATED IN THE TRANSFORMATION, FULL INFORMATION
+C*       ABOUT  P  IS SAVE FOR LATER USE IN  ETRBK3.
+C*
+C*       THE TRANSFORMATION SETS  E2(J)  EQUAL TO  SIGMA  AND  E(J)
+C*       EQUAL TO THE SQUARE ROOT OF  SIGMA  PREFIXED BY THE SIGN
+C*       OF THE REPLACED SUBDIAGONAL ELEMENT.
+C*
+C*       THE ABOVE STEPS ARE REPEATED ON FURTHER ROWS OF THE
+C*       TRANSFORMED  A  IN REVERSE ORDER UNTIL  A  IS REDUCED TO TRI-
+C*       DIAGONAL FORM, THAT IS, REPEATED FOR  J = N-1,N-2,...,3.
+C*
+C*    COMPLEXITY -
+C*       2/3 N**3
+C*
+C*    ON ENTRY-
+C*       N      - INTEGER
+C*                THE ORDER OF THE MATRIX.
+C*       NV     - INTEGER
+C*                MUST BE SET TO THE DIMENSION OF THE ARRAY PARAMETER A
+C*                AS DECLARED IN THE CALLING ROUTINE DIMENSION STATEMENT
+C*       A      - W.P. REAL (NV)
+C*                CONTAINS THE LOWER TRIANGLE OF THE REAL SYMMETRIC
+C*                INPUT MATRIX, STORED ROW-WISE AS A ONE-DIMENSIONAL
+C*                ARRAY, IN ITS FIRST N*(N+1)/2 POSITIONS.
+C*
+C*    ON EXIT-
+C*       A      - W.P. REAL (NV)
+C*                CONTAINS INFORMATION ABOUT THE ORTHOGONAL
+C*                TRANSFORMATIONS USED IN THE REDUCTION.
+C*       D      - W.P. REAL (N)
+C*                CONTAINS THE DIAGONAL ELEMENTS OF THE TRIDIAGONAL
+C*                MATRIX.
+C*       E      - W.P. REAL (N)
+C*                CONTAINS THE SUBDIAGONAL ELEMENTS OF THE TRIDIAGONAL
+C*                MATRIX IN ITS LAST N-1 POSITIONS.  E(1) IS SET TO ZERO
+C*       E2     - W.P. REAL (N)
+C*                CONTAINS THE SQUARES OF THE CORRESPONDING ELEMENTS OF
+C*                E. MAY COINCIDE WITH E IF THE SQUARES ARE NOT NEEDED.
+C*
+C*    DIFFERENCES FROM EISPACK 3 -
+C*       OUTER LOOP CHANGED FROM II=1,N TO I=N,3,-1
+C*       PARAMETER STATEMENT AND GENERIC INTRINSIC FUNCTIONS USED
+C*       SCALE.NE.0 TEST NOW SPOTS TRI-DIAGONAL FORM
+C*       VALUES LESS THAN xEPSLON CLEARED TO ZERO
+C*       USE BLAS(1)
+C*       U NOT COPIED TO D, LEFT IN A
+C*       E2 COMPUTED FROM E
+C*       INNER LOOPS SPLIT INTO ROUTINES ELAU AND FREDA
+C*       INVERSE OF H STORED INSTEAD OF H
+C*
+C*    NOTE -
+C*       QUESTIONS AND COMMENTS CONCERNING EISPACK SHOULD BE DIRECTED TO
+C*       B. S. GARBOW, APPLIED MATH. DIVISION, ARGONNE NATIONAL LAB.
+C
+      INTEGER I,IIA,IZ0,L,N,NV
+C
+      DOUBLE PRECISION A(NV),D(N),E(N),E2(N)
+      DOUBLE PRECISION AIIMAX,F,G,H,HROOT,SCALE,SCALEI
+      DOUBLE PRECISION DASUM, DNRM2
+      DOUBLE PRECISION ONE, ZERO
+C
+      PARAMETER (ZERO = 0.0D+00, ONE = 1.0D+00)
+C
+C-----------------------------------------------------------------------
+C
+      IF (N .LE. 2) GO TO 310
+      IZ0 = (N*N+N)/2
+      AIIMAX = ABS(A(IZ0))
+      DO 300 I = N, 3, -1
+         L = I - 1
+         IIA = IZ0
+         IZ0 = IZ0 - I
+         AIIMAX = MAX(AIIMAX, ABS(A(IIA)))
+         SCALE = DASUM (L, A(IZ0+1), 1)
+         IF(SCALE .EQ. ABS(A(IIA-1)) .OR. AIIMAX+SCALE .EQ. AIIMAX) THEN
+C
+C           THIS ROW IS ALREADY IN TRI-DIAGONAL FORM
+C
+            D(I) = A(IIA)
+            IF (AIIMAX+D(I) .EQ. AIIMAX) D(I) = ZERO
+            E(I) = A(IIA-1)
+            IF (AIIMAX+E(I) .EQ. AIIMAX) E(I) = ZERO
+            E2(I) = E(I)*E(I)
+            A(IIA) = ZERO
+            GO TO 300
+C
+         END IF
+C
+         SCALEI = ONE / SCALE
+         CALL DSCAL(L,SCALEI,A(IZ0+1),1)
+         HROOT = DNRM2(L,A(IZ0+1),1)
+C
+         F = A(IZ0+L)
+         G = -SIGN(HROOT,F)
+         E(I) = SCALE * G
+         E2(I) = E(I)*E(I)
+         H = HROOT*HROOT - F * G
+         A(IZ0+L) = F - G
+         D(I) = A(IIA)
+         A(IIA) = ONE / SQRT(H)
+C           .......... FORM P THEN Q IN E(1:L) ..........
+         CALL xELAU(ONE/H,L,A(IZ0+1),A,E)
+C           .......... FORM REDUCED A ..........
+         CALL xFREDA(L,A(IZ0+1),A,E)
+C
+  300 CONTINUE
+  310 CONTINUE
+      E(1) = ZERO
+      E2(1)= ZERO
+      D(1) = A(1)
+      IF(N.EQ.1) RETURN
+C
+      E(2) = A(2)
+      E2(2)= A(2)*A(2)
+      D(2) = A(3)
+      RETURN
+      END
+      SUBROUTINE xIMTQLV(N,D,E,E2,W,IND,IERR,RV1)
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      INTEGER TAG
+      DOUBLE PRECISION MACHEP
+      DIMENSION D(N),E(N),E2(N),W(N),RV1(N),IND(N)
+C
+C     THIS ROUTINE IS A VARIANT OF  IMTQL1  WHICH IS A TRANSLATION OF
+C     ALGOL PROCEDURE IMTQL1, NUM. MATH. 12, 377-383(1968) BY MARTIN AND
+C     WILKINSON, AS MODIFIED IN NUM. MATH. 15, 450(1970) BY DUBRULLE.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 241-248(1971).
+C
+C     THIS ROUTINE FINDS THE EIGENVALUES OF A SYMMETRIC TRIDIAGONAL
+C     MATRIX BY THE IMPLICIT QL METHOD AND ASSOCIATES WITH THEM
+C     THEIR CORRESPONDING SUBMATRIX INDICES.
+C
+C     ON INPUT-
+C
+C        N IS THE ORDER OF THE MATRIX,
+C
+C        D CONTAINS THE DIAGONAL ELEMENTS OF THE INPUT MATRIX,
+C
+C        E CONTAINS THE SUBDIAGONAL ELEMENTS OF THE INPUT MATRIX
+C          IN ITS LAST N-1 POSITIONS.  E(1) IS ARBITRARY,
+C
+C        E2 CONTAINS THE SQUARES OF THE CORRESPONDING ELEMENTS OF E.
+C          E2(1) IS ARBITRARY.
+C
+C     ON OUTPUT-
+C
+C        D AND E ARE UNALTERED,
+C
+C        ELEMENTS OF E2, CORRESPONDING TO ELEMENTS OF E REGARDED
+C          AS NEGLIGIBLE, HAVE BEEN REPLACED BY ZERO CAUSING THE
+C          MATRIX TO SPLIT INTO A DIRECT SUM OF SUBMATRICES.
+C          E2(1) IS ALSO SET TO ZERO,
+C
+C        W CONTAINS THE EIGENVALUES IN ASCENDING ORDER.  IF AN
+C          ERROR EXIT IS MADE, THE EIGENVALUES ARE CORRECT AND
+C          ORDERED FOR INDICES 1,2,...IERR-1, BUT MAY NOT BE
+C          THE SMALLEST EIGENVALUES,
+C
+C        IND CONTAINS THE SUBMATRIX INDICES ASSOCIATED WITH THE
+C          CORRESPONDING EIGENVALUES IN W -- 1 FOR EIGENVALUES
+C          BELONGING TO THE FIRST SUBMATRIX FROM THE TOP,
+C          2 FOR THOSE BELONGING TO THE SECOND SUBMATRIX, ETC.,
+C
+C        IERR IS SET TO
+C          ZERO       FOR NORMAL RETURN,
+C          J          IF THE J-TH EIGENVALUE HAS NOT BEEN
+C                     DETERMINED AFTER 30 ITERATIONS,
+C
+C        RV1 IS A TEMPORARY STORAGE ARRAY.
+C
+C     QUESTIONS AND COMMENTS SHOULD BE DIRECTED TO B. S. GARBOW,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C
+C     ------------------------------------------------------------------
+C
+C     ********** MACHEP IS A MACHINE DEPENDENT PARAMETER SPECIFYING
+C                THE RELATIVE PRECISION OF FLOATING POINT ARITHMETIC.
+C
+C                **********
+      MACHEP = 2.0D+00**(-50)
+C
+      IERR = 0
+      K = 0
+      TAG = 0
+C
+      DO 100 I = 1, N
+      W(I) = D(I)
+      IF (I .NE. 1) RV1(I-1) = E(I)
+  100 CONTINUE
+C
+      E2(1) = 0.0D+00
+      RV1(N) = 0.0D+00
+C
+      DO 360 L = 1, N
+      J = 0
+C     ********** LOOK FOR SMALL SUB-DIAGONAL ELEMENT **********
+  120 DO 140 M = L, N
+      IF (M .EQ. N) GO TO 160
+      IF (ABS(RV1(M)) .LE. MACHEP * (ABS(W(M)) + ABS(W(M+1)))) GO TO
+     +     160
+C     ********** GUARD AGAINST UNDERFLOWED ELEMENT OF E2 **********
+      IF (E2(M+1) .EQ. 0.0D+00) GO TO 180
+  140 CONTINUE
+C
+  160 IF (M .LE. K) GO TO 200
+      IF (M .NE. N) E2(M+1) = 0.0D+00
+  180 K = M
+      TAG = TAG + 1
+  200 P = W(L)
+      IF (M .EQ. L) GO TO 280
+      IF (J .EQ. 30) GO TO 380
+      J = J + 1
+C     ********** FORM SHIFT **********
+      G = (W(L+1) - P) / (2.0D+00 * RV1(L))
+      R = SQRT(G*G+1.0D+00)
+      G = W(M) - P + RV1(L) / (G + SIGN(R,G))
+      S = 1.0D+00
+      C = 1.0D+00
+      P = 0.0D+00
+      MML = M - L
+C     ********** FOR I=M-1 STEP -1 UNTIL L DO -- **********
+      DO 260 II = 1, MML
+      I = M - II
+      F = S * RV1(I)
+      B = C * RV1(I)
+      IF (ABS(F) .LT. ABS(G)) GO TO 220
+      C = G / F
+      R = SQRT(C*C+1.0D+00)
+      RV1(I+1) = F * R
+      S = 1.0D+00 / R
+      C = C * S
+      GO TO 240
+  220 S = F / G
+      R = SQRT(S*S+1.0D+00)
+      RV1(I+1) = G * R
+      C = 1.0D+00 / R
+      S = S * C
+  240 G = W(I+1) - P
+      R = (W(I) - G) * S + 2.0D+00 * C * B
+      P = S * R
+      W(I+1) = G + P
+      G = C * R - B
+  260 CONTINUE
+C
+      W(L) = W(L) - P
+      RV1(L) = G
+      RV1(M) = 0.0D+00
+      GO TO 120
+C     ********** ORDER EIGENVALUES **********
+  280 IF (L .EQ. 1) GO TO 320
+C     ********** FOR I=L STEP -1 UNTIL 2 DO -- **********
+      DO 300 II = 2, L
+      I = L + 2 - II
+      IF (P .GE. W(I-1)) GO TO 340
+      W(I) = W(I-1)
+      IND(I) = IND(I-1)
+  300 CONTINUE
+C
+  320 I = 1
+  340 W(I) = P
+      IND(I) = TAG
+  360 CONTINUE
+C
+      GO TO 400
+C     ********** SET ERROR -- NO CONVERGENCE TO AN
+C                EIGENVALUE AFTER 30 ITERATIONS **********
+  380 IERR = L
+  400 RETURN
+C     ********** LAST CARD OF IMTQLV **********
+      END
+      SUBROUTINE xJACDIA(F,VEC,NB1,NB2,LDVEC,NMIN,NMAX,BIG,JBIG)
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      LOGICAL GOPARR,DSKWRK,MASWRK
+      DIMENSION F(NB2),VEC(LDVEC,NB1),BIG(NB1),JBIG(NB1)
+C
+      COMMON /xPAR   / ME,MASTER,NPROC,IBTYP,IPTIM,GOPARR,DSKWRK,MASWRK
+C
+      PARAMETER (ROOT2=0.707106781186548D+00 )
+      PARAMETER (ZERO=0.0D+00, ONE=1.0D+00, D1050=1.05D+00,
+     *           D1500=1.5D+00, D3875=3.875D+00,
+     *           D0500=0.5D+00, D1375=1.375D+00, D0250=0.25D+00 )
+      PARAMETER (C2=1.0D-12, C3=4.0D-16,
+     *           C4=2.0D-16, C5=8.0D-09, C6=3.0D-06 )
+C
+C      F IS THE MATRIX TO BE DIAGONALIZED, F IS STORED TRIANGULAR
+C      VEC IS THE ARRAY OF EIGENVECTORS, DIMENSION NB1*NB1
+C      BIG AND JBIG ARE TEMPORARY SCRATCH AREAS OF DIMENSION NB1
+C      THE ROTATIONS AMONG THE FIRST NMIN BASIS FUNCTIONS ARE NOT
+C      ACCOUNTED FOR.
+C      THE ROTATIONS AMONG THE LAST NB1-NMAX BASIS FUNCTIONS ARE NOT
+C      ACCOUNTED FOR.
+C
+      IEAA=0
+      IEAB=0
+      TT=ZERO
+      EPS = 64.0D+00*xEPSLON(ONE)
+C
+C      LOOP OVER COLUMNS (K) OF TRIANGULAR MATRIX TO DETERMINE
+C      LARGEST OFF-DIAGONAL ELEMENTS IN ROW(I).
+C
+      DO 20 I=1,NB1
+         BIG(I)=ZERO
+         JBIG(I)=0
+         IF(I.LT.NMIN  .OR.  I.EQ.1) GO TO 20
+         II = (I*I-I)/2
+         J=MIN(I-1,NMAX)
+         DO 10 K=1,J
+            IF(ABS(BIG(I)).GE.ABS(F(II+K))) GO TO 10
+            BIG(I)=F(II+K)
+            JBIG(I)=K
+   10    CONTINUE
+   20 CONTINUE
+C
+C     ----- 2X2 JACOBI ITERATIONS BEGIN HERE -----
+C
+      MAXIT=MAX(NB2*20,500)
+      ITER=0
+   30 CONTINUE
+      ITER=ITER+1
+C
+C      FIND SMALLEST DIAGONAL ELEMENT
+C
+      SD=D1050
+      JJ=0
+      DO 40 J=1,NB1
+         JJ=JJ+J
+         SD= MIN(SD,ABS(F(JJ)))
+   40 CONTINUE
+      TEST = MAX(EPS, C2*MAX(SD,C6))
+C
+C      FIND LARGEST OFF-DIAGONAL ELEMENT
+C
+      T=ZERO
+      I1=MAX(2,NMIN)
+      IB = I1
+      DO 50 I=I1,NB1
+         IF(T.GE.ABS(BIG(I))) GO TO 50
+         T= ABS(BIG(I))
+         IB=I
+   50 CONTINUE
+C
+C      TEST FOR CONVERGENCE, THEN DETERMINE ROTATION.
+C
+      IF(T.LT.TEST) RETURN
+C                   ******
+C
+      IF(ITER.GT.MAXIT) THEN
+         IF (MASWRK) THEN
+            WRITE(6,*) 'JACOBI DIAGONALIZATION FAILS, DIMENSION=',NB1
+            WRITE(6,9020) ITER,T,TEST,SD
+         ENDIF
+         call aces_exit(1)
+      END IF
+C
+      IA=JBIG(IB)
+      IAA=IA*(IA-1)/2
+      IBB=IB*(IB-1)/2
+      DIF=F(IAA+IA)-F(IBB+IB)
+      IF(ABS(DIF).GT.C3*T) GO TO 70
+      SX=ROOT2
+      CX=ROOT2
+      GO TO 110
+   70 T2X2=BIG(IB)/DIF
+      T2X25=T2X2*T2X2
+      IF(T2X25 . GT . C4) GO TO 80
+      CX=ONE
+      SX=T2X2
+      GO TO 110
+   80 IF(T2X25 . GT . C5) GO TO 90
+      SX=T2X2*(ONE-D1500*T2X25)
+      CX=ONE-D0500*T2X25
+      GO TO 110
+   90 IF(T2X25 . GT . C6) GO TO 100
+      CX=ONE+T2X25*(T2X25*D1375 - D0500)
+      SX= T2X2*(ONE + T2X25*(T2X25*D3875 - D1500))
+      GO TO 110
+  100 T=D0250  / SQRT(D0250   + T2X25)
+      CX= SQRT(D0500   + T)
+      SX= SIGN( SQRT(D0500   - T),T2X2)
+  110 IEAR=IAA+1
+      IEBR=IBB+1
+C
+      DO 230 IR=1,NB1
+         T=F(IEAR)*SX
+         F(IEAR)=F(IEAR)*CX+F(IEBR)*SX
+         F(IEBR)=T-F(IEBR)*CX
+         IF(IR-IA) 220,120,130
+  120    TT=F(IEBR)
+         IEAA=IEAR
+         IEAB=IEBR
+         F(IEBR)=BIG(IB)
+         IEAR=IEAR+IR-1
+         IF(JBIG(IR)) 200,220,200
+  130    T=F(IEAR)
+         IT=IA
+         IEAR=IEAR+IR-1
+         IF(IR-IB) 180,150,160
+  150    F(IEAA)=F(IEAA)*CX+F(IEAB)*SX
+         F(IEAB)=TT*CX+F(IEBR)*SX
+         F(IEBR)=TT*SX-F(IEBR)*CX
+         IEBR=IEBR+IR-1
+         GO TO 200
+  160    IF(  ABS(T) . GE .  ABS(F(IEBR))) GO TO 170
+         IF(IB.GT.NMAX) GO TO 170
+         T=F(IEBR)
+         IT=IB
+  170    IEBR=IEBR+IR-1
+  180    IF(  ABS(T) . LT .  ABS(BIG(IR))) GO TO 190
+         BIG(IR) = T
+         JBIG(IR) = IT
+         GO TO 220
+  190    IF(IA . NE . JBIG(IR) . AND . IB . NE . JBIG(IR))  GO TO 220
+  200    KQ=IEAR-IR-IA+1
+         BIG(IR)=ZERO
+         IR1=MIN(IR-1,NMAX)
+         DO 210 I=1,IR1
+            K=KQ+I
+            IF(ABS(BIG(IR)) . GE . ABS(F(K)))  GO TO 210
+            BIG(IR) = F(K)
+            JBIG(IR)=I
+  210    CONTINUE
+  220    IEAR=IEAR+1
+  230    IEBR=IEBR+1
+C
+      DO 240 I=1,NB1
+         T1=VEC(I,IA)*CX + VEC(I,IB)*SX
+         T2=VEC(I,IA)*SX - VEC(I,IB)*CX
+         VEC(I,IA)=T1
+         VEC(I,IB)=T2
+  240 CONTINUE
+      GO TO 30
+C
+ 9020 FORMAT(1X,'ITER=',I6,' T,TEST,SD=',1P,3E20.10)
+      END
+      SUBROUTINE xJACORD(VEC,EIG,N,LDVEC)
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      DIMENSION VEC(LDVEC,N),EIG(N)
+C
+C     ---- SORT EIGENDATA INTO ASCENDING ORDER -----
+C
+      DO 290 I = 1, N
+         JJ = I
+         DO 270 J = I, N
+            IF (EIG(J) .LT. EIG(JJ)) JJ = J
+  270    CONTINUE
+         IF (JJ .EQ. I) GO TO 290
+         T = EIG(JJ)
+         EIG(JJ) = EIG(I)
+         EIG(I) = T
+         DO 280 J = 1, N
+            T = VEC(J,JJ)
+            VEC(J,JJ) = VEC(J,I)
+            VEC(J,I) = T
+  280    CONTINUE
+  290 CONTINUE
+      RETURN
+      END
+      SUBROUTINE xTINVTB(NM,N,D,E,E2,M,W,IND,Z,
+     *                  IERR,RV1,RV2,RV3,RV4,RV6)
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      DIMENSION D(N),E(N),E2(N),W(M),Z(NM,M),
+     *          RV1(N),RV2(N),RV3(N),RV4(N),RV6(N),IND(M)
+      DOUBLE PRECISION MACHEP,NORM
+      INTEGER P,Q,R,S,TAG,GROUP
+C     ------------------------------------------------------------------
+C
+C     THIS ROUTINE IS A TRANSLATION OF THE INVERSE ITERATION TECH-
+C     NIQUE IN THE ALGOL PROCEDURE TRISTURM BY PETERS AND WILKINSON.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 418-439(1971).
+C
+C     THIS ROUTINE FINDS THOSE EIGENVECTORS OF A TRIDIAGONAL
+C     SYMMETRIC MATRIX CORRESPONDING TO SPECIFIED EIGENVALUES,
+C     USING INVERSE ITERATION.
+C
+C     ON INPUT-
+C
+C        NM MUST BE SET TO THE ROW DIMENSION OF TWO-DIMENSIONAL
+C          ARRAY PARAMETERS AS DECLARED IN THE CALLING ROUTINE
+C          DIMENSION STATEMENT,
+C
+C        N IS THE ORDER OF THE MATRIX,
+C
+C        D CONTAINS THE DIAGONAL ELEMENTS OF THE INPUT MATRIX,
+C
+C        E CONTAINS THE SUBDIAGONAL ELEMENTS OF THE INPUT MATRIX
+C          IN ITS LAST N-1 POSITIONS.  E(1) IS ARBITRARY,
+C
+C        E2 CONTAINS THE SQUARES OF THE CORRESPONDING ELEMENTS OF E,
+C          WITH ZEROS CORRESPONDING TO NEGLIGIBLE ELEMENTS OF E.
+C          E(I) IS CONSIDERED NEGLIGIBLE IF IT IS NOT LARGER THAN
+C          THE PRODUCT OF THE RELATIVE MACHINE PRECISION AND THE SUM
+C          OF THE MAGNITUDES OF D(I) AND D(I-1).  E2(1) MUST CONTAIN
+C          0.0 IF THE EIGENVALUES ARE IN ASCENDING ORDER, OR 2.0
+C          IF THE EIGENVALUES ARE IN DESCENDING ORDER.  IF  BISECT,
+C          TRIDIB, OR  IMTQLV  HAS BEEN USED TO FIND THE EIGENVALUES,
+C          THEIR OUTPUT E2 ARRAY IS EXACTLY WHAT IS EXPECTED HERE,
+C
+C        M IS THE NUMBER OF SPECIFIED EIGENVALUES,
+C
+C        W CONTAINS THE M EIGENVALUES IN ASCENDING OR DESCENDING ORDER,
+C
+C        IND CONTAINS IN ITS FIRST M POSITIONS THE SUBMATRIX INDICES
+C          ASSOCIATED WITH THE CORRESPONDING EIGENVALUES IN W --
+C          1 FOR EIGENVALUES BELONGING TO THE FIRST SUBMATRIX FROM
+C          THE TOP, 2 FOR THOSE BELONGING TO THE SECOND SUBMATRIX, ETC.
+C
+C     ON OUTPUT-
+C
+C        ALL INPUT ARRAYS ARE UNALTERED,
+C
+C        Z CONTAINS THE ASSOCIATED SET OF ORTHONORMAL EIGENVECTORS.
+C          ANY VECTOR WHICH FAILS TO CONVERGE IS SET TO ZERO,
+C
+C        IERR IS SET TO
+C          ZERO       FOR NORMAL RETURN,
+C          -R         IF THE EIGENVECTOR CORRESPONDING TO THE R-TH
+C                     EIGENVALUE FAILS TO CONVERGE IN 5 ITERATIONS,
+C
+C        RV1, RV2, RV3, RV4, AND RV6 ARE TEMPORARY STORAGE ARRAYS.
+C
+C     QUESTIONS AND COMMENTS SHOULD BE DIRECTED TO B. S. GARBOW,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C
+C     ------------------------------------------------------------------
+C
+C     ********** MACHEP IS A MACHINE DEPENDENT PARAMETER SPECIFYING
+C                THE RELATIVE PRECISION OF FLOATING POINT ARITHMETIC.
+C
+C                **********
+      MACHEP = 2.0D+00**(-50)
+C
+      IERR = 0
+      IF (M .EQ. 0) GO TO 680
+      TAG = 0
+      ORDER = 1.0D+00 - E2(1)
+      XU = 0.0D+00
+      UK = 0.0D+00
+      X0 = 0.0D+00
+      U  = 0.0D+00
+      EPS2 = 0.0D+00
+      EPS3 = 0.0D+00
+      EPS4 = 0.0D+00
+      GROUP = 0
+      Q = 0
+C     ********** ESTABLISH AND PROCESS NEXT SUBMATRIX **********
+  100 P = Q + 1
+      IP = P + 1
+C
+      DO 120 Q = P, N
+      IF (Q .EQ. N) GO TO 140
+      IF (E2(Q+1) .EQ. 0.0D+00) GO TO 140
+  120 CONTINUE
+C     ********** FIND VECTORS BY INVERSE ITERATION **********
+  140 TAG = TAG + 1
+      IQMP = Q - P + 1
+      S = 0
+C
+      DO 660 R = 1, M
+      IF (IND(R) .NE. TAG) GO TO 660
+      ITS = 1
+      X1 = W(R)
+      IF (S .NE. 0) GO TO 220
+C     ********** CHECK FOR ISOLATED ROOT **********
+      XU = 1.0D+00
+      IF (P .NE. Q) GO TO 160
+      RV6(P) = 1.0D+00
+      GO TO 600
+  160 NORM = ABS(D(P))
+C
+      DO 180 I = IP, Q
+  180 NORM = NORM + ABS(D(I)) + ABS(E(I))
+C     ********** EPS2 IS THE CRITERION FOR GROUPING,
+C                EPS3 REPLACES ZERO PIVOTS AND EQUAL
+C                ROOTS ARE MODIFIED BY EPS3,
+C                EPS4 IS TAKEN VERY SMALL TO AVOID OVERFLOW **********
+      EPS2 = 1.0D-03 * NORM
+      EPS3 = MACHEP * NORM
+      UK = IQMP
+      EPS4 = UK * EPS3
+      UK = EPS4 / SQRT(UK)
+      S = P
+  200 GROUP = 0
+      GO TO 240
+C     ********** LOOK FOR CLOSE OR COINCIDENT ROOTS **********
+  220 IF (ABS(X1-X0) .GE. EPS2) GO TO 200
+      GROUP = GROUP + 1
+      IF (ORDER * (X1 - X0) .LE. 0.0D+00) X1 = X0 + ORDER * EPS3
+C     ********** ELIMINATION WITH INTERCHANGES AND
+C                INITIALIZATION OF VECTOR **********
+  240 V = 0.0D+00
+C
+      DO 300 I = P, Q
+      RV6(I) = UK
+      IF (I .EQ. P) GO TO 280
+      IF (ABS(E(I)) .LT. ABS(U)) GO TO 260
+C     ********** WARNING -- A DIVIDE CHECK MAY OCCUR HERE IF
+C                E2 ARRAY HAS NOT BEEN SPECIFIED CORRECTLY **********
+      XU = U / E(I)
+      RV4(I) = XU
+      RV1(I-1) = E(I)
+      RV2(I-1) = D(I) - X1
+      RV3(I-1) = 0.0D+00
+      IF (I .NE. Q) RV3(I-1) = E(I+1)
+      U = V - XU * RV2(I-1)
+      V = -XU * RV3(I-1)
+      GO TO 300
+  260 XU = E(I) / U
+      RV4(I) = XU
+      RV1(I-1) = U
+      RV2(I-1) = V
+      RV3(I-1) = 0.0D+00
+  280 U = D(I) - X1 - XU * V
+      IF (I .NE. Q) V = E(I+1)
+  300 CONTINUE
+C
+      IF (U .EQ. 0.0D+00) U = EPS3
+      RV1(Q) = U
+      RV2(Q) = 0.0D+00
+      RV3(Q) = 0.0D+00
+C     ********** BACK SUBSTITUTION
+C                FOR I=Q STEP -1 UNTIL P DO -- **********
+  320 DO 340 II = P, Q
+      I = P + Q - II
+      RV6(I) = (RV6(I) - U * RV2(I) - V * RV3(I)) / RV1(I)
+      V = U
+      U = RV6(I)
+  340 CONTINUE
+C     ********** ORTHOGONALIZE WITH RESPECT TO PREVIOUS
+C                MEMBERS OF GROUP **********
+      IF (GROUP .EQ. 0) GO TO 400
+      J = R
+C
+      DO 380 JJ = 1, GROUP
+  360 J = J - 1
+      IF (IND(J) .NE. TAG) GO TO 360
+      XU = DDOT(IQMP,RV6(P),1,Z(P,J),1)
+C
+      CALL DAXPY(IQMP,-XU,Z(P,J),1,RV6(P),1)
+C
+  380 CONTINUE
+C
+  400 NORM = 0.0D+00
+C
+      DO 420 I = P, Q
+  420 NORM = NORM + ABS(RV6(I))
+C
+      IF (NORM .GE. 1.0D+00) GO TO 560
+C     ********** FORWARD SUBSTITUTION **********
+      IF (ITS .EQ. 5) GO TO 540
+      IF (NORM .NE. 0.0D+00) GO TO 440
+      RV6(S) = EPS4
+      S = S + 1
+      IF (S .GT. Q) S = P
+      GO TO 480
+  440 XU = EPS4 / NORM
+C
+      DO 460 I = P, Q
+  460 RV6(I) = RV6(I) * XU
+C     ********** ELIMINATION OPERATIONS ON NEXT VECTOR
+C                ITERATE **********
+  480 DO 520 I = IP, Q
+      U = RV6(I)
+C     ********** IF RV1(I-1) .EQ. E(I), A ROW INTERCHANGE
+C                WAS PERFORMED EARLIER IN THE
+C                TRIANGULARIZATION PROCESS **********
+      IF (RV1(I-1) .NE. E(I)) GO TO 500
+      U = RV6(I-1)
+      RV6(I-1) = RV6(I)
+  500 RV6(I) = U - RV4(I) * RV6(I-1)
+  520 CONTINUE
+C
+      ITS = ITS + 1
+      GO TO 320
+C     ********** SET ERROR -- NON-CONVERGED EIGENVECTOR **********
+  540 IERR = -R
+      XU = 0.0D+00
+      GO TO 600
+C     ********** NORMALIZE SO THAT SUM OF SQUARES IS
+C                1 AND EXPAND TO FULL ORDER **********
+  560 U = 0.0D+00
+C
+      DO 580 I = P, Q
+      RV6(I) = RV6(I) / NORM
+  580 U = U + RV6(I)**2
+C
+      XU = 1.0D+00 / SQRT(U)
+C
+  600 DO 620 I = 1, N
+  620 Z(I,R) = 0.0D+00
+C
+      DO 640 I = P, Q
+  640 Z(I,R) = RV6(I) * XU
+C
+      X0 = X1
+  660 CONTINUE
+C
+      IF (Q .LT. N) GO TO 100
+  680 RETURN
+C     ********** LAST CARD OF TINVIT **********
+      END
+      SUBROUTINE xTQL2(NM,N,D,E,Z,IERR)
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      DOUBLE PRECISION MACHEP
+      DIMENSION D(N),E(N),Z(NM,N)
+C
+C     THIS ROUTINE IS A TRANSLATION OF THE ALGOL PROCEDURE TQL2,
+C     NUM. MATH. 11, 293-306(1968) BY BOWDLER, MARTIN, REINSCH, AND
+C     WILKINSON.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 227-240(1971).
+C
+C     THIS ROUTINE FINDS THE EIGENVALUES AND EIGENVECTORS
+C     OF A SYMMETRIC TRIDIAGONAL MATRIX BY THE QL METHOD.
+C     THE EIGENVECTORS OF A FULL SYMMETRIC MATRIX CAN ALSO
+C     BE FOUND IF  TRED2  HAS BEEN USED TO REDUCE THIS
+C     FULL MATRIX TO TRIDIAGONAL FORM.
+C
+C     ON INPUT-
+C
+C        NM MUST BE SET TO THE ROW DIMENSION OF TWO-DIMENSIONAL
+C          ARRAY PARAMETERS AS DECLARED IN THE CALLING ROUTINE
+C          DIMENSION STATEMENT,
+C
+C        N IS THE ORDER OF THE MATRIX,
+C
+C        D CONTAINS THE DIAGONAL ELEMENTS OF THE INPUT MATRIX,
+C
+C        E CONTAINS THE SUBDIAGONAL ELEMENTS OF THE INPUT MATRIX
+C          IN ITS LAST N-1 POSITIONS.  E(1) IS ARBITRARY,
+C
+C        Z CONTAINS THE TRANSFORMATION MATRIX PRODUCED IN THE
+C          REDUCTION BY  TRED2, IF PERFORMED.  IF THE EIGENVECTORS
+C          OF THE TRIDIAGONAL MATRIX ARE DESIRED, Z MUST CONTAIN
+C          THE IDENTITY MATRIX.
+C
+C      ON OUTPUT-
+C
+C        D CONTAINS THE EIGENVALUES IN ASCENDING ORDER.  IF AN
+C          ERROR EXIT IS MADE, THE EIGENVALUES ARE CORRECT BUT
+C          UNORDERED FOR INDICES 1,2,...,IERR-1,
+C
+C        E HAS BEEN DESTROYED,
+C
+C        Z CONTAINS ORTHONORMAL EIGENVECTORS OF THE SYMMETRIC
+C          TRIDIAGONAL (OR FULL) MATRIX.  IF AN ERROR EXIT IS MADE,
+C          Z CONTAINS THE EIGENVECTORS ASSOCIATED WITH THE STORED
+C          EIGENVALUES,
+C
+C        IERR IS SET TO
+C          ZERO       FOR NORMAL RETURN,
+C          J          IF THE J-TH EIGENVALUE HAS NOT BEEN
+C                     DETERMINED AFTER 30 ITERATIONS.
+C
+C     QUESTIONS AND COMMENTS SHOULD BE DIRECTED TO B. S. GARBOW,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C
+C     ------------------------------------------------------------------
+C
+C     ********** MACHEP IS A MACHINE DEPENDENT PARAMETER SPECIFYING
+C                THE RELATIVE PRECISION OF FLOATING POINT ARITHMETIC.
+C
+C                **********
+      MACHEP = 2.0D+00**(-50)
+C
+      IERR = 0
+      IF (N .EQ. 1) GO TO 400
+C
+      DO 100 I = 2, N
+  100 E(I-1) = E(I)
+C
+      F = 0.0D+00
+      B = 0.0D+00
+      E(N) = 0.0D+00
+C
+      DO 300 L = 1, N
+      J = 0
+      H = MACHEP * (ABS(D(L)) + ABS(E(L)))
+      IF (B .LT. H) B = H
+C     ********** LOOK FOR SMALL SUB-DIAGONAL ELEMENT **********
+      DO 120 M = L, N
+      IF (ABS(E(M)) .LE. B) GO TO 140
+C     ********** E(N) IS ALWAYS ZERO, SO THERE IS NO EXIT
+C                THROUGH THE BOTTOM OF THE LOOP **********
+  120 CONTINUE
+C
+  140 IF (M .EQ. L) GO TO 280
+  160 IF (J .EQ. 30) GO TO 380
+      J = J + 1
+C     ********** FORM SHIFT **********
+      L1 = L + 1
+      G = D(L)
+      P = (D(L1) - G) / (2.0D+00 * E(L))
+      R = SQRT(P*P+1.0D+00)
+      D(L) = E(L) / (P + SIGN(R,P))
+      H = G - D(L)
+C
+      DO 180 I = L1, N
+  180 D(I) = D(I) - H
+C
+      F = F + H
+C     ********** QL TRANSFORMATION **********
+      P = D(M)
+      C = 1.0D+00
+      S = 0.0D+00
+      MML = M - L
+C     ********** FOR I=M-1 STEP -1 UNTIL L DO -- **********
+      DO 260 II = 1, MML
+      I = M - II
+      G = C * E(I)
+      H = C * P
+      IF (ABS(P) .LT. ABS(E(I))) GO TO 200
+      C = E(I) / P
+      R = SQRT(C*C+1.0D+00)
+      E(I+1) = S * P * R
+      S = C / R
+      C = 1.0D+00 / R
+      GO TO 220
+  200 C = P / E(I)
+      R = SQRT(C*C+1.0D+00)
+      E(I+1) = S * E(I) * R
+      S = 1.0D+00 / R
+      C = C * S
+  220 P = C * D(I) - S * G
+      D(I+1) = H + S * (C * G + S * D(I))
+C     ********** FORM VECTOR **********
+      CALL DROT(N,Z(1,I+1),1,Z(1,I),1,C,S)
+C
+  260 CONTINUE
+C
+      E(L) = S * P
+      D(L) = C * P
+      IF (ABS(E(L)) .GT. B) GO TO 160
+  280 D(L) = D(L) + F
+  300 CONTINUE
+C     ********** ORDER EIGENVALUES AND EIGENVECTORS **********
+      DO 360 II = 2, N
+      I = II - 1
+      K = I
+      P = D(I)
+C
+      DO 320 J = II, N
+      IF (D(J) .GE. P) GO TO 320
+      K = J
+      P = D(J)
+  320 CONTINUE
+C
+      IF (K .EQ. I) GO TO 360
+      D(K) = D(I)
+      D(I) = P
+C
+      CALL DSWAP(N,Z(1,I),1,Z(1,K),1)
+C
+  360 CONTINUE
+C
+      GO TO 400
+C     ********** SET ERROR -- NO CONVERGENCE TO AN
+C                EIGENVALUE AFTER 30 ITERATIONS **********
+  380 IERR = L
+  400 RETURN
+C     ********** LAST CARD OF TQL2 **********
+      END
+      SUBROUTINE xTRBK3B(NM,N,NV,A,M,Z)
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      DIMENSION A(NV),Z(NM,M)
+C
+C     THIS ROUTINE IS A TRANSLATION OF THE ALGOL PROCEDURE TRBAK3,
+C     NUM. MATH. 11, 181-195(1968) BY MARTIN, REINSCH, AND WILKINSON.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 212-226(1971).
+C
+C     THIS ROUTINE FORMS THE EIGENVECTORS OF A REAL SYMMETRIC
+C     MATRIX BY BACK TRANSFORMING THOSE OF THE CORRESPONDING
+C     SYMMETRIC TRIDIAGONAL MATRIX DETERMINED BY  TRED3B.
+C
+C     ON INPUT-
+C
+C        NM MUST BE SET TO THE ROW DIMENSION OF TWO-DIMENSIONAL
+C          ARRAY PARAMETERS AS DECLARED IN THE CALLING ROUTINE
+C          DIMENSION STATEMENT,
+C
+C        N IS THE ORDER OF THE MATRIX,
+C
+C        NV MUST BE SET TO THE DIMENSION OF THE ARRAY PARAMETER A
+C          AS DECLARED IN THE CALLING ROUTINE DIMENSION STATEMENT,
+C
+C        A CONTAINS INFORMATION ABOUT THE ORTHOGONAL TRANSFORMATIONS
+C          USED IN THE REDUCTION BY  TRED3B IN ITS FIRST
+C          N*(N+1)/2 POSITIONS,
+C
+C        M IS THE NUMBER OF EIGENVECTORS TO BE BACK TRANSFORMED,
+C
+C        Z CONTAINS THE EIGENVECTORS TO BE BACK TRANSFORMED
+C          IN ITS FIRST M COLUMNS.
+C
+C     ON OUTPUT-
+C
+C        Z CONTAINS THE TRANSFORMED EIGENVECTORS
+C          IN ITS FIRST M COLUMNS.
+C
+C     NOTE THAT TRBAK3 PRESERVES VECTOR EUCLIDEAN NORMS.
+C
+C     QUESTIONS AND COMMENTS SHOULD BE DIRECTED TO B. S. GARBOW,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C
+C     ------------------------------------------------------------------
+C
+      IF (M .EQ. 0) GO TO 140
+      IF (N .EQ. 1) GO TO 140
+C
+      DO 120 I = 2, N
+      L = I - 1
+      IZ = (I * L) / 2
+      IK = IZ + I
+      H = A(IK)
+      IF (H .EQ. 0.0D+00) GO TO 120
+C
+      DO 100 J = 1, M
+      S = -DDOT(L,A(IZ+1),1,Z(1,J),1)
+C
+C     ********** DOUBLE DIVISION AVOIDS POSSIBLE UNDERFLOW **********
+      S = (S / H) / H
+C
+      CALL DAXPY(L,S,A(IZ+1),1,Z(1,J),1)
+C
+  100 CONTINUE
+C
+  120 CONTINUE
+C
+  140 RETURN
+C     ********** LAST CARD OF TRBAK3 **********
+      END
+      SUBROUTINE xTRED3B(N,NV,A,D,E,E2)
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      DIMENSION A(NV),D(N),E(N),E2(N)
+C
+C     THIS ROUTINE IS A TRANSLATION OF THE ALGOL PROCEDURE TRED3,
+C     NUM. MATH. 11, 181-195(1968) BY MARTIN, REINSCH, AND WILKINSON.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 212-226(1971).
+C
+C     THIS ROUTINE REDUCES A REAL SYMMETRIC MATRIX, STORED AS
+C     A ONE-DIMENSIONAL ARRAY, TO A SYMMETRIC TRIDIAGONAL MATRIX
+C     USING ORTHOGONAL SIMILARITY TRANSFORMATIONS.
+C
+C     ON INPUT-
+C
+C        N IS THE ORDER OF THE MATRIX,
+C
+C        NV MUST BE SET TO THE DIMENSION OF THE ARRAY PARAMETER A
+C          AS DECLARED IN THE CALLING ROUTINE DIMENSION STATEMENT,
+C
+C        A CONTAINS THE LOWER TRIANGLE OF THE REAL SYMMETRIC
+C          INPUT MATRIX, STORED ROW-WISE AS A ONE-DIMENSIONAL
+C          ARRAY, IN ITS FIRST N*(N+1)/2 POSITIONS.
+C
+C     ON OUTPUT-
+C
+C        A CONTAINS INFORMATION ABOUT THE ORTHOGONAL
+C          TRANSFORMATIONS USED IN THE REDUCTION,
+C
+C        D CONTAINS THE DIAGONAL ELEMENTS OF THE TRIDIAGONAL MATRIX,
+C
+C        E CONTAINS THE SUBDIAGONAL ELEMENTS OF THE TRIDIAGONAL
+C          MATRIX IN ITS LAST N-1 POSITIONS.  E(1) IS SET TO ZERO,
+C
+C        E2 CONTAINS THE SQUARES OF THE CORRESPONDING ELEMENTS OF E.
+C          E2 MAY COINCIDE WITH E IF THE SQUARES ARE NOT NEEDED.
+C
+C     QUESTIONS AND COMMENTS SHOULD BE DIRECTED TO B. S. GARBOW,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C
+C     ------------------------------------------------------------------
+C
+C     ********** FOR I=N STEP -1 UNTIL 1 DO -- **********
+      DO 300 II = 1, N
+      I = N + 1 - II
+      L = I - 1
+      IZ = (I * L) / 2
+      H = 0.0D+00
+      SCALE = 0.0D+00
+      IF (L .LT. 1) GO TO 120
+C     ********** SCALE ROW (ALGOL TOL THEN NOT NEEDED) **********
+      DO 100 K = 1, L
+      IZ = IZ + 1
+      D(K) = A(IZ)
+      SCALE = SCALE + ABS(D(K))
+  100 CONTINUE
+C
+      IF (SCALE .NE. 0.0D+00) GO TO 140
+  120 E(I) = 0.0D+00
+      E2(I) = 0.0D+00
+      GO TO 280
+C
+  140 DO 160 K = 1, L
+      D(K) = D(K) / SCALE
+      H = H + D(K) * D(K)
+  160 CONTINUE
+C
+      E2(I) = SCALE * SCALE * H
+      F = D(L)
+      G = -SIGN(SQRT(H),F)
+      E(I) = SCALE * G
+      H = H - F * G
+      D(L) = F - G
+      A(IZ) = SCALE * D(L)
+      IF (L .EQ. 1) GO TO 280
+      F = 0.0D+00
+C
+      JK = 1
+      DO 220 J = 1, L
+      JM1 = J - 1
+      DT = D(J)
+      G = 0.0D+00
+C     ********** FORM ELEMENT OF A*U **********
+      IF (JM1 .EQ. 0) GO TO 200
+      DO 180 K = 1, JM1
+      E(K) = E(K) + DT * A(JK)
+      G = G + D(K) * A(JK)
+      JK = JK + 1
+  180 CONTINUE
+  200 E(J) = G + A(JK) * DT
+      JK = JK + 1
+C     ********** FORM ELEMENT OF P **********
+  220 CONTINUE
+      F = 0.0D+00
+      DO 240 J = 1, L
+      E(J) = E(J) / H
+      F = F + E(J) * D(J)
+  240 CONTINUE
+C
+      HH = F / (H + H)
+      JK = 0
+C     ********** FORM REDUCED A **********
+      DO 260 J = 1, L
+      F = D(J)
+      G = E(J) - HH * F
+      E(J) = G
+C
+      DO 260 K = 1, J
+      JK = JK + 1
+      A(JK) = A(JK) - F * E(K) - G * D(K)
+  260 CONTINUE
+C
+  280 D(I) = A(IZ+1)
+      A(IZ+1) = SCALE * SQRT(H)
+  300 CONTINUE
+C
+      RETURN
+C     ********** LAST CARD OF TRED3 **********
+      END
+      SUBROUTINE xELAU(HINV,L,D,A,E)
+C
+      DOUBLE PRECISION A(*)
+      DOUBLE PRECISION D(L)
+      DOUBLE PRECISION E(L)
+      DOUBLE PRECISION F
+      DOUBLE PRECISION G
+      DOUBLE PRECISION HALF
+      DOUBLE PRECISION HH
+      DOUBLE PRECISION HINV
+      DOUBLE PRECISION ZERO
+C
+      PARAMETER (ZERO = 0.0D+00, HALF = 0.5D+00)
+C
+      JL = L
+      E(1) = A(1) * D(1)
+      JK = 2
+      DO 210 J = 2, JL
+         F = D(J)
+         G = ZERO
+         JM1 = J - 1
+C
+         DO 200 K = 1, JM1
+            G = G + A(JK) * D(K)
+            E(K) = E(K) + A(JK) * F
+            JK = JK + 1
+  200    CONTINUE
+C
+         E(J) = G + A(JK) * F
+         JK = JK + 1
+  210 CONTINUE
+C
+C        .......... FORM P ..........
+C
+      F = ZERO
+      DO 245 J = 1, L
+         E(J) = E(J) * HINV
+         F = F + E(J) * D(J)
+  245 CONTINUE
+C
+C     .......... FORM Q ..........
+C
+      HH = F * HALF * HINV
+      DO 250 J = 1, L
+  250 E(J) = E(J) - HH * D(J)
+C
+      RETURN
+      END
+      SUBROUTINE xESTPI(ESTPI1,N,EVAL,D,E,X,ANORM)
+C*
+C*    AUTHOR -
+C*       STEPHEN T. ELBERT (AMES LABORATORY-USDOE) DATE: 5 DEC 1986
+C*
+C*    PURPOSE -
+C*       EVALUATE SYMMETRIC TRIDIAGONAL MATRIX PERFORMANCE INDEX
+C*       *        *         *                  *           *
+C*       FOR 1 EIGENVECTOR
+C*           *
+C*
+C*    METHOD -
+C*       THIS ROUTINE FORMS THE 1-NORM OF THE RESIDUAL MATRIX A*X-X*EVAL
+C*       WHERE  A  IS A SYMMETRIC TRIDIAGONAL MATRIX STORED
+C*       IN THE DIAGONAL (D) AND SUB-DIAGONAL (E) VECTORS, EVAL IS THE
+C*       EIGENVALUE OF AN EIGENVECTOR OF  A,  NAMELY  X.
+C*       THIS NORM IS SCALED BY MACHINE ACCURACY FOR THE PROBLEM SIZE.
+C*       ALL NORMS APPEARING IN THE COMMENTS BELOW ARE 1-NORMS.
+C*
+C*    ON ENTRY -
+C*       N      - INTEGER
+C*                THE ORDER OF THE MATRIX  A.
+C*       EVAL   - W.P. REAL
+C*                THE EIGENVALUE CORRESPONDING TO VECTOR  X.
+C*       D      - W.P. REAL (N)
+C*                THE DIAGONAL VECTOR OF  A.
+C*       E      - W.P. REAL (N)
+C*                THE SUB-DIAGONAL VECTOR OF  A.
+C*       X      - W.P. REAL (N)
+C*                AN EIGENVECTOR OF  A.
+C*       ANORM  - W.P. REAL
+C*                THE NORM OF  A  IF IT HAS BEEN PREVIOUSLY COMPUTED.
+C*
+C*    ON EXIT -
+C*       ANORM  - W.P. REAL
+C*                THE NORM OF  A, COMPUTED IF INITIALLY ZERO.
+C*       ESTPI1 - W.P. REAL
+C*          !!A*X-X*EVAL!! / (xEPSLON(10*N)*!!A!!*!!X!!);
+C*          WHERE xEPSLON(X) IS THE SMALLEST NUMBER SUCH THAT
+C*             X + xEPSLON(X) .NE. X
+C*
+C*          ESTPI1 .LT. 1 == SATISFACTORY PERFORMANCE
+C*                 .GE. 1 AND .LE. 100 == MARGINAL PERFORMANCE
+C*                 .GT. 100 == POOR PERFORMANCE
+C*          (SEE LECT. NOTES IN COMP. SCI. VOL.6 PP 124-125)
+C
+      DOUBLE PRECISION ESTPI1,ANORM,EVAL,RNORM,SIZE,XNORM
+      DOUBLE PRECISION D(N), E(N), X(N)
+      DOUBLE PRECISION xEPSLON, ONE, ZERO
+C
+      PARAMETER (ZERO = 0.0D+00, ONE = 1.0D+00)
+C
+C-----------------------------------------------------------------------
+C
+      ESTPI1 = ZERO
+      IF( N .LE. 1 ) RETURN
+      SIZE = 10 * N
+      IF (ANORM .EQ. ZERO) THEN
+C
+C              COMPUTE NORM OF  A
+C
+         ANORM = MAX( ABS(D(1)) + ABS(E(2))
+     *               ,ABS(D(N)) + ABS(E(N)))
+         DO 110 I = 2, N-1
+            ANORM = MAX( ANORM, ABS(E(I))+ABS(D(I))+ABS(E(I+1)))
+  110    CONTINUE
+         IF(ANORM .EQ. ZERO) ANORM = ONE
+      END IF
+C
+C           COMPUTE NORMS OF RESIDUAL AND EIGENVECTOR
+C
+      XNORM = ABS(X(1)) + ABS(X(N))
+      RNORM = ABS( (D(1)-EVAL)*X(1) + E(2)*X(2))
+     *       +ABS( (D(N)-EVAL)*X(N) + E(N)*X(N-1))
+      DO 120 I = 2, N-1
+         XNORM = XNORM + ABS(X(I))
+         RNORM = RNORM + ABS(E(I)*X(I-1) + (D(I)-EVAL)*X(I)
+     *                       + E(I+1)*X(I+1))
+  120 CONTINUE
+C
+      ESTPI1 = RNORM / (xEPSLON(SIZE)*ANORM*XNORM)
+      RETURN
+      END
+      SUBROUTINE xFREDA(L,D,A,E)
+C
+      DOUBLE PRECISION A(*)
+      DOUBLE PRECISION D(L)
+      DOUBLE PRECISION E(L)
+      DOUBLE PRECISION F
+      DOUBLE PRECISION G
+C
+      JK = 1
+C
+C     .......... FORM REDUCED A ..........
+C
+      DO 280 J = 1, L
+         F = D(J)
+         G = E(J)
+C
+         DO 260 K = 1, J
+            A(JK) = A(JK) - F * E(K) - G * D(K)
+            JK = JK + 1
+  260    CONTINUE
+C
+  280 CONTINUE
+      RETURN
+      END
+      DOUBLE PRECISION FUNCTION xEPSLON (X)
+C*
+C*    AUTHORS -
+C*       THIS ROUTINE WAS TAKEN FROM EISPACK EDITION 3 DATED 4/6/83
+C*       THIS VERSION IS BY S. T. ELBERT, AMES LABORATORY-USDOE NOV 1986
+C*
+C*    PURPOSE -
+C*       ESTIMATE UNIT ROUNDOFF IN QUANTITIES OF SIZE X.
+C*
+C*    ON ENTRY -
+C*       X      - WORKING PRECISION REAL
+C*                VALUES TO FIND xEPSLON FOR
+C*
+C*    ON EXIT -
+C*       xEPSLON - WORKING PRECISION REAL
+C*                SMALLEST POSITIVE VALUE SUCH THAT X+xEPSLON .NE. ZERO
+C*
+C*    QUALIFICATIONS -
+C*       THIS ROUTINE SHOULD PERFORM PROPERLY ON ALL SYSTEMS
+C*       SATISFYING THE FOLLOWING TWO ASSUMPTIONS,
+C*          1.  THE BASE USED IN REPRESENTING FLOATING POINT
+C*              NUMBERS IS NOT A POWER OF THREE.
+C*          2.  THE QUANTITY  A  IN STATEMENT 10 IS REPRESENTED TO
+C*              THE ACCURACY USED IN FLOATING POINT VARIABLES
+C*              THAT ARE STORED IN MEMORY.
+C*       THE STATEMENT NUMBER 10 AND THE GO TO 10 ARE INTENDED TO
+C*       FORCE OPTIMIZING COMPILERS TO GENERATE CODE SATISFYING
+C*       ASSUMPTION 2.
+C*       UNDER THESE ASSUMPTIONS, IT SHOULD BE TRUE THAT,
+C*              A  IS NOT EXACTLY EQUAL TO FOUR-THIRDS,
+C*              B  HAS A ZERO FOR ITS LAST BIT OR DIGIT,
+C*              C  IS NOT EXACTLY EQUAL TO ONE,
+C*              EPS  MEASURES THE SEPARATION OF 1.0 FROM
+C*                   THE NEXT LARGER FLOATING POINT NUMBER.
+C*       THE DEVELOPERS OF EISPACK WOULD APPRECIATE BEING INFORMED
+C*       ABOUT ANY SYSTEMS WHERE THESE ASSUMPTIONS DO NOT HOLD.
+C*
+C*    DIFFERENCES FROM EISPACK 3 -
+C*       USE IS MADE OF PARAMETER STATEMENTS AND INTRINSIC FUNCTIONS
+C*       --NO EXECUTEABLE CODE CHANGES--
+C*
+C*    NOTE -
+C*       QUESTIONS AND COMMENTS CONCERNING EISPACK SHOULD BE DIRECTED TO
+C*       B. S. GARBOW, APPLIED MATH. DIVISION, ARGONNE NATIONAL LAB.
+C
+      DOUBLE PRECISION A,B,C,EPS,X
+      DOUBLE PRECISION ZERO, ONE, THREE, FOUR
+C
+      PARAMETER (ZERO=0.0D+00, ONE=1.0D+00, THREE=3.0D+00, FOUR=4.0D+00)
+C
+C-----------------------------------------------------------------------
+C
+      A = FOUR/THREE
+   10 B = A - ONE
+      C = B + B + B
+      EPS = ABS(C - ONE)
+      IF (EPS .EQ. ZERO) GO TO 10
+      xEPSLON = EPS*ABS(X)
+      RETURN
+      END
+C*MODULE INT2A   *DECK IJPRIM
+      SUBROUTINE vxIJPRIM(DDIJ)
+
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C
+      LOGICAL IANDJ,KANDL,SAME,OUT,NORM
+C
+#include "gamess.par"
+C
+CSSS      DIMENSION DDIJ(49*MXG2)
+      DIMENSION DDIJ(16*MXG2)
+C
+      COMMON /xIJGNRL/ A(MXG2),R(MXG2),X1(MXG2),Y1(MXG2),Z1(MXG2),
+     *                IJD(784)
+      COMMON /xMISC  / IANDJ,KANDL,SAME
+      COMMON /xOUTPUT/ NPRINT,ITOL,ICUT,NORMF,NORMP,NOPK
+      COMMON /xSHLINF/AG(MXGSH),CSA(MXGSH),CPA(MXGSH),CDA(MXGSH),
+     *                CFA(MXGSH),CGA(MXGSH),
+CSSS                     CHA(MXGSH),CIA(MXGSH),
+     *                BG(MXGSH),CSB(MXGSH),CPB(MXGSH),CDB(MXGSH),
+     *                CFB(MXGSH),CGB(MXGSH),
+CSSS                     CHB(MXGSH),CIB(MXGSH),
+     *                CG(MXGSH),CSC(MXGSH),CPC(MXGSH),CDC(MXGSH),
+     *                CFC(MXGSH),CGC(MXGSH),
+CSSS                     CHC(MXGSH),CIC(MXGSH),
+     *                DG(MXGSH),CSD(MXGSH),CPD(MXGSH),CDD(MXGSH),
+     *                CFD(MXGSH),CGD(MXGSH),
+CSSS                     CHD(MXGSH),CID(MXGSH),
+     *                XI,YI,ZI,XJ,YJ,ZJ,RRI,XK,YK,ZK,XL,YL,ZL,RRK,
+     *                NGA,NGB,NGC,NGD
+      COMMON /xSHLNOS/ QQ4,LIT,LJT,LKT,LLT,LOCI,LOCJ,LOCK,LOCL,
+     *                MINI,MINJ,MINK,MINL,MAXI,MAXJ,MAXK,MAXL,
+     *                NIJ,IJ,KL,IJKL
+      COMMON /xSHLT  / TOL,CUTOFF,ICOUNT,OUT
+C
+      PARAMETER (SQRT3=1.73205080756888D+00,
+     *           SQRT5=2.23606797749979D+00,
+     *           SQRT7=2.64575131106459D+00,
+     *           SQRT9=3.0D+00,
+     *           SQRT11=3.3166247903553998D+00,
+     *           ZERO=0.0D+00, ONE=1.0D+00)
+C
+
+      write (99,*) 'ijprim:',loci,locj,tol
+      NORM = NORMF .NE. 1 .OR. NORMP .NE. 1
+      MAX = MAXJ
+      N = 0
+      NN = 0
+      NM = -2**20
+      DO 180 I = MINI,MAXI
+         GO TO (100,100,120,120,100,120,120,100,120,120,
+     1          100,120,120,100,120,120,120,120,120,100,
+     1          100,120,120,100,120,120,120,120,120,100,
+     1          120,120,100,120,120), I
+CSSS     1          100,120,120,100,120,120,120,120,120,100,
+CSSS     1          120,120,120,120,120,100,120,120,100,120,
+CSSS     1          120,
+CSSS     1          100,120,120,100,120,120,120,120,120,100,
+CSSS     1          120,120,120,120,120,100,120,120,100,120,
+CSSS     1          120,100,120,120,120,120,120,100),I
+  100    NM = NN
+  120    NN = NM
+         IF (IANDJ) MAX = I
+         DO 170 J = MINJ,MAX
+            GO TO (140,140,160,160,140,160,160,140,160,160,
+     1             140,160,160,140,160,160,160,160,160,140,
+     1             140,160,160,140,160,160,160,160,160,140,
+     1             160,160,140,160,160),J
+CSSS     1             140,160,160,140,160,160,160,160,160,140,
+CSSS     1             160,160,160,160,160,140,160,160,140,160,
+CSSS     1             160,
+CSSS     1             140,160,160,140,160,160,160,160,160,140,
+CSSS     1             160,160,160,160,160,140,160,160,140,160,
+CSSS     1             160,140,160,160,160,160,160,140),J
+  140       NN = NN+1
+  160       N = N+1
+            IJD(N) = NN
+  170    CONTINUE
+  180 CONTINUE
+C
+C     ----- I PRIMITIVE
+C
+      NIJ = 0
+      JBMAX = NGB
+      DO 540 IA = 1,NGA
+         AI = AG(IA)
+         ARRI = AI*RRI
+         AXI = AI*XI
+         AYI = AI*YI
+         AZI = AI*ZI
+         CSI = CSA(IA)
+         CPI = CPA(IA)
+         CDI = CDA(IA)
+         CFI = CFA(IA)
+         CGI = CGA(IA)
+CSSS         CHI = CHA(IA)
+CSSS         CII = CIA(IA)
+C
+C        ----- J PRIMITIVE
+C
+         IF (IANDJ) JBMAX = IA
+         DO 520 JB = 1,JBMAX
+            AJ = BG(JB)
+            AA = AI+AJ
+            AAINV = ONE/AA
+            DUM = AJ*ARRI*AAINV
+            write (99,*) ia,jb,dum,tol,nij
+            IF (DUM .GT. TOL) GO TO 520
+            CSJ = CSB(JB)
+            CPJ = CPB(JB)
+            CDJ = CDB(JB)
+            CFJ = CFB(JB)
+            CGJ = CGB(JB)
+CSSS            CHJ = CHB(JB)
+CSSS            CIJ = CIB(JB)
+CSSS            NM = 49*NIJ
+            NM = 16*NIJ 
+            NN = NM
+            NIJ = NIJ+1
+            R(NIJ) = DUM
+            A(NIJ) = AA
+            X1(NIJ) = (AXI+AJ*XJ)*AAINV
+            Y1(NIJ) = (AYI+AJ*YJ)*AAINV
+            Z1(NIJ) = (AZI+AJ*ZJ)*AAINV
+C
+C           ----- DENSITY FACTOR
+C
+            DUM1 = ZERO
+            DUM2 = ZERO
+            DO 420 I = MINI,MAXI
+               GO TO (200,220,420,420,240,420,420,260,420,420,
+     1                261,420,420,262,420,420,420,420,420,263,
+     1                264,420,420,265,420,420,420,420,420,266,
+     1                420,420,267,420,420), I
+CSSS     1                268,420,420,269,420,420,420,420,420,270,
+CSSS     1                420,420,420,420,420,271,420,420,272,420,
+CSSS     1                420,
+CSSS     1                273,420,420,274,420,420,420,420,420,275,
+CSSS     1                420,420,420,420,420,276,420,420,277,420,
+CSSS     1                420,278,420,420,420,420,420,279),I
+  200          DUM1 = CSI*AAINV
+               GO TO 280
+  220          DUM1 = CPI*AAINV
+               GO TO 280
+  240          DUM1 = CDI*AAINV
+               GO TO 280
+  260          IF (NORM) DUM1 = DUM1*SQRT3
+               GO TO 280
+  261          DUM1 = CFI*AAINV
+               GO TO 280
+  262          IF (NORM) DUM1 = DUM1*SQRT5
+               GO TO 280
+  263          IF (NORM) DUM1 = DUM1*SQRT3
+               GO TO 280
+  264          DUM1 = CGI*AAINV
+               GO TO 280
+  265          IF (NORM) DUM1 = DUM1*SQRT7
+               GO TO 280
+  266          IF (NORM) DUM1 = DUM1*SQRT5/SQRT3
+               GO TO 280
+  267          IF (NORM) DUM1 = DUM1*SQRT3
+               GO TO 280
+  268          DUM1 = CHI*AAINV
+               GO TO 280
+  269          IF (NORM) DUM1 = DUM1*SQRT9
+               GO TO 280
+  270          IF (NORM) DUM1 = DUM1*SQRT7/SQRT3
+               GO TO 280
+  271          IF (NORM) DUM1 = DUM1*SQRT3
+               GO TO 280
+  272          IF (NORM) DUM1 = DUM1*SQRT5/SQRT3
+               GO TO 280
+  273          DUM1 = CII*AAINV
+               GO TO 280
+  274          IF (NORM) DUM1 = DUM1*SQRT11
+               GO TO 280
+  275          IF (NORM) DUM1 = DUM1*SQRT3
+               GO TO 280
+  276          IF (NORM) DUM1 = DUM1*SQRT3
+               GO TO 280
+  277          IF (NORM) DUM1 = DUM1*SQRT7/(SQRT5*SQRT3)
+               GO TO 280
+  278          IF (NORM) DUM1 = DUM1*SQRT5
+               GO TO 280
+  279          IF (NORM) DUM1 = DUM1*SQRT5/SQRT3
+C
+  280          IF (IANDJ) MAX = I
+               DO 400 J = MINJ,MAX
+                  GO TO (300,320,400,400,340,400,400,360,400,400,
+     1                   361,400,400,362,400,400,400,400,400,363,
+     1                   364,400,400,365,400,400,400,400,400,366,
+     1                   400,400,367,400,400), J
+CSSS     1                   368,400,400,369,400,400,400,400,400,370,
+CSSS     1                   400,400,400,400,400,371,400,400,372,400,
+CSSS     1                   400,
+CSSS     1                   373,400,400,374,400,400,400,400,400,375,
+CSSS     1                   400,400,400,400,400,376,400,400,377,400,
+CSSS     1                   400,378,400,400,400,400,400,379),J
+  300             DUM2 = DUM1*CSJ
+                  GO TO 380
+  320             DUM2 = DUM1*CPJ
+                  GO TO 380
+  340             DUM2 = DUM1*CDJ
+                  GO TO 380
+  360             IF (NORM) DUM2 = DUM2*SQRT3
+                  GO TO 380
+  361             DUM2 = DUM1*CFJ
+                  GO TO 380
+  362             IF (NORM) DUM2 = DUM2*SQRT5
+                  GO TO 380
+  363             IF (NORM) DUM2 = DUM2*SQRT3
+                  GO TO 380
+  364             DUM2 = DUM1*CGJ
+                  GO TO 380
+  365             IF (NORM) DUM2 = DUM2*SQRT7
+                  GO TO 380
+  366             IF (NORM) DUM2 = DUM2*SQRT5/SQRT3
+                  GO TO 380
+  367             IF (NORM) DUM2 = DUM2*SQRT3
+                  GO TO 380
+  368             DUM2 = DUM1*CHJ
+                  GO TO 380
+  369             IF (NORM) DUM2 = DUM2*SQRT9
+                  GO TO 380
+  370             IF (NORM) DUM2 = DUM2*SQRT7/SQRT3
+                  GO TO 380
+  371             IF (NORM) DUM2 = DUM2*SQRT3
+                  GO TO 380
+  372             IF (NORM) DUM2 = DUM2*SQRT5/SQRT3
+                  GO TO 380
+  373             DUM2 = DUM1*CIJ
+                  GO TO 380
+  374             IF (NORM) DUM2 = DUM2*SQRT11
+                  GO TO 380
+  375             IF (NORM) DUM2 = DUM2*SQRT3
+                  GO TO 380
+  376             IF (NORM) DUM2 = DUM2*SQRT3
+                  GO TO 380
+  377             IF (NORM) DUM2 = DUM2*SQRT7/(SQRT5*SQRT3)
+                  GO TO 380
+  378             IF (NORM) DUM2 = DUM2*SQRT5
+                  GO TO 380
+  379             IF (NORM) DUM2 = DUM2*SQRT5/SQRT3
+C
+  380             NN = NN+1
+                  DDIJ(NN) = DUM2
+  400          CONTINUE
+  420       CONTINUE
+            IF ( .NOT. IANDJ) GO TO 520
+            IF (IA .EQ. JB) GO TO 520
+CSSS            GO TO (500,440,460,455,450,445,444),LIT
+            GO TO (500,440,460,455,450), LIT 
+  440       IF (MINI .EQ. 2) GO TO 500
+            DDIJ(NM+2) = DDIJ(NM+2)+CSI*CPJ*AAINV
+            GO TO 480
+  444       DDIJ(NM+28) = DDIJ(NM+28)+DDIJ(NM+28)
+            DDIJ(NM+27) = DDIJ(NM+27)+DDIJ(NM+27)
+            DDIJ(NM+26) = DDIJ(NM+26)+DDIJ(NM+26)
+            DDIJ(NM+25) = DDIJ(NM+25)+DDIJ(NM+25)
+            DDIJ(NM+24) = DDIJ(NM+24)+DDIJ(NM+24)
+            DDIJ(NM+23) = DDIJ(NM+23)+DDIJ(NM+23)
+            DDIJ(NM+22) = DDIJ(NM+22)+DDIJ(NM+22)
+            DDIJ(NM+21) = DDIJ(NM+21)+DDIJ(NM+21)
+            DDIJ(NM+20) = DDIJ(NM+20)+DDIJ(NM+20)
+            DDIJ(NM+19) = DDIJ(NM+19)+DDIJ(NM+19)
+            DDIJ(NM+18) = DDIJ(NM+18)+DDIJ(NM+18)
+            DDIJ(NM+17) = DDIJ(NM+17)+DDIJ(NM+17)
+            DDIJ(NM+16) = DDIJ(NM+16)+DDIJ(NM+16)
+  445       DDIJ(NM+15) = DDIJ(NM+15)+DDIJ(NM+15)
+            DDIJ(NM+14) = DDIJ(NM+14)+DDIJ(NM+14)
+            DDIJ(NM+13) = DDIJ(NM+13)+DDIJ(NM+13)
+            DDIJ(NM+12) = DDIJ(NM+12)+DDIJ(NM+12)
+            DDIJ(NM+11) = DDIJ(NM+11)+DDIJ(NM+11)
+  450       DDIJ(NM+10) = DDIJ(NM+10)+DDIJ(NM+10)
+            DDIJ(NM+9) = DDIJ(NM+9)+DDIJ(NM+9)
+            DDIJ(NM+8) = DDIJ(NM+8)+DDIJ(NM+8)
+            DDIJ(NM+7) = DDIJ(NM+7)+DDIJ(NM+7)
+  455       DDIJ(NM+6) = DDIJ(NM+6)+DDIJ(NM+6)
+            DDIJ(NM+5) = DDIJ(NM+5)+DDIJ(NM+5)
+            DDIJ(NM+4) = DDIJ(NM+4)+DDIJ(NM+4)
+  460       DDIJ(NM+2) = DDIJ(NM+2)+DDIJ(NM+2)
+  480       DDIJ(NM+3) = DDIJ(NM+3)+DDIJ(NM+3)
+  500       DDIJ(NM+1) = DDIJ(NM+1)+DDIJ(NM+1)
+  520    CONTINUE
+  540 CONTINUE
+      RETURN
+      END
+C*MODULE INT2A   *DECK SHELLS
+      SUBROUTINE vxSHELLS(NELEC,ISH,JSH,KSH,LSH,FLIP,nosame)
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C
+      LOGICAL FLIP
+      LOGICAL IANDJ,KANDL,SAME,FIRST
+C
+      DIMENSION IX(84),IY(84),IZ(84),
+     *          JX(84),JY(84),JZ(84),
+     *          KX(84),KY(84),KZ(84),
+     *          LX(84),LY(84),LZ(84)
+C
+#include "gamess.par"
+C
+CSSS      COMMON /ERIOUT/ INU,JNU,KNU,LNU,NGTI,NGTJ,NGTK,NGTL
+      COMMON /xINTDEX/ IJGT(784),IJX(784),IJY(784),IJZ(784),IK(784),
+     *                KLGT(784),KLX(784),KLY(784),KLZ(784)
+      COMMON /xINFOA / NAT,ICH,MUL,NUM,NQMT,NE,NA,NB,
+     *                ZAN(MXATM),C(3,MXATM),IAN(MXATM)
+      COMMON /xMISC  / IANDJ,KANDL,SAME
+      COMMON /xNSHEL / EX(MXGTOT),CS(MXGTOT),CP(MXGTOT),CD(MXGTOT),
+     *                CF(MXGTOT),CG(MXGTOT), 
+CSS                   CH(MXGTOT),CI(MXGTOT),
+     *                KSTART(MXSH),KATOM(MXSH),KTYPE(MXSH),KNG(MXSH),
+     *                KLOC(MXSH),KMIN(MXSH),KMAX(MXSH),NSHELL
+      COMMON /xROOT  / XX,U(13),W(13),NROOTS
+      COMMON /xSHLEXC/ NORGSH(3),NORGSP(3),IEXCH,NANGM,NGTH(4)
+      COMMON /xSHLINF/GA(MXGSH),CSA(MXGSH),CPA(MXGSH),CDA(MXGSH),
+     *                CFA(MXGSH),CGA(MXGSH),
+CSSS                     CHA(MXGSH),CIA(MXGSH),
+     *                GB(MXGSH),CSB(MXGSH),CPB(MXGSH),CDB(MXGSH),
+     *                   CFB(MXGSH),CGB(MXGSH),
+CSSS                  CHB(MXGSH),CIB(MXGSH),
+     *                GC(MXGSH),CSC(MXGSH),CPC(MXGSH),CDC(MXGSH),
+     *                CFC(MXGSH),CGC(MXGSH),
+CSSS                     CHC(MXGSH),CIC(MXGSH),
+     *                GD(MXGSH),CSD(MXGSH),CPD(MXGSH),CDD(MXGSH),
+     *                CFD(MXGSH),CGD(MXGSH),
+CSSS                     CHD(MXGSH),CID(MXGSH),
+     *                AX,AY,AZ,BX,BY,BZ,RAB,CX,CY,CZ,DX,DY,DZ,RCD,
+     *                NGA,NGB,NGC,NGD
+      COMMON /xSHLNOS/ QQ4,LIT,LJT,LKT,LLT,LOCI,LOCJ,LOCK,LOCL,
+     +                MINI,MINJ,MINK,MINL,MAXI,MAXJ,MAXK,MAXL,
+     +                NIJ,IJ,KL,IJKL
+C
+cwc1
+      common /shtrue/ inu,jnu,knu,lnu
+      logical nosame
+cwc0
+c
+      SAVE FIRST,IGT,JGT,KGT,LGT
+
+      DATA LX /   0,   1,   0,   0,   2,   0,   0,   1,   1,   0,
+     *            3,   0,   0,   2,   2,   1,   0,   1,   0,   1,
+     *            4,   0,   0,   3,   3,   1,   0,   1,   0,   2,
+     *            2,   0,   2,   1,   1,
+     *            5,   0,   0,   4,   4,   1,   0,   1,   0,   3,
+     *            3,   2,   0,   2,   0,   3,   1,   1,   2,   2,
+     *            1,
+     *            6,   0,   0,   5,   5,   1,   0,   1,   0,   4,
+     *            4,   2,   0,   2,   0,   4,   1,   1,   3,   3,
+     *            0,   3,   3,   2,   1,   2,   1,   2/
+      DATA KX /   0,   7,   0,   0,  14,   0,   0,   7,   7,   0,
+     *           21,   0,   0,  14,  14,   7,   0,   7,   0,   7,
+     *           28,   0,   0,  21,  21,   7,   0,   7,   0,  14,
+     *           14,   0,  14,   7,   7,
+     *           35,   0,   0,  28,  28,   7,   0,   7,   0,  21,
+     *           21,  14,   0,  14,   0,  21,   7,   7,  14,  14,
+     *            7,
+     *           42,   0,   0,  35,  35,   7,   0,   7,   0,  28,
+     *           28,  14,   0,  14,   0,  28,   7,   7,  21,  21,
+     *            0,  21,  21,  14,   7,  14,   7,  14/
+      DATA JX /   0,  49,   0,   0,  98,   0,   0,  49,  49,   0,
+     *          147,   0,   0,  98,  98,  49,   0,  49,   0,  49,
+     *          196,   0,   0, 147, 147,  49,   0,  49,   0,  98,
+     *           98,   0,  98,  49,  49,
+     *          245,   0,   0, 196, 196,  49,   0,  49,   0, 147,
+     *          147,  98,   0,  98,   0, 147,  49,  49,  98,  98,
+     *           49,
+     *          294,   0,   0, 245, 245,  49,   0,  49,   0, 196,
+     *          196,  98,   0,  98,   0, 196,  49,  49, 147, 147,
+     *            0, 147, 147,  98,  49,  98,  49,  98/
+      DATA IX /   1, 344,   1,   1, 687,   1,   1, 344, 344,   1,
+     *         1030,   1,   1, 687, 687, 344,   1, 344,   1, 344,
+     *         1373,   1,   1,1030,1030, 344,   1, 344,   1, 687,
+     *          687,   1, 687, 344, 344,
+     *         1716,   1,   1,1373,1373, 344,   1, 344,   1,1030,
+     *         1030, 687,   1, 687,   1,1030, 344, 344, 687, 687,
+     *          344,
+     *         2059,   1,   1,1716,1716, 344,   1, 344,   1,1373,
+     *         1373, 687,   1, 687,   1,1373, 344, 344,1030,1030,
+     *            1,1030,1030, 687, 344, 687, 344, 687/
+      DATA LY /   0,   0,   1,   0,   0,   2,   0,   1,   0,   1,
+     *            0,   3,   0,   1,   0,   2,   2,   0,   1,   1,
+     *            0,   4,   0,   1,   0,   3,   3,   0,   1,   2,
+     *            0,   2,   1,   2,   1,
+     *            0,   5,   0,   1,   0,   4,   4,   0,   1,   2,
+     *            0,   3,   3,   0,   2,   1,   3,   1,   2,   1,
+     *            2,
+     *            0,   6,   0,   1,   0,   5,   5,   0,   1,   2,
+     *            0,   4,   4,   0,   2,   1,   4,   1,   3,   0,
+     *            3,   2,   1,   3,   3,   1,   2,   2/
+      DATA KY /   0,   0,   7,   0,   0,  14,   0,   7,   0,   7,
+     *            0,  21,   0,   7,   0,  14,  14,   0,   7,   7,
+     *            0,  28,   0,   7,   0,  21,  21,   0,   7,  14,
+     *            0,  14,   7,  14,   7,
+     *            0,  35,   0,   7,   0,  28,  28,   0,   7,  14,
+     *            0,  21,  21,   0,  14,   7,  21,   7,  14,   7,
+     *           14,
+     *            0,  42,   0,   7,   0,  35,  35,   0,   7,  14,
+     *            0,  28,  28,   0,  14,   7,  28,   7,  21,   0,
+     *           21,  14,   7,  21,  21,   7,  14,  14/
+      DATA JY /   0,   0,  49,   0,   0,  98,   0,  49,   0,  49,
+     *            0, 147,   0,  49,   0,  98,  98,   0,  49,  49,
+     *            0, 196,   0,  49,   0, 147, 147,   0,  49,  98,
+     *            0,  98,  49,  98,  49,
+     *            0, 245,   0,  49,   0, 196, 196,   0,  49,  98,
+     *            0, 147, 147,   0,  98,  49, 147,  49,  98,  49,
+     *           98,
+     *            0, 294,   0,  49,   0, 245, 245,   0,  49,  98,
+     *            0, 196, 196,   0,  98,  49, 196,  49, 147,   0,
+     *          147,  98,  49, 147, 147,  49,  98,  98/
+      DATA IY /   1,   1, 344,   1,   1, 687,   1, 344,   1, 344,
+     *            1,1030,   1, 344,   1, 687, 687,   1, 344, 344,
+     *            1,1373,   1, 344,   1,1030,1030,   1, 344, 687,
+     *            1, 687, 344, 687, 344,
+     *            1,1716,   1, 344,   1,1373,1373,   1, 344, 687,
+     *            1,1030,1030,   1, 687, 344,1030, 344, 687, 344,
+     *          687,
+     *            1,2059,   1, 344,   1,1716,1716,   1, 344, 687,
+     *            1,1373,1373,   1, 687, 344,1373, 344,1030,   1,
+     *         1030, 687, 344,1030,1030, 344, 687, 687/
+      DATA LZ /   0,   0,   0,   1,   0,   0,   2,   0,   1,   1,
+     *            0,   0,   3,   0,   1,   0,   1,   2,   2,   1,
+     *            0,   0,   4,   0,   1,   0,   1,   3,   3,   0,
+     *            2,   2,   1,   1,   2,
+     *            0,   0,   5,   0,   1,   0,   1,   4,   4,   0,
+     *            2,   0,   2,   3,   3,   1,   1,   3,   1,   2,
+     *            2,
+     *            0,   0,   6,   0,   1,   0,   1,   5,   5,   0,
+     *            2,   0,   2,   4,   4,   1,   1,   4,   0,   3,
+     *            3,   1,   2,   1,   2,   3,   3,   2/
+      DATA KZ /   0,   0,   0,   7,   0,   0,  14,   0,   7,   7,
+     *            0,   0,  21,   0,   7,   0,   7,  14,  14,   7,
+     *            0,   0,  28,   0,   7,   0,   7,  21,  21,   0,
+     *           14,  14,   7,   7,  14,
+     *            0,   0,  35,   0,   7,   0,   7,  28,  28,   0,
+     *           14,   0,  14,  21,  21,   7,   7,  21,   7,  14,
+     *           14,
+     *            0,   0,  42,   0,   7,   0,   7,  35,  35,   0,
+     *           14,   0,  14,  28,  28,   7,   7,  28,   0,  21,
+     *           21,   7,  14,   7,  14,  21,  21,  14/
+      DATA JZ /   0,   0,   0,  49,   0,   0,  98,   0,  49,  49,
+     *            0,   0, 147,   0,  49,   0,  49,  98,  98,  49,
+     *            0,   0, 196,   0,  49,   0,  49, 147, 147,   0,
+     *           98,  98,  49,  49,  98,
+     *            0,   0, 245,   0,  49,   0,  49, 196, 196,   0,
+     *           98,   0,  98, 147, 147,  49,  49, 147,  49,  98,
+     *           98,
+     *            0,   0, 294,   0,  49,   0,  49, 245, 245,   0,
+     *           98,   0,  98, 196, 196,  49,  49, 196,   0, 147,
+     *          147,  49,  98,  49,  98, 147, 147,  98/
+      DATA IZ /   1,   1,   1, 344,   1,   1, 687,   1, 344, 344,
+     *            1,   1,1030,   1, 344,   1, 344, 687, 687, 344,
+     *            1,   1,1373,   1, 344,   1, 344,1030,1030,   1,
+     *          687, 687, 344, 344, 687,
+     *            1,   1,1716,   1, 344,   1, 344,1373,1373,   1,
+     *          687,   1, 687,1030,1030, 344, 344,1030, 344, 687,
+     *          687,
+     *            1,   1,2059,   1, 344,   1, 344,1716,1716,   1,
+     *          687,   1, 687,1373,1373, 344, 344,1373,   1,1030,
+     *         1030, 344, 687, 344, 687,1030,1030, 687/
+      DATA FIRST/.TRUE./  
+C
+C     PREPARE SHELL INFORMATION/FOR HONDO INTEGRATION
+C
+      IF(FIRST) THEN
+         FIRST=.FALSE.
+         CALL xBASCHK(LMAX)
+                       NANGM =  4
+         IF(LMAX.EQ.2) NANGM =  6
+         IF(LMAX.EQ.3) NANGM = 10   
+         IF(LMAX.EQ.4) NANGM = 15
+         LGT = 1
+         KGT = LGT * NANGM
+         JGT = KGT * NANGM
+         IGT = JGT * NANGM
+      END IF
+
+      IF(NELEC.EQ.2) GO TO 200
+C
+C     ----- PERMUTE ISH AND JSH SHELLS, FOR THEIR TYPE
+C     THIS IS DONE FOR SPEED REASONS.  THE CODE GETS THE RIGHT ANSWER
+C     WITHOUT THE ANGULAR MOMENTUM FLIPPING, AND THEREFORE A CALLING
+C     ARGUMENT ALLOWS ONE DO EXACTLY THE INTEGRAL BLOCK AS SPECIFIED,
+C     SHOULD THAT BE DESIRED.
+C
+      IANDJ = ISH .EQ. JSH
+      IF (KTYPE(ISH) .LT. KTYPE(JSH)  .AND.  FLIP) THEN
+         INU = JSH
+         JNU = ISH
+         NGTI = JGT 
+         NGTJ = IGT
+      ELSE
+         INU = ISH
+         JNU = JSH
+         NGTI = IGT
+         NGTJ = JGT
+      END IF
+C
+C     ----- ISHELL
+C
+      Write(99,*) "inu, jnu, kmin..", inu, jnu, kmin(inu), kmax(inu)
+      I = KATOM(INU)
+      AX = C(1,I)
+      AY = C(2,I)
+      AZ = C(3,I)
+      I1 = KSTART(INU)
+      I2 = I1+KNG(INU)-1
+      LIT = KTYPE(INU)
+      MINI = KMIN(INU)
+      MAXI = KMAX(INU)
+      LOCI = KLOC(INU)-MINI
+      NGA = 0
+      DO 140 I = I1,I2
+         NGA = NGA+1
+         GA(NGA) = EX(I)
+         CSA(NGA) = CS(I)
+         CPA(NGA) = CP(I)
+         CDA(NGA) = CD(I)
+         CFA(NGA) = CF(I)
+         CGA(NGA) = CG(I)
+CSSS         CHA(NGA) = CH(I)
+CSSS         CIA(NGA) = CI(I)
+  140 CONTINUE
+C
+C     ----- JSHELL
+C
+      J = KATOM(JNU)
+      BX = C(1,J)
+      BY = C(2,J)
+      BZ = C(3,J)
+      J1 = KSTART(JNU)
+      J2 = J1+KNG(JNU)-1
+      LJT = KTYPE(JNU)
+      MINJ = KMIN(JNU)
+      MAXJ = KMAX(JNU)
+      LOCJ = KLOC(JNU)-MINJ
+      NGB = 0
+      DO 160 J = J1,J2
+         NGB = NGB+1
+         GB(NGB) = EX(J)
+         CSB(NGB) = CS(J)
+         CPB(NGB) = CP(J)
+         CDB(NGB) = CD(J)
+         CFB(NGB) = CF(J)
+         CGB(NGB) = CG(J)
+CSSS         CHB(NGB) = CH(J)
+CSSS         CIB(NGB) = CI(J)
+  160 CONTINUE
+      RAB = ((AX-BX)*(AX-BX) + (AY-BY)*(AY-BY) + (AZ-BZ)*(AZ-BZ))
+C
+C     ----- PREPARE INDICES FOR PAIRS OF (I,J) FUNCTIONS
+C
+      IJ = 0
+      JMAX = MAXJ
+      DO 190 I = MINI,MAXI
+         NX = IX(I)
+         NY = IY(I)
+         NZ = IZ(I)
+         IF (IANDJ) JMAX = I
+         DO 180 J = MINJ,JMAX
+            IJ = IJ+1
+            IJX(IJ) = NX+JX(J)
+            IJY(IJ) = NY+JY(J)
+            IJZ(IJ) = NZ+JZ(J)
+            IJGT(IJ) = NGTI*(I-MINI)+NGTJ*(J-MINJ)+1
+  180    CONTINUE
+  190 CONTINUE
+      Write(99,*) "The MINI, MINJ, MAXI, MAXJ, IJ in xvSHELL", 
+     &             MINI, MINJ, MAXI, IJ 
+      Write(99,*) "IJX ARRAY", (IJX(I), I=1, 5)
+      Write(99,*) "IJY ARRAY", (IJY(I), I=1, 5)
+      Write(99,*) "IJZ ARRAY",(IJZ(I), I=1, 5)
+      RETURN
+C     ******
+C
+C        K AND L SHELL
+C
+  200 CONTINUE
+      KANDL = KSH .EQ. LSH
+      SAME = ISH .EQ. KSH .AND. JSH .EQ. LSH
+cwc1
+      if (nosame) same=.false.
+cwc0
+C
+C     ----- PERMUTE KSH AND LSH SHELLS, FOR THEIR TYPE
+C
+      IF (KTYPE(KSH) .LT. KTYPE(LSH)  .AND.  FLIP) THEN
+         KNU = LSH
+         LNU = KSH
+         NGTK = LGT
+         NGTL = KGT
+      ELSE
+         KNU = KSH
+         LNU = LSH
+         NGTK = KGT
+         NGTL = LGT
+      END IF
+C
+C     ----- K SHELL
+C
+      K = KATOM(KNU)
+      CX = C(1,K)
+      CY = C(2,K)
+      CZ = C(3,K)
+      K1 = KSTART(KNU)
+      K2 = K1+KNG(KNU)-1
+      LKT = KTYPE(KNU)
+      MINK = KMIN(KNU)
+      MAXK = KMAX(KNU)
+      LOCK = KLOC(KNU)-MINK
+      NGC = 0
+      DO 260 K = K1,K2
+         NGC = NGC+1
+         GC(NGC) = EX(K)
+         CSC(NGC) = CS(K)
+         CPC(NGC) = CP(K)
+         CDC(NGC) = CD(K)
+         CFC(NGC) = CF(K)
+         CGC(NGC) = CG(K)
+CSSS         CHC(NGC) = CH(K)
+CSSS         CIC(NGC) = CI(K)
+  260 CONTINUE
+C
+C     ----- LSHELL
+C
+      L = KATOM(LNU)
+      DX = C(1,L)
+      DY = C(2,L)
+      DZ = C(3,L)
+      L1 = KSTART(LNU)
+      L2 = L1+KNG(LNU)-1
+      LLT = KTYPE(LNU)
+      MINL = KMIN(LNU)
+      MAXL = KMAX(LNU)
+      LOCL = KLOC(LNU)-MINL
+      NGD = 0
+      DO 280 L = L1,L2
+         NGD = NGD+1
+         GD(NGD) = EX(L)
+         CSD(NGD) = CS(L)
+         CPD(NGD) = CP(L)
+         CDD(NGD) = CD(L)
+         CFD(NGD) = CF(L)
+         CGD(NGD) = CG(L)
+CSSS         CHD(NGD) = CH(L)
+CSSS         CID(NGD) = CI(L)
+  280 CONTINUE
+      NROOTS = (LIT+LJT+LKT+LLT-2)/2
+      RCD = ((CX-DX)*(CX-DX) + (CY-DY)*(CY-DY) + (CZ-DZ)*(CZ-DZ))
+C
+C     ----- PREPARE INDICES FOR PAIRS OF (K,L) FUNCTIONS
+C
+      KL = 0
+      LMAX = MAXL
+      DO 310 K = MINK,MAXK
+         NX = KX(K)
+         NY = KY(K)
+         NZ = KZ(K)
+         IF (KANDL) LMAX = K
+         DO 300 L = MINL,LMAX
+            KL = KL+1
+            KLX(KL) = NX+LX(L)
+            KLY(KL) = NY+LY(L)
+            KLZ(KL) = NZ+LZ(L)
+            KLGT(KL) = NGTK*(K-MINK)+NGTL*(L-MINL)
+  300    CONTINUE
+  310 CONTINUE
+      Write(99,*) "The MINK, MINL, MAXK, LMAX, KL in xvSHELL",
+     &             MINK, MINL, MAXK, LMAX, KL 
+      Write(99,*) "KLX ARRAY", (KLX(I), I=1, 5)
+      Write(99,*) "KLY ARRAY", (KLY(I), I=1, 5)
+      Write(99,*) "KLZZ ARRAY",(KLZ(I), I=1, 5)
+      MAX = KL
+      DO 320 I = 1,IJ
+      IF (SAME) MAX = I
+  320 IK(I) = MAX
+      IJKL = IJ*KL
+      IF (SAME) IJKL = IJ*(IJ+1)/2
+      RETURN
+      END

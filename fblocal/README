@@ -1,0 +1,25 @@
+                
+	      
+                      FOSTER-BOYS LOCALIZTION PROGRAM    
+
+   This program localizes the Hartree-Fock canonical orbitals according
+   to the Boys criteria (see comments in the code for references). 
+   The program was written as a utility program to ACES II program system.
+   Since the boys localization requries SCF canonical orbitals and
+   dipole integrals, your ZMAT file should have "PROPS=FIRST_ORDER" key
+   word and the localization program should execute right after the SCF 
+   program. Localization should be carried with no symmetry.
+   Most other excisting localization programs accept the symmetry 
+   runs, but actual loclization is done with no symmetry. Current 
+   version is not capable of that since there is bug in transformation
+   from symmetry adapted orbitals to pure atomic orbitals. 
+   Current version does not localizes the virtual orbitals since 
+   original boys localization is not meant to localize virtual
+   orbitals (see Coffey Int. J. Quant. Chem. VIII, 777, 1974)
+ 
+   Author : S. Ajith Perera
+   Date   : Spring 1992
+
+
+  
+

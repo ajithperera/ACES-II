@@ -1,0 +1,70 @@
+ONNO optimization
+O
+N 1 NO*
+N 2 NN* 1 A*
+O 3 NO* 2 A* 1 D180
+
+NO=1.2
+NN=2.8
+A=120.0
+D180=180.0
+
+*ACES2
+!restart
+BASIS=3-21G,SPHERICAL=ON
+CHARGE=2
+DROPMO=1-4,CALC=CCSD
+EA_CALC=EA_EOMCC,EA_SYM=1-1-1-1
+DEA_CALC=STEOM,DEA_SYM=2-2-2-2/2-2-2-2
+
+*mrcc_gen
+ closed_shell_calc=ccsd
+ gradient_type=dea
+ igrad_mult=1
+ igrad_state=1 igrad_sym=1
+*end
+
+Comments
+
+The ONNO system is a beautiful example for a dea calculation. The (NO) dimer has
+4 low lying pi orbitals (8 spin-orbitals) that are occupied by two electrons.
+Hence we start from the dication and add two electrons in a dea calculation.
+
+All low lying states are easily obtained. We optimize the ground state singlet.
+
+TEST.DAT
+d TOTENERG
+ -0.257448008746E+03   0.1E-08
+d COORD
+ -0.429574142532E+01   0.1E-08
+  0.461185231224E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+ -0.248586382976E+01   0.1E-08
+ -0.910321350620E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.248586382976E+01   0.1E-08
+  0.910321350620E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.429574142532E+01   0.1E-08
+ -0.461185231224E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+d E_AVG
+ -0.664926074490E+00   0.1E-08
+d E_OPEN
+ -0.857400540500E+00   0.1E-08
+d NUCDIPOL
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+d NUCREP
+  0.824616323051E+02   0.1E-08
+d PARENERG
+ -0.256590608205E+03   0.1E-08
+d REFDIPOL
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+d SCFENEG
+ -0.256007344589E+03   0.1E-08
+d TOTENER2
+ -0.257448008746E+03   0.1E-08

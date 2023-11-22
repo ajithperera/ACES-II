@@ -1,0 +1,21 @@
+
+      SUBROUTINE MKDDEN_FULL(COEF,SCOEF,DDENS,DOCC,NBF,IUHF)
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+
+      DIMENSION COEF(NBF,NBF), DDENS(NBF,NBF), DOCC(NBF, NBF),
+     &          SCOEF(NBF, NBF)
+      DATA AZERO, ONE, TWO/0.D0, 1.0D0, 2.0D0/
+C
+      CALL XGEMM('T','N',nbf,nbf,Nbf,ONE,COEF,nbf,DOCC,nbf,
+     &           AZERO,SCOEF,nbf)
+C
+ 
+      CALL XGEMM('N','N',nbf,nbf,Nbf,ONE,SCOEF,nbf,COEF,nbf,
+     &           AZERO,DDENS,nbf)
+C
+CSSS      IF (IUHF.EQ.0) CALL SSCAL(NBF*NBF,TWO,DDENS,1)
+
+      RETURN
+      END
+

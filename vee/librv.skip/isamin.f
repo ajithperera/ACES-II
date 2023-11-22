@@ -1,0 +1,12 @@
+      INTEGER FUNCTION ISAMIN(N,T,INC)
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      DIMENSION T(N)
+      XMIN=1.D+99
+      DO 10 I=1,N
+       IF(ABS(T(I)).LT.XMIN)THEN
+        ISAMIN=I
+        XMIN=ABS(T(I))
+       ENDIF
+10    CONTINUE  
+      RETURN
+      END

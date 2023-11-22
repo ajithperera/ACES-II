@@ -1,0 +1,66 @@
+test -n "$USERDIR" || exit 1
+OLDAOMOS=$USERDIR/tmp.OLDAOMOS
+
+# Part 1: generate AOs
+cat <<. >ZMAT
+Generation of Potential Energy Curve for H2O
+H
+O 1 R
+H 2 R 1 A
+
+R=1.
+A=104.
+
+*ACES2
+BASIS=DZP
+CALC=SCF,spherical=off
+
+Create AOBASMOS file to be copied to OLDAOMOS for
+use as an initial guess in a subsequent H2O
+calculation. This will give a simple way to
+use a vectors from a previous calcualtions to
+be used in a subsequent calcualtions. This option
+does not need a GUESS file. Not that with this
+option occupation or the number of electrons must
+remain uncahnged. This is usefull in following
+potential energy surfaces.
+
+.
+ln -s $GENBAS . || exit 1
+xaces2 || exit 1
+mv AOBASMOS $OLDAOMOS || exit 1
+
+# clean
+for file in *
+do case $file in
+   GENBAS|ZMAT.BAS) ;;
+   *) rm -rf $file ;;
+   esac
+done
+
+# Part 2: calculate the distortion
+cat <<. >ZMAT
+Generation of a Potential Curve for H2O
+H
+O 1 R
+H 2 R 1 A
+
+R=1.2000
+A=104.
+
+*ACES2
+BASIS=DZP,spherical=off
+GUESS=READ_AO_MOS,CALC=SCF
+
+.
+mv $OLDAOMOS OLDAOMOS || exit 1
+xaces2 || exit 1
+
+exit 0
+TEST.DAT
+d TOTENERG
+ -0.759609232108E+02   0.1E-08
+d NUCREP
+  0.733550313999E+01   0.1E-08
+d SCFENEG
+ -0.759609232108E+02   0.1E-08

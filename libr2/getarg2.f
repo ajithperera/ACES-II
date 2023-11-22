@@ -1,0 +1,22 @@
+      SUBROUTINE GETARG2(NLIST,STRING,IFIRST,ISECOND)
+      IMPLICIT INTEGER (A-Z)
+      CHARACTER*(*) STRING
+      CHARACTER*1 ST
+      IF(NLIST.EQ.45)THEN
+       IFIRST=2
+       ISECOND=2
+      ELSEIF(NLIST.EQ.44)THEN
+       IFIRST=1
+       ISECOND=1
+      ELSEIF(NLIST.EQ.46)THEN
+       ST=STRING(1:1)
+       IF(ST.EQ.'A') THEN
+          IFIRST=2
+          ISECOND=1
+       ELSE
+          IFIRST=1
+          ISECOND=2
+       ENDIF
+      ENDIF
+      RETURN
+      END

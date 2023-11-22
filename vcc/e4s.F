@@ -1,0 +1,196 @@
+      SUBROUTINE E4S(ICORE,MAXCOR,IUHF,SE4)
+C
+C  THIS ROUTINE IS THE DRIVER FOR THE CONTRIBUTION OF THE DOUBLES
+C  TO THE SINGLES.
+C  IT CALCULATES IN ADDITION THE FOURTH-ORDER SINGLE ENBERGY                
+C  CONTRIBUTION AND CALCULATES THE NEW T1-AMPLITUDES
+C
+CEND
+C
+C CODED JUNE/90  JG
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      INTEGER DIRPRD,POP1,POP2,VRT1,VRT2
+      LOGICAL LAMBDA,NONHF,AOBASIS
+      LOGICAL MBPT3,MBPT4,CC,TRPEND,SNGEND,GRAD,MBPTT,SING1,QCISD,UCC
+      EQUIVALENCE(IFLAGS(2),METHOD)
+      DIMENSION ICORE(MAXCOR)
+      COMMON/SWITCH/MBPT3,MBPT4,CC,TRPEND,SNGEND,GRAD,MBPTT,SING1,
+     &              QCISD,UCC
+      COMMON/SYM/ POP1(8),POP2(8),VRT1(8),VRT2(8),NTAA,NTBB,NF1AA,
+     &            NF1BB,NF2AA,NF2BB
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /FILES/ LUOUT,MOINTS
+      COMMON /FLAGS/ IFLAGS(100)
+      COMMON /INFO/ NOCCO(2),NVRTO(2)
+      COMMON /NHFREF/ NONHF
+C
+      COMMON/SYMINF/NSTART,NIRREP,IRREPA(255),IRREPB(255),
+     &DIRPRD(8,8)
+      DATA ONE /1.0/
+cjp
+#include "bwcc.com"
+C
+C
+C  FLAG IF LAMBDA OR CC EQUATIONS ARE SOLVED
+C
+      LAMBDA=.FALSE.
+      AOBASIS=IFLAGS(93).EQ.2
+C
+      NOCCA=NOCCO(1)
+      NOCCB=NOCCO(2)
+      NVRTA=NVRTO(1)
+      NVRTB=NVRTO(2)
+      NWAA=NTAA
+      NWBB=NTBB
+C
+      ITAA=MAXCOR+1-NWAA*IINTFP
+      MXCOR=MAXCOR-NWAA*IINTFP
+      IF(IUHF.EQ.0) THEN
+       ITBB=ITAA
+      ELSE
+       ITBB=ITAA-NWBB*IINTFP
+       MXCOR=MXCOR-NWBB*IINTFP
+      ENDIF
+C
+cjp    
+      if(ibwpass.lt.2) then
+      IF((METHOD.EQ.3.OR.METHOD.EQ.4).AND.(.NOT.AOBASIS)) THEN
+       CALL ZERO(ICORE(ITAA),NWAA)
+       IF(IUHF.EQ.1) CALL ZERO(ICORE(ITBB),NWBB)
+      ELSE IF(METHOD.EQ.3.OR.METHOD.EQ.4.AND.AOBASIS) THEN
+       CALL GETLST(ICORE(ITAA),1,1,1,1,90)
+       IF(IUHF.EQ.1) CALL GETLST(ICORE(ITBB),1,1,1,2,90)
+      ELSE
+       CALL GETLST(ICORE(ITAA),1,1,1,3,90)
+       IF(IUHF.EQ.1) CALL GETLST(ICORE(ITBB),1,1,1,4,90)
+      ENDIF
+#ifdef _DEBUG_LVLM
+       Call checksum("T1-AA   :",Icore(itaa),nwaa)
+       If (iuhf.ne.0) Call checksum("T1-BB   :",Icore(itbb),nwbb)
+#endif
+C
+C  WITHIN THE SPIN ADAPTED RHF CODE NO CALL TO T2t1AA2 IS NECESSARY
+C
+      IF(IUHF.EQ.1) THEN
+       CALL T2T1AA2(ICORE(ITAA),ICORE,MXCOR,POP1,VRT1,1,LAMBDA,0)
+C
+       CALL T2T1AA2(ICORE(ITBB),ICORE,MXCOR,POP2,VRT2,2,LAMBDA,0)
+      ENDIF
+C
+C
+      CALL T2T1AB2(ICORE(ITAA),ICORE,MXCOR,POP1,POP2,VRT1,VRT2,1,
+     &             IUHF,LAMBDA,0)
+C
+      IF(IUHF.EQ.1) THEN
+      CALL T2T1AB2(ICORE(ITBB),ICORE,MXCOR,POP2,POP1,VRT2,VRT1,2,
+     &             IUHF,LAMBDA,0)
+      ENDIF
+C
+C  WITHIN THE SPIN ADAPTED RHF CODE NO CALL TO T2T1AA1 IS NECESSARY
+C
+      IF(.NOT.AOBASIS) THEN
+       IF(IUHF.EQ.1) THEN
+        CALL T2T1AA1(ICORE(ITAA),ICORE,MXCOR,POP1,VRT1,1,LAMBDA,0)
+C
+        CALL T2T1AA1(ICORE(ITBB),ICORE,MXCOR,POP2,VRT2,2,LAMBDA,0)
+       ENDIF
+C
+C
+       CALL T2T1AB1(ICORE(ITAA),ICORE,MXCOR,POP1,POP2,VRT1,VRT2,1,
+     &              IUHF,LAMBDA,0)
+C
+       IF(IUHF.EQ.1) THEN
+       CALL T2T1AB1(ICORE(ITBB),ICORE,MXCOR,POP2,POP1,VRT2,VRT1,2,
+     &              IUHF,LAMBDA,0)
+       ENDIF
+      ENDIF
+#ifdef _DEBUG_LVLM
+       Call checksum("T1-AA   :",Icore(itaa),nwaa)
+       If (iuhf.ne.0) Call checksum("T1-BB   :",Icore(itbb),nwbb)
+#endif
+      IF(NONHF)THEN
+       CALL GETLST(ICORE,1,1,1,3,93)
+       CALL SAXPY(NWAA,ONE,ICORE,1,ICORE(ITAA),1)
+       IF(IUHF.NE.0)THEN
+        CALL GETLST(ICORE,1,1,1,4,93)
+        CALL SAXPY(NWBB,ONE,ICORE,1,ICORE(ITBB),1)
+       ENDIF
+      ENDIF
+#ifdef _DEBUG_LVLM
+       Call checksum("T1-AA   :",Icore(itaa),nwaa)
+       If (iuhf.ne.0) Call checksum("T1-BB   :",Icore(itbb),nwbb)
+#endif
+C
+C     CALCULATE NEW AMPLITUDES AND MBPT(4) SINGLE ENERGY
+C
+cjp ibwpass1
+      endif
+cjp
+      SE4=0.0D0
+      IDEN=1
+      IE=IDEN+IINTFP*NWAA
+      ID=IE+IINTFP*(NOCCA+NVRTA)
+      IEND=ID+IINTFP*NWAA
+      IF(IEND.LT.MXCOR) THEN
+cjp prepare for pass 2
+      if(ibwpass.eq.2) then
+cjp read the intermediate result instead of the previous computation
+cjp do it transparently for E4SENG 
+        call getlst(icore(itaa),1,1,1,3,90)
+        if(iuhf.eq.1) call getlst(icore(itbb),1,1,1,4,90)
+      endif
+#ifdef _DEBUG_LVLM
+        call checksum("T1AA-increment", ICORE(Itaa), NWAA)
+#endif
+C
+       CALL E4SENG(ICORE(ITAA),ICORE(ID),ICORE(IDEN),ICORE(IE),
+     &             NWAA,POP1,VRT1,NOCCA,NVRTA,SE4,1)
+       IF((METHOD.EQ.3.OR.METHOD.EQ.4).AND.(.NOT.AOBASIS)) THEN
+        CALL UPDMOI(1,NWAA,1,90,0,0)
+        CALL PUTLST(ICORE(ID),1,1,1,1,90)
+       ELSE IF(METHOD.EQ.3.OR.METHOD.EQ.4.AND.AOBASIS) THEN
+        CALL PUTLST(ICORE(ID),1,1,1,1,90)
+       ELSE
+cjp here the new t1 amplitudes are written
+cjp old t1's are not overwritten!
+C
+        CALL PUTLST(ICORE(ID),1,1,1,3,90)
+
+#ifdef _DEBUG_LVLM
+        call checksum("T1AA", ICORE(ID), NWAA)
+        call output(Icore(id),1,nwaa,1,1,Nwaa,1)
+#endif
+       ENDIF
+      ENDIF
+
+      IF(IUHF.EQ.0) THEN
+       SE4=2.0D0*SE4
+      ELSE
+       IDEN=1
+       IE=IDEN+IINTFP*NWBB
+       ID=IE+IINTFP*(NOCCB+NVRTB)
+       IEND=ID+IINTFP*NWBB
+       IF(IEND.LT.MXCOR) THEN
+#ifdef _DEBUG_LVL0
+         call checksum("T1BB-increment", ICORE(ITBB), NWBB)
+#endif 
+C
+        CALL E4SENG(ICORE(ITBB),ICORE(ID),ICORE(IDEN),ICORE(IE),
+     &              NWBB,POP2,VRT2,NOCCB,NVRTB,SE4,2)
+        IF((METHOD.EQ.3.OR.METHOD.EQ.4).AND.(.NOT.AOBASIS)) THEN
+         CALL UPDMOI(1,NWBB,2,90,0,0)
+         CALL PUTLST(ICORE(ID),1,1,1,2,90)
+        ELSE IF(METHOD.EQ.3.OR.METHOD.EQ.4.AND.AOBASIS) THEN
+         CALL PUTLST(ICORE(ID),1,1,1,2,90)
+        ELSE
+         CALL PUTLST(ICORE(ID),1,1,1,4,90)
+        ENDIF
+       ENDIF
+      ENDIF
+      SING1=.TRUE.
+#ifdef _DEBUG_LVL0
+         call check_t2(Icore,Maxcor,Iuhf)
+#endif 
+      RETURN
+      END

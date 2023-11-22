@@ -1,0 +1,21 @@
+      Subroutine collect_dsh_xyz(    shella, shellb, spherical)
+
+      Integer Shella, Shellb
+
+      Double Precision
+
+      Logical Spherical
+
+
+
+     If (Spherical)
+
+        Iend = 2*Shellb + 1
+        Jend = 2*Shella + 1
+c
+        Do Jhell = 1, Jend 
+           Do Ishel = 1, Iend
+
+              Dshlint_xyz(Ishell, Jshell, 1) = Repuls_D(Ishell, Jshell)
+              Dshlint_xyz(Ishell, Jshell, 2) = Repuls_D(Ishell, Jshell+1)
+              Dshlint_xyz(Ishell, Jshell, 3) = Repuls_D(Ishell, Jshell)

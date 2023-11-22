@@ -1,0 +1,479 @@
+      SUBROUTINE T3IT_TRPS2(T1A,T1B,FOVA,FOVB,D1T1A,D1T1B,S1A,S1B,
+     1                 EVAL,SCR1,SCR2,SCR3,
+     1                 GOOOV,BUF,
+     1                 T2ABA,T2ABBI,T2ABBJ,T2AAAI,T2AAAJ,  
+     1                 IADBLK,LENBLK,IADT2,LENT2,
+     1                 IADV,LENV,OOOVAD,LENINT,
+     1                 ICORE,
+     1                 LNOOOV,NOCA,NOCB,NVRTA,NVRTB,NFREE,
+     1                 INT1,INT2,NONHF,IUHF,T3STOR,INIT)
+      IMPLICIT INTEGER (A-Z)
+      LOGICAL SKIP
+      LOGICAL INT1,INT2,NONHF,INIT
+      LOGICAL IJEQL,NONEQL
+      LOGICAL IJKEQL2,JKEQL2,IJEQL2,NONEQL2
+      LOGICAL CCSDT4,CCSDT,LCCSD_T
+      LOGICAL TRIPNI,TRIPNI1,TRIPIT,T3STOR
+      DOUBLE PRECISION T1A(1),T1B(1),FOVA(1),FOVB(1),
+     1                 D1T1A(1),D1T1B(1),S1A(1),S1B(1),
+     1                 SCR1(1),SCR2(1),SCR3(1),EVAL(NOCA+NVRTA,2)
+      DOUBLE PRECISION FACT1,FACT2
+C     GOOOV ijka gammas.
+      DOUBLE PRECISION GOOOV(1),BUF(1)
+      DOUBLE PRECISION T2ABA(1),T2ABBJ(1),T2ABBI(1)
+      DOUBLE PRECISION T2AAAI(1),T2AAAJ(1)
+      DOUBLE PRECISION ICORE(1)
+      DOUBLE PRECISION DOOA,DOOB,DVVA,DVVB
+      DOUBLE PRECISION DIJK
+C
+      DOUBLE PRECISION E14, E2AAB, E2BBA
+C
+#include "maxbasfn.par"
+C
+C The three most relevent papers, for all the standard triple excitation
+C method. Watss et al., JCP, 98, 8718, 1993 (JCP2)
+C for L-CCSD(T), Crawford and Stanton, IJQC,70,601,Eqns. A16 (IJQC)
+C
+      DIMENSION OOOVAD(8,4),LENINT(8,4)
+      DIMENSION LEN(8,8),IADBLK(8),LENBLK(8)
+      DIMENSION                        IADT2(8) ,LENT2(8),
+     1                                 IADV(8)  ,LENV(8)
+      DIMENSION IADW(8),LENW(8)
+      DIMENSION IADW2(8)
+C
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPA(255),IRREPB(255),DIRPRD(8,8)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON /SYM/    POP(8,2),VRT(8,2),NTAA,NTBB,NF1AA,NF2AA,
+     1                NF1BB,NF2BB
+      COMMON /EDEBUG/ E14, E2AAB, E2BBA
+      COMMON /INFO/   NOCCO(2),NVRTO(2)
+      COMMON /FLAGS/  IFLAGS(100)
+      EQUIVALENCE(ICLLVL,IFLAGS( 2))
+      EQUIVALENCE(IDRLVL,IFLAGS( 3))
+      EQUIVALENCE(IREFNC,IFLAGS(11))
+      EQUIVALENCE(IQRHFP,IFLAGS(32))
+      EQUIVALENCE(IQRHFM,IFLAGS(33))
+      EQUIVALENCE(INONHF,IFLAGS(38))
+      EQUIVALENCE(IORBTP,IFLAGS(39))
+      EQUIVALENCE(INONHF,IFLAGS(38))
+      EQUIVALENCE(IORBTP,IFLAGS(39))
+C
+C     T3 ARRAYS
+C
+      COMMON /ACTORB/ ABSVRT(MAXBASFN,8,2),ABSOCC(MAXBASFN,8,2)
+      COMMON /T3OFF/  IOFFVV(8,8,10),IOFFOO(8,8,10),IOFFVO(8,8,4)
+      COMMON /LISWI/  LWIC11,LWIC12,LWIC13,LWIC14,
+     1                LWIC15,LWIC16,LWIC17,LWIC18,
+     1                LWIC21,LWIC22,LWIC23,LWIC24,
+     1                LWIC25,LWIC26,LWIC27,LWIC28,
+     1                LWIC31,LWIC32,LWIC33,
+     1                LWIC34,LWIC35,LWIC36,
+     1                LWIC37,LWIC38,LWIC39,LWIC40,LWIC41,LWIC42
+      COMMON /AUXIO / DISTSZ(8,100),NDISTS(8,100),INIWRD(8,100),LNPHYR,
+     1                NRECS,LUAUX
+      COMMON /T3IOOF/ IJKPOS(8,8,8,2),IJKLEN(36,8,4),IJKOFF(36,8,4),
+     1                NCOMB(4)
+
+      INDEX(I) = I*(I-1)/2
+C
+C     Get eigenvalues (more precisely, diagonal Fock matrix elements)
+C
+      CALL GETREC(20,'JOBARC','SCFEVALA',(NOCA+NVRTA)*IINTFP,
+     1            EVAL(1,1))
+      CALL GETREC(20,'JOBARC','SCFEVALB',(NOCB+NVRTB)*IINTFP,
+     1            EVAL(1,2))
+C
+C     Determine the lengths and dimensions of the NIRREP**2 T3 AAB arrays.
+C
+C      WRITE(6,1070)
+C 1070 FORMAT(' @TRPS2-I, Triples symmetry block information ')
+      DO  100 IRPIJK=1,NIRREP
+      DO   90 IRPC  =1,NIRREP
+      IRPAB = DIRPRD(IRPIJK,IRPC)
+      LEN(IRPC,IRPIJK) = IRPDPD(IRPAB,1) * VRT(IRPC,2)
+C      WRITE(6,1080) IRPIJK,IRPC,IRPAB,LEN(IRPC,IRPIJK)
+ 1080 FORMAT('   FOR IJK BLOCK ',I4,/,
+     1       '       C   BLOCK ',I4,' AB BLOCK ',I4,' LENGTH IS ',I6)
+   90 CONTINUE
+  100 CONTINUE
+C
+C     Compute addresses and lengths of OOOV quantities.
+C
+      DO  410 ISPIN=1,4
+      DO  400 IRREP=1,NIRREP
+      IF(ISPIN.EQ.1)THEN
+      LENINT(IRREP,ISPIN) = IRPDPD(IRREP, 3) * IRPDPD(IRREP,16)
+      ENDIF
+      IF(ISPIN.EQ.2)THEN
+      LENINT(IRREP,ISPIN) = IRPDPD(IRREP, 4) * IRPDPD(IRREP,17)
+      ENDIF
+      IF(ISPIN.EQ.3)THEN
+      LENINT(IRREP,ISPIN) = IRPDPD(IRREP,14) * IRPDPD(IRREP,11)
+      ENDIF
+      IF(ISPIN.EQ.4)THEN
+      LENINT(IRREP,ISPIN) = IRPDPD(IRREP,14) * IRPDPD(IRREP,18)
+      ENDIF
+  400 CONTINUE
+  410 CONTINUE
+C
+      OOOVAD(1,1) = 1
+      OOOVAD(1,2) = 1
+      OOOVAD(1,3) = 1
+      OOOVAD(1,4) = 1
+      DO  430 ISPIN=1,4
+      IF(NIRREP.GT.1)THEN
+      DO  420 IRREP = 2,NIRREP
+      OOOVAD(IRREP,ISPIN) = OOOVAD(IRREP-1,ISPIN) +
+     1                      LENINT(IRREP-1,ISPIN)
+  420 CONTINUE
+      ENDIF
+  430 CONTINUE
+c      WRITE(6,1200)
+ 1200 FORMAT(' @TRPS2-I, OOOV ARRAY LENGTHS AND ADDRESSES ')
+      DO  450 ISPIN=1,4
+      DO  440 IRREP=1,NIRREP
+c      WRITE(6,1210) ISPIN,IRREP,LENINT(IRREP,ISPIN),OOOVAD(IRREP,ISPIN)
+ 1210 FORMAT(' SPIN, IRREP, LENGTH, ADDRESS ',2I4,I6,I6)
+  440 CONTINUE
+  450 CONTINUE
+C
+C     COMPUTE NUMBER OF FREE DOUBLE WORDS
+      MCORE = NFREE / IINTFP
+cYAU      WRITE(6,1230) NFREE,MCORE,IINTFP
+ 1230 FORMAT(' @TRPS2-I, Number of free integer words ',I10,/,
+     1       '           Number of free double  words ',I10,/,
+     1       '           Ratio                        ',I10)
+C
+      ISPIN1 = 1
+      ISPIN2 = 2
+#ifdef _DEBUG_LVL0
+      E4TBAA = 0.0
+#endif
+C
+      DO IRPIJK=1,NIRREP
+C
+      IJKVAL = 0
+C
+      DO IRPK  =1,NIRREP
+      IF(POP(IRPK,ISPIN2).EQ.0) GOTO 990
+C
+      KLOW  = 1
+      KHIGH = POP(IRPK,ISPIN2)
+C
+      DO  IRPJ=1,NIRREP
+      IF(POP(IRPJ,ISPIN1).EQ.0) GOTO 980
+      IRPJK = DIRPRD(IRPJ,IRPK)
+      IRPI  = DIRPRD(IRPJK,IRPIJK)
+      IF(IRPI.GT.IRPJ) GOTO 980
+C
+      IF(POP(IRPI,ISPIN1).EQ.0) GOTO 980
+C
+      IJEQL  = .FALSE.
+      NONEQL = .FALSE.
+      IF(IRPI.EQ.IRPJ)THEN
+      IJEQL  = .TRUE.
+      JLOW  = 2
+      JHIGH = POP(IRPJ,ISPIN1)
+      ILOW  = 1
+      NIJ = (POP(IRPJ,ISPIN1) * (POP(IRPJ,ISPIN1)-1))/2
+      ELSE
+      NONEQL = .TRUE.
+      JLOW  = 1
+      JHIGH = POP(IRPJ,ISPIN1)
+      ILOW  = 1
+      IHIGH = POP(IRPI,ISPIN1)
+      NIJ =  POP(IRPI,ISPIN1) * POP(IRPJ,ISPIN1)
+      ENDIF
+C
+      NIK = POP(IRPI,ISPIN1) * POP(IRPK,ISPIN2)
+      NJK = POP(IRPJ,ISPIN1) * POP(IRPK,ISPIN2)
+C
+      IF(IJEQL.AND.POP(IRPJ,ISPIN1).LT.2) GOTO 980
+C
+      IRPIJ =  DIRPRD(IRPI,IRPJ)
+      IRPIK =  DIRPRD(IRPI,IRPK)
+C
+C     COMPUTE ADDRESSES AND LENGTHS OF ABC SYMMETRY BLOCKS FOR
+C     THIS IJK. THIS LOOP IS EFFECTIVELY OVER IRREPS OF C (IE
+C     COLUMNS OF THE EVENTUAL TARGET).
+C
+C     MAIN CORE VECTOR ADDRESSING : (DOUBLE PRECISION WORDS)
+C
+C           I000   SYMMETRY PACKED T3 FOR THIS IJK BLOCK
+C           I010                   W
+C           I020   UNEXPANDED T2(  ,IJ) AAAA FOR THIS IJ BLOCK
+C           I030   EXPANDED   T2(  ,IJ) AAAA
+C           I040   T2(  ,JK) ABAB FOR THIS JK BLOCK
+C           I050   T2(  ,IK) ABAB FOR THIS IK BLOCK
+C           ISTART CURRENT STARTING ADDRESS OF REUSABLE CORE
+C
+      I000 = 1
+      DO  600 IRREP=1,NIRREP
+      IF(IRREP.EQ.1)THEN
+      IADBLK(IRREP) = 1
+      ELSE
+      IADBLK(IRREP) = IADBLK(IRREP-1) + LEN(IRREP-1,IRPIJK)
+      ENDIF
+      LENBLK(IRREP) = LEN(IRREP,IRPIJK)
+  600 CONTINUE
+C
+      LENABC=0
+      DO IRREP=1,NIRREP
+         LENABC = LENABC + LENBLK(IRREP)
+      END DO
+C
+      I010 = I000 + LENABC
+      DO IRREP=1,NIRREP
+         IRPA = DIRPRD(IRPIJK,IRREP)
+         LENW(IRREP) = VRT(IRPA,1) * IRPDPD(IRREP,13)
+      END DO
+C
+      IADW(1) = 1
+      IF (NIRREP.GT.1) THEN
+         DO IRREP=2,NIRREP
+            IADW(IRREP) = IADW(IRREP-1) + LENW(IRREP-1)
+         END DO
+      END IF
+C
+      IOFFT2 = I010
+      DO  641 IRREP=1,NIRREP
+      IOFFT2 = IOFFT2 + LENW(IRREP)
+  641 CONTINUE
+C
+      I020 = IOFFT2
+C     GET VARIOUS "SMALL" BLOCKS OF T2 AND <IJ//KA> IN CORE, ORGANIZED
+C     APPROPRIATELY.
+C
+C     BLOCK OF AAAA T(  ,IJ) WHERE I AND J ARE DIFFERENT SYMMETRY
+C     BLOCKS. LENGTH IS IRPDPD(IRPIJ,1) * POP(IRPI,1) * POP(IRPJ,1).
+C
+      CALL GETLST(ICORE(I020),IOFFOO(IRPJ,IRPIJ,1)+1,NIJ,1,IRPIJ,44)
+C
+C     EXPAND INTO A DIFFERENT REGION OF CORE SO WE KEEP UNTOUCHED T2
+C     AS WELL AS EXPANDED ONE. LENGTH IS DSZEXP * POP(IRPI,1) * POP(IRPJ,1)
+C
+      DSZ   = IRPDPD(IRPIJ,   ISPIN1)
+      DSZEXP= IRPDPD(IRPIJ,18+ISPIN1)
+      I030 = I020 + DSZ    * NIJ
+      I040 = I030 + DSZEXP * NIJ
+      CALL SYMEXP2(IRPIJ,VRT(1,1),DSZEXP,DSZ,NIJ,ICORE(I030),
+     1             ICORE(I020))
+C
+C     BLOCK OF ABAB T(  ,JK). LENGTH IS IRPDPD(IRPJK,13) * NJK
+C
+      I050 = I040 + IRPDPD(IRPJK,13) * NJK
+      CALL GETLST(ICORE(I040),IOFFOO(IRPK,IRPJK,5)+1,NJK,1,IRPJK,46)
+C
+C     BLOCK OF ABAB T(  ,IK). LENGTH IS IRPDPD(IRPIK,13) * NIK
+C
+      CALL GETLST(ICORE(I050),IOFFOO(IRPK,IRPIK,5)+1,NIK,1,IRPIK,46)
+C
+      I060 = I050 + IRPDPD(IRPIK,13) * NIK
+C
+      LNVOIJ  = IRPDPD(IRPIJ, 9)
+      LNVOIK  = IRPDPD(IRPIK,12)
+      LNVOJK  = IRPDPD(IRPJK,12)
+      LNVOIK2 = IRPDPD(IRPIK,11)
+      LNVOJK2 = IRPDPD(IRPJK,11)
+C
+      I070 = I060 + LENABC
+      I080 = I070 + LENABC
+      I090 = I080 + (I020 - I010)
+      I100 = I090 + LENABC
+      I110 = I100 + LENABC
+      I120 = I110 + LENABC
+      ISTART = I120
+C 
+C     If this is a CCSD(T) or QCISD(T) gradient calculation, allocate
+C     space for "disconnected" triple amplitudes.
+C
+      NLEFT = MCORE - ISTART
+C
+C The following memory test is not correct. We use ICORE(ISTART) 
+C to store quantities of length (a<b,c) for gradients and iterative
+C triples. This might be the cause for mysterious crashes of large
+C triples gradient calculations for low symmetry molecules.
+C Ajith Perera 11/2005.
+CSSS      IF (ISTART.GE.MCORE) THEN
+CSSS         WRITE(*,*) '@TRPS2: Insufficient memory to continue.'
+CSSS         CALL INSMEM('TRPS2',ISTART,MCORE)
+CSSS         STOP 1
+CSSS      END IF
+      IF(ISTART+LENABC.GE.MCORE)THEN                                  
+         WRITE(6,9010)                                                
+9010     FORMAT(' TRPS3-I, Insufficient memory to continue. ')
+         CALL INSMEM('TRPS2',ISTART+LENABC,MCORE)                    
+      ENDIF                             
+C
+C     COMPUTE DENOMINATOR ARRAY
+C
+      CALL MKD32(ICORE(I060),EVAL,IADBLK,IRPIJK,NOCA,NOCB,NVRTA,NVRTB)
+C
+      DO  K=KLOW,KHIGH
+C
+      CALL GETABA(T2ABA,IRPK,K,.FALSE.)
+
+      DO  J=JLOW,JHIGH
+C
+      CALL GETABB(T2ABBJ,IRPJ,J,.FALSE.)
+      CALL GETAAA(T2AAAJ,IRPJ,J,1,.FALSE.)
+C
+      IF(IJEQL) IHIGH = J-1
+C
+      DO  I=ILOW,IHIGH
+C
+      CALL GETABB(T2ABBI,IRPI,I,.FALSE.)
+      CALL GETAAA(T2AAAI,IRPI,I,1,.FALSE.)
+C
+      CALL ZERO(ICORE(I000),LENABC)
+C
+      LENGTHW = 0
+      DO 9647 IRREP=1,NIRREP
+      LENGTHW=LENGTHW + LENW(IRREP)
+ 9647 CONTINUE
+
+      CALL ZERO(ICORE(I010),LENGTHW)
+C
+      CALL D1T2NEW( ICORE(I000),ICORE(I010),
+     1           ICORE(I030),ICORE(I040),ICORE(I050),
+     1 ICORE(ISTART),IUHF,
+     1 IADBLK,LENBLK,IADW,LENW,IADT2,LENT2,IADV,LENV,
+     1 I,J,K,IRPI,IRPJ,IRPK,IRPIJ,IRPJK,IRPIK,IRPIJK,
+     1 DSZEXP,IRPDPD(IRPJK,13),IRPDPD(IRPIK,13),
+     1 SCR1,SCR2,SCR3,NLEFT,T2ABA,T2ABBJ,T2ABBI,
+     1 T2AAAJ,T2AAAI)
+
+C Skip these two terms for the initial guess
+ 
+      IJKVAL = IJKVAL + 1 
+      IF (.NOT. INIT) THEN
+
+#ifdef _DEBUG_LVLM
+      Write(*,*), Lenabc, Lengthw
+      call checksum("T3ITER_TRPS2-0", ICORE(I000), Lenabc)
+      call checksum("T3ITER_TRPS2-0", ICORE(I010), Lengthw)
+#endif
+C
+C     CCSD(T) of  non-HF if semicanonical orbitals are not used.
+C     (i) Virtual orbital sum.
+C
+      CALL T3FT323V(ICORE(I000),ICORE(I010),ICORE(ISTART),NFREE,IUHF,
+     1              1,2,LENABC,LENGTHW,IRPIJK,IJKVAL,IADBLK,IADW)
+
+C     CCSD(T) of non-HF if semicanonical orbitals are not used.
+C     (ii) Occupied orbital sum.
+C
+      CALL T3FT323O(ICORE(I000),ICORE(ISTART),NFREE,IUHF,1,2,LENABC,
+     1              IRPI,IRPJ,IRPK,IRPIJK,I,J,K)
+
+#ifdef _DEBUG_LVLM
+      Write(*,*)
+      call checksum("T3ITER_TRPS2-01", ICORE(I000), Lenabc)
+      Write(*,*)
+      call checksum("T3ITER_TRPS2-01", ICORE(I010), Lengthw)
+#endif
+      ENDIF
+C
+      CALL EXPSC2(ICORE(I000),ICORE(I010),IADBLK,IADW,IRPIJK)
+#ifdef _DEBUG_LVLM
+      Write(*,*)
+      call checksum("T3ITER_TRPS2-11", ICORE(I000), Lenabc)
+#endif 
+C
+C     Remove denominators (D3T3 ---> T3)
+C
+      DIJK = EVAL(ABSOCC(I,IRPI,1),1) + EVAL(ABSOCC(J,IRPJ,1),1)
+     1     + EVAL(ABSOCC(K,IRPK,2),2)
+ 
+      CALL RMD314(ICORE(I000),ICORE(I060),LENABC,DIJK)
+#ifdef _DEBUG_LVLM
+      Write(*,*), Lenabc, Lengthw
+      call checksum("T3ITER_TRPS2-0", ICORE(I000), Lenabc)
+#endif
+
+C
+C ICORE(I000)     A<B,C T3(C)
+C Compute T3 dissconected terms T2W + T2*FOV
+  
+C#ifdef _INCLUDE
+      CALL ZERO(ICORE(I070),LENABC)
+      CALL ZERO(ICORE(I010),IOFFT2 - I010)
+      CALL S1S223(ICORE(ISTART),ICORE(I070),ICORE(I010),IADBLK,IADW,
+     1            1,2,I,J,K,IRPI,IRPJ,IRPK,IRPIJ,IRPIK,IRPJK,IRPIJK,
+     1            IUHF,1,.FALSE.)
+      CALL ZERO(ICORE(I110),LENABC)
+      CALL ZERO(ICORE(I010),IOFFT2 - I010)
+      CALL S1S223(ICORE(ISTART),ICORE(I110),ICORE(I010),IADBLK,IADW,
+     1            1,2,I,J,K,IRPI,IRPJ,IRPK,IRPIJ,IRPIK,IRPJK,IRPIJK,
+     1            IUHF,2,.FALSE.)
+
+      CALL DAXPY(LENABC, 1.0D0, ICORE(I110), 1, ICORE(I070),1)
+      CALL RMD314(ICORE(I070),ICORE(I060),LENABC,DIJK)
+
+      IF (IUHF.EQ.0) THEN
+         CALL DCOPY(LENABC,ICORE(I070),1,ICORE(I100),1)
+         CALL SC1SC2(ICORE(I100),ICORE(I070),LENABC/IINTFP,
+     &               IADBLK,IRPIJK)
+      END IF
+      CALL DAXPY(LENABC, 1.0D0, ICORE(I070), 1, ICORE(I000), 1)
+C#endif 
+
+      IF(T3STOR)THEN
+       CALL PUTLIST(ICORE(I000),IJKVAL,1,1,IRPIJK,ISPIN1 + 1)
+#ifdef _DEBUG_LVLM
+       CALL E4TCTDIJK(ICORE(I000),ICORE(I070),ICORE(I060),LENABC,
+     &                DIJK,E2AAB,
+     &                __FILE__)
+ 
+      call checksum("T3ITER_TRPS2-1", ICORE(I000), Lenabc)
+#endif 
+      ENDIF
+C
+C     In RHF, form AAA (A<B<C) from AAB and write to disk.
+C
+      IF(IUHF.EQ.0.AND.T3STOR)THEN
+
+      IJKEQL2 = .FALSE.
+      IJEQL2  = .FALSE.
+      JKEQL2  = .FALSE.
+      NONEQL2 = .FALSE.
+      IF(IRPI.EQ.IRPJ.AND.IRPI.EQ.IRPK) IJKEQL2 = .TRUE.
+      IF(IRPJ.EQ.IRPK.AND.IRPI.NE.IRPK)  JKEQL2 = .TRUE.
+      IF(IRPI.EQ.IRPJ.AND.IRPI.NE.IRPK)  IJEQL2 = .TRUE.
+      IF(IRPI.NE.IRPJ.AND.IRPI.NE.IRPK.AND.IRPJ.NE.IRPK)
+     1                                  NONEQL2 = .TRUE.
+C
+      IJK  = IJKPOS(IRPI,IRPJ,IRPK,1)
+      IOFF = IJKOFF(IJK,IRPIJK,1)
+      IF(IJKEQL2) IJKAAA = IOFF + ((K-1)*(K-2)*(K-3))/6 + INDEX(J-1) + I
+      IF(IJEQL2 ) IJKAAA = IOFF + (K-1)*NIJ             + INDEX(J-1) + I
+      IF(JKEQL2 ) IJKAAA = IOFF + (INDEX(K-1)+ J-1)*POP(IRPI,1)  + I
+      IF(NONEQL2) IJKAAA = IOFF + (K-1)*NIJ + (J-1)*POP(IRPI,1)  + I
+
+      call zero(icore(istart),distsz(irpijk,1))
+      CALL SYMCONTW(ICORE(istart),ICORE(I000),IADBLK,1,IRPIJK)
+      CALL PUTLIST(ICORE(istart),IJKAAA,1,1,IRPIJK,1)
+#ifdef _DEBUG_LVLM
+      Write(*,*)
+      call checksum("T3ITER_TRPS2-2", ICORE(istart), distsz(irpijk,1))
+#endif 
+      
+      ENDIF
+
+      ENDDO
+      ENDDO
+      ENDDO
+
+ 980  CONTINUE
+      ENDDO
+ 990  CONTINUE
+      ENDDO
+      ENDDO
+#ifdef _DEBUG_LVL0
+      WRITE(6,3000) E2AAB
+ 3000 FORMAT(' @TRPS2-I, E2AAB ',F20.12)
+#endif
+
+      RETURN
+      END

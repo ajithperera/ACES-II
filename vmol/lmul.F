@@ -1,0 +1,64 @@
+      SUBROUTINE LMUL(S,A,LSL,MRAF,NMAS,LIA,ISV,K,HLP,TLC)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      INTEGER AND,DSTRT,OR,EOR
+C-----------------------------------------------------------------------
+C     Parameters
+C-----------------------------------------------------------------------
+#include "baslims.par"
+C-----------------------------------------------------------------------
+      COMMON /INDX/ PC(512),DSTRT(8,MXCBF),NTAP,LU2,NRSS,NUCZ,ITAG,
+     1 MAXLOP,MAXLOT,KMAX,NMAX,KHKT(7),MULT(8),ISYTYP(3),ITYPE(7,28),
+     2 IVAND(8,8),IVOR(8,8),IVEOR(8,8),NPARSU(8),NPAR(8),MULNUC(100),
+     3 NHKT(MXTNSH),MUL(MXTNSH),NUCO(MXTNSH),NRCO(MXTNSH),JSTRT(MXTNSH),
+     4 NSTRT(MXTNSH),MST(MXTNSH),JRS(MXTNSH)
+c      COMMON /INDX/ PC(512)
+      DIMENSION S(MRAF,NMAS,LIA),A(MRAF,LIA),LSL(NMAS,LIA),ISV(LIA)
+      DIMENSION HLP(2)
+      DATA C12,C13,C23 /1.0,8.0,8.0/
+C     THE COEFFICIENTS C12,C13,C23 ARE TO BE OPTIMIZED FOR BEST
+C     PERFORMANCE. THEIR OPTIMUM VALUES ARE INSTALLATION DEPENDENT.
+      IF(MRAF.GE.C23*NMAS) THEN
+      IF(LIA.GE.C12*MRAF) GO TO 10
+C...  MRAF IS LARGEST
+      DO 3 NQ=1,LIA
+      DO 3 LL=1,NMAS
+      IPOP = AND(NEQV(LSL(LL,NQ),ISV(NQ)),K)
+      IF(PC(IPOP+1) .GT. 0.) THEN
+      DO 1 MR=1,MRAF
+    1 S(MR,LL,NQ) = S(MR,LL,NQ) + A(MR,NQ)
+      ELSE
+      DO 2 MR=1,MRAF
+    2 S(MR,LL,NQ) =S(MR,LL,NQ) - A(MR,NQ)
+      ENDIF
+    3 CONTINUE
+      ELSE
+      IF(LIA.GT.C13*NMAS) GO TO 10
+C...  NMAS LARGEST
+      DO 6 NQ=1,LIA
+      DO 7 LL=1,NMAS
+      IPOP = AND(NEQV(LSL(LL,NQ),ISV(NQ)),K)
+      HLP(LL) = PC(IPOP+1)
+    7 CONTINUE
+      DO 5 MR=1,MRAF
+      AI = A(MR,NQ)
+      IF(ABS(AI) .LT. TLC) GO TO 5
+      DO 12 LL=1,NMAS
+   12 S(MR,LL,NQ) =S(MR,LL,NQ) + AI * HLP(LL)
+    5 CONTINUE
+    6 CONTINUE
+      ENDIF
+      RETURN
+   10 CONTINUE
+C...  LIA LARGEST
+      DO 9 LL=1,NMAS
+      DO 8 NQ=1,LIA
+      IPOP = AND(NEQV(LSL(LL,NQ),ISV(NQ)),K)
+      HLP(NQ) = PC(IPOP+1)
+    8 CONTINUE
+      DO 4 MR=1,MRAF
+      DO 4 NQ=1,LIA
+      S(MR,LL,NQ) = S(MR,LL,NQ) + A(MR,NQ) * HLP(NQ)
+    4 CONTINUE
+    9 CONTINUE
+      RETURN
+      END

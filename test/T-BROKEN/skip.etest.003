@@ -1,0 +1,104 @@
+rrrr=1.2054633828
+#just one point in cs
+cat <<! >ZMAT
+ozone
+O
+O 1 r1
+
+r1=$rrrr
+
+*ACES2(BASIS=CC-PVDZ,CALC=SCF,REFERENCE=RHF
+       SYMMETRY=OFF,NON-HF=ON
+       SPHERICAL=OFF
+       UNITS=ANGSTROM
+       MULTIPLICITY=1,CHARGE=-2)
+
+!
+
+xaces2 || exit 1
+
+mv NEWMOS OLDMOS
+
+cat <<! >GUESS
+xxx
+9
+7
+0 0 0 0
+0 0 0 0
+0
+0
+0
+0
+0 0
+1 0
+1
+0
+!
+
+cat <<! >ZMAT
+ozone
+O
+O 1 r1
+
+r1=$rrrr
+
+*ACES2(BASIS=CC-PVDZ,CALC=SCF,REFERENCE=ROHF
+       PRINT=10
+       LSHF_A1=200,LSHF_B1=150
+       SYMMETRY=OFF,NON-HF=ON
+       SPHERICAL=OFF
+       UNITS=ANGSTROM
+       MULTIPLICITY=3,CHARGE=0)
+
+!
+
+xaces2 || exit 1
+
+mv NEWMOS OLDMOS
+
+cat <<! >GUESS
+xxx
+8
+8
+0 0 0 0
+0 0 0 0
+0
+0
+0
+0
+0 0
+1 0
+0
+0
+!
+
+cat <<! >ZMAT
+ozone
+O
+O 1 r1
+
+r1=$rrrr
+
+*ACES2(BASIS=CC-PVDZ,CALC=CCSD,REFERENCE=UHF
+       DROPMO=1-2
+       SYMMETRY=OFF,NON-HF=ON
+       SPHERICAL=OFF
+       UNITS=ANGSTROM
+       SCF_MAXIT=0
+       MULTIPLICITY=1,CHARGE=0)
+
+!
+
+cat <<! >bwdata
+2222220
+2222202
+22222ab
+22222ba
+!
+
+cat <<! >bwroot
+1  1.
+!
+
+xaces2 || exit 1
+

@@ -1,0 +1,15 @@
+      SUBROUTINE EXPW2(T3,W1,NAB,NC,NA,NB)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      INTEGER A,B,C,AB
+      DIMENSION T3(NAB,NC),W1(NA,NB,NC)
+      INDEX(I) = I * (I-1) / 2
+      DO   30 C=1,NC
+      DO   20 B=2,NB
+      DO   10 A=1,B-1
+      AB = INDEX(B-1) + A
+      T3(AB,C) = T3(AB,C) + W1(A,B,C) - W1(B,A,C)
+   10 CONTINUE
+   20 CONTINUE
+   30 CONTINUE
+      RETURN
+      END

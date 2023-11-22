@@ -1,0 +1,13 @@
+      SUBROUTINE GCOPY (DEN1,DEN2,LEN) 
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION DEN1(LEN),DEN2(LEN) 
+C
+      DO 100 I=1,LEN 
+       DEN2(I) = DEN1(I) 
+ 100  CONTINUE 
+      DO 200 I=1,LEN 
+       DEN1(I) = 0.0d0   
+ 200  CONTINUE 
+c
+      RETURN
+      END

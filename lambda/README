@@ -1,0 +1,428 @@
+
+The following is a complete list of spin-integrated UHF Lambda equations 
+as implemented in ACES II program. Each term in the list has two
+references. The first one is the refrence to the JCP-95-2623-1991 and
+the other is to the actual subroutine names that compute the contribution.
+This was generated to help debug the parallel lambda implemenation
+for the CHSSI program. 02/2005 Ajith Perera
+------------------------------------------------------------------------
+
+  -1/2 SUM M N F <MN||EF>TAUB(MN,AF) + SUM M F T(M,F)<MA||FE>
+  -1/2 SUM M T(M,A)F(M,E) + f(A,E) = F(A,E)-----------------------> Eqn-4
+
+AA: 1/2 SUM M N F <MN||EF>TAUP(MN,AF) + SUM n,E,f <Mn||Ef>TAUP(In,Af)+
+        SUM M F <MA||FE>T(M,F) + SUM m f <mA||fE>T(m,f) +
+   -1/2 SUM E T(M,A)f(M,E) + f(A,E)
+BB: 1/2 SUM m N F <mN||eF>TAUP(mN,aF) + SUM n,e,f <mn||ef>TAUP(in,af)+
+        SUM M F <Ma||Fe>T(M,F) + SUM m f <ma||fe>T(m,f) +
+   -1/2 SUM E T(m,a)f(m,e) + f(a,e)
+
+F(A,E) intermediate, Eqn-4
+--------------------------------------------------------------------------
+
+  1/2 SUM N E F <MN||EF>TAU(IN,EF) + SUM E N T(N,E)<MN||IE>
++ 1/2 SUM E T(I,E)F(M,E) + f(M,I) = F(M,I)-----------------------> Eqn-5
+
+AA: 1/2 SUM N E F <MN||EF>TAU(IN,EF) + SUM n,E,f <Mn||Ef>TAU(In,Ef)+
+        SUM E N <MN||IE>T(N,E) + SUM e n <Mn||Ie>T(n,e) +
+    1/2 SUM E T(I,E)f(M,E) + f(M,I)
+BB: 1/2 SUM n e f <mn||ef>TAU(in,ef) + SUM N,e,F <mN||eF>TAU(iN,eF)+
+        SUM E N <mN||iE>T(N,E) + SUM e n <mn||ie>T(n,e) +
+    1/2 SUM e T(i,e)f(m,e) + f(m,i)
+
+F(M,I) intermediate, Eqn-5
+-------------------------------------------------------------------------
+
+     SUM N F <MN||EF>T(N,F) + f(M,E) = F(M,E) -------------------> Eqn-6
+
+AA: SUM N F <MN||EF>T(N,F) + SUM n f <Mn||Ef>T(n,f)
+BB: SUM N F <mN||eF>T(N,F) + SUM n f <mn||ef>T(n,f)
+
+F(M,E) intermediate, Eqn-6
+
+The F(A,E), F(M,I) and F(M,E) intermediates are computed in the 
+energy code by calls to GENINT with appropriate factors to get
+the signs correct. Please refer to comments in GENINT for further
+details. 
+---------------------------------------------------------------------------
+  +1/2SUM N F T(JN,FB)<MN||EF> + <MB||EJ> -------> Eqn-21, T4,T1 
+  See DWMBEJ and its dependents to see how this is computed. 
+
+AAAA:  1/2SUM N F T(JN,FB)<MN||EF> + 1/2SUM n f T(Jn,Bf)<Mn|Ef> + <MB||EJ>
+BBBB:  1/2SUM n f T(jn,fb)<mn||ef> + 1/2SUM N F T(jN,bF)<mN|eF> + <mb||ej>
+ABAB:  1/2SUM n f T(jn,fb)<Mn|Ef>  + 1/2SUM N F T(jN,Fb)<MN||EF> + <Mb|Ej>
+BABA:  1/2SUM N F T(JN,FB)<mN|eF>  + 1/2SUM n f T(Jn,Bf)<mn||ef> + <mB|eJ>
+BAAB:  1/2SUM N f T(jN,fB)<mN|Ef>  + <mB|Ej>
+ABBA:  1/2SUM n F T(Jn,Fb)<Mn|eF>  + <Mb|eJ>
+
+  -SUM N F T(J,F)T(N,B)<MN||EF>--------------Eqn-21, T5
+See T12INW3 and its dependents to see how this is computed. 
+
+AAAA: -SUM N F T(J,F)T(N,B)<MN||EF> 
+BBBB: -SUM n f T(j,f)T(n,b)<mn||ef>
+ABAB: -SUM n f T(j,f)T(n,b)<Mn|Ef> 
+BABA: -SUM N F T(J,F)T(N,B)<mN|eF>  
+BAAB:  SUM N f T(j,f)T(N,B)<mN|fE> 
+ABBA:  SUM n F T(J,F)T(n,b)<Mn|Fe>       
+
+   SUM F T(J,F)<BM||EF>  - SUM N T(N,B)<NM||JE> -----------> Eqn-21, T2,T3
+See T1RING and its dependents to see how this is computed. 
+
+AAAA:  SUM F T(J,F)<BM||EF> - SUM N T(N,B)<NM||EJ>
+BBBB:  SUM f T(j,f)<bm||ef> - SUM n T(n,b)<nm||ej>
+ABAB:  SUM f T(j,f)<bM|Ef>  - SUM n T(n,b)<nM|Ej>
+BABA:  SUM F T(J,F)<Bm|eF>  - SUM N T(N,B)<Nm|eJ>
+BAAB:  SUM f T(j,f)<Bm|Ef> - SUM N T(N,B)<Nm|jE>
+ABBA:  SUM F T(J,F)<bM|eF> - SUM n T(n,b)<nM|Je> 
+
+T1+...+T5=WB(MBEJ) intermediate, Eqn-21. 
+
+The subroutine FORMWL compute the WB(MBEJ) using the fact that
+WB(MBEJ) = 2W(MBEJ) - W(MBEJ) + SUM N T(N,B)<MN||EJ> - SUM F T(J,F)<MB||EF>
+           + SUM N F T(M,F)T(N,E)
+note that if you plan to use this formula, then T1, T1 and T3 has opposite 
+sign.
+-----------------------------------------------------------------------
+       -SUM N F T(NJ,BF)<MN||EF> + <MB||EJ>---------------->Eqn-24, T1,T2
+
+AAAA: -SUM N F T(NJ,BF)<MN||EF> + SUM N F T(Jn,Bf)<Mn|Ef> 
+BBBB: -SUM n f T(nj,bf)<mn||ef> + SUM N F T(jN,bF)<mN|eF>
+ABAB: -SUM n f T(nj,bf)<Mn|Ef>  + SUM N F T(jN,bF)<MN||EF>
+BABA: -SUM N F T(NJ,BF)<mN|eF>  + SUM n f T(Jn,Bf)<mn|ef>
+BAAB:  SUM N f T(Nj,Bf)<mN|fE>
+ABBA:  SUM n F T(nJ,bF)<Mn|Fe>                    
+
+WBB(MBEJ) intermediate, Eqn-24
+This intermediate is computed in subroutine WTWTW. This routine 
+employes the fact that
+WBB(MBEJ) = 2WB(MBEJ) - WX(MBEJ) where 
+WX(MB,EJ) = <MB||EJ> - 2*SUM N T(N,B)<MN||EJ> + 2*SUM F T(J,F)<MB||EF>
+           - 2*SUM N F T(M,F)T(N,E) + 3*SUM N F T(MN,EF)<NJ||FB>
+------------------------------------------------------------------------
+     <EF||AM> + SUM N F(N,A)T(MN,EF) ------------------> Eqn-23,T1,T2
+
+AAAA:  <EF||AM> + SUM N F(N,A)T(MN,EF)
+BBBB:  <ef||am> + SUM n F(n,a)T(mn,ef)
+ABAB:  <Ef|Am>  + SUM N F(N,A)T(mN,Ef)
+ABBA:  <Ef|aM> + SUM n F(n,a)T(Mn,Ef) 
+T2 is computed in W5F. The integral is simply added on.
+
+       SUM G T(M,G)WB(EF,AG)----------------------------> Eqn-23,T3
+
+AAAA:   SUM G T(M,G)WB(EF,AG)
+BBBB:   SUM g T(m,g)WB(ef,ag)
+ABAB:   SUM g T(m,g)WB(Ef,Ag)
+ABBA:   SUM G T(M,G)WB(Ef,aG)
+This is computed in  W5AA1, W5AB1, W5AB2
+
+       1/2SUM N O TAU(NO,EF)<AM||NO>--------------------->Eqn-23,T4
+
+AAAA:  1/2SUM N O TAU(NO,EF)<AM||NO>
+BBBB:  1/2SUM n o TAU(no,ef)<am||no>
+ABAB   1/2SUM N o TAU(No,Ef)<Am|No>
+ABBA:  1/2SUM N o TAU(No,Ef)<aM|No>
+This is computed in W5TAU
+
+    -P_(EF)SUM N T(N,E)WBB(NF,AM)--------------------------->Eqn-23,T5
+
+AAAA: -SUM N T(N,E)WBB(NF,AM) + SUM N T(N,F)WBB(NE,AM)
+BBBB: -SUM n T(n,e)WBB(nf,am) + SUM n T(n,f)WBB(ne,am)
+ABAB  -SUM N T(N,E)WBB(Nf,Am) + SUM n T(n,f)WBB(nE,Am)
+ABBA  -SUM N T(N,E)WBB(Nf,aM) + SUM n T(n,f)WBB(nE,aM)
+This is computed in W5RING. 
+
+    +P_(EF) SUM N G T(MN,FG)<EN||AG>------------------------->Eqn-23,T6
+
+AAAA: SUM N G T(MN,FG)<EN||AG> + SUM n g T(Mn,Fg)<En||Ag> 
+     -SUM N G T(MN,EG)<FN||AG> - SUM n g T(Mn,Eg)<Fn||Ag>
+BBBB: +SUM N G T(mN,fG)<eN|aG> + SUM n g T(mn,eg)<fn||ag>
+      -SUM N G T(mN,eG)<fN|aG> - SUM n g T(mn,fg)<en||ag>
+ABAB: +SUM N G T(mN,fG)<EN||AG> + SUM n g T(mn,fg)<En|Ag>
+      -SUM N g T(mN,Eg)<fN|Ag>
+BABA: +SUM N F T(MN,FG)<eN|aG > + SUM n f T(Mn,Fg)<en||ag>
+      -SUM n F T(Mn,eG)<Fn|aG>
+This term is computed in W5INUHF1, W5INUHF2, W5INUHF3. 
+
+T1...+T6 = WB(EFAM) intermediate, Eqn(23). 
+This is computed in FORMW5 and its dependents.
+--------------------------------------------------------------------------
+     <IE||MN> - SUM F F(I,F)T(MN,EF) ------------------> Eqn-22,T1,T2
+
+AAAA:  <IE||MN> - SUM F F(I,F)T(MN,EF)
+BBBB:  <ie||mn> - SUM f F(i,f)T(mn,ef)
+ABAB:  <Ie|Mn>  - SUM F F(I,F)T(Mn,Fe)
+BAAB:  <iE|Mn>  - SUM f F(i,f)T(Mn,Ef)
+This is computed in DHBIAJK5 and the integrals is added by DHBIAJK0
+
+      -SUM O T(O,E)WB(IO,MN)----------------------------> Eqn-22,T3
+
+AAAA:   -SUM O T(O,E)WB(IO,MN)
+BBBB:   -SUM o T(o,e)WB(io,mn)
+ABAB:   -SUM g T(o,e)WB(Io,Mn)
+BABA:   -SUM G T(O,E)WB(iO,mN)
+This is computed in DHBIAJK4
+
+       1/2SUM F G TAU(MN,FG)<IE||FG>--------------------->Eqn-22,T4
+
+AAAA:  1/2SUM F G TAU(MN,FG)<IE||FG>
+BBBB:  1/2SUM f g TAU(mn,fg)<ie||fg>
+ABAB   1/2SUM F g TAU(Mn,gF)<Ie|Fg>
+BABA:  1/2SUM f G TAU(mN,Gf)<iE|fG>
+This is computed in DHBIAJK6
+
+      SUM F T(M,F)WBB(IE,FN) - SUM F T(N,F)WBB(IE,FM)-------------------->Eqn-22,T5
+
+AAAA:   SUM F T(M,F)WBB(IE,FN) - SUM F T(N,F)WBB(IE,FM)
+BBBB:   SUM f T(m,f)WBB(ie,fn) - SUM f T(n,f)WBB(ie,fm)                             
+ABAB:   SUM F T(m,f)WBB(Ie,fN) - SUM F T(N,F)WBB(Ie,Fm) 
+BAAB    SUM f T(M,F)WBB(iE,Fn) - SUM f T(n,f)WBB(iE,fM)
+This is computed in DHBIAJK3
+
+    SUM O F T(NO,EF)<IO||MF> - SUM O F T(MO,EF)<IO||NF>----------------->Eqn-22,T6
+
+AAAA:  SUM O F T(NO,EF)<IO||MF> + SUM o f T(No,Ef)<Io|Mf> 
+      -SUM O F T(MO,EF)<IO||NF> - SUM o f T(Mo,Ef)<Io|Nf> 
+BBBB:  SUM o f T(no,ef)<io||mf> + SUM O F T(nO,eF)<iO|mF> 
+      -SUM o f T(mo,ef)<io||nf> - SUM O F T(mO,eF)<iO|nF> 
+ABAB:  SUM o f T(no,ef)<Io|Mf>  + SUM O F T(nO,eF)<IO||MF> 
+      -SUM o F T(Mo,eF)<Io|nF>
+BABA:  SUM O F T(NO,EF)<iO|mF>  + SUM o f T(No,Ef)<io||mf>  
+      -SUM O F T(mO,Ef)<iO|NF>
+This is computed in DHBIAJKA,DHBIAJKB,DHBIAJKC.
+
+T1+...T6=WB(IE,MN) intermediate, Eqn(22). 
+This is computed in FORMW4 and its dependents. Note that some
+of the comments in FORMW4 is misleading.
+---------------------------------------------------------------------------
+- 1/2 SUM F SUM M N T(MN,EF)L(MN,AF)-----------------------------> Eqn-25 
+
+AAAA:   -1/2 SUM F SUM M,N T(MN,EF)L(MN,EF)
+BBBB:   -1/2 SUM f SUM m,n T(mn,ef)L(mn,ef)
+ABAB:   -1/2 SUM f SUM M,n T(Mn,Ef)L(Mn,Ef)
+ 
+G(E,F) intermediate
+This is computed in FORMG1 and its dependents
+-------------------------------------------
+  1/2 SUM N SUM E,F T(MN,EF)L(IN,EF)--------------------------------> Eqn-26
+
+AAAA:   1/2 SUM N SUM E,F T(MN,EF)L(IN,EF) 
+BBBB:   1/2 SUM n SUM e,f T(mn,ef)L(in,ef) 
+ABAB:   1/2 SUM n SUM E,f T(Mn,Ef)L(In,Ef)
+
+G(M,I) intermediate
+This is computed in FORMG2 and its dependents
+----------------------------------------------------------------------------
+       -SUM M L(M,B)T(M,E)---------------------------->Eqn-16,part of T8
+
+AA: -SUM M L(M,B)T(M,E) = Q(B,E)
+BB: -SUM m L(m,b)T(m,e) = Q(b,e)
+
+      SUM  E L(E,J)T(M,E)--------------------------------->Eqn-16,part of T10
+
+AA:  SUM E L(E,J)T(M,E) = Q(J,M)
+BB:  SUM e L(e,j)T(m,e) = Q(j,m)
+
+These two contributions are computed in GADD. The GADD is called by
+G1INL2 and augment the G(E,F) and G(M,I) intermediate before the
+contraction with appropriate integrals (see below Eqn-1, T7 and T9
+contraction).
+----------------------------------------------------------------------------
+AA+BB: F(E,A) - 1/2 SUM M F(E,M)T(A,M)------------------------->Eqn-17, T1,T2
+       F(e,a) - 1/2 SUM m F(e,m)T(a,m)
+FB(E,A) intermediate, Eqn-17
+
+AA+BB  SUM E L(I,E)FB(E,A) + SUM e L(i,e)FB(e,a)+ F(I,A)-------->Eqn-15,T1,T2
+       + F(i,a)        
+
+      <IJ||AB> + P_(AB)SUM E L(IJ,AE)FB(E,B)-------------------->Eqn-16,T1,T2
+
+AAAA: SUM E L(IJ,AE)FB(E,B) - SUM E L(IJ,EB)FB(E,A) + <IJ||AB>
+BBBB: SUM e L(ij,ae)FB(e,b) - SUM e L(ij,eb)FB(e,a) + <ij||ab>
+ABAB: SUM e L(Ij,Ae)FB(e,b) - SUM E L(Ij,Eb)FB(E,A) + <Ij|Ab>
+
+All of these terms are computed in F1INL2 and its dependents (note
+the <IJ||AB> integrals are added via initilization in INITIN)
+----------------------------------------------------------------------
+AA+BB: F(I,M) - 1/2 SUM E F(E,J)T(E,M)--------------------------->Eqn-18,T1,T2
+       F(i,m)  -1/2 SUM e F(e,j)T(e,m)
+FB(I,M) intermediate, Eqn-18
+
+AA+BB: -SUM M L(M,A)FB(IM) - SUM m L(m,a)FB(i,m)-------------------->Eqn-15,T3
+
+      -P_(IJ)SUM M L(IM,AB)F(J,M) --------------------------------->Eqn-16,T3
+ 
+AAAA: -SUM M L(IM,AB)FB(J,M) + SUM M L(MJ,AB)FB(I,M)
+BBBB: -SUM m L(im,ab)FB(j,m) + SUM m L(mj,ab)FB(i,m)
+ABAB: -SUM m L(Im,Ab)FB(j,m) + SUM M L(Mj,Ab)FB(I,M)
+
+All of these terms are computed in F2INL2 and its dependents
+------------------------------------------------------------------------
+    P(AB) SUM E <IJ||AE> G(E,B) - P(IJ) SUM M <IM||AB>G(J,M)--->Eqn-16-T7,T9
+
+AAAA: SUM E <IJ||AE>G(EB) - SUM E <IJ||EB>G(EA)
+BBBB: SUM e <ij||ae>G(eb) - SUM e <ij||eb>G(ea)
+ABAB: SUM e <Ij||Ae>G(eb) - SUM E <Ij||Eb>G(EA)
+
+AAAA: -SUM M <IM||AB>G(JM) + SUM M <MJ||AB>G(IM)
+BBBB: -SUM m <im||ab>G(jm) + SUM m <mj||ab>G(im)
+ABAB: -SUM m <Im||Ab>G(jm) + SUM M <Mj||Ab>G(IM)
+
+These two contributions are calculated in G1INL2 and G2INL2 and dependents.
+--------------------------------------------------------------------------
+    -SUM M <MB||IJ>L(M,A) + SUM M <MA||IJ>L(M,B)--------------->Eqn-16-T13
+
+AAAA: -SUM M <MB||IJ>L(M,A) + SUM M <MA||IJ>L(M,B)
+BBBB: -SUM m <mb||ij>L(m,a) + SUM m <ma||ij>L(m,b)
+ABAB: -SUM m <mB||iJ>L(m,a) + SUM M <Mb||Ij>L(M,B)
+ 
+This is computed in L1INL2A and its dependents. 
+---------------------------------------------------------------------------
+    SUM E <AB||EJ>L(I,E) - SUM E <AB||EI>L(J,E)--------------->Eqn-16,T12
+
+AAAA: SUM E <AB||EJ>L(I,E) - SUM E <AB||EI>L(J,E)
+BBBB: SUM e <ab||ej>L(i,e) - SUM e <ab||ei>L(j,e)
+ABAB: SUM E <Ab||Ej>L(I,E) - SUM e <aB||eI>L(j,e)
+
+This is computed in L1INL2B and its dependents.
+---------------------------------------------------------------------------
+    SUM M,E WB(EI,MA)L(E,M) --------------------------->Eqn-15,T5
+
+AA:  SUM M E WB(EI,MA)L(E,M) + SUM m e WB(eI,mA)L(e,m) 
+BB:  SUM m e WB(ei,ma)L(e,m) + SUM m E WB(Ei,Ma)L(E,M)
+
+This is computed in L1INL1 (ISPIN=1,2 for AA and BB terms respectively)
+---------------------------------------------------------------------------
+    SUM M E F G(F,E)T(M,F)<IM||AE>-------------------------->Eqn-15,T9,T10
+
+AA:  SUM M E F G(F,E)T(M,F)<IM||AE> + SUM m e f G(f,e)T(m,f)<Im|Ae>
+BB:  SUM M E F G(F,E)T(M,F)<iM|aE> + SUM m e f G(f,e)T(m,f)<im||ae>
+
+   -SUM M E N G(M,N)T(ME)<IM||AE>
+
+AA: -SUM M E N G(M,N)T(M,E)<IM||AE> - SUM m e n G(m,n)T(m,e)<Im|Ae>
+BB: -SUM m e n G(M,N)T(M,E)<im||ae> - SUM m e n G(m,n)T(m,e)<iM|aE>
+
+These two terms are computed in GT1INL1.
+---------------------------------------------------------------------------
+   -SUM M N G(M,N)<MI||NA> - SUM E F G(E,F)<EI||FA>----------->Eqn-15,T7,T8
+
+AA: -SUM M N G(M,N)<MI||NA> - SUM m n G(m,n)<mI||nA> 
+    -SUM E F G(E,F)<EI||NA> - SUM w f G(e,f)<eI|fA>
+BB: -SUM M N G(M,N)<Ma|Na> - SUM m n G(m,n)<mi||na> 
+    -SUM E F G(E,F)<Ei|Na> - SUM w f G(e,f)<ei||fa> 
+
+These are computed in GINL11 and GINL12. Both are dependents of GWINL1. 
+---------------------------------------------------------------------------
+    +1/2SUM M E F L(IM,EF)WB(EF,AM)-------------------------->Eqn-15,T4,T6
+
+AA:  +1/2SUM M E F L(IM,EF)WB(EF,AM) + 1/2SUM m E f L(Im,Ef)WB(Ef,Am) 
+BB:  +1/2SUM m e f L(im,ef)WB(ef,am) + 1/2SUM M E f L(iM,Ef)WB(Ef,aM)
+
+     -1/2SUM M N E L(MN,AE)WB(MN,IE) 
+
+AA: -1/2SUM M N E L(MN,AE)WB(MN,IE) - 1/2SUM M n e L(Mn,Ae)WB(Mn,Ie) 
+BB: -1/2SUM m n e L(mn,ae)WB(mn,ie) - 1/2SUM M n E L(Mn,aE)WB(Mn,iE)
+
+These terms are computed in L2INL1 and its dependents. Also, computed
+are  the F(A,I) and F(a,i) contributions. 
+------------------------------------------------------------------------------
+  <EF||AB> -P(EF) SUM M T(M,E)<MF||AB>---------------------->Eqn-19,T1,T2
+
+AAAA: <EF||AB> = T1(EF,AB)
+BBBB: <ef||ab> = T1(ef,ab)
+ABAB: <Ef|Ab>  = T1(Ef,Ab)
+
+      -SUM M T(M,E)<MF||AB> + SUM M T(M,F)<ME||AB>
+
+AAAA:  - SUM M T(M,E)<MF||AB> + SUM M T(M,F)<ME||AB> = T2(EF,AB)
+BBBB:  - SUM m T(m,e)<mf||ab> + SUM m T(m,f)<me||ab> = T2(ef,ab) 
+ABAB:  - SUM M T(M,E)<Mf|Ab> + SUM m T(m,f)<mE|aB>   = T2(Ef,Ab)
+
+            1/2SUM M N TAU(MN,EF)<MN||AB> --------------->Eqn-19, T3
+
+AAAA:  1/2SUM M N TAU(MN,EF)<MN||AB>  = T3(EF,AB)
+BBBB:  1/2SUM m n TAU(mn,ef)<mn||ab>  = T3(ef,ab)
+ABAB:  1/2SUM M n TAU(Mn,Ef)<Mn|Ab>   = T3(Ef,Ab)
+
+T1+..T3=WB(EFAB) intermediate, Eqn-19, Note that we do not
+pre calculate the WB(EFAB) intermediate. Instead we would diretcly
+compute the contributions to the L(IJ,AB). These contributions
+are computed in depenedents of L2INL2 (L2LAD, T1) and L1W1 (T2).
+-------------------------------------------------------------------------
+     1/2SUM E F L(IJ,EF)T1(EF,AB)-------------------------------->Eqn-16,T4
+
+AAAA:  1/2SUM E F L(IJ,EF)T1(EF,AB) 
+BBBB:  1/2SUM e f L(ij,ef)T1(ef,ab)
+ABAB:  1/2SUM E f L(Ij,Ef)T1(Ef,Ab)
+
+This is computed in L2LAD (DRAOLAD), a dependent of L2INL2. The actual
+routine that does the job are LLADAA1 and LLADAB1 (LLADAB2 for RHF). 
+
+        1/2SUM E F L(IJ,EF)T2(EF,AB)
+
+AAAA:  1/2SUM E F L(IJ,EF)T2(EF,AB)
+BBBB:  1/2SUM e f L(ij,ef)T2(ef,ab)
+ABAB:  1/2SUM E f L(Ij,Ef)T2(Ef,Ab)
+
+This is computed in L1W1.
+------------------------------------------------------------------------------
+    <IJ||MN> + SUM E T(M,E)<IJ||EN> - SUM E T(N,E)<IJ||EM> ---->Eqn-20,T1,T2
+
+AAAA:  <IJ||MN> + SUM E T(M,E)<IJ||EN> - SUM E T(N,E)<IJ||EM>
+BBBB:  <ij||mn> + SUM e T(m,e)<ij||en> - SUM e T(n,e)<ij||em>
+ABAB:  <Ij|Mn> +  SUM E T(M,E)<Ij|En> - SUM e T(n,e)<Ij|eM>
+
+These terms are computed in GENINT and dependents (T1INW2) in the
+energy code. 
+
+             1/2SUM E F TAU(MN,EF)<EF||IJ> --------------> Eqn-20, T3
+
+See FORMV1 and its dependents to see how this contribution is computed.
+
+AAAA:  1/2SUM E F TAU(MN,EF)<EF||IJ>
+BBBB:  1/2SUM e f TAU(mn,ef)<ef||ij>
+ABAB:  1/2SUM E f TAU(Mn,Ef)<Ef|Ij>
+
+T1+..+T3=WB(IJ,MN) intermediate, Eqn-20
+-----------------------------------------------------------------------------
+     1/2SUM M N L(MN,AB)WB(IJ,MN)--------------------------------->Eqn-16,T5
+
+AAAA:  1/2SUM M N L(MN,AB)WB(IJ,MN) 
+BBBB:  1/2SUM m n L(mn,ab)WB(ij,mn) 
+ABAB:  1/2SUM M n L(Mn,Ab)WB(Ij,Mn)
+
+This is computed in L2LAD (DRAOLAD), a dependent of L2INL2 (the same routines
+that employ to compute the WB(EF,AB) contributions using appropriate data)
+-----------------------------------------------------------------------------
+     P_(IJ)P_(AB)L(I,A)F(J,B)A------------------------------------->Eqn-16,T11
+
+AAAA: L(I,A)F(J,B) - L(I,B)F(J,A) - L(J,A)F(I,B) + L(J,B)F(I,A) 
+BBBB: L(i,a)F(j,b) - L(i,b)F(j,a) - L(j,a)F(i,b) + L(j,b)F(i,a) 
+ABAB: L(I,A)F(j,b) + L(j,b)F(I,A)
+BABA: L(i,a)F(J,B) + L(J,B)F(I,A) 
+
+This is done in DISCO, a dependent of L2RNG.
+------------------------------------------------------------------------------
+     P_(IJ)P_(AB)SUM M E L(IM,AE)WB(EJ,MB)------------------------->Eqn-16,T6
+
+AAAA:  SUM M E L(IM,AE)WB(EJ,MB) + SUM M E L(Im,Ae)WB(eJ,mB)  = Q(IJ,AB)
+BBBB:  SUM m e L(im,ae)WB(ej,mb) + SUM m e L(iM,aE)WB(Ej,Mb)  = Q(jj,ab)
+ABAB:  SUM m e L(Im,Ae)WB(ej,mb) + SUM M E L(IM,AE)WB(Ej,Mb)  = Q(Ij,Ab)
+BABA:  SUM M E L(iM,aE)WB(EJ,MB) + SUM m e L(im,ae)WB(eJ,mB)  = Q(iJ,aB)
+ABBA:  SUM m E L(Im,aE)WB(Ej,mB)                              = Q(Ij,aB)
+BAAB:  SUM M e L(iM,Ae)WB(eJ,Mb)                              = Q(iJ,Ab)
+
+Z(IJ,AB) = Q(IJ,AB) - Q(JI,AB) - Q(IJ,BA) + Q(JI,BA)
+Z(ij,ab) = Q(ij,ab) - Q(ji,ab) - Q(ij,ba) + Q(ji,ba)
+Z(Ij,Ab) = Q(Ij,Ab) + Q(jI,bA) + Q(Ij,Ab) + Q(jI,bA)
+Z(Ij,aB) = Q(Ij,aB) + Q(jI,Ba) + Q(Ij,aB) + Q(jI,aB) 
+
+L(IJ,AB) = P_(IJ)P_(AB)Z(IJ,AB) 
+L(ij,ab) = P_(ij)P_(ab)Z(ij,ab)
+L(Ij,Ab) = Z(Ij,Ab) - Z(Ij,bA) - Z(jI,Ab) + Z(jI,Ab)
+
+This is computed in L2RNG, a dependent of L2INL2. The LRNGDRV with 
+aguments to control the spin cases responsible for carrying out 
+the contraction. 
+--------------------------------------------------------------------------------
+

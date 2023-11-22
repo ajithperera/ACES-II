@@ -1,0 +1,44 @@
+      SUBROUTINE MODGIJ(IRREPG,IRREPTA,IRREPTB,GP,G,TA,TB,ISPIN,FACT)
+C
+C THIS ROUTINE ACCEPTS THE INPUT ARRAYS G(be), TA(ai) AND TB(ai) 
+C AND MODIFIES G ACCORDING TO:
+C
+C       GP(mj) = G(mj) + FACT * TA(em) * TB(ej)
+C
+CEND
+      IMPLICIT INTEGER (A-Z)
+      DOUBLE PRECISION ONE,ZILCH,FACT,G,TA,TB,GP
+      DIMENSION GP(*),G(*),TA(*),TB(*)
+      COMMON/SYMINF/NSTART,NIRREP,IRREPS(255,2),DIRPRD(8,8)
+      COMMON/SYM/POP(8,2),VRT(8,2),NT(2),NFMI(2),NFEA(2)
+      COMMON/SYMLOC/ISYMOFF(8,8,25)
+C
+      DATA ONE,ZILCH /1.0D0,0.0D0/
+C
+C CARRY OUT MULTIPLICATION
+C                                         +
+C           GP(mj) = G(mj) + FACT * TA(em) * TB(ej)
+C
+      DO 10 IRREPJ=1,NIRREP
+       IRREPM=DIRPRD(IRREPJ,IRREPG)
+       IRREPE=DIRPRD(IRREPM,IRREPTA)
+       NUME=VRT(IRREPE,ISPIN)
+       NUMJ=POP(IRREPJ,ISPIN)
+       NUMM=POP(IRREPM,ISPIN)
+       IOFFTA=ISYMOFF(IRREPM,IRREPTA,8+ISPIN) 
+       IOFFTB=ISYMOFF(IRREPJ,IRREPTB,8+ISPIN) 
+       IOFFG =ISYMOFF(IRREPJ,IRREPG ,20+ISPIN)
+       CALL XGEMM('T','N',NUMM,NUMJ,NUME,FACT,TA(IOFFTA),NUME,
+     &            TB(IOFFTB),NUME,ZILCH,GP(IOFFG),NUMM)
+C
+CSSS       Print*, "The L1*R1 term in modgij"
+CSSS       call output(gp(IOFFG), 1, numm*numj, 1, 1, numm*numj, 1,0)
+CSSS       Print*, "The L2*R2 term in modgij"
+CSSS       call output(g(IOFFG), 1, numm*numj, 1, 1, numm*numj, 1,0)
+C
+       CALL SAXPY(NUMM*NUMJ,ONE,G(IOFFG),1,GP(IOFFG),1)
+10    CONTINUE
+     
+C
+      RETURN
+      END

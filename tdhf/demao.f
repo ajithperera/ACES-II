@@ -1,0 +1,20 @@
+      SUBROUTINE DEMAO(N,C,DMO,DAO)
+C  ..... Transform Anti-Symmetric Density to AO basis ...................
+C  ..... here N=NBASIS .............................................
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      COMMON/INFOA/NBASIS,NUMSCF,NX,NMO2,NOC,NVT,NVO     
+      DIMENSION C(N,N),DAO(1),DMO(1)
+      DATA ZERO/0.D0/,ONE/1.D0/
+      N2=NUMSCF*NUMSCF
+      CALL RTAPUT(DAO,DMO,N)
+C     CALL MATMUL(C,DAO,DMO,N,N,N,1,0)
+      CALL XGEMM('N','N',NBASIS,NBASIS,NUMSCF,ONE,C,N,DAO,NUMSCF
+     X ,ZERO,DMO,NUMSCF)
+      CALL TRANSQ(C,N)
+C     CALL MATMUL(DMO,C,DAO,N,N,N,1,0)
+      CALL XGEMM('N','N',NBASIS,NBASIS,NUMSCF,ONE,DMO,NUMSCF,C,N
+     X ,ZERO,DAO,NUMSCF)
+      CALL TRANSQ(C,N)
+      CALL COPY(DAO,DMO,N2)
+      RETURN
+      END

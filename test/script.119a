@@ -1,0 +1,64 @@
+test -n "$USERDIR" || exit 1
+OLDMOS=$USERDIR/tmp.OLDMOS
+
+# Part 1: generate MOs
+cat <<. >ZMAT
+Generate OLDMOS
+H
+F 1 R
+
+R=1.4
+
+*ACES2
+BASIS=DZP,SPHERICAL=ON
+REF=UHF
+CALC=SCF,HFSTABILITY=FOLLOW
+
+.
+ln -s $GENBAS . || exit 1
+xaces2 || exit 1
+mv NEWMOS $OLDMOS || exit 1
+
+# clean
+for file in *
+do case $file in
+   GENBAS|ZMAT.BAS) ;;
+   *) rm -rf $file ;;
+   esac
+done
+
+# Part 2: optimize the geometry
+cat <<. >ZMAT
+Use OLDMOS (without a GUESS file)
+H
+F 1 R*
+
+R=1.4
+
+*ACES2
+!RESTART
+BASIS=DZP,SPHERICAL=ON
+REF=UHF,GUESS=READ_SO_MOS
+CALC=CCSD,DROPMO=1
+
+.
+mv $OLDMOS OLDMOS || exit 1
+xaces2 || exit 1
+
+exit 0
+TEST.DAT
+d TOTENERG
+ -0.100247877712E+03   0.1E-08
+d COORD
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.164723930813E+01   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+ -0.873825667280E-01   0.1E-08
+d NUCREP
+  0.518845065339E+01   0.1E-08
+d SCFENEG
+ -0.100046952368E+03   0.1E-08
+d S2SCF
+ -0.106581410364E-13   0.1E-08

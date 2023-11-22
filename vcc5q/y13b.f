@@ -1,0 +1,205 @@
+      SUBROUTINE Y13B(CORE,MAXCOR,IUHF)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      INTEGER DISSIZW,DISSIZT,DISSIZY,SIZAAO,SIZAAV,SIZBBO,SIZBBV
+      INTEGER POP,VRT,DIRPRD
+      DIMENSION CORE(1)
+      DIMENSION SIZAAO(8),SIZAAV(8),SIZBBO(8),SIZBBV(8)
+C
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /SYM/    POP(8,2),VRT(8,2),NT(2),NFMI(2),NFEA(2)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPS(255,2),DIRPRD(8,8)
+      COMMON /INFO/   NOCA,NOCB,NVRTA,NVRTB
+      COMMON /T3OFF/  IOFFVV(8,8,10),IOFFOO(8,8,10),IOFFVO(8,8,4)
+C
+      INDEX(I) = I * (I-1)/2
+C
+      WRITE(6,1000)
+ 1000 FORMAT(' @Y13B-I, T2 * Y4 contributions. ')
+C
+      DO   20 IRREP=1,NIRREP
+      SIZAAO(IRREP) = 0
+      SIZAAV(IRREP) = 0
+      SIZBBO(IRREP) = 0
+      SIZBBV(IRREP) = 0
+C
+      DO   10 JRREP=1,NIRREP
+      KRREP=DIRPRD(IRREP,JRREP)
+C
+      SIZAAO(IRREP) = SIZAAO(IRREP) + POP(JRREP,1)*POP(KRREP,1)
+      SIZAAV(IRREP) = SIZAAV(IRREP) + VRT(JRREP,1)*VRT(KRREP,1)
+      SIZBBO(IRREP) = SIZBBO(IRREP) + POP(JRREP,2)*POP(KRREP,2)
+      SIZBBV(IRREP) = SIZBBV(IRREP) + VRT(JRREP,2)*VRT(KRREP,2)
+C
+   10 CONTINUE
+   20 CONTINUE
+C
+C     CEKM = CEIJ * IJKM
+C     cekm = ceij * ijkm
+C
+      DO  100 ISPIN=1,IUHF+1
+C
+      DO   40 IRPIJ=1,NIRREP
+C
+      IRPCE = IRPIJ
+      IRPKM = IRPIJ
+C
+      DISSIZW = IRPDPD(IRPIJ,2+ISPIN)
+      NDISW   = IRPDPD(IRPIJ,2+ISPIN)
+      DISSIZT = IRPDPD(IRPIJ,  ISPIN)
+      NDIST   = IRPDPD(IRPIJ,2+ISPIN)
+C
+C     Expanded distribution sizes for Y13 (not used in XGEMM).
+C
+      IF(ISPIN.EQ.1)THEN
+      DISSIZY = SIZAAV(IRPCE)
+      NDISY   = SIZAAO(IRPKM)
+      ELSE
+      DISSIZY = SIZBBV(IRPCE)
+      NDISY   = SIZBBO(IRPKM)
+      ENDIF
+C
+      I000 = 1
+      I010 = I000 + DISSIZY * NDISY
+      I020 = I010 + DISSIZW * NDISW
+      I030 = I020 + DISSIZT * NDIST
+      NEED = IINTFP * I030
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+ 1020 FORMAT(' @Y13B-I, Insufficient memory. Need ',I15,' . Got ',I15)
+      STOP 'Y13B'
+      ENDIF
+C
+      IOFFY = I000
+      IOFFW = I010
+      IOFFT = I020
+C
+C     W(I,J,K,M) or W(i,j,k,m)
+      CALL GETLIST(CORE(IOFFW),1,NDISW,2,IRPIJ, 6+ISPIN)
+C     T(C<E,I<J) or T(c<e,i<j)
+      CALL  GETLST(CORE(IOFFT),1,NDIST,1,IRPKM,43+ISPIN)
+C
+      CALL XGEMM('N','N',DISSIZT,NDISW,DISSIZW,
+     1             -1.0D+00,
+C    1             1.0D+00,
+     1            CORE(IOFFT),DISSIZT,
+     1            CORE(IOFFW),DISSIZW,0.0D+00,
+     1            CORE(IOFFY),DISSIZT)
+C
+C     We have a symmetry block of Y(C<E,K<M) at IOFFY. Expand to Y(C,E,I,J)
+C     and add to contents of list.
+C
+C     (C<E,K<M) ---> (C,E,K<M)
+      CALL SYMEXP2(IRPCE,VRT(1,ISPIN),DISSIZY,IRPDPD(IRPCE,  ISPIN),
+     1             IRPDPD(IRPKM,2+ISPIN),CORE(IOFFY),CORE(IOFFY))
+C     (C,E,K<M) ---> (C,E,K,M)
+      CALL  SYMEXP(IRPKM,POP(1,ISPIN),DISSIZY,CORE(IOFFY))
+C
+C     Who's being pedantic now ?
+      I020 = I010 + DISSIZY * NDISY
+      NEED = IINTFP * I020
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y13B'
+      ENDIF
+C
+      CALL GETLIST(CORE(IOFFW),1,NDISY,2,IRPKM,18+ISPIN)
+      CALL    VADD(CORE(IOFFW),CORE(IOFFW),CORE(IOFFY),DISSIZY*NDISY,
+     1              1.0D+00)
+      CALL PUTLIST(CORE(IOFFW),1,NDISY,2,IRPKM,18+ISPIN)
+   40 CONTINUE
+  100 CONTINUE
+C
+C     CeKm = CeIj * IjKm
+C     (generate all other increments from this one by sign change and
+C     transposition)
+C
+      DO  140 IRPIJ=1,NIRREP
+C
+      IRPCE = IRPIJ
+      IRPKM = IRPIJ
+C
+      DISSIZW = IRPDPD(IRPIJ,14)
+      NDISW   = IRPDPD(IRPIJ,14)
+      DISSIZT = IRPDPD(IRPIJ,13)
+      NDIST   = IRPDPD(IRPIJ,14)
+C
+      DISSIZY = IRPDPD(IRPCE,13)
+      NDISY   = IRPDPD(IRPKM,14)
+C
+      I000 = 1
+      I010 = I000 + DISSIZY * NDISY
+      I020 = I010 + DISSIZW * NDISW
+      I030 = I020 + DISSIZT * NDIST
+      NEED = IINTFP * I030
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y13B'
+      ENDIF
+C
+      IOFFY = I000
+      IOFFW = I010
+      IOFFT = I020
+C
+C     W(I,j,K,m)
+      CALL GETLIST(CORE(IOFFW),1,NDISW,2,IRPIJ, 9)
+C     T(C,e,I,j)
+      CALL  GETLST(CORE(IOFFT),1,NDIST,1,IRPKM,46)
+C
+      CALL XGEMM('N','N',DISSIZT,NDISW,DISSIZW,
+     1             -1.0D+00,
+C     1             1.0D+00,
+     1            CORE(IOFFT),DISSIZT,
+     1            CORE(IOFFW),DISSIZW,0.0D+00,
+     1            CORE(IOFFY),DISSIZT)
+C
+C     We have a symmetry block of Y(C,e,K,m) at IOFFY.
+C     Sum into abab/baba/abba/baab lists, appropriately transposing and/
+C     or negating. First allocate memory.
+C
+      I020 = I010 + DISSIZY * NDISY
+      I030 = I020 + MAX(DISSIZY,NDISY)
+      I040 = I030 + MAX(DISSIZY,NDISY)
+      I050 = I040 + MAX(DISSIZY,NDISY)
+      NEED = IINTFP * I050
+      IF(NEED.GT.MAXCOR)THEN
+      WRITE(6,1020) NEED,MAXCOR
+      STOP 'Y13B'
+      ENDIF
+C
+C     abab
+      CALL GETLIST(CORE(I010),1,NDISY,2,IRPKM,21)
+      CALL    VADD(CORE(I010),CORE(I010),CORE(IOFFY),DISSIZY*NDISY,
+     1              1.0D+00)
+      CALL PUTLIST(CORE(I010),1,NDISY,2,IRPKM,21)
+C
+C     abab ---> abba
+C
+      CALL SYMTR1(IRPKM,POP(1,1),POP(1,2),IRPDPD(IRPCE,13),
+     1            CORE(IOFFY),CORE(I020),CORE(I030),CORE(I040))
+      CALL GETLIST(CORE(I010),1,NDISY,2,IRPKM,23)
+      CALL    VADD(CORE(I010),CORE(I010),CORE(IOFFY),DISSIZY*NDISY,
+     1             -1.0D+00)
+      CALL PUTLIST(CORE(I010),1,NDISY,2,IRPKM,23)
+C
+C     abba ---> baba
+C
+      CALL SYMTR3(IRPCE,VRT(1,1),VRT(1,2),IRPDPD(IRPCE,13),
+     1            IRPDPD(IRPKM,14),CORE(IOFFY),
+     1            CORE(I020),CORE(I030),CORE(I040))
+      CALL GETLIST(CORE(I010),1,NDISY,2,IRPKM,22)
+      CALL    VADD(CORE(I010),CORE(I010),CORE(IOFFY),DISSIZY*NDISY,
+     1              1.0D+00)
+      CALL PUTLIST(CORE(I010),1,NDISY,2,IRPKM,22)
+C
+C     baba ---> baab
+C
+      CALL SYMTR1(IRPKM,POP(1,2),POP(1,1),IRPDPD(IRPCE,13),
+     1            CORE(IOFFY),CORE(I020),CORE(I030),CORE(I040))
+      CALL GETLIST(CORE(I010),1,NDISY,2,IRPKM,24)
+      CALL    VADD(CORE(I010),CORE(I010),CORE(IOFFY),DISSIZY*NDISY,
+     1             -1.0D+00)
+      CALL PUTLIST(CORE(I010),1,NDISY,2,IRPKM,24)
+  140 CONTINUE
+      RETURN
+      END

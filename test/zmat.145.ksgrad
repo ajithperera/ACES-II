@@ -1,0 +1,24 @@
+TEST-HFDFT
+O
+H 1 R*
+H 1 R* 2 A*
+
+R=0.9569
+A=104.517
+
+*ACES2(REFERENCE=RHF,FOCK=AO,
+BASIS=MG3
+GRAD_CALC=ANALYTICAL 
+MEM_SIZ=1GB,
+SPHERICAL=ON,SCF_TYPE=KS,MULTI=1)
+
+*SCF
+ KS=ON
+
+*INTGRT
+ kspot=becke,lyp
+ func=becke,lyp
+ ksmem=150000000
+ potradpts=94
+*end 
+

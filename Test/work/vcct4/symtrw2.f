@@ -1,0 +1,80 @@
+      SUBROUTINE SYMTRW2m(T3,W,W2,IADT3,IADW,IRPIJK,ISPIN1,ISPIN2)
+      IMPLICIT INTEGER (A-Z)
+      DOUBLE PRECISION T3(1),W(1),W2(1)
+      DIMENSION IADT3(8),IADW(8),IADW2(8)
+      DIMENSION LEN(8)
+C
+      common/newio/in1,in2,in3,in4,in5,no,nu
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPA(255),IRREPB(255),
+     1                DIRPRD(8,8)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON /SYM/    POP(8,2),VRT(8,2),NTAA,NTBB,NF1AA,NF2AA,
+     1                NF1BB,NF2BB
+      COMMON /T3OFF/  IOFFVV(8,8,10),IOFFOO(8,8,10),IOFFVO(8,8,4)
+C     CASE 2 TRIPLES (AAB)
+C     ISPIN1 = 1
+C     ISPIN2 = 2
+C     CASE 3 TRIPLES (BBA)
+C     ISPIN1 = 2
+C     ISPIN2 = 1
+C
+C     Routine to effect the transformations
+C
+C     T3(A<C,d) ---> W2(AC,d)      (IRREP LABEL IS D)
+C
+C      W2(AC,d) --->  W(Cd,A)      (IRREP LABEL IS A) THE TOUGH PART
+C
+C     in symmetry. As always, DIRPRD(A,C,D) is not necessarily equal
+C     to 1.
+C
+      DO   20 IRPD=1,NIRREP
+      IRPAC = DIRPRD(IRPD,IRPIJK)
+C
+      LEN(IRPD) = IRPDPD(IRPAC,18+ISPIN1) * VRT(IRPD,ISPIN2)
+      IF(IRPD.EQ.1)THEN
+      IADW2(IRPD) = 1
+      ELSE
+      IADW2(IRPD) = IADW2(IRPD-1) + LEN(IRPD-1)
+      ENDIF
+C
+      CALL SYMEXP2(IRPAC,VRT(1,ISPIN1),
+     1             IRPDPD(IRPAC,18+ISPIN1),IRPDPD(IRPAC,ISPIN1),
+     1             VRT(IRPD,ISPIN2),W2(IADW2(IRPD)),T3(IADT3(IRPD)))
+   20 CONTINUE
+c      call chksumsk('w2      ',w2,729)
+C
+C     SET ADDRESSES FOR REORDERED W.
+C
+      DO   30 IRPA=1,NIRREP
+      IRPCD = DIRPRD(IRPA,IRPIJK)
+      LEN(IRPA) = VRT(IRPA,ISPIN1) * IRPDPD(IRPCD,13)
+      IF(IRPA.EQ.1)THEN
+      IADW(IRPA) = 1
+      ELSE
+      IADW(IRPA) = IADW(IRPA-1) + LEN(IRPA-1)
+      ENDIF
+   30 CONTINUE
+C
+      DO 50 IRPA=1,NIRREP
+      IRPCD = DIRPRD(IRPA,IRPIJK)
+      DO 40 IRPD=1,NIRREP
+      IRPC  = DIRPRD(IRPD,IRPCD)
+      IRPAC = DIRPRD(IRPA,IRPC)
+C
+      IF(VRT(IRPA,ISPIN1).EQ.0.OR.VRT(IRPC,ISPIN1).EQ.0.OR.
+     1                            VRT(IRPD,ISPIN2).EQ.0) GOTO 40
+C
+      CALL SYMW2m(nu,W(IADW(IRPA)),W2(IADW2(IRPD)),t3,
+     1           IRPDPD(IRPCD,13       ),VRT(IRPA,ISPIN1),
+     1           IRPDPD(IRPAC,18+ISPIN1),VRT(IRPD,ISPIN2),
+     1           ISPIN1,ISPIN2,
+     1           IOFFVV(IRPD,IRPCD,4+ISPIN1),
+     1           IOFFVV(IRPC,IRPAC,2+ISPIN1),
+     1           IRPA,IRPC,IRPD)
+C
+   40 CONTINUE
+   50 CONTINUE
+C
+      RETURN
+      END
+

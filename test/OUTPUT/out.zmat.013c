@@ -1,0 +1,2889 @@
+
+              ****************************************************
+              * ACES : Advanced Concepts in Electronic Structure *
+              *                    Ver. 2.6.0                    *
+              *               Release Candidate: 2               *
+              ****************************************************
+
+                             Quantum Theory Project
+                             University of Florida
+                             Gainesville, FL  32611
+ @ACES_INIT_RTE: Build-specific parameters:
+                 bytes per integer =  4
+                 bytes per double  =  8
+                 recls per integer =  4
+
+
+                      ACES STATE VARIABLE REGISTRATION LOG
+     ----------------------------------------------------------------------
+     The ACES State Variables were initialized.
+     Updating (RESTART,OFF): 'OFF' converts to 'OFF' -> 0
+     Updating (BASIS,TZ2P): String copy succeeded.
+     Updating (SPHERICAL,ON): 'ON' converts to 'ON' -> 1
+     Updating (MULTIPLICTY,2): 1 -> 2
+     Updating (REFERENCE,ROHF): 'ROHF' converts to 'ROHF' -> 2
+     Updating (CALCLEVEL,CCSD): 'CCSD' converts to 'CCSD' -> 10
+     Updating (INCORE,NOABCD): 'NOABCD' converts to 'NOABCD' -> 1
+     Updating (GEOM_OPT,FULL): 'FULL' converts to 'FULL' -> 2
+     ----------------------------------------------------------------------
+
+
+                       ACES STATE VARIABLE VALIDATION LOG
+     ----------------------------------------------------------------------
+     Updating (COORDINATES,INTERNAL): 'INTERNAL' converts to 'INTERNAL' -> 0
+     Updating (OPT_METHOD,manr): 'manr' converts to 'MANR' -> 3
+     Updating (PROGRAM,aces2): 'aces2' converts to 'ACES2' -> 2
+     Updating (GRAD_CALC,analytical): 'analytical' converts to 'ANALYTICAL' -> 0
+     Updating (DERIV_LEV,first): 'first' converts to 'ON' -> 1
+     Updating (CC_MAXCYC,50): 0 -> 50
+     Updating (CC_EXPORDER,5): 0 -> 5
+     Updating (TAMP_SUM,5): 0 -> 5
+     Updating (ORBITALS,standard): 'standard' converts to 'STANDARD' -> 0
+     Updating (PERT_ORB,standard): 'standard' converts to 'STANDARD' -> 0
+     Updating (ESTATE_TOL,5): -1 -> 5
+     Updating (NONHF,ON): 'ON' converts to 'ON' -> 1
+     Updating (HBARABCD,OFF): 'OFF' converts to 'OFF' -> 1
+     Updating (HBARABCI,OFF): 'OFF' converts to 'OFF' -> 1
+     Updating (ABCDFULL,ON): 'ON' converts to 'ON' -> 1
+     Updating (CACHE_RECS,45): -1 -> 45
+     Updating (FILE_RECSIZ,16384): -1 -> 16384
+     ----------------------------------------------------------------------
+
+          ASV#   ASV KEY DEFINITION =    CURRENT [   DEFAULT] UNITS
+          ------------------------------------------------------------
+            1:                PRINT =          0 [         0] 
+            2:            CALCLEVEL =         10 [         0] 
+            3:            DERIV_LEV =          1 [        -1] 
+            4:              CC_CONV =          7 [         7] (tol)
+
+            5:             SCF_CONV =          7 [         7] (tol)
+            6:            XFORM_TOL =         11 [        11] (tol)
+            7:            CC_MAXCYC =         50 [         0] cycles
+            8:           LINDEP_TOL =          5 [         5] 
+
+            9:                  RDO =         -1 [        -1] 
+           10:           SCF_EXTRAP =          1 [         1] 
+           11:            REFERENCE =          2 [         0] 
+           12:          CC_EXPORDER =          5 [         0] 
+
+           13:             TAMP_SUM =          5 [         0] 
+           14:            NTOP_TAMP =         15 [        15] 
+           15:              DAMPSCF =         20 [        20] x 0.01
+           16:           SCF_MAXCYC =        150 [       150] cycles
+
+           18:                PROPS =          0 [         0] 
+           19:              DENSITY =          0 [         0] 
+           20:          SCF_EXPORDE =          6 [         6] 
+           21:          CC_EXTRAPOL =          1 [         1] 
+
+           22:            BRUECKNER =          0 [         0] 
+           23:               XFIELD =          0 [         0] x 10-6
+           24:               YFIELD =          0 [         0] x 10-6
+           25:               ZFIELD =          0 [         0] x 10-6
+
+           26:            SAVE_INTS =          0 [         0] 
+           28:               CHARGE =          0 [         0] 
+           29:          MULTIPLICTY =          2 [         1] 
+           30:          CPHF_CONVER =         12 [        12] (tol)
+
+           31:          CPHF_MAXCYC =         64 [        64] cycles
+           35:               INCORE =          1 [         0] 
+           36:          MEMORY_SIZE =   15000000 [  15000000] Words
+           37:          FILE_RECSIZ =      16384 [        -1] Words
+
+           38:                NONHF =          1 [         0] 
+           39:             ORBITALS =          0 [        -1] 
+           40:          SCF_EXPSTAR =          8 [         8] 
+           41:          LOCK_ORBOCC =          0 [         0] 
+
+           42:          FILE_STRIPE =          0 [         0] 
+           43:               DOHBAR =          0 [         0] 
+           44:           CACHE_RECS =         45 [        -1] 
+           45:                GUESS =          0 [         0] 
+
+           46:           JODA_PRINT =          0 [         0] 
+           47:           OPT_METHOD =          3 [         0] 
+           48:          CONVERGENCE =          4 [         4] H/bohr
+           49:          EIGENVECTOR =          1 [         1] 
+
+           50:              NEGEVAL =          2 [         2] 
+           51:          CURVILINEAR =          0 [         0] 
+           52:          STP_SIZ_CTL =          0 [         0] 
+           53:             MAX_STEP =        300 [       300] millibohr
+
+           54:            VIBRATION =          0 [         0] 
+           55:            EVAL_HESS =          0 [         0] # of cyc.
+           56:            INTEGRALS =          1 [         1] 
+           57:          FD_STEPSIZE =          0 [         0] 10-4 bohr
+
+           58:               POINTS =          0 [         0] 
+           59:          CONTRACTION =          1 [         1] 
+           60:             SYMMETRY =          0 [         0] 
+           62:            SPHERICAL =          1 [         0] 
+
+           63:          RESET_FLAGS =          0 [         0] 
+           64:             PERT_ORB =          0 [         2] 
+           65:             GENBAS_1 =          0 [         0] 
+           66:             GENBAS_2 =          0 [         0] 
+
+           67:             GENBAS_3 =          0 [         0] 
+           68:          COORDINATES =          0 [         3] 
+           69:            CHECK_SYM =          1 [         1] 
+           70:            SCF_PRINT =          0 [         0] 
+
+           71:                  ECP =          0 [         0] 
+           72:              RESTART =          0 [         1] 
+           73:            TRANS_INV =          0 [         0] 
+           74:          HFSTABILITY =          0 [         0] 
+
+           75:             ROT_EVEC =          0 [         0] 
+           76:           BRUCK_CONV =          4 [         4] (tol)
+           78:                UNITS =          0 [         0] 
+           79:          FD_USEGROUP =          0 [         0] 
+
+           80:           FD_PROJECT =          0 [         0] 
+           83:                VTRAN =          0 [         0] 
+           84:             HF2_FILE =          1 [         1] 
+           85:             SUBGROUP =          0 [         0] 
+
+           86:           SUBGRPAXIS =          0 [         0] 
+           87:               EXCITE =          0 [         0] 
+           88:            ZETA_CONV =         12 [        12] (tol)
+           90:           TREAT_PERT =          0 [         0] 
+
+           91:          ESTATE_PROP =          0 [         0] 
+           92:           OPT_MAXCYC =         50 [        50] 
+           93:             ABCDTYPE =          0 [         0] 
+           95:           AO_LADDERS =          1 [         1] 
+
+           96:                 FOCK =          0 [         0] 
+           97:          ESTATE_MAXC =         20 [        20] 
+           98:           ESTATE_TOL =          5 [        -1] (tol)
+           99:            TURBOMOLE =          0 [         0] 
+
+          100:           GAMMA_ABCD =          0 [         0] 
+          101:            ZETA_TYPE =          1 [         1] 
+          102:          ZETA_MAXCYC =         50 [        50] 
+          103:             RESRAMAN =          0 [         0] 
+
+          104:                  PSI =          0 [         0] 
+          105:             GEOM_OPT =          2 [         0] 
+          106:             EXTERNAL =          0 [         0] 
+          107:          HESS_UPDATE =          2 [         0] 
+
+          108:         INIT_HESSIAN =          0 [         0] 
+          109:          EXTRAPOLATE =          0 [         0] 
+          201:              EA_CALC =          0 [         0] 
+          203:                 TDHF =          0 [         0] 
+
+          204:           FUNCTIONAL =          4 [         4] 
+          205:           EOM_MAXCYC =         50 [        50] cycles
+          206:              EOMPROP =          0 [         0] 
+          207:             ABCDFULL =          1 [         0] 
+
+          208:           INTGRL_TOL =         14 [        14] (tol)
+          209:             DAMP_TYP =          0 [         0] 
+          210:             DAMP_TOL =         10 [        10] x 0.01
+          211:              LSHF_A1 =          0 [         0] x 0.01
+
+          212:              LSHF_B1 =          0 [         0] x 0.01
+          213:             POLYRATE =          0 [         0] 
+          214:              IP_CALC =          0 [         0] 
+          216:            IP_SEARCH =          0 [         0] 
+
+          217:               EOMREF =          0 [         0] 
+          218:              SOLVENT =          0 [         0] 
+          219:            EE_SEARCH =          0 [         0] 
+          220:            EOM_PRJCT =          0 [         0] 
+
+          221:               NEWVRT =          0 [         0] 
+          222:             HBARABCD =          1 [         0] 
+          223:             HBARABCI =          1 [         0] 
+          224:             NT3EOMEE =          0 [         0] 
+
+          225:              NOREORI =          0 [         0] 
+          227:               KS_POT =          0 [         0] 
+          228:             DIP_CALC =          0 [         0] 
+          230:             DEA_CALC =          0 [         0] 
+
+          232:              PROGRAM =          2 [         0] 
+          233:                CCR12 =          0 [         0] 
+          234:            EOMXFIELD =          0 [         0] x 10-6
+          235:            EOMYFIELD =          0 [         0] x 10-6
+
+          236:            EOMZFIELD =          0 [         0] x 10-6
+          237:              INSERTF =          0 [         0] 
+          238:            GRAD_CALC =          0 [         2] 
+          239:            IMEM_SIZE =    3000000 [   3000000] Words
+
+          240:              MAKERHF =          0 [         0] 
+          241:           GLOBAL_MEM =          0 [         0] Words
+          242:             PRP_INTS =          0 [         0] 
+          243:           TRUNC_ORBS =          0 [         0] 
+
+          244:             FNO_KEEP =          0 [         0] percent
+          245:             FNO_BSSE =          0 [         0] 
+          246:              NATURAL =          0 [         0] 
+          248:              UNO_REF =          0 [         0] 
+
+          249:           UNO_CHARGE =          0 [         0] 
+          250:             UNO_MULT =          1 [         1] 
+          251:                RAMAN =          0 [         0] 
+          252:            KUCHARSKI =          0 [         0] 
+
+          253:             SCF_TYPE =          0 [         0] 
+          254:               DIRECT =          0 [         0] 
+          255:         SINGLE_STORE =          0 [         0] 
+          ------------------------------------------------------------
+
+                         ACES STATE VARIABLES (STRINGS)
+          ------------------------------------------------------------
+          BASIS = TZ2P
+          OCCUPATION = [ESTIMATED BY SCF]
+          ------------------------------------------------------------
+   3 entries found in Z-matrix 
+
+ Job Title : ROHF CCSD GEOMETRY OPTIMIZATION USING 5D NH2/TZ2P
+
+  There are  2 unique internal coordinates.
+  Of these,  2 will be optimized.
+   User supplied Z-matrix: 
+--------------------------------------------------------------------------------
+       SYMBOL    BOND      LENGTH    ANGLE     ANGLE     DIHED     ANGLE
+                  TO      (ANGST)    WRT      (DEG)      WRT      (DEG)
+--------------------------------------------------------------------------------
+        H    
+        N          1         R    
+        H          2         R          1        A    
+                  *Initial values for internal coordinates* 
+                      Name             Value
+                        R               1.008002
+                        A             104.699710
+--------------------------------------------------------------------------------
+  @symmetry-i, Coordinates after  COM shift 
+     -0.115921724322      0.000000000000     -1.815414098768
+     -0.115921724322      0.000000000000      0.089433477172
+      1.726578356371      0.000000000000      0.572794357065
+   Rotational constants (in cm-1): 
+     8.63637       13.12999       25.23472
+   Principal axis orientation for molecule:
+       -1.508173247331    1.017142886820    0.000000000000
+        0.000000000000   -0.146411041280    0.000000000000
+        1.508173247331    1.017142886820    0.000000000000
+********************************************************************************
+   The full molecular point group is C2v .
+   The largest Abelian subgroup of the full molecular point group is C2v .
+   The computational point group is C2v .
+********************************************************************************
+--------------------------------------------------------------------------------
+   Analysis of internal coordinates specified by Z-matrix 
+--------------------------------------------------------------------------------
+   *The nuclear repulsion energy is    7.68120 a.u.
+   *There are   2 degrees of freedom within the tot. symm. molecular subspace.
+   *Z-matrix requests optimization of   2 coordinates.
+   *The optimization is unconstrained and your Z-matrix is great.
+--------------------------------------------------------------------------------
+         -----------------------------------------------
+         Cartesian coordinates corresponding to internal 
+                 coordinate input (Bohr) 
+ ----------------------------------------------------------------
+ Z-matrix   Atomic            C o o r d i n a t e s
+  Symbol    Number           X              Y              Z
+ ----------------------------------------------------------------
+     H         1         0.00000000    -1.50817325     1.01714289
+     N         7         0.00000000     0.00000000    -0.14641104
+     H         1         0.00000000     1.50817325     1.01714289
+ ----------------------------------------------------------------
+   Interatomic distance matrix (Angstroms) 
+
+                 H             N             H    
+                [ 1]        [ 2]        [ 3]
+  H    [ 1]     0.00000
+  N    [ 2]     1.00800     0.00000
+  H    [ 3]     1.59618     1.00800     0.00000
+@ACES2: Executing "rm -f FILES"
+@ACES2: Executing "xjoda"
+ @ACES2: INITIALIZATION DUMP
+   mopac_guess =  F
+   direct =  F
+   plain_scf =  F
+   nddo_guess =  F
+   hf_scf =  T
+   dirmp2 =  F
+   fno =  F
+   geomopt =  T
+   raman =  F
+   vibfreq =  F
+   analytical_gradient =  T
+   mrcc =  F
+   integral command is "xvmol"
+   derivative-integral command is "xvdint"
+ @ACES2: END INITIALIZATION DUMP
+ @ACES2: Beginning main opt_an loop. Iteration  1
+@ACES2: Executing "xvmol"
+ One- and two-electron integrals over symmetry-adapted AOs are calculated.
+
+ @READIN: Spherical harmonics are used.
+NAMN: H #1  0.000000000 -1.508173247  1.017142887
+NAMN: N #2  0.000000000  0.000000000 -0.146411041
+             42 SYMMETRY ADAPTED BASIS FUNCTIONS 
+  @READIN-I, Nuclear repulsion energy :    7.6811963303 a.u.
+  required memory for a1 array  8903380 words 
+  required memory for a2 array  207578 words 
+@ACES_MALLOC: allocated >= 34 MB of core memory
+  @TWOEL-I,      19048 integrals of symmetry type  I I I I
+  @TWOEL-I,      40205 integrals of symmetry type  I J I J
+  @TWOEL-I,      23439 integrals of symmetry type  I I J J
+  @TWOEL-I,      17978 integrals of symmetry type  I J K L
+  @TWOEL-I, Total number of 2-e integrals     100670.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.10 (      0.1)   0: 0: 4.35 (      4.4)   0: 0: 4.6 (      4.6)
+@ACES2: Executing "xvmol2ja"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144875520 204875775
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.06 (      0.1)   0: 0: 0.02 (      0.0)   0: 0: 0.1 (      0.1)
+@ACES2: Executing "xvscf"
+ @VSCF-I, There are  42 functions in the AO basis.
+
+ @VSCF-I, There are  4 irreducible representations.
+
+
+       Irrep        # of functions
+         1                 19
+         2                  7
+         3                 12
+         4                  4
+
+  @VSCF-I, Parameters for SCF calculation: 
+             SCF reference function: ROHF
+       Maximum number of iterations:  150
+          Full symmetry point group: C2v 
+          Computational point group: C2v 
+             Initial density matrix: CORE                   
+          SCF convergence tolerance: 10**(- 7)
+           Convergence acceleration: RPP
+               Latest start for RPP:   8
+                          RPP order:   6
+
+        Doubles-singles  level-shifter :   0.00
+        Singles-virtuals level-shifter :   0.00
+
+  @SYMSIZ-I, Symmetry integral information:
+       There are   4 (aa|aa) symmetry combinations.
+       There are   6 (ab|ab) symmetry combinations.
+       There are   6 (aa|bb) symmetry combinations.
+ 
+       The (aa|aa) integrals require      43068 words.
+       The (ab|ab) integrals require      85593 words.
+       The (aa|bb) integrals require      25284 words.
+       The integrals require     153945 words.
+ 
+  @SYMSIZ-I, Memory information: 
+       Full in-core PK list formation:    1091322
+             Maximum memory available:   15000000
+
+  @SYMSIZ-I, Selecting full in-core PK list formation.
+
+@ACES_MALLOC: allocated >= 4 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Occupancies from core Hamiltonian:
+
+          Alpha population by irrep:   3    1    1    0
+           Beta population by irrep:   2    1    1    0
+
+
+  --------------------------------------------------------------------
+  Iteration         Total Energy            Largest Density Difference
+  --------------------------------------------------------------------
+       0           -46.6842458596              0.0000000000E+00
+       1           -51.2240115319              0.5643846326E+01
+       2           -53.8871608524              0.5758564679E+01
+       3           -54.8358292316              0.8986697418E+00
+       4           -55.3991249218              0.8235642006E+00
+       5           -55.5456460426              0.1347426919E+00
+       6           -55.5763366197              0.7987701188E-01
+       7           -55.5817928686              0.2371760560E-01
+       8           -55.5830080575              0.1504503326E-01
+       9           -55.5830244352              0.5860198489E-02
+      10           -55.5830257167              0.1034770259E-02
+      11           -55.5830257326              0.1322465253E-03
+      12           -55.5830257367              0.7807337527E-04
+      13           -55.5830257371              0.2190179118E-04
+      14           -55.5830257372              0.6601257617E-05
+      15           -55.5830257372              0.1149118063E-05
+      16           -55.5830257372              0.1880390443E-06
+      17           -55.5830257372              0.2084671777E-06
+ 
+@VSCF-I, SCF has converged.
+
+     E(SCF)=       -55.5830257372              0.4104553730E-07
+
+ 
+@VSCF-I, Final occupancies:
+
+          Alpha population by irrep:   3    1    1    0
+           Beta population by irrep:   3    0    1    0
+
+
+       The average multiplicity is    2.0000000
+  The expectation value of S**2 is    0.7500000
+
+
+
+      Trace of projected alpha density matrix =   1.000000000
+
+      Trace of projected beta  density matrix =   1.000000000
+
+      Alpha part of wavefunction is symmetric.
+      Beta  part of wavefunction is symmetric.
+
+
+  ORBITAL EIGENVALUES (ALPHA)  (1H = 27.2113957 eV)
+
+       MO #        E(hartree)               E(eV)           FULLSYM    COMPSYM
+       ----   --------------------   --------------------   -------   ---------
+    1     1         -15.5860560498        -424.1183385729      A1        A1 (1)
+    2     2          -1.1595908364         -31.5540851005      A1        A1 (1)
+    3    27          -0.6561117262         -17.8537158059      B1        B1 (3)
+    4     3          -0.5027631441         -13.6808868565      A1        A1 (1)
+    5    20          -0.5018606171         -13.6563278388      B2        B2 (2)
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    6     4           0.3143641207           8.5542864834      A1        A1 (1)
+    7    28           0.3670071954           9.9867780199      B1        B1 (3)
+    8     5           0.3894689623          10.5979940464      A1        A1 (1)
+    9    29           0.3941442780          10.7252159113      B1        B1 (3)
+   10    21           0.4334958387          11.7960268020      B2        B2 (2)
+   11     6           0.5540911891          15.0775946007      A1        A1 (1)
+   12    39           0.6001300264          16.3303756200      A2        A2 (4)
+   13    22           0.6621717895          18.0186185859      B2        B2 (2)
+   14     7           0.7711658498          20.9844990897      A1        A1 (1)
+   15    30           0.8693311722          23.6557145219      B1        B1 (3)
+   16    31           1.0208881081          27.7797902741      B1        B1 (3)
+   17     8           1.0669104967          29.0321237034      A1        A1 (1)
+   18     9           1.3205390836          35.9337115420      A1        A1 (1)
+   19    32           1.3597109267          36.9996320630      B1        B1 (3)
+   20    23           1.6140191187          43.9197129064      B2        B2 (2)
+   21    40           1.6273397076          44.2821847227      A2        A2 (4)
+   22    10           1.6919550721          46.0404589727      A1        A1 (1)
+   23    11           1.7375362214          47.2807856646      A1        A1 (1)
+   24    33           1.9117098323          52.0202927115      B1        B1 (3)
+   25    24           2.0859778050          56.7623674741      B2        B2 (2)
+   26    12           2.5399120541          69.1145519475      A1        A1 (1)
+   27    34           2.7818759419          75.6987270443      B1        B1 (3)
+   28    41           2.8874502553          78.5715514606      A2        A2 (4)
+   29    25           3.0141594489          82.0194854670      B2        B2 (2)
+   30    35           3.0207317329          82.1983264877      B1        B1 (3)
+   31    13           3.2821837596          89.3128010434      A1        A1 (1)
+   32    14           3.6157694820          98.3901341339      A1        A1 (1)
+   33    36           3.7537131799         102.1437746820      B1        B1 (3)
+   34    15           4.9403969736         134.4350969634      A1        A1 (1)
+   35    26           5.1172283280         139.2469249192      B2        B2 (2)
+   36    42           5.1483588914         140.0940310008      A2        A2 (4)
+   37    16           5.3034178694         144.3134022074      A1        A1 (1)
+   38    17           5.4283417776         147.7127561054      A1        A1 (1)
+   39    37           5.5934180564         152.2047120491      B1        B1 (3)
+   40    38           7.1508859995         194.5855885392      B1        B1 (3)
+   41    18           7.1667485198         195.0172298546      A1        A1 (1)
+   42    19          35.2677331232         959.6842414580      A1        A1 (1)
+
+
+  ORBITAL EIGENVALUES ( BETA)  (1H = 27.2113957 eV)
+
+       MO #        E(hartree)               E(eV)           FULLSYM    COMPSYM
+       ----   --------------------   --------------------   -------   ---------
+    1     1         -15.5602948195        -423.4173395433      A1        A1 (1)
+    2     2          -1.0516801932         -28.6176858877      A1        A1 (1)
+    3    27          -0.6303527636         -17.1527784807      B1        B1 (3)
+    4     3          -0.4647800864         -12.6473148445      A1        A1 (1)
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    5    20           0.1614828824           4.3941746123      B2        B2 (2)
+    6     4           0.3279978296           8.9252787311      A1        A1 (1)
+    7    28           0.3735395226          10.1645317584      B1        B1 (3)
+    8    29           0.4000173220          10.8850296357      B1        B1 (3)
+    9     5           0.4013606053          10.9215822504      A1        A1 (1)
+   10    21           0.4889335628          13.3045646494      B2        B2 (2)
+   11     6           0.5581106806          15.1869705730      A1        A1 (1)
+   12    39           0.6223138027          16.9340271340      A2        A2 (4)
+   13    22           0.6906354192          18.7931536776      B2        B2 (2)
+   14     7           0.8108655474          22.0647832692      A1        A1 (1)
+   15    30           0.8712565004          23.7081053890      B1        B1 (3)
+   16    31           1.0304446006          28.0398357747      B1        B1 (3)
+   17     8           1.0841238615          29.5005233828      A1        A1 (1)
+   18     9           1.3352906565          36.3351224277      A1        A1 (1)
+   19    32           1.3672150823          37.2038306109      B1        B1 (3)
+   20    23           1.6772494422          45.6402982581      B2        B2 (2)
+   21    40           1.6894972091          45.9735770914      A2        A2 (4)
+   22    10           1.7204966363          46.8171147712      A1        A1 (1)
+   23    11           1.7828974508          48.5151280275      A1        A1 (1)
+   24    33           1.9226233099          52.3172636685      B1        B1 (3)
+   25    24           2.2070628606          60.0572608337      B2        B2 (2)
+   26    12           2.5635229142          69.7570364054      A1        A1 (1)
+   27    34           2.7948213717          76.0509902557      B1        B1 (3)
+   28    41           2.8984302428          78.8703322450      A2        A2 (4)
+   29    35           3.0265558302          82.3568083036      B1        B1 (3)
+   30    25           3.0289642395          82.4223444819      B2        B2 (2)
+   31    13           3.2872901444          89.4517529001      A1        A1 (1)
+   32    14           3.6305359679          98.7919508244      A1        A1 (1)
+   33    36           3.7705347863         102.6015140694      B1        B1 (3)
+   34    15           4.9649951276         135.1044470659      A1        A1 (1)
+   35    26           5.1875752776         141.1611636010      B2        B2 (2)
+   36    42           5.2183476410         141.9985225601      A2        A2 (4)
+   37    16           5.3381979672         145.2598172114      A1        A1 (1)
+   38    17           5.4933509251         149.4817457419      A1        A1 (1)
+   39    37           5.6042827734         152.5003561612      B1        B1 (3)
+   40    38           7.1541599271         194.6746766780      B1        B1 (3)
+   41    18           7.1716790249         195.1513957792      A1        A1 (1)
+   42    19          35.2808050571         960.0399470224      A1        A1 (1)
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.21 (      0.2)   0: 0: 1.00 (      1.0)   0: 0: 1.3 (      1.3)
+@ACES2: Executing "xvtran"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142860288 202860543
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Full UHF integral transformation
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.60 (      0.6)   0: 0: 2.36 (      2.4)   0: 0: 4.0 (      4.0)
+@ACES2: Executing "xintprc"
+
+
+ performing integral processing for standard CC
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144199680 204199935
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Processing integrals for CCSD calculation.
+  @GMOIAA-I, Processing MO integrals for spin case AA.
+  @GMOIAA-I, Generation of integral list completed.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP              65746
+                      PPPH              34835
+                      PPHH               4752
+                      PHPH               3014
+                      PHHH                822
+                      HHHH                 49
+
+                     TOTAL             109218
+  @GMOIAA-I, Processing MO integrals for spin case BB.
+  @GMOIAA-I, Generation of integral list completed.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP              72087
+                      PPPH              30735
+                      PPHH               3510
+                      PHPH               2292
+                      PHHH                560
+                      HHHH                 34
+
+                     TOTAL             109218
+  @GMOIAB-I, Processing MO integrals for spin case AB.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP             136890
+                      PPPH1H            36429
+                      PPPH2H            29517
+                      PPHH               7933
+                      PHPH1P             2231
+                      PHPH2P             3141
+                      PHHH1P              614
+                      PHHH2P              713
+                      HHHH                 65
+
+                     TOTAL             217533
+
+  @FORMT2-I, Second-order MBPT correlation energies:
+  @FORMT2-I, Singles contribution will be calculated.
+  @FORMT2-W, MBPT(2) energies are correct only for semicanonical orbitals.
+              ----------------------------------------------
+              E(SCF)                =  -55.583025737158 a.u.
+              E2(AA)                =   -0.026834922514 a.u.
+              E2(BB)                =   -0.012279506309 a.u.
+              E2(AB)                =   -0.146991581363 a.u.
+              E2(SINGLE)            =   -0.002858332540 a.u.
+              E2(TOT)               =   -0.186106010186 a.u.
+              Total MBPT(2) energy  =  -55.771990079885 a.u.
+              ----------------------------------------------
+            ----------------------------------------------
+                     Projected spin multiplicities: 
+            ----------------------------------------------
+             <0|S^2|0>                  =    0.7500000000.
+             <0|S^2 T2|0>               =    0.0000000000.
+             Projected <0|S^2 exp(T)|0> =    0.7500000000.
+             Approximate spin mult.     =    2.0000000000.
+            ----------------------------------------------
+   Largest T2 amplitudes for spin case AA:
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   4  28  22]-0.01768 [  5   3  29   8]-0.01589 [  4   3  22   7]-0.01376
+[  4   3  23   9] 0.01367 [  5   3  28   7]-0.01321 [  4   3  24  12]-0.01269
+[  4   3  22   6]-0.01262 [  4   3  22   9] 0.01205 [  5   3  28   9] 0.01111
+[  5   3  28   6]-0.01106 [  5   4  28  25]-0.01103 [  5   2  28   6]-0.01035
+[  4   3  25   9] 0.01014 [  4   2  22   6]-0.01005 [  5   4  40  13] 0.01003
+-----------------------------------------------------------------------------
+   Norm of T2AA vector (     1738 symmetry allowed elements):  0.0860703644.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case BB:
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  4   3  29   7]-0.01631 [  4   3  28   6]-0.01353 [  4   3  28   5]-0.01132
+[  4   3  28   8] 0.01119 [  4   2  28   5]-0.01084 [  3   2  24  21]-0.01030
+[  3   2   6   5]-0.01004 [  4   3  29   6] 0.00944 [  3   2  23  21]-0.00886
+[  4   3  31   6] 0.00869 [  4   2  40  21]-0.00862 [  4   3  31   7]-0.00842
+[  4   3  29  11] 0.00837 [  4   2  39  21] 0.00836 [  4   3  31  12]-0.00820
+-----------------------------------------------------------------------------
+   Norm of T2BB vector (     1218 symmetry allowed elements):  0.0589298928.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case AB:
+       _       _                 _       _                 _       _
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   4  28  28]-0.02576 [  3   3   9   8]-0.02123 [  3   3  29  29]-0.02098
+[  5   4  29  29]-0.02064 [  4   4  22  28]-0.02048 [  3   3   7   6]-0.01848
+[  3   3   6   5]-0.01847 [  3   2  24  21]-0.01774 [  5   2  40  21]-0.01696
+[  5   4  31  31]-0.01693 [  2   2   6   5]-0.01676 [  4   3  22   6]-0.01673
+[  3   3  12  11]-0.01615 [  5   2  28   5]-0.01594 [  4   2  22   5]-0.01579
+-----------------------------------------------------------------------------
+   Norm of T2AB vector (     7933 symmetry allowed elements):  0.1919270407.
+-----------------------------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.72 (      0.7)   0: 0: 0.88 (      0.9)   0: 0: 3.3 (      3.3)
+@ACES2: Executing "xvcc"
+
+-----------------------------------------------------------------------------
+                                Entering xvcc
+-----------------------------------------------------------------------------
+
+
+
+  running standard cc program
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 151695360 211695615
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+   CCSD energy will be calculated.
+   The reference state is a ROHF wave function.
+   The reference state is a general non-HF wave function.
+   The AA contribution to the correlation energy is:   -0.0282324 a.u.
+   The BB contribution to the correlation energy is:   -0.0137179 a.u.
+   The AB contribution to the correlation energy is:   -0.1470573 a.u.
+   The total correlation energy is -0.189007529309 a.u.
+   The AA contribution to the correlation energy is:   -0.0286893 a.u.
+   The BB contribution to the correlation energy is:   -0.0132849 a.u.
+   The AB contribution to the correlation energy is:   -0.1611049 a.u.
+   The total correlation energy is -0.203079114529 a.u.
+  Convergence information after     1 iterations: 
+  Largest element of residual vector :  0.56307031E-02.
+  Largest element of DIIS residual   :  0.56307031E-02.
+   The AA contribution to the correlation energy is:   -0.0286352 a.u.
+   The BB contribution to the correlation energy is:   -0.0131028 a.u.
+   The AB contribution to the correlation energy is:   -0.1651710 a.u.
+   The total correlation energy is -0.206909048787 a.u.
+  Convergence information after     2 iterations: 
+  Largest element of residual vector :  0.26616863E-02.
+  Largest element of DIIS residual   :  0.20947349E-02.
+   The AA contribution to the correlation energy is:   -0.0284838 a.u.
+   The BB contribution to the correlation energy is:   -0.0129540 a.u.
+   The AB contribution to the correlation energy is:   -0.1667335 a.u.
+   The total correlation energy is -0.208171251780 a.u.
+  Convergence information after     3 iterations: 
+  Largest element of residual vector :  0.12848948E-02.
+  Largest element of DIIS residual   :  0.98579982E-03.
+   The AA contribution to the correlation energy is:   -0.0284348 a.u.
+   The BB contribution to the correlation energy is:   -0.0129131 a.u.
+   The AB contribution to the correlation energy is:   -0.1671359 a.u.
+   The total correlation energy is -0.208483748343 a.u.
+  Convergence information after     4 iterations: 
+  Largest element of residual vector :  0.63304365E-03.
+  Largest element of DIIS residual   :  0.37767335E-03.
+   The AA contribution to the correlation energy is:   -0.0284218 a.u.
+   The BB contribution to the correlation energy is:   -0.0129043 a.u.
+   The AB contribution to the correlation energy is:   -0.1671924 a.u.
+   The total correlation energy is -0.208518427561 a.u.
+  Convergence information after     5 iterations: 
+  Largest element of residual vector :  0.23505365E-03.
+  Largest element of DIIS residual   :  0.12918583E-03.
+   The AA contribution to the correlation energy is:   -0.0284242 a.u.
+   The BB contribution to the correlation energy is:   -0.0129060 a.u.
+   The AB contribution to the correlation energy is:   -0.1671926 a.u.
+   The total correlation energy is -0.208522818554 a.u.
+  Convergence information after     6 iterations: 
+  Largest element of residual vector :  0.85047716E-04.
+  Largest element of DIIS residual   :  0.48217888E-04.
+   The AA contribution to the correlation energy is:   -0.0284256 a.u.
+   The BB contribution to the correlation energy is:   -0.0129073 a.u.
+   The AB contribution to the correlation energy is:   -0.1671911 a.u.
+   The total correlation energy is -0.208523967215 a.u.
+  Convergence information after     7 iterations: 
+  Largest element of residual vector :  0.31571766E-04.
+  Largest element of DIIS residual   :  0.18156848E-04.
+   The AA contribution to the correlation energy is:   -0.0284257 a.u.
+   The BB contribution to the correlation energy is:   -0.0129075 a.u.
+   The AB contribution to the correlation energy is:   -0.1671914 a.u.
+   The total correlation energy is -0.208524541533 a.u.
+  Convergence information after     8 iterations: 
+  Largest element of residual vector :  0.12175267E-04.
+  Largest element of DIIS residual   : -0.70453448E-05.
+   The AA contribution to the correlation energy is:   -0.0284256 a.u.
+   The BB contribution to the correlation energy is:   -0.0129075 a.u.
+   The AB contribution to the correlation energy is:   -0.1671916 a.u.
+   The total correlation energy is -0.208524751059 a.u.
+  Convergence information after     9 iterations: 
+  Largest element of residual vector :  0.44865705E-05.
+  Largest element of DIIS residual   :  0.17408448E-05.
+   The AA contribution to the correlation energy is:   -0.0284256 a.u.
+   The BB contribution to the correlation energy is:   -0.0129075 a.u.
+   The AB contribution to the correlation energy is:   -0.1671916 a.u.
+   The total correlation energy is -0.208524721088 a.u.
+  Convergence information after    10 iterations: 
+  Largest element of residual vector :  0.11430754E-05.
+  Largest element of DIIS residual   :  0.50567251E-06.
+   The AA contribution to the correlation energy is:   -0.0284256 a.u.
+   The BB contribution to the correlation energy is:   -0.0129075 a.u.
+   The AB contribution to the correlation energy is:   -0.1671916 a.u.
+   The total correlation energy is -0.208524693269 a.u.
+  Convergence information after    11 iterations: 
+  Largest element of residual vector : -0.31560967E-06.
+  Largest element of DIIS residual   : -0.22809933E-06.
+   The AA contribution to the correlation energy is:   -0.0284256 a.u.
+   The BB contribution to the correlation energy is:   -0.0129075 a.u.
+   The AB contribution to the correlation energy is:   -0.1671915 a.u.
+   The total correlation energy is -0.208524672569 a.u.
+  Convergence information after    12 iterations: 
+  Largest element of residual vector : -0.14497841E-06.
+  Largest element of DIIS residual   : -0.10213908E-06.
+   The AA contribution to the correlation energy is:   -0.0284256 a.u.
+   The BB contribution to the correlation energy is:   -0.0129075 a.u.
+   The AB contribution to the correlation energy is:   -0.1671915 a.u.
+   The total correlation energy is -0.208524666049 a.u.
+  Convergence information after    13 iterations: 
+  Largest element of residual vector : -0.61863558E-07.
+  Largest element of DIIS residual   : -0.37558644E-07.
+  Amplitude equations converged in    13 iterations.
+   The AA contribution to the correlation energy is:   -0.0284256 a.u.
+   The BB contribution to the correlation energy is:   -0.0129075 a.u.
+   The AB contribution to the correlation energy is:   -0.1671915 a.u.
+   The total correlation energy is -0.208524666629 a.u.
+   Largest T1 amplitudes for spin case AA:
+   i       a                 i       a                 i       a    
+-----------------------------------------------------------------------------
+[  2       6    ]-0.01353 [  2       9    ] 0.01302 [  2      13    ]-0.01007
+[  5      31    ] 0.00934 [  2      12    ]-0.00931 [  2      11    ]-0.00913
+[  5      28    ]-0.00862 [  2      10    ] 0.00861 [  2       7    ] 0.00810
+[  3      13    ] 0.00778 [  4      22    ] 0.00741 [  5      29    ] 0.00692
+[  3       7    ]-0.00666 [  4      23    ] 0.00658 [  3      12    ] 0.00639
+-----------------------------------------------------------------------------
+   Norm of T1AA vector (       65 symmetry allowed elements):  0.0383661440.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case AA:
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   4  28  22]-0.01724 [  5   3  29   8]-0.01659 [  4   3  23   9] 0.01383
+[  4   3  22   7]-0.01357 [  4   3  24  12]-0.01323 [  4   3  22   6]-0.01213
+[  5   3  28   7]-0.01199 [  4   3  22   9] 0.01141 [  5   4  28  25]-0.01056
+[  5   4  40  13] 0.01033 [  5   4  39   9] 0.01009 [  4   2  22   6]-0.00999
+[  5   4  29  23] 0.00993 [  4   3  25   9] 0.00975 [  5   3  28   9] 0.00942
+-----------------------------------------------------------------------------
+   Norm of T2AA vector (     1738 symmetry allowed elements):  0.0851628300.
+-----------------------------------------------------------------------------
+   Largest T1 amplitudes for spin case BB:
+   i       a                 i       a                 i       a    
+-----------------------------------------------------------------------------
+[  3       6    ] 0.01634 [  2       6    ]-0.01506 [  2       5    ] 0.01079
+[  3       5    ] 0.01005 [  4      28    ] 0.00938 [  2      12    ] 0.00935
+[  4      29    ]-0.00811 [  2      10    ] 0.00754 [  3      13    ]-0.00751
+[  2      11    ] 0.00680 [  2       8    ]-0.00668 [  4      34    ]-0.00660
+[  3      12    ]-0.00493 [  3       7    ]-0.00489 [  4      35    ]-0.00481
+-----------------------------------------------------------------------------
+   Norm of T1BB vector (       59 symmetry allowed elements):  0.0373635386.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case BB:
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  4   3  29   7]-0.01710 [  4   3  28   6]-0.01238 [  3   2  24  21]-0.01039
+[  3   2  23  21]-0.01024 [  4   2  39  21] 0.00961 [  4   3  28   5]-0.00949
+[  4   3  28   8] 0.00900 [  4   3  31   7]-0.00897 [  4   2  28   5]-0.00877
+[  4   2  40  21]-0.00876 [  3   2   6   5]-0.00874 [  4   3  29  11] 0.00870
+[  4   3  29   6] 0.00850 [  4   3  32   7] 0.00777 [  4   3  31   6] 0.00769
+-----------------------------------------------------------------------------
+   Norm of T2BB vector (     1218 symmetry allowed elements):  0.0549481061.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case AB:
+       _       _                 _       _                 _       _
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   4  28  28]-0.02874 [  3   3   9   8]-0.02525 [  5   4  29  29]-0.02524
+[  3   3  29  29]-0.02522 [  4   2   6  21] 0.02245 [  4   4  22  28]-0.02240
+[  3   3   6   5]-0.02227 [  4   2   7  21]-0.02133 [  5   4   6   5]-0.02131
+[  3   3   7   6]-0.02082 [  3   2  24  21]-0.02081 [  5   2  40  21]-0.01998
+[  4   3   7  21] 0.01982 [  5   4  31  31]-0.01960 [  2   2   6   5]-0.01946
+-----------------------------------------------------------------------------
+   Norm of T2AB vector (     7933 symmetry allowed elements):  0.2278979040.
+-----------------------------------------------------------------------------
+   The CC iterations have converged.
+
+            ----------------------------------------------
+                     Projected spin multiplicities: 
+            ----------------------------------------------
+             <0|S^2|0>                  =    0.7500000000.
+             <0|S^2 (T2+T1**2) |0>      =    0.0000000000.
+             <0|S^2 T1|0>               =    0.0000000000.
+             Projected <0|S^2 exp(T)|0> =    0.7500000000.
+             Approximate spin mult.     =    2.0000000000.
+            ----------------------------------------------
+       Summary of iterative solution of CC equations 
+      -----------------------------------------------------------
+                       Correlation           Total
+       Iteration         Energy              Energy
+      -----------------------------------------------------------
+            0        -0.189007529309     -55.772033266467  DIIS 
+            1        -0.203079114529     -55.786104851687  DIIS 
+            2        -0.206909048787     -55.789934785945  DIIS 
+            3        -0.208171251780     -55.791196988939  DIIS 
+            4        -0.208483748343     -55.791509485501  DIIS 
+            5        -0.208518427561     -55.791544164719  DIIS 
+            6        -0.208522818554     -55.791548555712  DIIS 
+            7        -0.208523967215     -55.791549704374  DIIS 
+            8        -0.208524541533     -55.791550278691  DIIS 
+            9        -0.208524751059     -55.791550488217  DIIS 
+           10        -0.208524721088     -55.791550458246  DIIS 
+           11        -0.208524693269     -55.791550430428  DIIS 
+           12        -0.208524672569     -55.791550409727  DIIS 
+           13        -0.208524666629     -55.791550403787  DIIS 
+      -----------------------------------------------------------
+
+               CCSD        energy is     -55.791550403787 a.u. 
+
+      A miracle has come to pass. The CC iterations have converged.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 1.23 (      1.2)   0: 0: 9.06 (      9.1)   0: 0:10.6 (     10.6)
+
+-----------------------------------------------------------------------------
+                                Exiting xvcc
+-----------------------------------------------------------------------------
+
+ The ACES Member Executable has completed successfully.
+@ACES2: Executing "xlambda"
+
+-----------------------------------------------------------------------------
+                              Entering xlambda
+-----------------------------------------------------------------------------
+
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 145166336 205166591
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  The Lambda equations are solved for CCSD.
+  Convergence information after     1 iterations: 
+  Largest element of residual vector : -0.19597855E-02.
+  Largest element of DIIS residual   : -0.19597855E-02.
+  Convergence information after     2 iterations: 
+  Largest element of residual vector : -0.53350880E-03.
+  Largest element of DIIS residual   : -0.28393771E-03.
+  Convergence information after     3 iterations: 
+  Largest element of residual vector : -0.23960557E-03.
+  Largest element of DIIS residual   : -0.14245025E-03.
+  Convergence information after     4 iterations: 
+  Largest element of residual vector : -0.53047830E-04.
+  Largest element of DIIS residual   :  0.42622861E-04.
+  Convergence information after     5 iterations: 
+  Largest element of residual vector : -0.23725085E-04.
+  Largest element of DIIS residual   : -0.11634958E-04.
+  Convergence information after     6 iterations: 
+  Largest element of residual vector : -0.70176898E-05.
+  Largest element of DIIS residual   : -0.49534098E-05.
+  Convergence information after     7 iterations: 
+  Largest element of residual vector : -0.33170641E-05.
+  Largest element of DIIS residual   : -0.19360267E-05.
+  Convergence information after     8 iterations: 
+  Largest element of residual vector : -0.13021023E-05.
+  Largest element of DIIS residual   : -0.74147183E-06.
+  Convergence information after     9 iterations: 
+  Largest element of residual vector : -0.48208430E-06.
+  Largest element of DIIS residual   : -0.26375837E-06.
+  Convergence information after    10 iterations: 
+  Largest element of residual vector : -0.17140395E-06.
+  Largest element of DIIS residual   : -0.80177288E-07.
+  Lambda equations converged in    10 iterations.
+
+-----------------------------------------------------------------------------
+                             Exiting xlambda
+-----------------------------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.97 (      1.0)   0: 0: 8.36 (      8.4)   0: 0: 9.7 (      9.7)
+@ACES2: Executing "xdens"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 143409152 203409407
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  CCSD density and intermediates are calculated.
+  The reference state is a non HF wave functions.
+  The reference state is a ROHF wave function.
+  The iterative expansion of D(ai) converged after  13 iterations.
+  ----------------------------------------------------------------------
+                 Natural orbital occupation numbers
+  ----------------------------------------------------------------------
+                            Alpha spin
+  ----------------------------------------------------------------------
+  0.99970  0.99058  0.98404  0.98066  0.98028  0.01314  0.01223  0.00784
+  0.00718  0.00406  0.00382  0.00364  0.00356  0.00348  0.00076  0.00066
+  0.00057  0.00049  0.00045  0.00042  0.00037  0.00036  0.00031  0.00031
+  0.00020  0.00015  0.00013  0.00012  0.00009  0.00008  0.00005  0.00004
+  0.00004  0.00003  0.00003  0.00002  0.00002  0.00002  0.00002  0.00002
+  0.00001  0.00001
+  Trace of density matrix :   5.0000000000.
+  ----------------------------------------------------------------------
+                            Beta spin
+  ----------------------------------------------------------------------
+  0.99969  0.98489  0.98000  0.97897  0.01325  0.01142  0.00762  0.00693
+  0.00373  0.00373  0.00175  0.00171  0.00137  0.00064  0.00062  0.00057
+  0.00046  0.00039  0.00036  0.00033  0.00027  0.00024  0.00020  0.00015
+  0.00012  0.00008  0.00008  0.00007  0.00006  0.00005  0.00004  0.00004
+  0.00003  0.00002  0.00002  0.00002  0.00002  0.00002  0.00001  0.00001
+  0.00001  0.00001
+  Trace of density matrix :   4.0000000000.
+  ----------------------------------------------------------------------
+  @S2EXPECT-I, S**2 calculated as expectation value.
+              Reference state <S**2>        :    0.7500000000.
+              Total one particle correction :    0.1008849957.
+              Total two particle correction :   -0.1007627290.
+              Expectation value of <S**2>   :    0.7501222668.
+  Density calculation successfully completed.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 1.11 (      1.1)   0: 0: 3.83 (      3.8)   0: 0: 5.7 (      5.7)
+@ACES2: Executing "xanti"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 143228928 203229183
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ CCSD MO gammas will be sorted to Mulliken order.
+  @SETMET-I, Unequal number of MO and AO orbitals.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.68 (      0.7)   0: 0: 0.54 (      0.5)   0: 0: 1.8 (      1.8)
+@ACES2: Executing "xbcktrn"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142872576 202872831
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ CCSD MO gammas will be transformed to the AO basis.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.22 (      0.2)   0: 0: 1.89 (      1.9)   0: 0: 2.3 (      2.3)
+@ACES2: Executing "xvdint"
+@ACES_MALLOC: allocated >= 45 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ One- and two-electron integral derivatives are calculated
+ for ROHF-CC/MBPT gradients and dipole moments.
+ Spherical gaussians are used.
+
+  Cartesian Coordinates
+  ---------------------
+
+  Total number of coordinates:  9
+
+
+   1   H #1 1   x      0.0000000000
+   2            y     -1.5081732473
+   3            z      1.0171428868
+
+   4   H #1 2   x      0.0000000000
+   5            y      1.5081732473
+   6            z      1.0171428868
+
+   7   N #2     x      0.0000000000
+   8            y      0.0000000000
+   9            z     -0.1464110413
+
+
+  Symmetry Coordinates
+  --------------------
+
+  Number of coordinates in each symmetry:   3  2  3  1
+   1   H #1  y    2  -  5
+   2   H #1  z    3  +  6
+   3   N #2  z    9
+   4   H #1  x    1  +  4
+   5   N #2  x    7
+   6   H #1  y    2  +  5
+   7   H #1  z    3  -  6
+   8   N #2  y    8
+   9   H #1  x    1  -  4
+ Translational invariance is used.
+
+                         H #1 y     0.0164744365
+                         H #1 z    -0.0172000237
+                         N #2 z     0.0172000237
+
+
+ H #1 1     0.0000000000            0.0082372183           -0.0086000119
+ H #1 2     0.0000000000           -0.0082372183           -0.0086000119
+ N #2       0.0000000000            0.0000000000            0.0172000237
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.23 (      0.2)   0: 0: 5.50 (      5.5)   0: 0: 5.9 (      5.9)
+ACES2: Total elapsed time is       56.5 seconds
+@ACES2: Executing "xjoda"
+   JODA beginning optimization cycle #  1.
+   Internal coordinate forces and energy gradients (atomic units): 
+           R       dV/dR             R       dV/dR             R       dV/dR
+ [R    ]  1.90485 -0.01178 [R    ]  1.90485 -0.01178 [A    ]  1.82735  0.00339
+   There are  0 Negative Eigenvalues.
+   There are  0 Negative Eigenvalues.
+  @EFOL-I, No Morse constant availablefor N    -H    .  Default used.
+   MANR scale factor for NR step is 1.000 for R    .
+   Summary of Optimization Cycle: 
+   The maximum unscaled step is:    0.02146.
+   Scale factor set to:  1.00000.
+   Forces are in hartree/bohr and hartree/radian.
+   Parameter values are in Angstroms and degrees.
+--------------------------------------------------------------------------
+  Parameter     dV/dR           Step          Rold            Rnew
+--------------------------------------------------------------------------
+    R      -0.0117750785    0.0062311037    1.0080020000    1.0142331037
+    A       0.0033858601   -0.7759819796  104.6997100000  103.9237280204
+--------------------------------------------------------------------------
+  Minimum force:  0.003385860 / RMS force:  0.008663617
+ Updating structure...
+  @symmetry-i, Coordinates after  COM shift 
+     -0.117042014595      0.000000000000     -1.825053889928
+     -0.117042014595      0.000000000000      0.091568764546
+      1.743264348144      0.000000000000      0.552765725069
+   Rotational constants (in cm-1): 
+     8.53797       13.10634       24.49485
+   Principal axis orientation for molecule:
+       -1.509533527676    1.032389976290    0.000000000000
+        0.000000000000   -0.148605759716    0.000000000000
+        1.509533527676    1.032389976290    0.000000000000
+         -----------------------------------------------
+         Cartesian coordinates corresponding to internal 
+                 coordinate input (Bohr) 
+ ----------------------------------------------------------------
+ Z-matrix   Atomic            C o o r d i n a t e s
+  Symbol    Number           X              Y              Z
+ ----------------------------------------------------------------
+     H         1         0.00000000    -1.50953353     1.03238998
+     N         7         0.00000000     0.00000000    -0.14860576
+     H         1         0.00000000     1.50953353     1.03238998
+ ----------------------------------------------------------------
+   Interatomic distance matrix (Angstroms) 
+
+                 H             N             H    
+                [ 1]        [ 2]        [ 3]
+  H    [ 1]     0.00000
+  N    [ 2]     1.01423     0.00000
+  H    [ 3]     1.59762     1.01423     0.00000
+ @ACES2: Beginning main opt_an loop. Iteration  2
+@ACES2: Executing "xvmol"
+ One- and two-electron integrals over symmetry-adapted AOs are calculated.
+
+ @READIN: Spherical harmonics are used.
+NAMN: H #1  0.000000000 -1.509533528  1.032389976
+NAMN: N #2  0.000000000  0.000000000 -0.148605760
+             42 SYMMETRY ADAPTED BASIS FUNCTIONS 
+  @READIN-I, Nuclear repulsion energy :    7.6357437103 a.u.
+  required memory for a1 array  8903380 words 
+  required memory for a2 array  207578 words 
+@ACES_MALLOC: allocated >= 34 MB of core memory
+  @TWOEL-I,      19048 integrals of symmetry type  I I I I
+  @TWOEL-I,      40205 integrals of symmetry type  I J I J
+  @TWOEL-I,      23439 integrals of symmetry type  I I J J
+  @TWOEL-I,      17978 integrals of symmetry type  I J K L
+  @TWOEL-I, Total number of 2-e integrals     100670.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.12 (      0.1)   0: 0: 4.33 (      4.3)   0: 0: 4.6 (      4.6)
+@ACES2: Executing "xvmol2ja"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144875520 204875775
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.09 (      0.1)   0: 0: 0.02 (      0.0)   0: 0: 0.1 (      0.1)
+@ACES2: Executing "xvscf"
+          Alpha population by irrep:   3    1    1    0
+           Beta population by irrep:   3    0    1    0
+
+
+@ACES_MALLOC: allocated >= 4 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ @SORTHO-I, Orthonormalizing initial guess. 
+ @SORTHO-I, Orthonormalizing initial guess. 
+  --------------------------------------------------------------------
+  Iteration         Total Energy            Largest Density Difference
+  --------------------------------------------------------------------
+       0           -55.5620263838              0.0000000000E+00
+       1           -55.5825624732              0.3062655958E+00
+       2           -55.5829364345              0.7195661392E-01
+       3           -55.5829515071              0.1676860034E-01
+       4           -55.5829529446              0.5170475945E-02
+       5           -55.5829530892              0.1149715518E-02
+       6           -55.5829530931              0.1084718893E-03
+       7           -55.5829530932              0.2023866206E-04
+       8           -55.5829530932              0.6795457594E-05
+       9           -55.5829530932              0.1881396888E-05
+      10           -55.5829530932              0.1490136077E-06
+ 
+@VSCF-I, SCF has converged.
+
+     E(SCF)=       -55.5829530932              0.2579382616E-07
+
+
+       The average multiplicity is    2.0000000
+  The expectation value of S**2 is    0.7500000
+
+
+
+      Trace of projected alpha density matrix =   1.000000000
+
+      Trace of projected beta  density matrix =   1.000000000
+
+      Alpha part of wavefunction is symmetric.
+      Beta  part of wavefunction is symmetric.
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.29 (      0.3)   0: 0: 0.72 (      0.7)   0: 0: 1.1 (      1.1)
+@ACES2: Executing "xvtran"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142860288 202860543
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Full UHF integral transformation
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.61 (      0.6)   0: 0: 2.36 (      2.4)   0: 0: 3.6 (      3.6)
+@ACES2: Executing "xintprc"
+
+
+ performing integral processing for standard CC
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144199680 204199935
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Processing integrals for CCSD calculation.
+  @GMOIAA-I, Processing MO integrals for spin case AA.
+  @GMOIAA-I, Generation of integral list completed.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP              65746
+                      PPPH              34835
+                      PPHH               4752
+                      PHPH               3014
+                      PHHH                822
+                      HHHH                 49
+
+                     TOTAL             109218
+  @GMOIAA-I, Processing MO integrals for spin case BB.
+  @GMOIAA-I, Generation of integral list completed.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP              72087
+                      PPPH              30735
+                      PPHH               3510
+                      PHPH               2292
+                      PHHH                560
+                      HHHH                 34
+
+                     TOTAL             109218
+  @GMOIAB-I, Processing MO integrals for spin case AB.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP             136890
+                      PPPH1H            36429
+                      PPPH2H            29517
+                      PPHH               7933
+                      PHPH1P             2231
+                      PHPH2P             3141
+                      PHHH1P              614
+                      PHHH2P              713
+                      HHHH                 65
+
+                     TOTAL             217533
+
+  @FORMT2-I, Second-order MBPT correlation energies:
+  @FORMT2-I, Singles contribution will be calculated.
+  @FORMT2-W, MBPT(2) energies are correct only for semicanonical orbitals.
+              ----------------------------------------------
+              E(SCF)                =  -55.582953093249 a.u.
+              E2(AA)                =   -0.026852391727 a.u.
+              E2(BB)                =   -0.012297752452 a.u.
+              E2(AB)                =   -0.147219586787 a.u.
+              E2(SINGLE)            =   -0.002863682381 a.u.
+              E2(TOT)               =   -0.186369730966 a.u.
+              Total MBPT(2) energy  =  -55.772186506595 a.u.
+              ----------------------------------------------
+            ----------------------------------------------
+                     Projected spin multiplicities: 
+            ----------------------------------------------
+             <0|S^2|0>                  =    0.7500000000.
+             <0|S^2 T2|0>               =    0.0000000000.
+             Projected <0|S^2 exp(T)|0> =    0.7500000000.
+             Approximate spin mult.     =    2.0000000000.
+            ----------------------------------------------
+   Largest T2 amplitudes for spin case AA:
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   4  28  22]-0.01827 [  5   3  29   8]-0.01579 [  5   3  28   7]-0.01414
+[  4   3  22   7]-0.01386 [  4   3  23   9] 0.01362 [  4   3  22   6]-0.01264
+[  4   3  24  12]-0.01224 [  4   3  22   9] 0.01205 [  5   4  28  25]-0.01156
+[  5   3  28   9] 0.01144 [  5   3  28   6]-0.01125 [  5   2  28   6]-0.01057
+[  5   4  40  13] 0.01015 [  4   3  25   9] 0.01011 [  4   2  22   6]-0.01010
+-----------------------------------------------------------------------------
+   Norm of T2AA vector (     1738 symmetry allowed elements):  0.0862717338.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case BB:
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  4   3  29   7]-0.01621 [  4   3  28   6]-0.01448 [  4   3  28   8] 0.01152
+[  4   3  28   5]-0.01152 [  4   2  28   5]-0.01107 [  3   2  24  21]-0.01029
+[  3   2   6   5]-0.01013 [  4   3  29  11] 0.00894 [  3   2  23  21]-0.00890
+[  4   3  31   6] 0.00866 [  4   2  40  21]-0.00864 [  4   3  31   7]-0.00861
+[  4   2  28   9] 0.00856 [  4   2  39  21] 0.00839 [  4   3  29   6] 0.00821
+-----------------------------------------------------------------------------
+   Norm of T2BB vector (     1218 symmetry allowed elements):  0.0591256199.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case AB:
+       _       _                 _       _                 _       _
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   4  28  28]-0.02819 [  4   4  22  28]-0.02116 [  3   3   9   8]-0.02113
+[  3   3  29  29]-0.02016 [  5   4  29  29]-0.01901 [  3   3   6   5]-0.01875
+[  3   3   7   6]-0.01860 [  3   2  24  21]-0.01774 [  5   4  31  31]-0.01702
+[  5   2  40  21]-0.01698 [  2   2   6   5]-0.01695 [  4   3  22   6]-0.01686
+[  5   3  28   5]-0.01670 [  3   4   6  28]-0.01665 [  5   2  28   5]-0.01657
+-----------------------------------------------------------------------------
+   Norm of T2AB vector (     7933 symmetry allowed elements):  0.1926092757.
+-----------------------------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.71 (      0.7)   0: 0: 0.87 (      0.9)   0: 0: 3.3 (      3.3)
+@ACES2: Executing "xvcc"
+
+-----------------------------------------------------------------------------
+                                Entering xvcc
+-----------------------------------------------------------------------------
+
+
+
+  running standard cc program
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 151695360 211695615
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+   CCSD energy will be calculated.
+   The reference state is a ROHF wave function.
+   The reference state is a general non-HF wave function.
+   The AA contribution to the correlation energy is:   -0.0282525 a.u.
+   The BB contribution to the correlation energy is:   -0.0137385 a.u.
+   The AB contribution to the correlation energy is:   -0.1472858 a.u.
+   The total correlation energy is -0.189276800748 a.u.
+   The AA contribution to the correlation energy is:   -0.0284450 a.u.
+   The BB contribution to the correlation energy is:   -0.0129329 a.u.
+   The AB contribution to the correlation energy is:   -0.1673789 a.u.
+   The total correlation energy is -0.208756788709 a.u.
+  Convergence information after     1 iterations: 
+  Largest element of residual vector : -0.24611431E-02.
+  Largest element of DIIS residual   : -0.24611431E-02.
+   The AA contribution to the correlation energy is:   -0.0284324 a.u.
+   The BB contribution to the correlation energy is:   -0.0129191 a.u.
+   The AB contribution to the correlation energy is:   -0.1674551 a.u.
+   The total correlation energy is -0.208806559712 a.u.
+  Convergence information after     2 iterations: 
+  Largest element of residual vector :  0.97683474E-03.
+  Largest element of DIIS residual   :  0.11265221E-02.
+   The AA contribution to the correlation energy is:   -0.0284299 a.u.
+   The BB contribution to the correlation energy is:   -0.0129152 a.u.
+   The AB contribution to the correlation energy is:   -0.1674910 a.u.
+   The total correlation energy is -0.208836102921 a.u.
+  Convergence information after     3 iterations: 
+  Largest element of residual vector :  0.21920530E-03.
+  Largest element of DIIS residual   :  0.13342671E-03.
+   The AA contribution to the correlation energy is:   -0.0284284 a.u.
+   The BB contribution to the correlation energy is:   -0.0129131 a.u.
+   The AB contribution to the correlation energy is:   -0.1675054 a.u.
+   The total correlation energy is -0.208846974743 a.u.
+  Convergence information after     4 iterations: 
+  Largest element of residual vector :  0.77831774E-04.
+  Largest element of DIIS residual   :  0.60815069E-04.
+   The AA contribution to the correlation energy is:   -0.0284282 a.u.
+   The BB contribution to the correlation energy is:   -0.0129124 a.u.
+   The AB contribution to the correlation energy is:   -0.1675102 a.u.
+   The total correlation energy is -0.208850726653 a.u.
+  Convergence information after     5 iterations: 
+  Largest element of residual vector :  0.24451258E-04.
+  Largest element of DIIS residual   :  0.10042107E-04.
+   The AA contribution to the correlation energy is:   -0.0284282 a.u.
+   The BB contribution to the correlation energy is:   -0.0129122 a.u.
+   The AB contribution to the correlation energy is:   -0.1675110 a.u.
+   The total correlation energy is -0.208851428731 a.u.
+  Convergence information after     6 iterations: 
+  Largest element of residual vector :  0.96333680E-05.
+  Largest element of DIIS residual   :  0.44322234E-05.
+   The AA contribution to the correlation energy is:   -0.0284283 a.u.
+   The BB contribution to the correlation energy is:   -0.0129122 a.u.
+   The AB contribution to the correlation energy is:   -0.1675111 a.u.
+   The total correlation energy is -0.208851552896 a.u.
+  Convergence information after     7 iterations: 
+  Largest element of residual vector :  0.21408473E-05.
+  Largest element of DIIS residual   :  0.16715054E-05.
+   The AA contribution to the correlation energy is:   -0.0284284 a.u.
+   The BB contribution to the correlation energy is:   -0.0129122 a.u.
+   The AB contribution to the correlation energy is:   -0.1675111 a.u.
+   The total correlation energy is -0.208851584298 a.u.
+  Convergence information after     8 iterations: 
+  Largest element of residual vector :  0.10862990E-05.
+  Largest element of DIIS residual   :  0.71451885E-06.
+   The AA contribution to the correlation energy is:   -0.0284284 a.u.
+   The BB contribution to the correlation energy is:   -0.0129122 a.u.
+   The AB contribution to the correlation energy is:   -0.1675111 a.u.
+   The total correlation energy is -0.208851598860 a.u.
+  Convergence information after     9 iterations: 
+  Largest element of residual vector :  0.47353663E-06.
+  Largest element of DIIS residual   :  0.23473698E-06.
+   The AA contribution to the correlation energy is:   -0.0284284 a.u.
+   The BB contribution to the correlation energy is:   -0.0129122 a.u.
+   The AB contribution to the correlation energy is:   -0.1675111 a.u.
+   The total correlation energy is -0.208851608351 a.u.
+  Convergence information after    10 iterations: 
+  Largest element of residual vector :  0.15571618E-06.
+  Largest element of DIIS residual   : -0.76955081E-07.
+   The AA contribution to the correlation energy is:   -0.0284284 a.u.
+   The BB contribution to the correlation energy is:   -0.0129122 a.u.
+   The AB contribution to the correlation energy is:   -0.1675111 a.u.
+   The total correlation energy is -0.208851611642 a.u.
+  Convergence information after    11 iterations: 
+  Largest element of residual vector :  0.48652618E-07.
+  Largest element of DIIS residual   : -0.22299632E-07.
+  Amplitude equations converged in    11 iterations.
+   The AA contribution to the correlation energy is:   -0.0284284 a.u.
+   The BB contribution to the correlation energy is:   -0.0129122 a.u.
+   The AB contribution to the correlation energy is:   -0.1675111 a.u.
+   The total correlation energy is -0.208851611109 a.u.
+   Largest T1 amplitudes for spin case AA:
+   i       a                 i       a                 i       a    
+-----------------------------------------------------------------------------
+[  2       6    ]-0.01388 [  2       9    ] 0.01305 [  2      13    ]-0.01073
+[  5      28    ]-0.00950 [  5      31    ] 0.00950 [  2      11    ]-0.00898
+[  2      10    ] 0.00873 [  2      12    ]-0.00857 [  3      13    ] 0.00818
+[  2       7    ] 0.00793 [  4      22    ] 0.00755 [  4      23    ] 0.00673
+[  3       7    ]-0.00669 [  5      29    ] 0.00626 [  3      12    ] 0.00586
+-----------------------------------------------------------------------------
+   Norm of T1AA vector (       65 symmetry allowed elements):  0.0386955626.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case AA:
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   4  28  22]-0.01773 [  5   3  29   8]-0.01644 [  4   3  23   9] 0.01379
+[  4   3  22   7]-0.01366 [  5   3  28   7]-0.01280 [  4   3  24  12]-0.01279
+[  4   3  22   6]-0.01211 [  4   3  22   9] 0.01140 [  5   4  28  25]-0.01103
+[  5   4  40  13] 0.01043 [  5   4  39   9] 0.01013 [  4   2  22   6]-0.01004
+[  4   3  25   9] 0.00971 [  5   3  28   9] 0.00961 [  5   3  29  12] 0.00949
+-----------------------------------------------------------------------------
+   Norm of T2AA vector (     1738 symmetry allowed elements):  0.0852744997.
+-----------------------------------------------------------------------------
+   Largest T1 amplitudes for spin case BB:
+   i       a                 i       a                 i       a    
+-----------------------------------------------------------------------------
+[  3       6    ] 0.01630 [  2       6    ]-0.01500 [  2       5    ] 0.01090
+[  3       5    ] 0.01014 [  4      28    ] 0.01008 [  2      12    ] 0.00986
+[  3      13    ]-0.00755 [  4      29    ]-0.00750 [  2      10    ] 0.00743
+[  4      34    ]-0.00670 [  2       8    ]-0.00667 [  2      11    ] 0.00614
+[  3      12    ]-0.00514 [  3       7    ]-0.00500 [  4      35    ]-0.00477
+-----------------------------------------------------------------------------
+   Norm of T1BB vector (       59 symmetry allowed elements):  0.0374895411.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case BB:
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  4   3  29   7]-0.01696 [  4   3  28   6]-0.01320 [  3   2  24  21]-0.01038
+[  3   2  23  21]-0.01029 [  4   2  39  21] 0.00965 [  4   3  28   5]-0.00951
+[  4   3  29  11] 0.00923 [  4   3  28   8] 0.00916 [  4   3  31   7]-0.00913
+[  4   2  28   5]-0.00883 [  3   2   6   5]-0.00880 [  4   2  40  21]-0.00878
+[  4   3  31   6] 0.00765 [  4   3  32   7] 0.00759 [  4   3  29   6] 0.00733
+-----------------------------------------------------------------------------
+   Norm of T2BB vector (     1218 symmetry allowed elements):  0.0550573830.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case AB:
+       _       _                 _       _                 _       _
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   4  28  28]-0.03186 [  3   3   9   8]-0.02514 [  3   3  29  29]-0.02399
+[  5   4  29  29]-0.02316 [  4   4  22  28]-0.02315 [  4   2   6  21] 0.02286
+[  3   3   6   5]-0.02267 [  5   4   6   5]-0.02180 [  4   2   7  21]-0.02111
+[  3   3   7   6]-0.02092 [  3   2  24  21]-0.02082 [  4   2  13  21] 0.02011
+[  5   2  40  21]-0.02002 [  4   3   7  21] 0.01981 [  5   4  31  31]-0.01973
+-----------------------------------------------------------------------------
+   Norm of T2AB vector (     7933 symmetry allowed elements):  0.2288955980.
+-----------------------------------------------------------------------------
+   The CC iterations have converged.
+
+            ----------------------------------------------
+                     Projected spin multiplicities: 
+            ----------------------------------------------
+             <0|S^2|0>                  =    0.7500000000.
+             <0|S^2 (T2+T1**2) |0>      =    0.0000000000.
+             <0|S^2 T1|0>               =    0.0000000000.
+             Projected <0|S^2 exp(T)|0> =    0.7500000000.
+             Approximate spin mult.     =    2.0000000000.
+            ----------------------------------------------
+       Summary of iterative solution of CC equations 
+      -----------------------------------------------------------
+                       Correlation           Total
+       Iteration         Energy              Energy
+      -----------------------------------------------------------
+            0        -0.189276800748     -55.772229893996  DIIS 
+            1        -0.208756788709     -55.791709881958  DIIS 
+            2        -0.208806559712     -55.791759652961  DIIS 
+            3        -0.208836102921     -55.791789196170  DIIS 
+            4        -0.208846974743     -55.791800067991  DIIS 
+            5        -0.208850726653     -55.791803819901  DIIS 
+            6        -0.208851428731     -55.791804521980  DIIS 
+            7        -0.208851552896     -55.791804646144  DIIS 
+            8        -0.208851584298     -55.791804677547  DIIS 
+            9        -0.208851598860     -55.791804692109  DIIS 
+           10        -0.208851608351     -55.791804701600  DIIS 
+           11        -0.208851611109     -55.791804704357  DIIS 
+      -----------------------------------------------------------
+
+               CCSD        energy is     -55.791804704357 a.u. 
+
+      A miracle has come to pass. The CC iterations have converged.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 1.07 (      1.1)   0: 0: 7.75 (      7.8)   0: 0: 9.1 (      9.1)
+
+-----------------------------------------------------------------------------
+                                Exiting xvcc
+-----------------------------------------------------------------------------
+
+ The ACES Member Executable has completed successfully.
+@ACES2: Executing "xlambda"
+
+-----------------------------------------------------------------------------
+                              Entering xlambda
+-----------------------------------------------------------------------------
+
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 145166336 205166591
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  The Lambda equations are solved for CCSD.
+  Convergence information after     1 iterations: 
+  Largest element of residual vector : -0.19523595E-02.
+  Largest element of DIIS residual   : -0.19523595E-02.
+  Convergence information after     2 iterations: 
+  Largest element of residual vector : -0.53904976E-03.
+  Largest element of DIIS residual   : -0.29244555E-03.
+  Convergence information after     3 iterations: 
+  Largest element of residual vector : -0.24119884E-03.
+  Largest element of DIIS residual   : -0.14164354E-03.
+  Convergence information after     4 iterations: 
+  Largest element of residual vector :  0.54894945E-04.
+  Largest element of DIIS residual   :  0.44380184E-04.
+  Convergence information after     5 iterations: 
+  Largest element of residual vector : -0.23294379E-04.
+  Largest element of DIIS residual   : -0.12089769E-04.
+  Convergence information after     6 iterations: 
+  Largest element of residual vector : -0.76554972E-05.
+  Largest element of DIIS residual   : -0.51798896E-05.
+  Convergence information after     7 iterations: 
+  Largest element of residual vector : -0.34825789E-05.
+  Largest element of DIIS residual   : -0.20274914E-05.
+  Convergence information after     8 iterations: 
+  Largest element of residual vector : -0.13654860E-05.
+  Largest element of DIIS residual   : -0.77645181E-06.
+  Convergence information after     9 iterations: 
+  Largest element of residual vector : -0.50485295E-06.
+  Largest element of DIIS residual   : -0.27029497E-06.
+  Convergence information after    10 iterations: 
+  Largest element of residual vector : -0.17563701E-06.
+  Largest element of DIIS residual   : -0.81759070E-07.
+  Lambda equations converged in    10 iterations.
+
+-----------------------------------------------------------------------------
+                             Exiting xlambda
+-----------------------------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 1.10 (      1.1)   0: 0: 8.27 (      8.3)   0: 0: 9.7 (      9.7)
+@ACES2: Executing "xdens"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 143409152 203409407
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  CCSD density and intermediates are calculated.
+  The reference state is a non HF wave functions.
+  The reference state is a ROHF wave function.
+  The iterative expansion of D(ai) converged after  13 iterations.
+  ----------------------------------------------------------------------
+                 Natural orbital occupation numbers
+  ----------------------------------------------------------------------
+                            Alpha spin
+  ----------------------------------------------------------------------
+  0.99970  0.99054  0.98399  0.98044  0.98012  0.01340  0.01242  0.00787
+  0.00716  0.00406  0.00382  0.00364  0.00356  0.00348  0.00077  0.00067
+  0.00057  0.00049  0.00045  0.00042  0.00037  0.00036  0.00031  0.00031
+  0.00020  0.00015  0.00013  0.00012  0.00009  0.00008  0.00005  0.00004
+  0.00004  0.00003  0.00003  0.00002  0.00002  0.00002  0.00002  0.00002
+  0.00001  0.00001
+  Trace of density matrix :   5.0000000000.
+  ----------------------------------------------------------------------
+                            Beta spin
+  ----------------------------------------------------------------------
+  0.99969  0.98481  0.97976  0.97884  0.01351  0.01159  0.00765  0.00692
+  0.00372  0.00372  0.00175  0.00171  0.00137  0.00066  0.00062  0.00057
+  0.00047  0.00039  0.00036  0.00034  0.00027  0.00025  0.00020  0.00015
+  0.00012  0.00008  0.00008  0.00007  0.00006  0.00005  0.00004  0.00004
+  0.00003  0.00002  0.00002  0.00002  0.00002  0.00002  0.00001  0.00001
+  0.00001  0.00001
+  Trace of density matrix :   4.0000000000.
+  ----------------------------------------------------------------------
+  @S2EXPECT-I, S**2 calculated as expectation value.
+              Reference state <S**2>        :    0.7500000000.
+              Total one particle correction :    0.1017572186.
+              Total two particle correction :   -0.1016333139.
+              Expectation value of <S**2>   :    0.7501239047.
+  Density calculation successfully completed.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 1.06 (      1.1)   0: 0: 3.86 (      3.9)   0: 0: 5.5 (      5.5)
+@ACES2: Executing "xanti"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 143228928 203229183
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ CCSD MO gammas will be sorted to Mulliken order.
+  @SETMET-I, Unequal number of MO and AO orbitals.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.59 (      0.6)   0: 0: 0.63 (      0.6)   0: 0: 1.8 (      1.8)
+@ACES2: Executing "xbcktrn"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142872576 202872831
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ CCSD MO gammas will be transformed to the AO basis.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.27 (      0.3)   0: 0: 1.82 (      1.8)   0: 0: 2.4 (      2.4)
+@ACES2: Executing "xvdint"
+@ACES_MALLOC: allocated >= 45 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ One- and two-electron integral derivatives are calculated
+ for ROHF-CC/MBPT gradients and dipole moments.
+ Spherical gaussians are used.
+
+  Cartesian Coordinates
+  ---------------------
+
+  Total number of coordinates:  9
+
+
+   1   H #1 1   x      0.0000000000
+   2            y     -1.5095335277
+   3            z      1.0323899763
+
+   4   H #1 2   x      0.0000000000
+   5            y      1.5095335277
+   6            z      1.0323899763
+
+   7   N #2     x      0.0000000000
+   8            y      0.0000000000
+   9            z     -0.1486057597
+
+
+  Symmetry Coordinates
+  --------------------
+
+  Number of coordinates in each symmetry:   3  2  3  1
+   1   H #1  y    2  -  5
+   2   H #1  z    3  +  6
+   3   N #2  z    9
+   4   H #1  x    1  +  4
+   5   N #2  x    7
+   6   H #1  y    2  +  5
+   7   H #1  z    3  -  6
+   8   N #2  y    8
+   9   H #1  x    1  -  4
+ Translational invariance is used.
+
+                         H #1 y     0.0095349445
+                         H #1 z    -0.0099587203
+                         N #2 z     0.0099587203
+
+
+ H #1 1     0.0000000000            0.0047674723           -0.0049793601
+ H #1 2     0.0000000000           -0.0047674723           -0.0049793601
+ N #2       0.0000000000            0.0000000000            0.0099587203
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.27 (      0.3)   0: 0: 5.42 (      5.4)   0: 0: 5.9 (      5.9)
+ACES2: Total elapsed time is      103.8 seconds
+@ACES2: Executing "xjoda"
+   JODA beginning optimization cycle #  2.
+   Retrieving information from last optimization cycle.
+   Internal coordinate forces and energy gradients (atomic units): 
+           R       dV/dR             R       dV/dR             R       dV/dR
+ [R    ]  1.91662 -0.00682 [R    ]  1.91662 -0.00682 [A    ]  1.81381  0.00189
+   Hessian from cycle  1 read.
+   BFGS update using last two gradients and previous step.
+   There are  0 Negative Eigenvalues.
+   There are  0 Negative Eigenvalues.
+  @EFOL-I, No Morse constant availablefor N    -H    .  Default used.
+   MANR scale factor for NR step is 1.000 for R    .
+   Summary of Optimization Cycle: 
+   The maximum unscaled step is:    0.02891.
+   Scale factor set to:  1.00000.
+   Forces are in hartree/bohr and hartree/radian.
+   Parameter values are in Angstroms and degrees.
+--------------------------------------------------------------------------
+  Parameter     dV/dR           Step          Rold            Rnew
+--------------------------------------------------------------------------
+    R      -0.0068230761    0.0085232334    1.0142331037    1.0227563371
+    A       0.0018861466   -1.0204351507  103.9237280204  102.9032928697
+--------------------------------------------------------------------------
+  Minimum force:  0.001886147 / RMS force:  0.005005593
+ Updating structure...
+  @symmetry-i, Coordinates after  COM shift 
+     -0.118527969890      0.000000000000     -1.838284396553
+     -0.118527969890      0.000000000000      0.094444833602
+      1.765396681549      0.000000000000      0.526035130985
+   Rotational constants (in cm-1): 
+     8.40588       13.07133       23.55101
+   Principal axis orientation for molecule:
+       -1.511553747026    1.052874005808    0.000000000000
+        0.000000000000   -0.151554301293    0.000000000000
+        1.511553747026    1.052874005808    0.000000000000
+         -----------------------------------------------
+         Cartesian coordinates corresponding to internal 
+                 coordinate input (Bohr) 
+ ----------------------------------------------------------------
+ Z-matrix   Atomic            C o o r d i n a t e s
+  Symbol    Number           X              Y              Z
+ ----------------------------------------------------------------
+     H         1         0.00000000    -1.51155375     1.05287401
+     N         7         0.00000000     0.00000000    -0.15155430
+     H         1         0.00000000     1.51155375     1.05287401
+ ----------------------------------------------------------------
+   Interatomic distance matrix (Angstroms) 
+
+                 H             N             H    
+                [ 1]        [ 2]        [ 3]
+  H    [ 1]     0.00000
+  N    [ 2]     1.02276     0.00000
+  H    [ 3]     1.59976     1.02276     0.00000
+ @ACES2: Beginning main opt_an loop. Iteration  3
+@ACES2: Executing "xvmol"
+ One- and two-electron integrals over symmetry-adapted AOs are calculated.
+
+ @READIN: Spherical harmonics are used.
+NAMN: H #1  0.000000000 -1.511553747  1.052874006
+NAMN: N #2  0.000000000  0.000000000 -0.151554301
+             42 SYMMETRY ADAPTED BASIS FUNCTIONS 
+  @READIN-I, Nuclear repulsion energy :    7.5744281698 a.u.
+  required memory for a1 array  8903380 words 
+  required memory for a2 array  207578 words 
+@ACES_MALLOC: allocated >= 34 MB of core memory
+  @TWOEL-I,      19048 integrals of symmetry type  I I I I
+  @TWOEL-I,      40205 integrals of symmetry type  I J I J
+  @TWOEL-I,      23439 integrals of symmetry type  I I J J
+  @TWOEL-I,      17978 integrals of symmetry type  I J K L
+  @TWOEL-I, Total number of 2-e integrals     100670.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.12 (      0.1)   0: 0: 4.28 (      4.3)   0: 0: 4.7 (      4.7)
+@ACES2: Executing "xvmol2ja"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144875520 204875775
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.08 (      0.1)   0: 0: 0.02 (      0.0)   0: 0: 0.1 (      0.1)
+@ACES2: Executing "xvscf"
+          Alpha population by irrep:   3    1    1    0
+           Beta population by irrep:   3    0    1    0
+
+
+@ACES_MALLOC: allocated >= 4 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ @SORTHO-I, Orthonormalizing initial guess. 
+ @SORTHO-I, Orthonormalizing initial guess. 
+  --------------------------------------------------------------------
+  Iteration         Total Energy            Largest Density Difference
+  --------------------------------------------------------------------
+       0           -55.5463446143              0.0000000000E+00
+       1           -55.5819420052              0.4700175239E+00
+       2           -55.5825971614              0.8519736766E-01
+       3           -55.5826240157              0.2079421253E-01
+       4           -55.5826268727              0.7211702336E-02
+       5           -55.5826271338              0.1455484753E-02
+       6           -55.5826271421              0.2042616935E-03
+       7           -55.5826271424              0.2439051563E-04
+       8           -55.5826271424              0.1001032083E-04
+       9           -55.5826271424              0.2557557452E-05
+      10           -55.5826271424              0.1693519456E-06
+ 
+@VSCF-I, SCF has converged.
+
+     E(SCF)=       -55.5826271424              0.3137258764E-07
+
+
+       The average multiplicity is    2.0000000
+  The expectation value of S**2 is    0.7500000
+
+
+
+      Trace of projected alpha density matrix =   1.000000000
+
+      Trace of projected beta  density matrix =   1.000000000
+
+      Alpha part of wavefunction is symmetric.
+      Beta  part of wavefunction is symmetric.
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.26 (      0.3)   0: 0: 0.73 (      0.7)   0: 0: 1.1 (      1.1)
+@ACES2: Executing "xvtran"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142860288 202860543
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Full UHF integral transformation
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.56 (      0.6)   0: 0: 2.37 (      2.4)   0: 0: 3.6 (      3.6)
+@ACES2: Executing "xintprc"
+
+
+ performing integral processing for standard CC
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144199680 204199935
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Processing integrals for CCSD calculation.
+  @GMOIAA-I, Processing MO integrals for spin case AA.
+  @GMOIAA-I, Generation of integral list completed.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP              65746
+                      PPPH              34835
+                      PPHH               4752
+                      PHPH               3014
+                      PHHH                822
+                      HHHH                 49
+
+                     TOTAL             109218
+  @GMOIAA-I, Processing MO integrals for spin case BB.
+  @GMOIAA-I, Generation of integral list completed.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP              72087
+                      PPPH              30735
+                      PPHH               3510
+                      PHPH               2292
+                      PHHH                560
+                      HHHH                 34
+
+                     TOTAL             109218
+  @GMOIAB-I, Processing MO integrals for spin case AB.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP             136890
+                      PPPH1H            36429
+                      PPPH2H            29517
+                      PPHH               7933
+                      PHPH1P             2231
+                      PHPH2P             3141
+                      PHHH1P              614
+                      PHHH2P              713
+                      HHHH                 65
+
+                     TOTAL             217533
+
+  @FORMT2-I, Second-order MBPT correlation energies:
+  @FORMT2-I, Singles contribution will be calculated.
+  @FORMT2-W, MBPT(2) energies are correct only for semicanonical orbitals.
+              ----------------------------------------------
+              E(SCF)                =  -55.582627142425 a.u.
+              E2(AA)                =   -0.026878645990 a.u.
+              E2(BB)                =   -0.012323758613 a.u.
+              E2(AB)                =   -0.147542155812 a.u.
+              E2(SINGLE)            =   -0.002871468433 a.u.
+              E2(TOT)               =   -0.186744560415 a.u.
+              Total MBPT(2) energy  =  -55.772243171273 a.u.
+              ----------------------------------------------
+            ----------------------------------------------
+                     Projected spin multiplicities: 
+            ----------------------------------------------
+             <0|S^2|0>                  =    0.7500000000.
+             <0|S^2 T2|0>               =    0.0000000000.
+             Projected <0|S^2 exp(T)|0> =    0.7500000000.
+             Approximate spin mult.     =    2.0000000000.
+            ----------------------------------------------
+   Largest T2 amplitudes for spin case AA:
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   4  28  22]-0.01898 [  5   3  28   7]-0.01550 [  5   3  29   8]-0.01511
+[  4   3  22   7]-0.01399 [  4   3  23   9] 0.01356 [  4   3  22   6]-0.01269
+[  5   4  28  25]-0.01230 [  4   3  22   9] 0.01204 [  5   3  28   9] 0.01182
+[  4   3  24  12]-0.01156 [  5   3  28   6]-0.01140 [  5   2  28   6]-0.01071
+[  5   4  40  13] 0.01022 [  4   2  22   6]-0.01017 [  4   3  25   9] 0.01006
+-----------------------------------------------------------------------------
+   Norm of T2AA vector (     1738 symmetry allowed elements):  0.0865548431.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case BB:
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  4   3  28   6]-0.01586 [  4   3  29   7]-0.01551 [  4   3  28   8] 0.01190
+[  4   3  28   5]-0.01166 [  4   2  28   5]-0.01121 [  3   2  24  21]-0.01028
+[  3   2   6   5]-0.01025 [  4   3  29  11] 0.00937 [  4   2  28   9] 0.00907
+[  3   2  23  21]-0.00894 [  4   3  31   7]-0.00883 [  4   2  40  21]-0.00866
+[  4   3  31   6] 0.00863 [  4   2  39  21] 0.00842 [  3   2   8   5] 0.00806
+-----------------------------------------------------------------------------
+   Norm of T2BB vector (     1218 symmetry allowed elements):  0.0593975565.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case AB:
+       _       _                 _       _                 _       _
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   4  28  28]-0.03237 [  4   4  22  28]-0.02196 [  3   3   9   8]-0.02099
+[  3   3   6   5]-0.01917 [  3   3   7   6]-0.01876 [  5   3  28   5]-0.01853
+[  3   4   6  28]-0.01847 [  3   3  29  29]-0.01786 [  3   2  24  21]-0.01775
+[  4   2  13  21] 0.01737 [  5   2  28   5]-0.01734 [  2   2   6   5]-0.01720
+[  5   4  31  31]-0.01714 [  4   3  22   6]-0.01704 [  5   2  40  21]-0.01701
+-----------------------------------------------------------------------------
+   Norm of T2AB vector (     7933 symmetry allowed elements):  0.1935648668.
+-----------------------------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.62 (      0.6)   0: 0: 0.97 (      1.0)   0: 0: 3.4 (      3.4)
+@ACES2: Executing "xvcc"
+
+-----------------------------------------------------------------------------
+                                Entering xvcc
+-----------------------------------------------------------------------------
+
+
+
+  running standard cc program
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 151695360 211695615
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+   CCSD energy will be calculated.
+   The reference state is a ROHF wave function.
+   The reference state is a general non-HF wave function.
+   The AA contribution to the correlation energy is:   -0.0282828 a.u.
+   The BB contribution to the correlation energy is:   -0.0137679 a.u.
+   The AB contribution to the correlation energy is:   -0.1476091 a.u.
+   The total correlation energy is -0.189659715762 a.u.
+   The AA contribution to the correlation energy is:   -0.0284648 a.u.
+   The BB contribution to the correlation energy is:   -0.0129540 a.u.
+   The AB contribution to the correlation energy is:   -0.1677265 a.u.
+   The total correlation energy is -0.209145302865 a.u.
+  Convergence information after     1 iterations: 
+  Largest element of residual vector : -0.42581237E-02.
+  Largest element of DIIS residual   : -0.42581237E-02.
+   The AA contribution to the correlation energy is:   -0.0284404 a.u.
+   The BB contribution to the correlation energy is:   -0.0129304 a.u.
+   The AB contribution to the correlation energy is:   -0.1678588 a.u.
+   The total correlation energy is -0.209229640969 a.u.
+  Convergence information after     2 iterations: 
+  Largest element of residual vector :  0.20159770E-02.
+  Largest element of DIIS residual   :  0.22941824E-02.
+   The AA contribution to the correlation energy is:   -0.0284358 a.u.
+   The BB contribution to the correlation energy is:   -0.0129243 a.u.
+   The AB contribution to the correlation energy is:   -0.1679218 a.u.
+   The total correlation energy is -0.209281889386 a.u.
+  Convergence information after     3 iterations: 
+  Largest element of residual vector :  0.46184707E-03.
+  Largest element of DIIS residual   :  0.26175906E-03.
+   The AA contribution to the correlation energy is:   -0.0284329 a.u.
+   The BB contribution to the correlation energy is:   -0.0129208 a.u.
+   The AB contribution to the correlation energy is:   -0.1679470 a.u.
+   The total correlation energy is -0.209300694128 a.u.
+  Convergence information after     4 iterations: 
+  Largest element of residual vector :  0.13917347E-03.
+  Largest element of DIIS residual   :  0.10956027E-03.
+   The AA contribution to the correlation energy is:   -0.0284324 a.u.
+   The BB contribution to the correlation energy is:   -0.0129195 a.u.
+   The AB contribution to the correlation energy is:   -0.1679550 a.u.
+   The total correlation energy is -0.209306902008 a.u.
+  Convergence information after     5 iterations: 
+  Largest element of residual vector :  0.43391185E-04.
+  Largest element of DIIS residual   :  0.17344469E-04.
+   The AA contribution to the correlation energy is:   -0.0284326 a.u.
+   The BB contribution to the correlation energy is:   -0.0129191 a.u.
+   The AB contribution to the correlation energy is:   -0.1679563 a.u.
+   The total correlation energy is -0.209308041552 a.u.
+  Convergence information after     6 iterations: 
+  Largest element of residual vector :  0.17308010E-04.
+  Largest element of DIIS residual   :  0.81954704E-05.
+   The AA contribution to the correlation energy is:   -0.0284328 a.u.
+   The BB contribution to the correlation energy is:   -0.0129190 a.u.
+   The AB contribution to the correlation energy is:   -0.1679565 a.u.
+   The total correlation energy is -0.209308275015 a.u.
+  Convergence information after     7 iterations: 
+  Largest element of residual vector :  0.35945793E-05.
+  Largest element of DIIS residual   :  0.28136341E-05.
+   The AA contribution to the correlation energy is:   -0.0284328 a.u.
+   The BB contribution to the correlation energy is:   -0.0129190 a.u.
+   The AB contribution to the correlation energy is:   -0.1679565 a.u.
+   The total correlation energy is -0.209308337003 a.u.
+  Convergence information after     8 iterations: 
+  Largest element of residual vector :  0.18318799E-05.
+  Largest element of DIIS residual   :  0.12358416E-05.
+   The AA contribution to the correlation energy is:   -0.0284328 a.u.
+   The BB contribution to the correlation energy is:   -0.0129190 a.u.
+   The AB contribution to the correlation energy is:   -0.1679565 a.u.
+   The total correlation energy is -0.209308364344 a.u.
+  Convergence information after     9 iterations: 
+  Largest element of residual vector :  0.81968041E-06.
+  Largest element of DIIS residual   :  0.42444630E-06.
+   The AA contribution to the correlation energy is:   -0.0284328 a.u.
+   The BB contribution to the correlation energy is:   -0.0129190 a.u.
+   The AB contribution to the correlation energy is:   -0.1679565 a.u.
+   The total correlation energy is -0.209308380971 a.u.
+  Convergence information after    10 iterations: 
+  Largest element of residual vector :  0.28253713E-06.
+  Largest element of DIIS residual   :  0.13719142E-06.
+   The AA contribution to the correlation energy is:   -0.0284328 a.u.
+   The BB contribution to the correlation energy is:   -0.0129190 a.u.
+   The AB contribution to the correlation energy is:   -0.1679565 a.u.
+   The total correlation energy is -0.209308386765 a.u.
+  Convergence information after    11 iterations: 
+  Largest element of residual vector :  0.91710476E-07.
+  Largest element of DIIS residual   : -0.40802608E-07.
+  Amplitude equations converged in    11 iterations.
+   The AA contribution to the correlation energy is:   -0.0284328 a.u.
+   The BB contribution to the correlation energy is:   -0.0129190 a.u.
+   The AB contribution to the correlation energy is:   -0.1679565 a.u.
+   The total correlation energy is -0.209308385772 a.u.
+   Largest T1 amplitudes for spin case AA:
+   i       a                 i       a                 i       a    
+-----------------------------------------------------------------------------
+[  2       6    ]-0.01435 [  2       9    ] 0.01310 [  2      13    ]-0.01155
+[  5      28    ]-0.01084 [  5      31    ] 0.00971 [  2      10    ] 0.00891
+[  2      11    ]-0.00877 [  3      13    ] 0.00865 [  4      22    ] 0.00776
+[  2       7    ] 0.00769 [  2      12    ]-0.00750 [  4      23    ] 0.00693
+[  3       7    ]-0.00672 [  2      14    ]-0.00589 [  5      34    ]-0.00516
+-----------------------------------------------------------------------------
+   Norm of T1AA vector (       65 symmetry allowed elements):  0.0391531256.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case AA:
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   4  28  22]-0.01826 [  5   3  29   8]-0.01566 [  5   3  28   7]-0.01397
+[  4   3  22   7]-0.01379 [  4   3  23   9] 0.01372 [  4   3  24  12]-0.01212
+[  4   3  22   6]-0.01211 [  5   4  28  25]-0.01165 [  4   3  22   9] 0.01138
+[  5   4  40  13] 0.01047 [  5   4  39   9] 0.01018 [  4   2  22   6]-0.01010
+[  5   3  29  12] 0.00989 [  5   3  28   9] 0.00977 [  4   3  25   9] 0.00965
+-----------------------------------------------------------------------------
+   Norm of T2AA vector (     1738 symmetry allowed elements):  0.0854264157.
+-----------------------------------------------------------------------------
+   Largest T1 amplitudes for spin case BB:
+   i       a                 i       a                 i       a    
+-----------------------------------------------------------------------------
+[  3       6    ] 0.01623 [  2       6    ]-0.01493 [  4      28    ] 0.01128
+[  2       5    ] 0.01103 [  2      12    ] 0.01048 [  3       5    ] 0.01028
+[  3      13    ]-0.00761 [  2      10    ] 0.00726 [  4      34    ]-0.00685
+[  2       8    ]-0.00666 [  4      29    ]-0.00607 [  3      12    ]-0.00538
+[  2      11    ] 0.00519 [  3       7    ]-0.00513 [  3       9    ] 0.00470
+-----------------------------------------------------------------------------
+   Norm of T1BB vector (       59 symmetry allowed elements):  0.0376713565.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case BB:
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  4   3  29   7]-0.01619 [  4   3  28   6]-0.01439 [  3   2  24  21]-0.01038
+[  3   2  23  21]-0.01036 [  4   2  39  21] 0.00970 [  4   3  29  11] 0.00962
+[  4   3  28   5]-0.00938 [  4   3  31   7]-0.00933 [  4   3  28   8] 0.00928
+[  3   2   6   5]-0.00889 [  4   2  40  21]-0.00882 [  4   2  28   5]-0.00869
+[  4   3  31   6] 0.00758 [  4   3  32   7] 0.00736 [  4   3  28   7] 0.00735
+-----------------------------------------------------------------------------
+   Norm of T2BB vector (     1218 symmetry allowed elements):  0.0552067509.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case AB:
+       _       _                 _       _                 _       _
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   4  28  28]-0.03738 [  3   3   9   8]-0.02499 [  4   4  22  28]-0.02404
+[  4   2   6  21] 0.02340 [  3   3   6   5]-0.02327 [  5   4   6   5]-0.02246
+[  4   2  13  21] 0.02150 [  3   3   7   6]-0.02106 [  3   2  24  21]-0.02083
+[  4   2   7  21]-0.02082 [  3   3  29  29]-0.02072 [  5   4  31  28] 0.02057
+[  3   4   6  28]-0.02047 [  5   3  28   5]-0.02027 [  5   4  28  31] 0.02015
+-----------------------------------------------------------------------------
+   Norm of T2AB vector (     7933 symmetry allowed elements):  0.2302832206.
+-----------------------------------------------------------------------------
+   The CC iterations have converged.
+
+            ----------------------------------------------
+                     Projected spin multiplicities: 
+            ----------------------------------------------
+             <0|S^2|0>                  =    0.7500000000.
+             <0|S^2 (T2+T1**2) |0>      =    0.0000000000.
+             <0|S^2 T1|0>               =    0.0000000000.
+             Projected <0|S^2 exp(T)|0> =    0.7500000000.
+             Approximate spin mult.     =    2.0000000000.
+            ----------------------------------------------
+       Summary of iterative solution of CC equations 
+      -----------------------------------------------------------
+                       Correlation           Total
+       Iteration         Energy              Energy
+      -----------------------------------------------------------
+            0        -0.189659715762     -55.772286858186  DIIS 
+            1        -0.209145302865     -55.791772445289  DIIS 
+            2        -0.209229640969     -55.791856783393  DIIS 
+            3        -0.209281889386     -55.791909031811  DIIS 
+            4        -0.209300694128     -55.791927836553  DIIS 
+            5        -0.209306902008     -55.791934044433  DIIS 
+            6        -0.209308041552     -55.791935183977  DIIS 
+            7        -0.209308275015     -55.791935417439  DIIS 
+            8        -0.209308337003     -55.791935479428  DIIS 
+            9        -0.209308364344     -55.791935506768  DIIS 
+           10        -0.209308380971     -55.791935523396  DIIS 
+           11        -0.209308385772     -55.791935528197  DIIS 
+      -----------------------------------------------------------
+
+               CCSD        energy is     -55.791935528197 a.u. 
+
+      A miracle has come to pass. The CC iterations have converged.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 1.03 (      1.0)   0: 0: 7.76 (      7.8)   0: 0: 9.0 (      9.0)
+
+-----------------------------------------------------------------------------
+                                Exiting xvcc
+-----------------------------------------------------------------------------
+
+ The ACES Member Executable has completed successfully.
+@ACES2: Executing "xlambda"
+
+-----------------------------------------------------------------------------
+                              Entering xlambda
+-----------------------------------------------------------------------------
+
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 145166336 205166591
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  The Lambda equations are solved for CCSD.
+  Convergence information after     1 iterations: 
+  Largest element of residual vector : -0.19427546E-02.
+  Largest element of DIIS residual   : -0.19427546E-02.
+  Convergence information after     2 iterations: 
+  Largest element of residual vector : -0.54701431E-03.
+  Largest element of DIIS residual   : -0.30462015E-03.
+  Convergence information after     3 iterations: 
+  Largest element of residual vector : -0.24354433E-03.
+  Largest element of DIIS residual   : -0.14044598E-03.
+  Convergence information after     4 iterations: 
+  Largest element of residual vector :  0.61387240E-04.
+  Largest element of DIIS residual   :  0.46771846E-04.
+  Convergence information after     5 iterations: 
+  Largest element of residual vector : -0.25452228E-04.
+  Largest element of DIIS residual   : -0.14092455E-04.
+  Convergence information after     6 iterations: 
+  Largest element of residual vector : -0.89625011E-05.
+  Largest element of DIIS residual   : -0.55153969E-05.
+  Convergence information after     7 iterations: 
+  Largest element of residual vector : -0.37276886E-05.
+  Largest element of DIIS residual   : -0.21533245E-05.
+  Convergence information after     8 iterations: 
+  Largest element of residual vector : -0.14521253E-05.
+  Largest element of DIIS residual   : -0.82068290E-06.
+  Convergence information after     9 iterations: 
+  Largest element of residual vector : -0.53349532E-06.
+  Largest element of DIIS residual   : -0.27745905E-06.
+  Convergence information after    10 iterations: 
+  Largest element of residual vector : -0.18018663E-06.
+  Largest element of DIIS residual   : -0.83653216E-07.
+  Lambda equations converged in    10 iterations.
+
+-----------------------------------------------------------------------------
+                             Exiting xlambda
+-----------------------------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 1.07 (      1.1)   0: 0: 8.31 (      8.3)   0: 0: 9.7 (      9.7)
+@ACES2: Executing "xdens"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 143409152 203409407
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  CCSD density and intermediates are calculated.
+  The reference state is a non HF wave functions.
+  The reference state is a ROHF wave function.
+  The iterative expansion of D(ai) converged after  13 iterations.
+  ----------------------------------------------------------------------
+                 Natural orbital occupation numbers
+  ----------------------------------------------------------------------
+                            Alpha spin
+  ----------------------------------------------------------------------
+  0.99970  0.99048  0.98392  0.98013  0.97990  0.01377  0.01268  0.00792
+  0.00712  0.00405  0.00381  0.00363  0.00355  0.00348  0.00077  0.00069
+  0.00057  0.00050  0.00045  0.00043  0.00037  0.00036  0.00031  0.00031
+  0.00019  0.00015  0.00013  0.00012  0.00009  0.00008  0.00005  0.00004
+  0.00004  0.00003  0.00003  0.00002  0.00002  0.00002  0.00002  0.00002
+  0.00001  0.00001
+  Trace of density matrix :   5.0000000000.
+  ----------------------------------------------------------------------
+                            Beta spin
+  ----------------------------------------------------------------------
+  0.99969  0.98470  0.97942  0.97866  0.01386  0.01183  0.00769  0.00690
+  0.00372  0.00371  0.00175  0.00171  0.00137  0.00067  0.00062  0.00058
+  0.00047  0.00039  0.00035  0.00034  0.00027  0.00025  0.00020  0.00015
+  0.00012  0.00008  0.00008  0.00007  0.00006  0.00005  0.00004  0.00004
+  0.00003  0.00002  0.00002  0.00002  0.00002  0.00002  0.00001  0.00001
+  0.00001  0.00001
+  Trace of density matrix :   4.0000000000.
+  ----------------------------------------------------------------------
+  @S2EXPECT-I, S**2 calculated as expectation value.
+              Reference state <S**2>        :    0.7500000000.
+              Total one particle correction :    0.1029760985.
+              Total two particle correction :   -0.1028498357.
+              Expectation value of <S**2>   :    0.7501262628.
+  Density calculation successfully completed.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 1.00 (      1.0)   0: 0: 3.93 (      3.9)   0: 0: 6.0 (      6.0)
+@ACES2: Executing "xanti"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 143228928 203229183
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ CCSD MO gammas will be sorted to Mulliken order.
+  @SETMET-I, Unequal number of MO and AO orbitals.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.64 (      0.6)   0: 0: 0.58 (      0.6)   0: 0: 1.7 (      1.7)
+@ACES2: Executing "xbcktrn"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142872576 202872831
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ CCSD MO gammas will be transformed to the AO basis.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.25 (      0.3)   0: 0: 1.85 (      1.9)   0: 0: 2.4 (      2.4)
+@ACES2: Executing "xvdint"
+@ACES_MALLOC: allocated >= 45 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ One- and two-electron integral derivatives are calculated
+ for ROHF-CC/MBPT gradients and dipole moments.
+ Spherical gaussians are used.
+
+  Cartesian Coordinates
+  ---------------------
+
+  Total number of coordinates:  9
+
+
+   1   H #1 1   x      0.0000000000
+   2            y     -1.5115537470
+   3            z      1.0528740058
+
+   4   H #1 2   x      0.0000000000
+   5            y      1.5115537470
+   6            z      1.0528740058
+
+   7   N #2     x      0.0000000000
+   8            y      0.0000000000
+   9            z     -0.1515543013
+
+
+  Symmetry Coordinates
+  --------------------
+
+  Number of coordinates in each symmetry:   3  2  3  1
+   1   H #1  y    2  -  5
+   2   H #1  z    3  +  6
+   3   N #2  z    9
+   4   H #1  x    1  +  4
+   5   N #2  x    7
+   6   H #1  y    2  +  5
+   7   H #1  z    3  -  6
+   8   N #2  y    8
+   9   H #1  x    1  -  4
+ Translational invariance is used.
+
+                         H #1 y     0.0006141310
+                         H #1 z    -0.0003844567
+                         N #2 z     0.0003844567
+
+
+ H #1 1     0.0000000000            0.0003070655           -0.0001922284
+ H #1 2     0.0000000000           -0.0003070655           -0.0001922284
+ N #2       0.0000000000            0.0000000000            0.0003844567
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.34 (      0.3)   0: 0: 5.39 (      5.4)   0: 0: 5.9 (      5.9)
+ACES2: Total elapsed time is      151.6 seconds
+@ACES2: Executing "xjoda"
+   JODA beginning optimization cycle #  3.
+   Retrieving information from last optimization cycle.
+   Internal coordinate forces and energy gradients (atomic units): 
+           R       dV/dR             R       dV/dR             R       dV/dR
+ [R    ]  1.93273 -0.00036 [R    ]  1.93273 -0.00036 [A    ]  1.79600 -0.00008
+   Hessian from cycle  2 read.
+   BFGS update using last two gradients and previous step.
+   There are  0 Negative Eigenvalues.
+   There are  0 Negative Eigenvalues.
+  @EFOL-I, No Morse constant availablefor N    -H    .  Default used.
+   MANR scale factor for NR step is 1.000 for R    .
+   Summary of Optimization Cycle: 
+   The maximum unscaled step is:    0.00110.
+   Scale factor set to:  1.00000.
+   Forces are in hartree/bohr and hartree/radian.
+   Parameter values are in Angstroms and degrees.
+--------------------------------------------------------------------------
+  Parameter     dV/dR           Step          Rold            Rnew
+--------------------------------------------------------------------------
+    R      -0.0003599424    0.0004081784    1.0227563371    1.0231645155
+    A      -0.0000792749   -0.0061913452  102.9032928697  102.8971015245
+--------------------------------------------------------------------------
+  Minimum force:  0.000079275 / RMS force:  0.000260618
+ Updating structure...
+  @symmetry-i, Coordinates after  COM shift 
+     -0.118578208671      0.000000000000     -1.839005235994
+     -0.118578208671      0.000000000000      0.094495339526
+      1.766144955379      0.000000000000      0.526054223607
+   Rotational constants (in cm-1): 
+     8.39923       13.06203       23.52903
+   Principal axis orientation for molecule:
+       -1.512091899700    1.053365623346    0.000000000000
+        0.000000000000   -0.151625066410    0.000000000000
+        1.512091899700    1.053365623346    0.000000000000
+         -----------------------------------------------
+         Cartesian coordinates corresponding to internal 
+                 coordinate input (Bohr) 
+ ----------------------------------------------------------------
+ Z-matrix   Atomic            C o o r d i n a t e s
+  Symbol    Number           X              Y              Z
+ ----------------------------------------------------------------
+     H         1         0.00000000    -1.51209190     1.05336562
+     N         7         0.00000000     0.00000000    -0.15162507
+     H         1         0.00000000     1.51209190     1.05336562
+ ----------------------------------------------------------------
+   Interatomic distance matrix (Angstroms) 
+
+                 H             N             H    
+                [ 1]        [ 2]        [ 3]
+  H    [ 1]     0.00000
+  N    [ 2]     1.02316     0.00000
+  H    [ 3]     1.60033     1.02316     0.00000
+ @ACES2: Beginning main opt_an loop. Iteration  4
+@ACES2: Executing "xvmol"
+ One- and two-electron integrals over symmetry-adapted AOs are calculated.
+
+ @READIN: Spherical harmonics are used.
+NAMN: H #1  0.000000000 -1.512091900  1.053365623
+NAMN: N #2  0.000000000  0.000000000 -0.151625066
+             42 SYMMETRY ADAPTED BASIS FUNCTIONS 
+  @READIN-I, Nuclear repulsion energy :    7.5714206847 a.u.
+  required memory for a1 array  8903380 words 
+  required memory for a2 array  207578 words 
+@ACES_MALLOC: allocated >= 34 MB of core memory
+  @TWOEL-I,      19048 integrals of symmetry type  I I I I
+  @TWOEL-I,      40205 integrals of symmetry type  I J I J
+  @TWOEL-I,      23439 integrals of symmetry type  I I J J
+  @TWOEL-I,      17978 integrals of symmetry type  I J K L
+  @TWOEL-I, Total number of 2-e integrals     100670.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.14 (      0.1)   0: 0: 4.29 (      4.3)   0: 0: 4.6 (      4.6)
+@ACES2: Executing "xvmol2ja"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144875520 204875775
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.08 (      0.1)   0: 0: 0.03 (      0.0)   0: 0: 0.1 (      0.1)
+@ACES2: Executing "xvscf"
+          Alpha population by irrep:   3    1    1    0
+           Beta population by irrep:   3    0    1    0
+
+
+@ACES_MALLOC: allocated >= 4 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ @SORTHO-I, Orthonormalizing initial guess. 
+ @SORTHO-I, Orthonormalizing initial guess. 
+  --------------------------------------------------------------------
+  Iteration         Total Energy            Largest Density Difference
+  --------------------------------------------------------------------
+       0           -55.5825546005              0.0000000000E+00
+       1           -55.5826072659              0.2160534571E-01
+       2           -55.5826080758              0.3927585913E-02
+       3           -55.5826081047              0.7941531696E-03
+       4           -55.5826081061              0.1403190034E-03
+       5           -55.5826081063              0.3745962471E-04
+       6           -55.5826081063              0.1348477676E-05
+       7           -55.5826081063              0.5114782407E-06
+       8           -55.5826081063              0.1944569110E-06
+ 
+@VSCF-I, SCF has converged.
+
+     E(SCF)=       -55.5826081063              0.3346424210E-07
+
+
+       The average multiplicity is    2.0000000
+  The expectation value of S**2 is    0.7500000
+
+
+
+      Trace of projected alpha density matrix =   1.000000000
+
+      Trace of projected beta  density matrix =   1.000000000
+
+      Alpha part of wavefunction is symmetric.
+      Beta  part of wavefunction is symmetric.
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.27 (      0.3)   0: 0: 0.66 (      0.7)   0: 0: 1.0 (      1.0)
+@ACES2: Executing "xvtran"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142860288 202860543
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Full UHF integral transformation
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.48 (      0.5)   0: 0: 2.48 (      2.5)   0: 0: 3.6 (      3.6)
+@ACES2: Executing "xintprc"
+
+
+ performing integral processing for standard CC
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 144199680 204199935
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  Processing integrals for CCSD calculation.
+  @GMOIAA-I, Processing MO integrals for spin case AA.
+  @GMOIAA-I, Generation of integral list completed.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP              65746
+                      PPPH              34835
+                      PPHH               4752
+                      PHPH               3014
+                      PHHH                822
+                      HHHH                 49
+
+                     TOTAL             109218
+  @GMOIAA-I, Processing MO integrals for spin case BB.
+  @GMOIAA-I, Generation of integral list completed.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP              72087
+                      PPPH              30735
+                      PPHH               3510
+                      PHPH               2292
+                      PHHH                560
+                      HHHH                 34
+
+                     TOTAL             109218
+  @GMOIAB-I, Processing MO integrals for spin case AB.
+                      TYPE            NUMBER
+                      ----           --------
+                      PPPP             136890
+                      PPPH1H            36429
+                      PPPH2H            29517
+                      PPHH               7933
+                      PHPH1P             2231
+                      PHPH2P             3141
+                      PHHH1P              614
+                      PHHH2P              713
+                      HHHH                 65
+
+                     TOTAL             217533
+
+  @FORMT2-I, Second-order MBPT correlation energies:
+  @FORMT2-I, Singles contribution will be calculated.
+  @FORMT2-W, MBPT(2) energies are correct only for semicanonical orbitals.
+              ----------------------------------------------
+              E(SCF)                =  -55.582608106309 a.u.
+              E2(AA)                =   -0.026879684520 a.u.
+              E2(BB)                =   -0.012324644184 a.u.
+              E2(AB)                =   -0.147555731292 a.u.
+              E2(SINGLE)            =   -0.002871815361 a.u.
+              E2(TOT)               =   -0.186760059996 a.u.
+              Total MBPT(2) energy  =  -55.772239981666 a.u.
+              ----------------------------------------------
+            ----------------------------------------------
+                     Projected spin multiplicities: 
+            ----------------------------------------------
+             <0|S^2|0>                  =    0.7500000000.
+             <0|S^2 T2|0>               =    0.0000000000.
+             Projected <0|S^2 exp(T)|0> =    0.7500000000.
+             Approximate spin mult.     =    2.0000000000.
+            ----------------------------------------------
+   Largest T2 amplitudes for spin case AA:
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   4  28  22]-0.01900 [  5   3  28   7]-0.01556 [  5   3  29   8]-0.01506
+[  4   3  22   7]-0.01401 [  4   3  23   9] 0.01355 [  4   3  22   6]-0.01269
+[  5   4  28  25]-0.01233 [  4   3  22   9] 0.01204 [  5   3  28   9] 0.01183
+[  4   3  24  12]-0.01155 [  5   3  28   6]-0.01139 [  5   2  28   6]-0.01071
+[  5   4  40  13] 0.01022 [  4   2  22   6]-0.01017 [  4   3  25   9] 0.01005
+-----------------------------------------------------------------------------
+   Norm of T2AA vector (     1738 symmetry allowed elements):  0.0865674841.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case BB:
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  4   3  28   6]-0.01592 [  4   3  29   7]-0.01547 [  4   3  28   8] 0.01191
+[  4   3  28   5]-0.01165 [  4   2  28   5]-0.01121 [  3   2  24  21]-0.01028
+[  3   2   6   5]-0.01025 [  4   3  29  11] 0.00937 [  4   2  28   9] 0.00909
+[  3   2  23  21]-0.00894 [  4   3  31   7]-0.00884 [  4   2  40  21]-0.00867
+[  4   3  31   6] 0.00864 [  4   2  39  21] 0.00842 [  3   2   8   5] 0.00806
+-----------------------------------------------------------------------------
+   Norm of T2BB vector (     1218 symmetry allowed elements):  0.0594089651.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case AB:
+       _       _                 _       _                 _       _
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   4  28  28]-0.03254 [  4   4  22  28]-0.02198 [  3   3   9   8]-0.02098
+[  3   3   6   5]-0.01918 [  3   3   7   6]-0.01878 [  5   3  28   5]-0.01860
+[  3   4   6  28]-0.01853 [  3   2  24  21]-0.01776 [  3   3  29  29]-0.01774
+[  4   2  13  21] 0.01740 [  5   2  28   5]-0.01736 [  2   2   6   5]-0.01721
+[  5   4  31  31]-0.01714 [  4   3  22   6]-0.01706 [  5   2  40  21]-0.01701
+-----------------------------------------------------------------------------
+   Norm of T2AB vector (     7933 symmetry allowed elements):  0.1936080004.
+-----------------------------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.67 (      0.7)   0: 0: 0.92 (      0.9)   0: 0: 3.3 (      3.3)
+@ACES2: Executing "xvcc"
+
+-----------------------------------------------------------------------------
+                                Entering xvcc
+-----------------------------------------------------------------------------
+
+
+
+  running standard cc program
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 151695360 211695615
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+   CCSD energy will be calculated.
+   The reference state is a ROHF wave function.
+   The reference state is a general non-HF wave function.
+   The AA contribution to the correlation energy is:   -0.0282840 a.u.
+   The BB contribution to the correlation energy is:   -0.0137689 a.u.
+   The AB contribution to the correlation energy is:   -0.1476227 a.u.
+   The total correlation energy is -0.189675579809 a.u.
+   The AA contribution to the correlation energy is:   -0.0284343 a.u.
+   The BB contribution to the correlation energy is:   -0.0129205 a.u.
+   The AB contribution to the correlation energy is:   -0.1679679 a.u.
+   The total correlation energy is -0.209322669606 a.u.
+  Convergence information after     1 iterations: 
+  Largest element of residual vector : -0.17709084E-03.
+  Largest element of DIIS residual   : -0.17709084E-03.
+   The AA contribution to the correlation energy is:   -0.0284332 a.u.
+   The BB contribution to the correlation energy is:   -0.0129195 a.u.
+   The AB contribution to the correlation energy is:   -0.1679725 a.u.
+   The total correlation energy is -0.209325177726 a.u.
+  Convergence information after     2 iterations: 
+  Largest element of residual vector :  0.94342530E-04.
+  Largest element of DIIS residual   :  0.10605833E-03.
+   The AA contribution to the correlation energy is:   -0.0284330 a.u.
+   The BB contribution to the correlation energy is:   -0.0129193 a.u.
+   The AB contribution to the correlation energy is:   -0.1679745 a.u.
+   The total correlation energy is -0.209326827157 a.u.
+  Convergence information after     3 iterations: 
+  Largest element of residual vector :  0.21627428E-04.
+  Largest element of DIIS residual   :  0.12757579E-04.
+   The AA contribution to the correlation energy is:   -0.0284329 a.u.
+   The BB contribution to the correlation energy is:   -0.0129192 a.u.
+   The AB contribution to the correlation energy is:   -0.1679754 a.u.
+   The total correlation energy is -0.209327475412 a.u.
+  Convergence information after     4 iterations: 
+  Largest element of residual vector :  0.68004608E-05.
+  Largest element of DIIS residual   :  0.40638424E-05.
+   The AA contribution to the correlation energy is:   -0.0284329 a.u.
+   The BB contribution to the correlation energy is:   -0.0129191 a.u.
+   The AB contribution to the correlation energy is:   -0.1679757 a.u.
+   The total correlation energy is -0.209327675723 a.u.
+  Convergence information after     5 iterations: 
+  Largest element of residual vector :  0.21288872E-05.
+  Largest element of DIIS residual   :  0.86448729E-06.
+   The AA contribution to the correlation energy is:   -0.0284329 a.u.
+   The BB contribution to the correlation energy is:   -0.0129191 a.u.
+   The AB contribution to the correlation energy is:   -0.1679757 a.u.
+   The total correlation energy is -0.209327710971 a.u.
+  Convergence information after     6 iterations: 
+  Largest element of residual vector :  0.56180867E-06.
+  Largest element of DIIS residual   :  0.29749950E-06.
+   The AA contribution to the correlation energy is:   -0.0284329 a.u.
+   The BB contribution to the correlation energy is:   -0.0129191 a.u.
+   The AB contribution to the correlation energy is:   -0.1679757 a.u.
+   The total correlation energy is -0.209327719389 a.u.
+  Convergence information after     7 iterations: 
+  Largest element of residual vector :  0.10828042E-06.
+  Largest element of DIIS residual   :  0.84939268E-07.
+   The AA contribution to the correlation energy is:   -0.0284329 a.u.
+   The BB contribution to the correlation energy is:   -0.0129191 a.u.
+   The AB contribution to the correlation energy is:   -0.1679757 a.u.
+   The total correlation energy is -0.209327721754 a.u.
+  Convergence information after     8 iterations: 
+  Largest element of residual vector :  0.54816533E-07.
+  Largest element of DIIS residual   :  0.38462442E-07.
+  Amplitude equations converged in     8 iterations.
+   The AA contribution to the correlation energy is:   -0.0284329 a.u.
+   The BB contribution to the correlation energy is:   -0.0129191 a.u.
+   The AB contribution to the correlation energy is:   -0.1679757 a.u.
+   The total correlation energy is -0.209327720878 a.u.
+   Largest T1 amplitudes for spin case AA:
+   i       a                 i       a                 i       a    
+-----------------------------------------------------------------------------
+[  2       6    ]-0.01438 [  2       9    ] 0.01311 [  2      13    ]-0.01156
+[  5      28    ]-0.01090 [  5      31    ] 0.00972 [  2      10    ] 0.00891
+[  2      11    ]-0.00875 [  3      13    ] 0.00866 [  4      22    ] 0.00777
+[  2       7    ] 0.00768 [  2      12    ]-0.00748 [  4      23    ] 0.00694
+[  3       7    ]-0.00672 [  2      14    ]-0.00590 [  5      34    ]-0.00517
+-----------------------------------------------------------------------------
+   Norm of T1AA vector (       65 symmetry allowed elements):  0.0391723925.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case AA:
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   4  28  22]-0.01827 [  5   3  29   8]-0.01561 [  5   3  28   7]-0.01402
+[  4   3  22   7]-0.01380 [  4   3  23   9] 0.01371 [  4   3  22   6]-0.01211
+[  4   3  24  12]-0.01210 [  5   4  28  25]-0.01167 [  4   3  22   9] 0.01138
+[  5   4  40  13] 0.01047 [  5   4  39   9] 0.01019 [  4   2  22   6]-0.01010
+[  5   3  29  12] 0.00988 [  5   3  28   9] 0.00977 [  5   4  28  23]-0.00965
+-----------------------------------------------------------------------------
+   Norm of T2AA vector (     1738 symmetry allowed elements):  0.0854330664.
+-----------------------------------------------------------------------------
+   Largest T1 amplitudes for spin case BB:
+   i       a                 i       a                 i       a    
+-----------------------------------------------------------------------------
+[  3       6    ] 0.01623 [  2       6    ]-0.01492 [  4      28    ] 0.01133
+[  2       5    ] 0.01105 [  2      12    ] 0.01049 [  3       5    ] 0.01028
+[  3      13    ]-0.00761 [  2      10    ] 0.00725 [  4      34    ]-0.00685
+[  2       8    ]-0.00666 [  4      29    ]-0.00600 [  3      12    ]-0.00538
+[  2      11    ] 0.00517 [  3       7    ]-0.00514 [  3       9    ] 0.00470
+-----------------------------------------------------------------------------
+   Norm of T1BB vector (       59 symmetry allowed elements):  0.0376816223.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case BB:
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  4   3  29   7]-0.01613 [  4   3  28   6]-0.01444 [  3   2  24  21]-0.01038
+[  3   2  23  21]-0.01036 [  4   2  39  21] 0.00971 [  4   3  29  11] 0.00962
+[  4   3  28   5]-0.00936 [  4   3  31   7]-0.00934 [  4   3  28   8] 0.00928
+[  3   2   6   5]-0.00889 [  4   2  40  21]-0.00882 [  4   2  28   5]-0.00868
+[  4   3  31   6] 0.00758 [  4   3  28   7] 0.00748 [  4   3  32   7] 0.00735
+-----------------------------------------------------------------------------
+   Norm of T2BB vector (     1218 symmetry allowed elements):  0.0552124988.
+-----------------------------------------------------------------------------
+   Largest T2 amplitudes for spin case AB:
+       _       _                 _       _                 _       _
+   i   j   a   b             i   j   a   b             i   j   a   b
+-----------------------------------------------------------------------------
+[  5   4  28  28]-0.03761 [  3   3   9   8]-0.02498 [  4   4  22  28]-0.02407
+[  4   2   6  21] 0.02344 [  3   3   6   5]-0.02329 [  5   4   6   5]-0.02250
+[  4   2  13  21] 0.02153 [  3   3   7   6]-0.02108 [  3   2  24  21]-0.02084
+[  4   2   7  21]-0.02080 [  5   4  31  28] 0.02069 [  3   4   6  28]-0.02057
+[  3   3  29  29]-0.02055 [  5   3  28   5]-0.02036 [  5   4  28  31] 0.02026
+-----------------------------------------------------------------------------
+   Norm of T2AB vector (     7933 symmetry allowed elements):  0.2303467060.
+-----------------------------------------------------------------------------
+   The CC iterations have converged.
+
+            ----------------------------------------------
+                     Projected spin multiplicities: 
+            ----------------------------------------------
+             <0|S^2|0>                  =    0.7500000000.
+             <0|S^2 (T2+T1**2) |0>      =    0.0000000000.
+             <0|S^2 T1|0>               =    0.0000000000.
+             Projected <0|S^2 exp(T)|0> =    0.7500000000.
+             Approximate spin mult.     =    2.0000000000.
+            ----------------------------------------------
+       Summary of iterative solution of CC equations 
+      -----------------------------------------------------------
+                       Correlation           Total
+       Iteration         Energy              Energy
+      -----------------------------------------------------------
+            0        -0.189675579809     -55.772283686118  DIIS 
+            1        -0.209322669606     -55.791930775915  DIIS 
+            2        -0.209325177726     -55.791933284035  DIIS 
+            3        -0.209326827157     -55.791934933465  DIIS 
+            4        -0.209327475412     -55.791935581721  DIIS 
+            5        -0.209327675723     -55.791935782032  DIIS 
+            6        -0.209327710971     -55.791935817280  DIIS 
+            7        -0.209327719389     -55.791935825697  DIIS 
+            8        -0.209327720878     -55.791935827187  DIIS 
+      -----------------------------------------------------------
+
+               CCSD        energy is     -55.791935827187 a.u. 
+
+      A miracle has come to pass. The CC iterations have converged.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.84 (      0.8)   0: 0: 5.68 (      5.7)   0: 0: 7.0 (      7.0)
+
+-----------------------------------------------------------------------------
+                                Exiting xvcc
+-----------------------------------------------------------------------------
+
+ The ACES Member Executable has completed successfully.
+@ACES2: Executing "xlambda"
+
+-----------------------------------------------------------------------------
+                              Entering xlambda
+-----------------------------------------------------------------------------
+
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 145166336 205166591
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  The Lambda equations are solved for CCSD.
+  Convergence information after     1 iterations: 
+  Largest element of residual vector : -0.19429152E-02.
+  Largest element of DIIS residual   : -0.19429152E-02.
+  Convergence information after     2 iterations: 
+  Largest element of residual vector : -0.54752625E-03.
+  Largest element of DIIS residual   : -0.30523563E-03.
+  Convergence information after     3 iterations: 
+  Largest element of residual vector : -0.24370936E-03.
+  Largest element of DIIS residual   : -0.14041678E-03.
+  Convergence information after     4 iterations: 
+  Largest element of residual vector :  0.61639400E-04.
+  Largest element of DIIS residual   :  0.46839656E-04.
+  Convergence information after     5 iterations: 
+  Largest element of residual vector : -0.25588604E-04.
+  Largest element of DIIS residual   : -0.14175035E-04.
+  Convergence information after     6 iterations: 
+  Largest element of residual vector : -0.90167043E-05.
+  Largest element of DIIS residual   : -0.55314260E-05.
+  Convergence information after     7 iterations: 
+  Largest element of residual vector : -0.37396372E-05.
+  Largest element of DIIS residual   : -0.21596849E-05.
+  Convergence information after     8 iterations: 
+  Largest element of residual vector : -0.14564834E-05.
+  Largest element of DIIS residual   : -0.82298308E-06.
+  Convergence information after     9 iterations: 
+  Largest element of residual vector : -0.53498863E-06.
+  Largest element of DIIS residual   : -0.27794930E-06.
+  Convergence information after    10 iterations: 
+  Largest element of residual vector : -0.18049862E-06.
+  Largest element of DIIS residual   : -0.83780130E-07.
+  Lambda equations converged in    10 iterations.
+
+-----------------------------------------------------------------------------
+                             Exiting xlambda
+-----------------------------------------------------------------------------
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.95 (      0.9)   0: 0: 8.36 (      8.4)   0: 0: 9.6 (      9.6)
+@ACES2: Executing "xdens"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 143409152 203409407
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+  CCSD density and intermediates are calculated.
+  The reference state is a non HF wave functions.
+  The reference state is a ROHF wave function.
+  The iterative expansion of D(ai) converged after  13 iterations.
+  ----------------------------------------------------------------------
+                 Natural orbital occupation numbers
+  ----------------------------------------------------------------------
+                            Alpha spin
+  ----------------------------------------------------------------------
+  0.99970  0.99048  0.98392  0.98011  0.97989  0.01378  0.01270  0.00792
+  0.00712  0.00405  0.00381  0.00363  0.00355  0.00348  0.00077  0.00069
+  0.00057  0.00050  0.00045  0.00043  0.00037  0.00036  0.00031  0.00031
+  0.00019  0.00015  0.00013  0.00012  0.00009  0.00008  0.00005  0.00004
+  0.00004  0.00003  0.00003  0.00002  0.00002  0.00002  0.00002  0.00002
+  0.00001  0.00001
+  Trace of density matrix :   5.0000000000.
+  ----------------------------------------------------------------------
+                            Beta spin
+  ----------------------------------------------------------------------
+  0.99969  0.98469  0.97941  0.97865  0.01387  0.01184  0.00769  0.00690
+  0.00372  0.00371  0.00175  0.00171  0.00137  0.00067  0.00062  0.00058
+  0.00047  0.00039  0.00035  0.00034  0.00027  0.00025  0.00020  0.00015
+  0.00012  0.00008  0.00008  0.00007  0.00006  0.00005  0.00004  0.00004
+  0.00003  0.00002  0.00002  0.00002  0.00002  0.00002  0.00001  0.00001
+  0.00001  0.00001
+  Trace of density matrix :   4.0000000000.
+  ----------------------------------------------------------------------
+  @S2EXPECT-I, S**2 calculated as expectation value.
+              Reference state <S**2>        :    0.7500000000.
+              Total one particle correction :    0.1030315498.
+              Total two particle correction :   -0.1029051723.
+              Expectation value of <S**2>   :    0.7501263774.
+  Density calculation successfully completed.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 1.07 (      1.1)   0: 0: 3.79 (      3.8)   0: 0: 5.5 (      5.5)
+@ACES2: Executing "xanti"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 143228928 203229183
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ CCSD MO gammas will be sorted to Mulliken order.
+  @SETMET-I, Unequal number of MO and AO orbitals.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.56 (      0.6)   0: 0: 0.64 (      0.6)   0: 0: 1.7 (      1.7)
+@ACES2: Executing "xbcktrn"
+@ACES_MALLOC: allocated >= 57 MB of core memory
+ @ACES_INIT: heap range 142872576 202872831
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ CCSD MO gammas will be transformed to the AO basis.
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.27 (      0.3)   0: 0: 1.82 (      1.8)   0: 0: 2.4 (      2.4)
+@ACES2: Executing "xvdint"
+@ACES_MALLOC: allocated >= 45 MB of core memory
+ @ACES_CACHE_INIT: allocated >= 2 MB of cache from core memory
+ One- and two-electron integral derivatives are calculated
+ for ROHF-CC/MBPT gradients and dipole moments.
+ Spherical gaussians are used.
+
+  Cartesian Coordinates
+  ---------------------
+
+  Total number of coordinates:  9
+
+
+   1   H #1 1   x      0.0000000000
+   2            y     -1.5120918997
+   3            z      1.0533656233
+
+   4   H #1 2   x      0.0000000000
+   5            y      1.5120918997
+   6            z      1.0533656233
+
+   7   N #2     x      0.0000000000
+   8            y      0.0000000000
+   9            z     -0.1516250664
+
+
+  Symmetry Coordinates
+  --------------------
+
+  Number of coordinates in each symmetry:   3  2  3  1
+   1   H #1  y    2  -  5
+   2   H #1  z    3  +  6
+   3   N #2  z    9
+   4   H #1  x    1  +  4
+   5   N #2  x    7
+   6   H #1  y    2  +  5
+   7   H #1  z    3  -  6
+   8   N #2  y    8
+   9   H #1  x    1  -  4
+ Translational invariance is used.
+
+                         H #1 y     0.0000877418
+                         H #1 z    -0.0000058009
+                         N #2 z     0.0000058009
+
+
+ H #1 1     0.0000000000            0.0000438709           -0.0000029004
+ H #1 2     0.0000000000           -0.0000438709           -0.0000029004
+ N #2       0.0000000000            0.0000000000            0.0000058009
+
+
+
+
+ACES ---SYSTEM--- (total sec) ----USER---- (total sec) -WALLCLOCK- (total sec)
+TIME   0: 0: 0.26 (      0.3)   0: 0: 5.43 (      5.4)   0: 0: 5.9 (      5.9)
+ACES2: Total elapsed time is      196.6 seconds
+@ACES2: Executing "xjoda"
+   JODA beginning optimization cycle #  4.
+   Retrieving information from last optimization cycle.
+   Internal coordinate forces and energy gradients (atomic units): 
+           R       dV/dR             R       dV/dR             R       dV/dR
+ [R    ]  1.93350 -0.00004 [R    ]  1.93350 -0.00004 [A    ]  1.79589 -0.00005
+   Hessian from cycle  3 read.
+   BFGS update using last two gradients and previous step.
+   There are  0 Negative Eigenvalues.
+   There are  0 Negative Eigenvalues.
+  @EFOL-I, No Morse constant availablefor N    -H    .  Default used.
+   MANR scale factor for NR step is 1.000 for R    .
+   Summary of Optimization Cycle: 
+   The maximum unscaled step is:    0.00022.
+   Scale factor set to:  1.00000.
+   Forces are in hartree/bohr and hartree/radian.
+   Parameter values are in Angstroms and degrees.
+--------------------------------------------------------------------------
+  Parameter     dV/dR           Step          Rold            Rnew
+--------------------------------------------------------------------------
+    R      -0.0000361168    0.0000363305    1.0231645155    1.0232008460
+    A      -0.0000484783    0.0111892020  102.8971015245  102.9082907265
+--------------------------------------------------------------------------
+  Minimum force:  0.000036117 / RMS force:  0.000042747
+--------------------------------------------------------------------------------
+   RMS gradient is below .10000E-03.
+   Convergence criterion satisfied.  Optimization completed.
+--------------------------------------------------------------------------------
+   Interatomic distance matrix (Angstroms) 
+
+                 H             N             H    
+                [ 1]        [ 2]        [ 3]
+  H    [ 1]     0.00000
+  N    [ 2]     1.02316     0.00000
+  H    [ 3]     1.60033     1.02316     0.00000
+
+   Summary of optimized internal coordinates
+   (Angstroms and degrees)
+
+R    =     1.0231645155
+A    =   102.8971015245
+
+   Frequencies of the updated Hessian at convergence:
+
+    0.i    0.i    0.     0.     0.     0.  1820.  3423.  5341. 
+
+   Warning: Frequencies based on the updated Hessian are not very accurate.
+            A separate frequency calculation is required to get correct values.
+
+
+
+ @ACES2: The ACES2 program has completed successfully in  198 seconds.
+
+

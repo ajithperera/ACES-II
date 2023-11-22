@@ -1,0 +1,72 @@
+      SUBROUTINE IO3ALL(G,W,SCR,MAXCOR,AIOO,FACT,ISPIN,POP,VRT,
+     &                 DISSYT,NUMSYT,LISTG,LISTW,IRREP,icall,bRedundant)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      INTEGER DISSYT,DIRPRD,POP,VRT
+      LOGICAL bRedundant, L23TO26
+      DIMENSION G(DISSYT,1),W(DISSYT,1),AIOO(1),POP(8),VRT(8),
+     &          SCR(MAXCOR)
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPA(255),IRREPB(255),DIRPRD(8,8)
+      COMMON /FLAGS2/ iFlags2(500)
+      common /dropgeo/ ndrgeo
+      integer         iintln, ifltln, iintfp, ialone, ibitwd
+      common /machsp/ iintln, ifltln, iintfp, ialone, ibitwd
+C
+      DATA ONEM,ONE,HALF /-1.0D0,1.D0,0.5D0/
+C
+C  PICK UP THE G-AMPLITUDES AND THE INTEGRALS
+C
+      if (ndrgeo.eq.0) then
+         CALL GETLST(G,1,NUMSYT,1,IRREP,LISTG)
+      else  
+        if (icall.eq.1) 
+     X   CALL GETGO3(G,W,1,NUMSYT,1,IRREP,LISTG,ISPIN,listw,dissyt)
+        if (icall.eq.2) 
+     X   CALL GETGO3R(G,W,1,NUMSYT,1,IRREP,LISTG,ISPIN,listw,dissyt,1)
+        if (icall.eq.3) 
+     X   CALL GETGO3S(G,W,1,NUMSYT,1,IRREP,LISTG,ISPIN,listw,dissyt)
+      endif 
+      L23TO26 = (LISTW.GE.23.AND.LISTW.LE.26)
+      IF (bRedundant.OR.L23TO26) THEN
+        CALL GETLST(W,1,NUMSYT,2,IRREP,LISTW)
+      ELSE
+        CALL GETLST_NR(W,SCR,MAXCOR*IINTFP,LISTW,IRREP)
+      ENDIF
+C
+C  PERFORM MULTIPLICATION
+C
+C  JOFF OFFSET IN G AND W
+C  IOFF OFFSET IN DOO
+      JOFF=1
+      IOFF=1
+      DO 90 IRREPJ=1,NIRREP
+C          
+C        GET OCCUPATION NUMBER FOR JRREP     
+C
+       NOCCJ=POP(IRREPJ)
+C
+C        DETERMINE IRREPI WHOSE DIRECT PRODUCT WITH JRREP GIVES IRREP
+C
+       IRREPI=DIRPRD(IRREP,IRREPJ)
+C
+C        GET OCCUPATION NUMBER FOR IRREPI
+C
+       NVRTI=VRT(IRREPI)
+C
+C        IF NVRTI OR NOCCJ EQUAL ZERO, NOTHING TO COMPUTE
+C
+       IF(MIN(NOCCJ,NVRTI).NE.0) THEN
+C
+        CALL XGEMM('T','N',NOCCJ,NOCCJ,DISSYT*NVRTI,FACT,
+     &              W(1,JOFF),NVRTI*DISSYT,G(1,JOFF),      
+     &              NVRTI*DISSYT,ONE,AIOO(IOFF),NOCCJ)
+C
+       ENDIF
+C
+C UPDATE THE OFFSETS
+C
+       JOFF=JOFF+NOCCJ*NVRTI
+       IOFF=IOFF+NOCCJ*NOCCJ
+90    CONTINUE
+C
+      RETURN
+      END

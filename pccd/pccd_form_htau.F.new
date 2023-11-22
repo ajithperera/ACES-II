@@ -1,0 +1,227 @@
+      Subroutine Pccd_form_htau(Htau_qp,Htau_pq,Hoo_qp,Hoo_pq,Hvv_qp,
+     +                          Hvv_pq,Hov,Hvo,Work,Maxcor,Nocc,Nvrt,
+     +                          Nbas)
+
+      Implicit Double Precision(A-H,O-Z)
+
+      LOgical Pp,MM,Pm
+
+      Dimension Htau_pq(Nbas,Nbas)
+      Dimension Htau_qp(Nbas,Nbas)
+      Dimension Hoo_pq(Nocc*Nocc)
+      Dimension Hoo_qp(Nocc*Nocc)
+      Dimension Hvv_pq(Nvrt*Nvrt)
+      Dimension Hvv_qp(Nvrt*Nvrt)
+      Dimension Hvo(Nvrt*Nocc)
+      Dimension Hov(Nocc*Nvrt)
+      Dimension Work(Maxcor)
+
+      Data Ione,Onem,One,Dnull,Half,Two/1,-1.0D0,1.0D0,0.0D0,0.50D0,
+     +                                  2.0D0/
+
+#include "syminf.com"
+#include "sym.com"
+#include "machsp.com"
+
+      Nmax = Max(Nvrt,Nocc)
+
+      I000 = Ione
+      I010 = I000 + Nmax*Nmax
+      Iend = I010 + Nbas*Nbas
+      If (Iend.Gt.Maxcor) Call Insmem("Pccd_form_htau",Iend,Maxcor)
+
+#ifdef _DEBUG_LVL0
+      Write(6,"(a)") " The Htau_qp (from one-electron Hamiltonian)"
+      Call output(Htau_pq,1,Nbas,1,Nbas,Nbas,Nbas,1)
+      Write(6,"(a)") " The Htau_pq (from one-electron Hamiltonian)"
+      Call output(Htau_qp,1,Nbas,1,Nbas,Nbas,Nbas,1)
+#endif 
+#ifdef _OBSOLETED 
+      Ioff = Ione
+      Joff = Ione
+      Do Irrep = 1, Nirrep
+         N = Pop(Irrep,1)
+         M = Vrt(Irrep,1)
+         Call Transp(Hoo_qp(Ioff),Work(I000),N,N)
+         Call Dcopy(N*N,Work(I000),1,Hoo_pq(Ioff),1)
+         Call Daxpy(N*N,Onem,Hoo_qp(Ioff),1,Hoo_pq(Ioff),1)
+
+         Call Transp(Hvv_qp(Joff),Work(I000),M,M)
+         Call Dcopy(M*M,Work(I000),1,Hvv_pq(Joff),1)
+         Call Daxpy(M*M,Onem,Hvv_qp(Joff),1,Hvv_pq(Joff),1)
+         Ioff = Ioff + N*N
+         Joff = Joff + M*M
+      Enddo 
+      Call Daxpy(Nbas*Nbas,One,Htau_qp,1,Htau_pq,1)
+#endif 
+
+CSSS      Call Dscal(Nocc*Nocc,Half,Hoo_qp,1)
+CSSS      Call Dscal(Nvrt*Nvrt,Half,Hvv_qp,1)
+
+#ifdef _DEBUG_LVL0
+      Write(6,"(a)") " The Hoo_qp"
+      call output(Hoo_qp,1,Nocc,1,Nocc,Nocc,Nocc,1)
+      Write(6,"(a)") " The Hvv_qp"
+      call output(Hvv_qp,1,Nvrt,1,Nvrt,Nvrt,Nvrt,1)
+#endif 
+
+      Maxcor = Maxcor - Iend 
+      Call Pccd_frmful(Hoo_qp,Hvv_qp,Work(I010),Work(Iend),Maxcor,
+     +                 Nbas,0)
+      Call Daxpy(Nbas*Nbas,One,Work(I010),1,Htau_pq,1)
+
+#ifdef _DEBUG_LVL0
+      write(6,*)
+      Write(6,"(a,a)") " The Htau_qp (before OV/VO blocks added",
+     +                 " and not anti-symmetrized)"
+      Call output(Htau_pq,1,Nbas,1,Nbas,Nbas,Nbas,1)
+#endif 
+
+#ifdef _DEBUG_LVL0
+      Write(6,"(a)") "Checking VO and OV blocks"
+      Ioff = Ione
+      Do Irrep = 1, Nirrep
+         N = Pop(Irrep,1)
+         M = Vrt(Irrep,1)
+         Call output(Hvo(Ioff),1,M,1,N,M,N,1)
+         Call output(Hov(Ioff),1,N,1,M,N,M,1)
+         Ioff = Ioff + N*M
+      Enddo
+#endif 
+
+#ifdef _NO_NRML_ORD
+      Call Pccd_frmful_ov(Hvo,Hov,Htau_pq,Work(Iend),Maxcor,Nbas,
+     +                    "ADD ",0)
+#else 
+      Call Pccd_frmful_ov(Hvo,Hov,Htau_pq,Work(Iend),Maxcor,Nbas,
+     +                    "ADD ",0)
+#endif 
+
+#ifdef _DEBUG_LVL0
+      Write(6,"(a,a)") " The Htau_qp (after OV/VO blocks added",
+     +                 " and not anti-symmetrized)"
+      Call output(Htau_pq,1,Nbas,1,Nbas,Nbas,Nbas,1)
+#endif 
+
+C Antisymmetrize to generate the orbital rotation gradients matrix.The scalling
+C by minus two accomplish two things. The minus is needed to get the correct
+C sign for the VO and OV blocks (VO block must be positive). The two gives the
+C orbital rotaion gradient of the Alpha block (and match with half of the value
+C obtained numerically). Note that proceeding steps need to be tailored to the
+C fact that we are working with alpha block only.
+
+CSSS      Call Transp(Htau_pq,Work(I010),Nbas,Nbas)
+CSSS      Call Daxpy(Nbas*Nbas,One,Work(I010),1,Htau_pq,1)
+      Call DScal(Nbas,Dnull,Htau_pq,Nbas+1)
+
+C#ifdef _NOSKIP 
+      Do M = 1, Nbas
+         Ioff = 0
+         Do N = M+1, Nbas
+            Pp = .False.
+            Mm = .False.
+            Pm = .False.
+            If (Htau_pq(N,M) .Lt. Dnull .And. Htau_pq(M,N) .Lt. 
+     +         Dnull) Mm = .True.
+            If (Htau_pq(N,M) .Gt. Dnull .And. Htau_pq(M,N) .Gt. 
+     +        Dnull)  Pp = .True.
+            If (Htau_pq(N,M) .Lt. Dnull .And. Htau_pq(M,N) .Gt. 
+     +         Dnull) Pm = .True.
+            If (Htau_pq(N,M) .Gt. Dnull .And. Htau_pq(M,N) .Lt. 
+     +         Dnull) Pm = .True.
+            If (Mm .OR. Pp) Then
+            Print*, PP,MM,Pm,N,M
+                Htau_pq(N,M) = Htau_pq(N,M) - Htau_pq(M,N)
+                Htau_pq(M,N) = -Htau_pq(N,M)
+            Endif 
+            If (Pm) Then
+            Print*, PP,MM,Pm,N,M
+                Htau_pq(N,M) = -(Htau_pq(N,M) + Htau_pq(M,N))
+                Htau_pq(M,N) = -Htau_pq(N,M)
+            Endif 
+         Enddo
+      Enddo
+C#endif
+
+      Call Dscal(Nbas*Nbas,Two,Htau_pq,1)
+
+#ifdef _NOSKIP
+      Do N = 1, Nbas
+         Do M = N+1, Nbas
+            If (Htau_pq(M,N) .Le. Dnull) Then
+                Htau_pq(M,N) = -Htau_pq(M,N)
+            Endif
+         Enddo
+      Enddo 
+
+      Do N = 1, Nbas 
+         Do M = 1, N-1
+            If (Htau_pq(M,N) .Gt. Dnull) Then
+                Htau_pq(M,N) = -Htau_pq(M,N)
+            Endif
+         Enddo
+      Enddo 
+#endif 
+
+#ifdef _DEBUG_LVL0
+      Write(6,"(a)") " The orbital rotation gradient"
+      Call output(Htau_pq,1,Nbas,1,Nbas,Nbas,Nbas,1)
+      Write(6,"(a)") " Recheck The Hoo_qp"
+      call output(Hoo_qp,1,Nocc,1,Nocc,Nocc,Nocc,1)
+      Write(6,"(a)") " Recheck The Hvv_qp"
+      call output(Hvv_qp,1,Nvrt,1,Nvrt,Nvrt,Nvrt,1)
+#endif 
+
+      Call Pccd_frmful(Hoo_qp,Hvv_qp,Work(I010),Work(Iend),Maxcor,
+     +                 Nbas,0)
+
+#ifndef _HF_ONLY
+C Scale the diagonals by half (correlation contribution only).
+
+      Call Dscal(Nbas,Half,Work(I010),Nbas+1)
+#endif 
+      Call Daxpy(Nbas*Nbas,One,Work(I010),1,Htau_qp,1)
+
+#ifdef _NO_NRML_ORD
+      Call Pccd_frmful_ov(Hov,Hvo,Htau_qp,Work(Iend),Maxcor,Nbas,
+     +                    "ADD ",0)
+#else 
+      Call Pccd_frmful_ov(Hov,Hvo,Htau_qp,Work(Iend),Maxcor,Nbas,
+     +                    "ADD ",0)
+#endif 
+CSSS      Call Dscal(Nbas*Nbas,Two,Htau_qp,1)
+
+      Call Getrec(20, 'JOBARC', 'NUCREP', Iintfp, Zrepl)
+#ifdef _DEBUG_LVL0
+      Write(6,"(a)") " The Htau_qp"
+      Call output(Htau_qp,1,Nbas,1,Nbas,Nbas,Nbas,1)
+      e=dnull
+      do i = 1, Nbas 
+         e = e + Htau_qp(i,i)*Two
+      enddo
+#ifdef _DEBUG_LVL0
+      write(6,*)
+      write(6,"(a,2(2x,F15.10))") "The electronic energy :", e
+#endif 
+
+      write(6,*)
+#ifdef _HF_ONLY
+      e = e + Zrepl 
+      write(6,"(a,2(2x,F15.10))") "The reference energy  :", e
+      Return
+#endif 
+#ifdef _NO_NRML_ORD
+      e = e + Zrepl
+      write(6,"(a,2(2x,F15.10))") "The total energy:", e
+#else
+#ifndef _HF_ONLY
+      e = e
+      write(6,"(a,(2x,F15.10))") "The correlation energy:", e
+#endif 
+#endif 
+      write(6,*)
+#endif 
+      Return
+      End
+
+

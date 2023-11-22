@@ -1,0 +1,84 @@
+ISRCHEQ(3F)                                           Last changed: 7-18-01
+
+
+NNAAMMEE
+     IISSRRCCHHEEQQ, IISSRRCCHHNNEE - Searches a vector for the first element equal or
+     not equal to a target
+
+SSYYNNOOPPSSIISS
+     _i_n_d_e_x = IISSRRCCHHEEQQ ((_n,, _x,, _i_n_c_x,, _t_a_r_g_e_t))
+
+     _i_n_d_e_x = IISSRRCCHHNNEE ((_n,, _x,, _i_n_c_x,, _t_a_r_g_e_t))
+
+IIMMPPLLEEMMEENNTTAATTIIOONN
+     UNICOS systems
+
+DDEESSCCRRIIPPTTIIOONN
+     IISSRRCCHHEEQQ searches a real or integer vector for the first element that
+     is equal to a real or integer target.
+
+     IISSRRCCHHNNEE searches a real or integer vector for the first element that
+     is not equal to a real or integer target.
+
+     When using the Cray Fortran compiler UNICOS systems, all arguments
+     must be of default kind unless documented otherwise.  On UNICOS
+     systems, default kind is KKIINNDD==88 for integer, real, complex, and
+     logical arguments.
+
+     These functions have the following arguments:
+
+     _i_n_d_e_x  Integer.  (output)
+            Index of the first element equal or not equal to _t_a_r_g_e_t.  If
+            _t_a_r_g_e_t is not found, _n+1 is returned.  If _n <= 0, 0 is
+            returned.
+
+     _n      Integer.  (input)
+            Number of elements to be searched.
+
+     _x      Real or integer array of dimension (_n-1)* |_i_n_c_x| + 1.  (input)
+            Array _x contains the vector to be searched.
+
+     _i_n_c_x   Integer.  (input)
+            Increment between elements of the searched array.
+
+     _t_a_r_g_e_t Real or integer.  (input)
+            Value for which to search in the array.
+
+     The Fortran equivalent code for IISSRRCCHHEEQQ is as follows:
+
+               FUNCTION ISRCHEQ(N,X,INCX,TARGET)
+               INTEGER X(*), TARGET
+               J=1
+               ISRCHEQ=0
+               IF(N.LE.0) RETURN
+               IF(INCX.LT.0) J=1-(N-1)*INCX
+               DO 100 I=1,N
+                  IF(X(J).EQ.TARGET) GO TO 200
+                  J=J+INCX
+           100 CONTINUE
+           200 ISRCHEQ=I
+               RETURN
+               END
+
+     Although used as integers internally, you can use real values of _x and
+     _t_a_r_g_e_t, because IISSRRCCHHEEQQ and IISSRRCCHHEEQQ are matching bit patterns.
+
+NNOOTTEESS
+     IISSRRCCHHEEQQ replaces the IISSEEAARRCCHH routine, but it has an entry point named
+     IISSEEAARRCCHH as well as IISSRRCCHHEEQQ.
+
+     When scanning backward (_i_n_c_x < 0), each routine starts at the end of
+     the vector and moves backward, as follows:
+
+     _x(1-_i_n_c_x* (_n-1)), _x(1-_i_n_c_x* (_n-2)), ..., _x(1)
+
+     The desired value is at:
+
+     _x(1+(_i_n_d_e_x-1)* _i_n_c_x) when _i_n_c_x > 0
+
+     _x(1+(_i_n_d_e_x-_n)* _i_n_c_x) when _i_n_c_x < 0
+
+SSEEEE AALLSSOO
+     _A_p_p_l_i_c_a_t_i_o_n _P_r_o_g_r_a_m_m_e_r'_s _L_i_b_r_a_r_y _R_e_f_e_r_e_n_c_e _M_a_n_u_a_l for the printed
+     version of this man page.
+

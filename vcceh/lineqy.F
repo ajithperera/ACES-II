@@ -1,0 +1,417 @@
+      SUBROUTINE LINEQY(SCR,MAXCOR,IUHF,ASMALL,ASQUARE,KMAX,IRREPX,
+     &                  IOFFSET,IPERT,FREQ,ISIDE,REALFREQ)
+C
+C THIS ROUTINE SOLVES THE LINEAR EQUATION:
+C
+C                        
+C   <Q|exp(-T) H exp(T)|Q><Q|Y|0> = <Q|M|0>
+C
+C FOR THE OPERATOR Y, USING A STANDARD REDUCED SUBSPACE
+C ALGORITHM.
+C
+C LIST 1,470 - OLD EXPANSION (E) VECTORS, ONE VECTOR PER LOGICAL RECORD
+C LIST 2,470 - OLD H*E VECTORS, ONE VECTOR PER LOGICAL RECORD
+C LIST 1,471 - M VECTOR
+C LIST 1,472 - DIAGONAL PART OF Hd, STORED ON ONE LOGICAL RECORD
+C
+C HERE H IS PARTITIONED INTO [Hd + D] WHERE Hd IS A DIAGONAL
+C PART OF H AND D IS THE REMAINDER OF THE MATRIX
+C
+C EQUATION TO BE SOLVED FOR Y IS:
+C
+C         H * Y = M 
+C
+C      [Hd + D]Y = M
+C
+C    [1 + Hd(-1)*D] Y - Hd(-1) * M = 0
+C
+C THE LAST EQUATION IS THE FORM USED IN THIS ROUTINE.
+C
+C SUBSPACE BUILT UP BY SUCCESSIVE MULTIPLICATION OF TRIAL VECTORS BY
+C Hd(-1)*D FOLLOWED BY ORTHOGONALIZATION
+C 
+CEND
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      LOGICAL CONVRG,DOUBLE,ESPROP,IOPTROOT,IOPTSYM,REALFREQ
+      LOGICAL PRINT,PRINT2, PRINT3
+      LOGICAL SS, SD, DS, DD
+C
+      PARAMETER (MAXORD=100)
+      PARAMETER (MAXROOT=100)
+C
+      DIMENSION SCR(MAXCOR),ASMALL(KMAX,KMAX),ASQUARE(KMAX)
+C
+      COMMON/EXTINF/NDIMR,IOLDEST
+      COMMON/EXTRAP/MAXEXP,NREDUCE,NTOL,NSIZEC
+      COMMON/SYMPOP/IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON/MACHSP/IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON/FLAGS/IFLAGS(100)
+      COMMON/TIMSUB/TDAVID, TMULT, TQUAD
+      COMMON/DRVHBAR/SS, SD, DS, DD
+      COMMON /TIMEINFO/ TIMEIN, TIMENOW, TIMETOT, TIMENEW
+C
+      DATA ONE,ONEM,ZILCH,TWO /1.0D0,-1.0D0,0.0D0,2.0D0/
+      DATA FACT /27.2116/
+C
+      INDXF(I,J,N)=I+(J-1)*N
+      IGET(I)=1+MOD(IOLDEST+MAXORD-I,MAXORD+1)
+C
+      PRINT2=IFLAGS(1).GE.10
+      PRINT=IFLAGS(1).GE.10
+      PRINT3=IFLAGS(1).GE.10
+C
+      CUTOFF=1.D-14
+
+C      CUTOFF=1.D-22
+C
+C  IF .NOT. DD FREQUENCY DEPENCE FOR THE DOUBLES IS ADDED IN BY HBARXC
+C  THIS MEANS WE HAVE TO BE CAREFUL WHEN ADDING IN FREQUENCY DEPENDENCE.
+C  No longer the case 
+      IF (DD .or. .true.) THEN
+        NDIMF = NSIZEC
+      ELSE
+        NDIMF = IRPDPD(IRREPX, 9)
+        IF (IUHF .NE. 0) NDIMF = NDIMF + IRPDPD(IRREPX,10)
+      ENDIF
+C
+      IF(FREQ.NE.ZILCH)THEN
+       IF(REALFREQ)THEN
+        WRITE(6,5004)FREQ
+       ELSE
+        WRITE(6,5005)SQRT(FREQ)
+C        if (.not. dd) then 
+C          write(6,*) ' we do not think that lineqy works properly '
+C        endif
+       ENDIF 
+5004   FORMAT(T3,'@LINEQY-I, Frequency is ',F15.10,' a.u.')
+5005   FORMAT(T3,'@LINEQY-I, Imaginary frequency is ',F15.10,' a.u.')
+      ENDIF
+C
+      I000=1
+      I010=I000+NSIZEC
+      I020=I010+NSIZEC
+C
+C Memory checks were added by Ajith 07/95
+C
+      IF (I020 .GE. MAXCOR) CALL INSMEM('LINEQY', I020, MAXCOR)
+C
+C PUT Hd ELEMENTS ON LIST 472
+C
+c do not add frequency, as this does not work for part_eom plus imaginary freq's
+c
+cmn      CALL HBARDIAG(IRREPX,SCR,MAXCOR,IUHF,FREQ)
+      CALL HBARDIAG(IRREPX,SCR,MAXCOR,IUHF,0.0d0)
+C
+C PUT EVENTUAL SOLUTION VECTOR (M(R)) ON LIST 471
+C
+      CALL GETLST(SCR(I000),IOFFSET,1,1,IRREPX,372+ISIDE)
+#ifdef _DEBUG_LVL0
+       call checksum("List-372",scr(i000),Nsizec)
+#endif 
+      IF(.NOT.REALFREQ)THEN
+       CALL UPDATES(IRREPX,SCR(I000),444,0,IUHF)
+       CALL HBARXC(SCR(I000),MAXCOR,IUHF,ISIDE,IRREPX)
+       CALL FETCHVEC(IRREPX,SCR(I000),IUHF,2,490,460)
+       IF (.NOT. DD .and. .false.) THEN
+         CALL FETCHVEC(IRREPX,SCR(I010),IUHF,0,490,443)
+         DO I = NDIMF + 1, NSIZEC
+           SCR(I000) = SCR(I000) - FREQ * SCR(I010)
+         ENDDO
+       ENDIF
+      ENDIF
+      CALL PUTLST(SCR(I000),1,1,1,1,471)
+#ifdef _DEBUG_LVLM
+       call checksum("List-471",scr(i000),Nsizec)
+#endif 
+C     
+C INITIATE CONSTRUCTION OF SOLUTION SPACE
+C
+      CALL ZERO(ASMALL,KMAX*KMAX)
+C
+C SCALE INPUT VECTOR WITH DIAGONAL ELEMENTS OF HBAR - Hd-1 * M
+C
+      CALL GETLST(SCR(I010),1,1,1,1,472)
+#ifdef _DEBUG_LVLM
+       call checksum("Hbardiag",scr(i010),Nsizec)
+#endif 
+      IF(REALFREQ)THEN
+        DO 901 I=1,NSIZEC
+          SCR(I000-1+I)=SCR(I000-1+I)/(SCR(I010-1+I) +freq)
+  901   CONTINUE
+      ELSE
+        DO 905 I = 1, NSIZEC
+          SCR(I000-1+I)=SCR(I000-1+I)/(SCR(I010-1+I)**2+freq)
+  905   CONTINUE 
+      ENDIF
+C
+C NORMALIZE VECTOR - THIS IS FIRST ELEMENT OF EXPANSION SPACE
+C
+      CALL SCOPY(NSIZEC,SCR(I000),1,SCR(I010),1)
+      IF(IUHF.EQ.0)THEN
+       CALL SPNTSING(IRREPX,SCR(I010),SCR(I020),MAXCOR-I020+1)
+      ENDIF
+      ZNORM=SQRT(SDOT(NSIZEC,SCR(I000),1,SCR(I010),1))
+      X0=ONE/ZNORM
+      CALL SSCAL(NSIZEC,X0,SCR(I000),1)
+      CALL UPDATES(IRREPX,SCR(I000),444,0,IUHF)
+      CALL PUTLST(SCR(I000),1,1,1,1,470)
+#ifdef _DEBUG_LVLM
+       call checksum("470",scr(i000),Nsizec)
+#endif 
+C
+      ASQUARE(1)=ONE
+C
+C BUILD REMAINING EXPANSION SPACE
+C
+      CALL TIMER(1)
+      DO 1000 K=1,KMAX
+C
+C CALCULATE [Hd(-1) * D]*C(k) = Hd(-1) * [H*C(k) - Hd*C(k)]
+C
+        CALL TIMER(1)      
+        TDAVID = TDAVID + TIMENEW
+        CALL HBARXC(SCR(I000),MAXCOR,IUHF,ISIDE,IRREPX)
+        CALL TIMER(1)
+        CALL FETCHVEC(IRREPX,SCR(I000),IUHF,2,490,460)
+#ifdef _DEBUG_LVLM
+       call checksum("I000-1",scr(i000),Nsizec)
+#endif 
+       IF(.NOT.REALFREQ)THEN
+         IF (.NOT. DD .and. .false.) THEN
+           CALL FETCHVEC(IRREPX,SCR(I010),IUHF,0,490,443)
+           DO I = NDIMF + 1, NSIZEC
+             SCR(I000) = SCR(I000) - FREQ * SCR(I010)
+           ENDDO
+         ENDIF
+        CALL UPDATES(IRREPX,SCR(I000),444,0,IUHF)
+        CALL TIMER(1)      
+        TDAVID = TDAVID + TIMENEW
+        CALL HBARXC(SCR(I000),MAXCOR,IUHF,ISIDE,IRREPX)
+        CALL TIMER(1)
+        CALL FETCHVEC(IRREPX,SCR(I000),IUHF,2,490,460)
+         IF (.NOT. DD .and. .false.) THEN
+           CALL FETCHVEC(IRREPX,SCR(I010),IUHF,0,490,443)
+           DO I = NDIMF + 1, NSIZEC
+             SCR(I000) = SCR(I000) - FREQ * SCR(I010)
+           ENDDO
+         ENDIF
+       ENDIF
+#ifdef _DEBUG_LVLM
+       call checksum("I000",scr(i000),Nsizec)
+#endif 
+       CALL GETLST(SCR(I010),K,1,1,1,470)
+
+#ifdef _DEBUG_LVLM
+       call checksum("I000",scr(i000),Nsizec)
+       call checksum("I010",scr(i010),Nsizec)
+       Write(6,*) "?????"
+#endif 
+C
+C ADD FREQUENCY DEPENDENCE
+C
+       CALL SAXPY(NDIMF,FREQ,SCR(I010),1,SCR(I000),1)
+#ifdef _DEBUG_LVLM
+       call checksum("I000",scr(i000),Nsizec)
+       call checksum("I010",scr(i010),Nsizec)
+       Write(6,*) "?????"
+#endif 
+C
+C  incorporate denominator:
+C      HC = (HC - C*H0) / H0
+C  Do this part in steps to reduce memory requirements.
+C
+C  STORE HC VECTOR TEMPORARILY
+C       
+       CALL PUTLST(SCR(I000),K,1,1,2,470)
+#ifdef _DEBUG_LVLM
+       call checksum("I000",scr(i000),Nsizec)
+       call checksum("I010",scr(i010),Nsizec)
+#endif 
+C
+       CALL GETLST(SCR(I000),1,1,1,1,472)
+#ifdef _DEBUG_LVLM
+       call checksum("I000",scr(i000),Nsizec)
+       call checksum("I010",scr(i010),Nsizec)
+#endif 
+       IF(REALFREQ)THEN
+          DO I =1, NSIZEC
+             scr(i000-1+i)=scr(i000-1+i) + freq
+          ENDDO
+       else
+          DO I =1, NSIZEC
+             scr(i000-1+i)=scr(i000-1+i)**2 + freq
+          ENDDO
+       ENDIF
+#ifdef _DEBUG_LVLM
+       Write(6,*) "****"
+       call checksum("I000",scr(i000),Nsizec)
+       call checksum("I010",scr(i010),Nsizec)
+#endif 
+C
+C  CONSTRUCT C*H0 IN I010
+C
+        DO  I=1,NSIZEC
+          SCR(I010-1+I)=SCR(I000-1+I)*SCR(I010-1+I)
+        ENDDO
+#ifdef _DEBUG_LVLM
+       call checksum("I010",scr(i010),Nsizec)
+#endif 
+C
+C  CONSTRUCT HC- H0*C   I010 = I000 - I010
+C     
+       CALL GETLST(SCR(I000),K,1,1,2,470)
+       DO  I=1,NSIZEC
+         SCR(I010+I-1) = SCR(I000+I-1) - SCR(I010+I-1)
+       ENDDO
+#ifdef _DEBUG_LVLM
+       call checksum("I010",scr(i010),Nsizec)
+#endif 
+C
+       CALL GETLST(SCR(I000),1,1,1,1,472)
+       IF(REALFREQ)THEN
+          DO I =1, NSIZEC
+             scr(i000-1+i)=scr(i000-1+i) + freq
+          ENDDO
+       else
+          DO I =1, NSIZEC
+             scr(i000-1+i)=scr(i000-1+i)**2 + freq
+          ENDDO
+       ENDIF
+C
+        DO I = 1, NSIZEC
+          SCR(I000+I-1) = SCR(I010+I-1) / SCR(I000+I-1)
+        ENDDO
+C
+C  THIS IS THE FINAL RESULT OF OUR MANIPULATIONS
+C
+       CALL PUTLST(SCR(I000),K,1,1,2,470,s)
+#ifdef _DEBUG_LVLM
+       call checksum("List-470-2",scr(i000),Nsizec)
+#endif 
+C
+C
+C  NOW CONSTRUCT RELEVANT CONTRIBUTIONS TO ASMALL (I,K) AND (K,I)
+C
+       IF(IUHF.EQ.0)THEN
+         CALL SPNTSING(IRREPX,SCR(I000),SCR(I010),MAXCOR-I010+1)
+       ENDIF
+       DO I=1,K
+         CALL GETLST(SCR(I010),I,1,1,1,470)
+         ASMALL(I,K)=SDOT(NSIZEC,SCR(I000),1,SCR(I010),1)
+       ENDDO
+       CALL GETLST(SCR(I000),K,1,1,1,470)
+       IF(IUHF.EQ.0)THEN
+         CALL SPNTSING(IRREPX,SCR(I000),SCR(I010),MAXCOR-I010+1)
+       ENDIF
+       DO I=1,K-1
+         CALL GETLST(SCR(I010),I,1,1,2,470)
+         ASMALL(K,I)=SDOT(NSIZEC,SCR(I000),1,SCR(I010),1)
+       ENDDO
+C
+C ORTHOGONALIZE H'*C(k) TO EXISTING SUBSPACE
+C
+       CALL GETLST(SCR(I010),K,1,1,2,470)
+       DO 102 I=1,K
+        CALL GETLST(SCR(I000),I,1,1,1,470)
+        X=-ASMALL(I,K)/ASQUARE(I)
+        CALL SAXPY(NSIZEC,X,SCR(I000),1,SCR(I010),1)
+102    CONTINUE
+C
+       CALL SCOPY(NSIZEC,SCR(I010),1,SCR(I000),1) 
+       IF(IUHF.EQ.0)THEN
+        CALL SPNTSING(IRREPX,SCR(I000),SCR(I020),MAXCOR-I020+1)
+       ENDIF
+       ASQUARE(K+1)=SDOT(NSIZEC,SCR(I010),1,SCR(I000),1)
+       RESID=ASQUARE(K+1)
+C
+       IF(PRINT)THEN
+        WRITE(6,5002)K,RESID
+5002    FORMAT(T3,'@LINEQY-I, Residual after ',I5,' iterations is ',
+     &         D15.10,'.')
+       ENDIF
+       CALL PUTLST(SCR(I010),K+1,1,1,1,470)
+       CALL UPDATES(IRREPX,SCR(I010),444,0,IUHF)
+       IF(RESID.LT.CUTOFF)THEN
+        ASQUARE(K+1)=ONE
+        WRITE(6,5003)K
+5003    FORMAT(T3,'@LINEQY-I, Derivative amplitudes converged',
+     &            ' after ',I5,
+     &            ' iterations.')
+        GOTO 300
+       ENDIF 
+C
+1000  CONTINUE
+C
+      GOTO 999
+C
+300   WRITE(6,5000)
+      WRITE(6,*)
+5000  FORMAT(T3,'@LINEQY-I, Solving linear equation in reduced ',
+     &          'subspace.')
+C
+C FIRST WE MUST MODIFY SUBSPACE MATRIX, WHICH IS CURRENTLY A REPRESENTATION
+C OF THE OPERATOR [Hd(-1) * D] TO [1 + Hd(-1) * D].  THIS IS SIMPLY 
+C ACCOMPLISHED BY ADDING THE NORM OF THE APPROPRIATE EXPANSION VECTORS
+C TO THE DIAGONAL ELEMENTS.
+C
+      CALL SAXPY(K,ONE,ASQUARE,1,ASMALL,KMAX+1)
+C
+C INVERT SUBSPACE REPRESENTATION OF [1 + Hd(-1) * D]
+C
+      CALL MINV(ASMALL,K,KMAX,SCR(I000),DET,TOL,0,1)
+C
+C GENERATE SOLUTION VECTOR AS LINEAR COMBINATION OF BASIS VECTORS
+C
+      CALL ZERO(SCR(I000),NSIZEC)
+      DO 340 I=1,K
+       CALL GETLST(SCR(I010),I,1,1,1,470)
+       CALL SAXPY (NSIZEC,ASMALL(I,1)/X0,SCR(I010),1,SCR(I000),1)
+340   CONTINUE
+C
+C check solution
+c
+      IF (PRINT3 ) THEN
+C  STORE SOLUTION TEMPORARILY        
+        CALL PUTLST(SCR(I000),1,1,1,1,471)
+        WRITE(6,*)
+        WRITE(6,*) ' CHECK COMPLETE SOLUTION  '
+        CALL UPDATES2(IRREPX, SCR(I000), 444, 0, 490, IUHF)
+        CALL HBARXC(SCR(I000),MAXCOR*IINTFP,IUHF,ISIDE,IRREPX)
+        CALL LOADVEC2(IRREPX, SCR(I010),MAXCOR, IUHF, 490,2,
+     &     460, NSIZEC, .FALSE.)
+C
+C ADD FREQUENCY DEPENDENCE
+C
+        CALL GETLST(SCR(I000),1,1,1,1,471)
+        CALL SAXPY(NDIMF,FREQ,SCR(I000),1,SCR(I010),1)
+        CALL GETLST(SCR(I000),IOFFSET,1,1,IRREPX,372+ISIDE)
+        DIFF = ZILCH
+        DO I=1, NSIZEC
+          DIFF = DMAX1(ABS(SCR(I000+I-1) - SCR(I010+I-1)),DIFF)
+        ENDDO
+        WRITE(6,*) ' DIFFERENCE BETWEEN A*X AND Y ', DIFF
+        CALL GETLST(SCR(I000),1,1,1,1,471)
+      ENDIF
+C
+C WRITE SOLUTION VECTOR TO DISK
+C
+      CALL PUTLST(SCR(I000),IOFFSET,1,1,IRREPX,372+ISIDE)
+#ifdef _DEBUG_LVL0
+      Call checksum("Tx   :",SCR(I000),Nsizec)
+#endif 
+C
+      IF(PRINT2)THEN
+       WRITE(6,1001)
+1001   FORMAT(T3,'@LINEQY-I, Derivative T amplitudes : ')
+       CALL PRVECR(SCR(I000),NSIZEC)
+      ENDIF
+C
+      CALL TIMER(1)      
+      TDAVID = TDAVID + TIMENEW
+      RETURN
+999   WRITE(6,5001)KMAX
+      CALL ERREX
+5001  FORMAT(T3,'@LINEQY-F, Convergence failed after ',I5,
+     &          ' iterations.')
+      RETURN
+      END

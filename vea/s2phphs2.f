@@ -1,0 +1,291 @@
+      SUBROUTINE S2PHPHS2(ICORE,MAXCOR,IUHF, ISIDE, ISPIN)
+C
+C   THIS SUBROUTINE CALCULATES THE CONTRIBUTION OF S2 
+C   TO S2 INVOLVING THE PHPH BLOCK OF EFFECTIVE INTEGRALS W.
+C
+C CONTRACTIONS :
+C
+C    Z(Ab,Ip) = -  SUM [<AK|CI> S(CB, KP) + <BK|CI> S(AC,KP)] [ RHF ]
+C                  k,c
+C
+C  THESE TWO SUMMATIONS HAVE TO BE PERFORMED INDEPENDENTLY IN THE
+C  CASE OF RHF CALCULATIONS. ONLY ONE SUMMATION + SPINLOOP FOR UHF
+C   (THE SECOND TERM!)
+CEND
+      IMPLICIT INTEGER (A-Z)
+      DOUBLE PRECISION ONE,ONEM,ZILCH
+      logical skip, print
+C
+      DIMENSION ICORE(MAXCOR)
+      DIMENSION LISTW0(2,2), NUMSZS(8)
+C
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPS(255,2),DIRPRD(8,8)
+      COMMON /SYM/ POP(8,2),VRT(8,2),NT(2),NFMI(2),NFEA(2)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON /SINFO/ NS(8), SIRREP
+      COMMON/SLISTS/LS1IN, LS1OUT, LS2IN(2,2), LS2OUT(2,2)
+C
+      DATA ONE  /1.0/
+      DATA ZILCH/0.0/
+      DATA ONEM/-1.0/
+C
+C 58: W(Ak,Ci), ordered as C,k ; A,i  [ RHF ]
+C     WARNING: DIFFERENT FROM DOCUMENTATION (MAY 1993)
+C
+      LISTW0(1,1) = 54
+      LISTW0(2,1) = 58
+      LISTW0(1,2) = 59
+      LISTW0(2,2) = 55
+C
+C  THE FIRST INDEX IN LISTW0 LABELS THE SPIN OF K AND I, THE SECOND INDEX
+C  LABELS THE SPIN OF B AND C AND EQUALS ISPIN. THE FIRST INDEX DETERMINES 
+C  ALSO IMIXSPIN IN S.      
+C
+C    FIRST CALCULATE THE SECOND TERM FOR BOTH UHF AND RHF
+C
+C         - SUM <Bk|Ci> S(aC,iP)
+C
+      DO 5 XIRREP = 1, NIRREP
+         MIRREP = DIRPRD(XIRREP, SIRREP)
+         NUMSZS(XIRREP) = POP(MIRREP, ISPIN) * NS(SIRREP)
+ 5    CONTINUE      
+C
+      skip = .false.
+      if (skip) then
+         write(6,*) 'general phph term is skipped'
+      else
+         IF (IUHF.EQ.0) THEN
+            IMIXSPIN = 1
+         ELSE
+            IMIXSPIN = 3 - ISPIN
+         ENDIF
+         BSPIN = ISPIN
+         MSPIN = IMIXSPIN
+         LISTS2IN = LS2IN(ISPIN, IMIXSPIN + 1 - IUHF)
+       LISTW = LISTW0(IMIXSPIN+1-IUHF, ISPIN)
+
+C UHF,LISTW(2,1), (1,2)
+C RHF,LISTW(2,1)
+
+       CALL GETLEN(LENS, VRT(1,MSPIN), VRT(1,BSPIN), POP(1,MSPIN), NS)
+       I000=1
+       I010=I000+LENS*IINTFP
+       I020=I010 +LENS*IINTFP
+       IF ((IUHF.NE.0) .AND. ISPIN.EQ.IMIXSPIN) THEN       
+          CALL GETEXP2(ICORE(I010), LENS, NUMSZS, IRPDPD(1, 18+ISPIN),
+     $       LISTS2IN, VRT(1,ISPIN), IRPDPD(1, ISYTYP(1, LISTS2IN)))
+       ELSE
+          CALL GETALLS2(ICORE(I010),LENS,POP(1,MSPIN),NS(1),1,LISTS2IN)
+       ENDIF
+C
+C REORDER THE S COEFFICIENT ACCORDING TO S(AB, MP) -> S(BM, AP)
+C
+       CALL SSTGEN(ICORE(I010),ICORE(I000),LENS,VRT(1,MSPIN), 
+     $    VRT(1,BSPIN),POP(1,MSPIN),NS,ICORE(I020),1,'2314')
+       CALL ZERO(ICORE(I010),LENS)
+C
+C LOOP OVER IRREPS OF RHS OF S VECTOR
+C
+       ICOUNT1 = I000
+       ICOUNT2 = I010
+       DO 100 XIRREP=1,NIRREP
+        AIRREP=DIRPRD(XIRREP,SIRREP)
+        IRREPW=XIRREP
+        DISSYW=IRPDPD(IRREPW,ISYTYP(1,LISTW)) 
+        NUMDSW=IRPDPD(IRREPW,ISYTYP(2,LISTW)) 
+        DISSYS= NUMDSW
+        NUMDSS=VRT(AIRREP,MSPIN) * NS(SIRREP)
+        I030=I020+IINTFP*DISSYW*NUMDSW
+        IF(I030.GT.MAXCOR)THEN
+C
+C OUT-OF-CORE ALGORITHM
+C
+         WRITE(6,*)' out-of-core AB not coded, s2phphs2 '
+         WRITE(6,1000) I030, MAXCOR
+ 1000    FORMAT('  REQUIRED MEMORY :', I12, '  AVAILABLE : ', I12)
+         call errex
+C
+        ENDIF
+C
+C
+C DO IN-CORE ALGORITHM
+C
+C
+C READ W INTO W(CK, BI)
+C     
+         CALL GETLST(ICORE(I020),1,NUMDSW,1,IRREPW,LISTW)
+C
+C PERFORM MATRIX MULTIPLICATION
+C
+C
+C         Z(BI, AP) = - SUM W(CK, BI) * S(CK, AP)         [ISIDE = 1]
+C                        CK
+C         Z(CK, AP) = - SUM W(CK, BI) * S(BI, AP)         [ISIDE = 2]
+C                        BI
+          NROW=DISSYW
+          NCOL=NUMDSS
+          NSUM=DISSYS
+          print =  .false.
+          if ( print ) then
+             write(6,*) ' W-integrals'
+             call output(icore(i020), 1, dissyw, 1, numdsw, dissyw,
+     $          numdsw, 1)
+             write(6,*) ' s-coefficients'
+             call output(icore(icount1), 1, dissys, 1, numdss, dissys,
+     $          numdss, 1)
+          endif
+          IF (ISIDE.EQ.1) THEN
+            CALL XGEMM('T','N',NROW,NCOL,NSUM,ONEM,ICORE(I020),NSUM,
+     &               ICORE(ICOUNT1),NSUM,ONE,ICORE(ICOUNT2),NROW)
+          ELSE
+            CALL XGEMM('N','N',NROW,NCOL,NSUM,ONEM,ICORE(I020),NROW,
+     &               ICORE(ICOUNT1),NSUM,ONE,ICORE(ICOUNT2),NROW)
+          ENDIF
+          if (print) then
+             write(6,*) ' output s-coefficients'
+             call output(icore(icount2), 1, dissys, 1, numdss,
+     $          dissys, numdss, 1)
+          endif
+C
+C TRANSPOSE Z(BI, AP) -> Z(IB, AP) FOR USE IN SSTGEN
+C  (PERMUTATION '3124' IS NOT AVAILABLE)
+C
+          MAXS = MAX(DISSYS, NUMDSS)
+          ITMP1 = I020
+          ITMP2 = ITMP1 + MAXS * IINTFP
+          ITMP3 = ITMP2 + MAXS * IINTFP
+          CALL SYMTR3(XIRREP, VRT(1,ISPIN), POP(1,MSPIN), DISSYS,
+     $       NUMDSS, ICORE(ICOUNT2), ICORE(ITMP1),
+     $       ICORE(ITMP2), ICORE(ITMP3))
+          ICOUNT1 = ICOUNT1 + DISSYS * NUMDSS * IINTFP
+          ICOUNT2 = ICOUNT2 + DISSYS * NUMDSS * IINTFP
+100    CONTINUE
+C
+C     REORDER S COEFFICIENTS BACK TO ORIGINAL FORM S[IB, AP] -> S[AB, IP]
+C
+       CALL SSTGEN(ICORE(I010), ICORE(I000), LENS, POP(1,MSPIN),
+     $    VRT(1,ISPIN), VRT(1,MSPIN), NS(1), ICORE(I020), 1, '3214')
+C          
+C ADD THE S INCREMENTS TO LISTS2EX
+C
+       LISTS2EX = LS2OUT(ISPIN, IMIXSPIN + 1 - IUHF)
+       IF ((IUHF.NE.0) .AND. (IMIXSPIN.EQ.ISPIN)) THEN
+          CALL ASSYMALL(ICORE(I000), LENS, NUMSZS, IRPDPD(1, 18+ISPIN),
+     $       VRT(1, ISPIN), ICORE(I020), MAXCOR-I020+1)          
+          CALL GETEXP2(ICORE(I010), LENS, NUMSZS, IRPDPD(1, 18+ISPIN),
+     $       LISTS2EX, VRT(1, ISPIN), IRPDPD(1, ISYTYP(1, LISTS2EX)))
+       ELSE
+          CALL GETALLS2(ICORE(I010), LENS,POP(1,MSPIN),NS(1),
+     $       1,LISTS2EX)
+       ENDIF       
+C
+       CALL SAXPY (LENS,ONE,ICORE(I000),1,ICORE(I010),1)
+C
+       IF ((IUHF.NE.0).AND. (IMIXSPIN.EQ.ISPIN)) THEN
+          CALL PUTSQZ(ICORE(I010), LENS, NUMSZS, IRPDPD(1, 18+ISPIN),
+     $       LISTS2EX, VRT(1, ISPIN), IRPDPD(1, ISYTYP(1, LISTS2EX)),
+     $       ICORE(I020), MAXCOR-I020+1)
+       ELSE
+          CALL PUTALLS2(ICORE(I010),LENS,POP(1,IMIXSPIN), NS(1),1,
+     $       LISTS2EX)
+       ENDIF
+C
+      endif
+C
+      IF (IUHF.EQ.0) THEN
+         skip = .false.
+         if (skip) then
+            write(6,*) ' pure RHF term is not calculated in s2phphs2'
+         else
+C
+C DO THE FIRST TERM FOR THE RHF CASE
+C
+C   Z(AB, IP) = - SUM <AK|CI> S(CB,KP)
+C                 KC
+C
+       CALL GETLEN(LENS, VRT(1,1), VRT(1,1), POP(1,1), NS(1))
+       I000 = 1
+       I010 = I000 + LENS * IINTFP
+       I020 = I010 + LENS * IINTFP
+       LISTS2IN = LS2IN(1,2)
+       LISTS2EX = LS2OUT(1,2)
+       LISTW = LISTW0(2,1)
+       CALL GETALLS2(ICORE(I010), LENS,POP(1,1),NS(1),1,LISTS2IN)
+C
+C REORDER THE S COEFFICIENT ACCORDING TO S(CB, MP) -> S(CM, BP)
+C
+       CALL SSTGEN(ICORE(I010), ICORE(I000), LENS, VRT(1,1), VRT(1,1),
+     $    POP(1,1), NS, ICORE(I020), 1, '1324')
+       CALL ZERO(ICORE(I010),LENS)
+C
+C LOOP OVER IRREPS OF RHS OF S VECTOR
+C
+       ICOUNT1 = I000
+       ICOUNT2 = I010
+       DO 200 XIRREP=1,NIRREP
+        AIRREP=DIRPRD(XIRREP,SIRREP)
+        IRREPW=XIRREP
+        DISSYW=IRPDPD(IRREPW,ISYTYP(1,LISTW)) 
+        NUMDSW=IRPDPD(IRREPW,ISYTYP(2,LISTW)) 
+        DISSYS= NUMDSW
+        NUMDSS=VRT(AIRREP,1) * NS(SIRREP)
+        I030=I020+IINTFP*DISSYW*NUMDSW
+        IF(I030.GT.MAXCOR)THEN
+C
+C OUT-OF-CORE ALGORITHM
+C
+         WRITE(6,*)' out-of-core AB not coded '
+         call errex
+C
+        ENDIF
+C
+C
+C DO IN-CORE ALGORITHM
+C
+C
+C READ W INTO W(CK, AI)
+C     
+         CALL GETLST(ICORE(I020),1,NUMDSW,1,IRREPW,LISTW)
+C
+C PERFORM MATRIX MULTIPLICATION
+C
+C         Z(AI, BP) = - SUM W(CK, AI) * S(CK, BP)         [ISIDE = 1]
+C                        CK
+C         Z(CK, BP) = - SUM W(CK, AI) * S(AI, BP)         [ISIDE = 2]
+C                        AI
+C  
+          NROW=NUMDSW
+          NCOL=NUMDSS
+          NSUM=DISSYS
+          IF (ISIDE.EQ.1) THEN
+            CALL XGEMM('T','N',NROW,NCOL,NSUM,ONEM,ICORE(I020),NSUM,
+     &               ICORE(ICOUNT1),NSUM,ONE,ICORE(ICOUNT2),NROW)
+          ELSE
+            CALL XGEMM('N','N',NROW,NCOL,NSUM,ONEM,ICORE(I020),NROW,
+     &               ICORE(ICOUNT1),NSUM,ONE,ICORE(ICOUNT2),NROW)
+          ENDIF
+          ICOUNT1 = ICOUNT1 + DISSYS * NUMDSS * IINTFP
+          ICOUNT2 = ICOUNT2 + DISSYS * NUMDSS * IINTFP
+ 200   CONTINUE
+C
+C     REORDER S COEFFICIENTS BACK TO ORIGINAL FORM S[CK, BP] -> S[CB, KP]
+C
+       CALL SSTGEN(ICORE(I010), ICORE(I000), LENS, VRT(1,1),
+     $    POP(1,1), VRT(1,1), NS(1), ICORE(I020), 1, '1324')
+C          
+C ADD THE S INCREMENTS TO LISTS2EX
+C
+       CALL GETALLS2(ICORE(I010),LENS,POP(1,1),NS(1),1,LISTS2EX)
+       CALL SAXPY (LENS,ONE,ICORE(I000),1,ICORE(I010),1)
+       CALL PUTALLS2(ICORE(I010),LENS,POP(1,1),NS(1),1,LISTS2EX)
+C
+       endif
+       ENDIF
+       print = .false.
+       if (print) then
+          write(6,*)'phph-contributions are calculated'
+       endif
+C       
+       RETURN
+       END

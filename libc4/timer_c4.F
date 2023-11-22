@@ -1,0 +1,14 @@
+      SUBROUTINE TIMER_C4(TCPU,TSYS,NTYPE)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      REAL TARRAY(2)
+      SAVE X
+       A=ETIME(TARRAY)
+       Z=DBLE(TARRAY(1))
+      IF(NTYPE.EQ.0)THEN
+       TCPU=Z-X
+       X=Z
+      ELSE
+       TCPU=Z
+      ENDIF
+      RETURN
+      END

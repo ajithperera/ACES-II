@@ -1,0 +1,95 @@
+
+      SUBROUTINE GETAOINF(IUHF,IRREPX)
+      IMPLICIT INTEGER (A-Z)
+      COMMON/AOSYM/IAOPOP(8),IOFFAO(8),IOFFV(8,2),IOFFO(8,2),
+     &             IRPDPDAO(8),IRPDPDAOS(8),ISTART(8,8),ISTARTMO(8,3)
+#include "flags.com"
+#include "machsp.com"
+#include "sym.com"
+#include "syminf.com"
+#include "sympop.com"
+#include "info.com"
+C
+C PICK UP POPULATION OF AO's BY IRREDUCIBLE REPRESENTATION
+C
+CJDW 7/1/96. It is incorrect to read NUMBASIR when orbitals have been
+C            dropped, since DROPVC (from xvtran) redefines this record
+C            from its original meaning. I have written original contents
+C            of NUMBASIR on NUMBASI0 (in DROPVC) and this should be
+C            read to get IAOPOP when orbitals have been dropped.
+      IONE  = 1
+      NDROP = 0
+      CALL GETREC(20,'JOBARC','NUMDROPA',IONE,NDROP)
+      IF(NDROP.EQ.0)THEN
+        CALL GETREC(20,'JOBARC','NUMBASIR',NIRREP,IAOPOP)
+      ELSE
+        CALL GETREC(20,'JOBARC','NUMBASI0',NIRREP,IAOPOP)
+      ENDIF
+      if (iflags(1).ge.9) then
+         write(*,*) '@GETAOINF: IAOPOP = ',iaopop
+      end if
+C
+C CALCULATE OFFSETS FOR IRREPS OF VIRTUAL ORBITALS
+C
+      DO 5 ISPIN=1,1+IUHF
+       IOFFV(1,ISPIN)=NOCCO(ISPIN)+1
+       IOFFO(1,ISPIN)=1
+       DO 6 IRREP=2,NIRREP
+        IOFFV(IRREP,ISPIN)=IOFFV(IRREP-1,ISPIN)+VRT(IRREP-1,ISPIN)
+        IOFFO(IRREP,ISPIN)=IOFFO(IRREP-1,ISPIN)+POP(IRREP-1,ISPIN)
+6      CONTINUE
+5     CONTINUE 
+C
+      IF(IUHF.EQ.0)THEN
+        CALL ICOPY(8,IOFFV(1,1),1,IOFFV(1,2),1)
+        CALL ICOPY(8,IOFFO(1,1),1,IOFFO(1,2),1)
+      ENDIF
+C
+      IOFFAO(1)=1
+      DO 7 IRREP=2,NIRREP
+       IOFFAO(IRREP)=IOFFAO(IRREP-1)+IAOPOP(IRREP-1)
+7     CONTINUE
+C
+C CALCULATE A IRPDPD VECTOR FOR THE AO REPRESENTATION
+C
+      CALL IZERO(IRPDPDAO,8)
+      CALL IZERO(IRPDPDAOS,8)
+      DO 8 IRREP=1,NIRREP
+       ISTART(1,IRREP)=0
+       DO 9 IRREPR=1,NIRREP-1
+        IRREPL=DIRPRD(IRREPR,IRREP)
+        ISTART(IRREPR+1,IRREP)=ISTART(IRREPR,IRREP)+
+     &                         IAOPOP(IRREPL)*IAOPOP(IRREPR)
+9      CONTINUE
+       DO 13 IRREPR=1,NIRREP
+        IRREPL=DIRPRD(IRREPR,IRREP)
+        IRPDPDAO(IRREP)=IRPDPDAO(IRREP)+IAOPOP(IRREPL)*IAOPOP(IRREPR)
+        IF(IRREP.EQ.1) THEN
+         IRPDPDAOS(IRREP)=IRPDPDAOS(IRREP)+
+     &                   (IAOPOP(IRREPR)-1)*IAOPOP(IRREPR)/2
+        ELSE
+         IF(IRREPL.GT.IRREPR) THEN
+          IRPDPDAOS(IRREP)=IRPDPDAOS(IRREP)+IAOPOP(IRREPL)
+     &                     *IAOPOP(IRREPR)
+         ENDIF
+        ENDIF
+13     CONTINUE
+8     CONTINUE
+C
+C CALCULATE STARTING POINTS OF EACH IRREP IN IJ DISTRIBUTIONS
+C
+      IOFF=0
+      DO 10 ISPIN=3,3-2*IUHF,-1
+       ISTARTMO(1,ISPIN)=IOFF
+       DO 11 IRREPIJ=1,NIRREP-1
+        IRREPAB=DIRPRD(IRREPIJ,IRREPX)
+        IOFF=IOFF+IRPDPD(IRREPIJ,ISYTYP(2,43+ISPIN))
+     &           *IRPDPDAO(IRREPAB)
+        ISTARTMO(IRREPIJ+1,ISPIN)=IOFF
+11     CONTINUE
+       NIRREP2=DIRPRD(NIRREP,IRREPX)
+       IOFF=IOFF+IRPDPD(NIRREP,ISYTYP(2,43+ISPIN))*IRPDPDAO(NIRREP2) 
+10    CONTINUE
+C
+      RETURN
+      END

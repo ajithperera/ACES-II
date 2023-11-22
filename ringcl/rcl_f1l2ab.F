@@ -1,0 +1,125 @@
+      SUBROUTINE RCL_F1L2AB(T2,Z2,T,Z,FEAAA,FEABB,POP1,POP2,VRT1,VRT2,
+     &                      DISSYT,DISSYZ,NUMSYT,NUMSYZ,NFSIZA,NFSIZB,
+     &                      LISTT,LISTZ,IRREP,IUHF,TMP,IMULT)
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      INTEGER DISSYT,DISSYZ,DIRPRD,POP1,POP2,VRT1,VRT2
+      DIMENSION T2(DISSYT,NUMSYT),Z2(DISSYZ,NUMSYZ),FEAAA(NFSIZA),
+     &          FEABB(NFSIZB),T(NUMSYT,DISSYT),Z(NUMSYZ,DISSYZ)
+      DIMENSION TMP(1),POP1(8),POP2(8),VRT1(8),VRT2(8)
+C
+      COMMON/SYMINF/ NSTART,NIRREP,IRREPA(255),IRREPB(255),
+     &               DIRPRD(8,8)
+C
+      DATA AZERO,ONE,ONEM,HALF /0.0D0,1.0D0,-1.0D0,0.05D0/
+C
+C   GET L2 AMPLITUDES
+C
+      CALL GETLST(T2,1,NUMSYT,2,IRREP,LISTT)
+
+#ifdef _DEBUG_LVLM
+      call checksum("L2ab :",t2,dissyt*numsyt)
+CSSS      Write(6,*) " L2(Ab,Ij) increment at entering F1AB"
+CSSS      call output(t2,1,dissyt,1,numsyt,dissyt,numsyt,1)
+      call checksum("fea:",feaaa,NFSIZA)
+      call checksum("feb:",feabb,NFSIZB)
+C      write(6,*) " Fea" 
+C      call output(feaaa,1,NFSIZA,1,1,NFSIZA,1,1)
+C      write(6,*) " Feb" 
+C      call output(feabb,1,NFSIZB,1,1,NFSIZB,1,1)
+#endif
+      CALL TRANSP(T2,T,NUMSYT,DISSYT)
+      CALL ZERO(Z,NUMSYZ*DISSYZ)
+C
+C      PERFORM MULTIPLICATION
+C
+      JOFF=1
+      IOFF=1
+      DO 90 IRREPJ=1,NIRREP
+C
+       NVRTJ=VRT2(IRREPJ)
+C
+       IRREPI=DIRPRD(IRREPJ,IRREP)
+C
+       NVRTI=VRT1(IRREPI)
+C
+       IF(MIN(NVRTI,NVRTJ).NE.0) THEN
+C 
+        CALL XGEMM('N','T',NUMSYT*NVRTI,NVRTJ,NVRTJ,ONE,T(1,JOFF),
+     &             NVRTI*NUMSYT,FEABB(IOFF),NVRTJ,
+     &             AZERO,Z(1,JOFF),NVRTI*NUMSYZ)
+       ENDIF
+C
+       JOFF=JOFF+NVRTJ*NVRTI
+       IOFF=IOFF+NVRTJ*NVRTJ
+90    CONTINUE
+
+      IF(IUHF.EQ.0) THEN
+
+       CALL TRANSP(Z,Z2,DISSYZ,NUMSYZ)
+       CALL GETLST(T2,1,NUMSYZ,1,IRREP,LISTZ)
+#ifdef _DEBUG_LVL0
+        write(6,*) "@-rcc_faab"
+        call checksum("z2old:",t2,NUMSYZ*DISSYZ)
+        call checksum("z2add:",z2,NUMSYZ*DISSYZ)
+#endif
+       CALL VADD(T2,T2,Z2,NUMSYZ*DISSYZ,ONE)
+       CALL SYMTR1(IRREP,POP1,POP2,DISSYZ,Z2,TMP,TMP(1+DISSYZ),
+     &             TMP(1+2*DISSYZ))
+       CALL SYMTR3(IRREP,VRT1,VRT2,DISSYZ,NUMSYZ,Z2,TMP,
+     &             TMP(1+NUMSYZ),TMP(1+2*NUMSYZ))
+       IF (IMULT .EQ. 2) THEN
+       CALL VADD(Z2,Z2,T2,NUMSYZ*DISSYZ,ONE)
+       ELSE
+       CALL VADD(Z2,Z2,T2,NUMSYZ*DISSYZ,ONE)
+       ENDIF
+       
+       CALL PUTLST(Z2,1,NUMSYZ,1,IRREP,LISTZ)
+
+      ELSE
+
+       CALL SYMTR1(IRREP,VRT1,VRT2,NUMSYT,T,TMP,TMP(1+NUMSYT),
+     &             TMP(1+2*NUMSYT))
+       CALL SYMTR1(IRREP,VRT1,VRT2,NUMSYZ,Z,TMP,TMP(1+NUMSYZ),
+     &             TMP(1+2*NUMSYZ))
+C
+C     PERFORM SECOND MULTIPLICATION
+C
+       JOFF=1 
+       IOFF=1
+       DO 190 IRREPI=1,NIRREP
+C
+        NVRTI=VRT1(IRREPI)
+C
+        IRREPJ=DIRPRD(IRREPI,IRREP)
+C
+        NVRTJ=VRT2(IRREPJ)
+C
+        IF(MIN(NVRTJ,NVRTI).NE.0) THEN
+C
+         CALL XGEMM('N','T',NUMSYT*NVRTJ,NVRTI,NVRTI,ONE,T(1,JOFF),
+     &              NVRTJ*NUMSYT,FEAAA(IOFF),NVRTI,
+     &              ONE,Z(1,JOFF),NVRTJ*NUMSYZ)
+        ENDIF
+C
+        JOFF=JOFF+NVRTJ*NVRTI
+        IOFF=IOFF+NVRTI*NVRTI
+190    CONTINUE
+
+       CALL SYMTRA(IRREP,VRT2,VRT1,NUMSYZ,Z,Z2)
+       CALL TRANSP(Z2,Z,DISSYZ,NUMSYZ)
+       CALL GETLST(T,1,NUMSYZ,1,IRREP,LISTZ)
+#ifdef _DEBUG_LVL0
+        write(6,*) "@-rcc_fabab"
+        call checksum("z2old:",t,NUMSYZ*DISSYZ)
+        call checksum("z2add:",z,NUMSYZ*DISSYZ)
+#endif
+       CALL VADD(Z,Z,T,NUMSYZ*DISSYZ,ONE)
+       CALL PUTLST(Z,1,NUMSYZ,1,IRREP,LISTZ)
+
+#ifdef _DEBUG_LVLM
+      Write(6,*) " L2(Ab,Ij) increment at exit F1AB"
+      call output(z,1,dissyz,1,numsyz,dissyz,numsyz,1)
+#endif
+      ENDIF
+      RETURN
+      END

@@ -1,0 +1,14 @@
+      SUBROUTINE QCDUMPF(FVEC,XTRIAL,FIA,N,NOCCA,NDIM)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION FVEC(NDIM),XTRIAL(NDIM),FIA(N,N)
+      IROW=0
+      DO I=1,NOCCA
+         EII=FIA(I,I)
+         DO J=NOCCA+1,N
+            IROW=IROW+1
+            FVEC(IROW)=-FIA(J,I)
+            XTRIAL(IROW)=-FIA(J,I)/(FIA(J,J)-EII)
+         END DO
+      END DO
+      RETURN
+      END

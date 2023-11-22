@@ -1,0 +1,7 @@
+      SUBROUTINE VM_MOVE (A,B,N)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION A(N),B(N)
+      DO 3 I=1,N
+    3 B(I)=A(I)
+      RETURN
+      END

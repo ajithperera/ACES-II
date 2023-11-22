@@ -1,0 +1,21 @@
+      SUBROUTINE NORMALIZ(U, N)
+C
+C THE VECTORS IN U ARE RENORMALIZED TO ONE
+C
+      IMPLICIT INTEGER (A-Z)
+      DOUBLE PRECISION U, ZILCH, ONE, YMAX, SDOT
+C
+      DIMENSION U(N,N)
+C
+      DATA ZILCH, ONE /0.0D0, 1.0D0/
+C
+      DO 10 J = 1, N
+         YMAX = SDOT(N, U(1,J), 1, U(1,J), 1)
+         YMAX = ONE/SQRT(YMAX)
+         DO 30 I = 1, N
+            U(I,J) = YMAX * U(I,J)
+ 30      CONTINUE
+ 10   CONTINUE
+C
+      RETURN
+      END

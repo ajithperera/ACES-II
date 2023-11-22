@@ -1,0 +1,486 @@
+      SUBROUTINE NT3AAA(OOOV,OOOV2,BUF,
+     &                  IADBLK,LENBLK,IADT2,LENT2,IADV,LENV,
+     &                  OOOVAD,LENINT,EVAL,LNOOOV,NO,NV,
+     &                  ICORE,NFREE,ISPIN,INT1,INT2,NONHF,
+     &                  IRREPX,ISIDE,ROOT,EL3R3,AAAL3R3,BBBL3R3)
+      IMPLICIT INTEGER (A-Z)
+      PARAMETER (MAXNBF=1000)
+      INTEGER ABSVRT,ABSOCC,DISTSZ,DIRPRD,DSZEIJ,DSZEIK,DSZEJK,
+     &        VRT,POP
+      LOGICAL INT1,INT2,NONHF
+      LOGICAL IJKEQL,IJEQL,JKEQL,NONEQL
+      DOUBLE PRECISION ROOT
+C     ijka integrals/intermediates used in D3T3 = WT2
+      DOUBLE PRECISION OOOV(LNOOOV),BUF(1)
+C     ijka integrals/intermediates used in D2T2 = WT3 (includes 1b)
+      DOUBLE PRECISION OOOV2(LNOOOV)
+      DOUBLE PRECISION EVAL(NO + NV),DIJK
+      DOUBLE PRECISION EL3R3
+      DOUBLE PRECISION ICORE(1),AAAL3R3,BBBL3R3
+C
+      DIMENSION OOOVAD(8),LENINT(8)
+      DIMENSION LEN(8,8),IADBLK(8),LENBLK(8)
+      DIMENSION                        IADT2(8) ,LENT2(8),
+     1                                 IADV(8)  ,LENV(8)
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPS(255,2),DIRPRD(8,8)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON /SYM/    POP(8,2),VRT(8,2),NTAA,NTBB,NF1AA,NF2AA,
+     1                NF1BB,NF2BB
+      COMMON /INFO/   NOCCO(2),NVRTO(2)
+      COMMON /FLAGS/  IFLAGS(100)
+      EQUIVALENCE(ICLLVL,IFLAGS( 2))
+      EQUIVALENCE(INONHF,IFLAGS(38))
+      EQUIVALENCE(IORBTP,IFLAGS(39))
+      COMMON /FLAGS2/ IFLAGS2(500)
+C
+C     TRIPLES COMMON BLOCKS
+C
+      COMMON /ACTORB/ ABSVRT(MAXNBF,8,2),ABSOCC(MAXNBF,8,2)
+      COMMON /T3OFF/  IOFFVV(8,8,10),IOFFOO(8,8,10),IOFFVO(8,8,4)
+      COMMON /T2LIST/ LISTT2(3)
+      COMMON /LISWI/  LWIC11,LWIC12,LWIC13,LWIC14,
+     1                LWIC15,LWIC16,LWIC17,LWIC18,
+     1                LWIC21,LWIC22,LWIC23,LWIC24,
+     1                LWIC25,LWIC26,LWIC27,LWIC28,
+     1                LWIC31,LWIC32,LWIC33,
+     1                LWIC34,LWIC35,LWIC36,
+     1                LWIC37,LWIC38,LWIC39,LWIC40,LWIC41,LWIC42
+      COMMON /AUXIO / DISTSZ(8,100),NDISTS(8,100),INIWRD(8,100),LNPHYR,
+     1                NRECS,LUAUX
+      COMMON /T3IOOF/ IJKPOS(8,8,8,2),IJKLEN(36,8,4),IJKOFF(36,8,4),
+     1                NCOMB(4)
+C
+      INDEX(I) = I*(I-1)/2
+C
+      IF(ISPIN.EQ.1)THEN
+      NT1 = IRPDPD(IRREPX, 9)
+      ELSE
+      NT1 = IRPDPD(IRREPX,10)
+      ENDIF
+C
+C     MAIN CORE VECTOR ADDRESSING
+C
+      IM90 = 1
+      IM80 = IM90 + NT1
+      IM70 = IM80 + NT1
+      IM60 = IM70 + NT1
+      IM50 = IM60 + NT1
+C
+      IF(ISPIN.EQ.1)THEN
+      WRITE(6,1015)
+ 1015 FORMAT(' @TRPS14-I, Spin case AAA ')
+      ELSE
+      WRITE(6,1020)
+ 1020 FORMAT(' @TRPS14-I, Spin case BBB ')
+      ENDIF
+C
+C     INITIALIZE T1 INCREMENTS
+C
+      CALL ZERO(ICORE(IM90),NT1)
+C
+C     INITIALIZE "F" INCREMENTS
+C
+      CALL ZERO(ICORE(IM70),NT1)
+C
+C     GET EIGENVALUES
+C
+      IF(ISPIN.EQ.1)THEN
+      CALL GETREC(20,'JOBARC','SCFEVALA',(NO+NV)*IINTFP,EVAL)
+      ELSE
+      CALL GETREC(20,'JOBARC','SCFEVALB',(NO+NV)*IINTFP,EVAL)
+      ENDIF
+C
+C     Compute (B<C,A) lengths for given IRPIJK.
+C
+      DO   90 IRPIJK=1,NIRREP
+      IRPABC = DIRPRD(IRREPX,IRPIJK)
+      DO   80 IRPA  =1,NIRREP
+      IRPBC = DIRPRD(IRPABC,IRPA)
+      LEN(IRPA,IRPIJK) = IRPDPD(IRPBC,ISPIN) * VRT(IRPA,ISPIN)
+   80 CONTINUE
+   90 CONTINUE
+C
+      MCORE = NFREE / IINTFP
+      WRITE(6,1230) NFREE,MCORE,IINTFP
+ 1230 FORMAT(' @TRPS14-I, Number of free integer words ',I10,/,
+     1       '            Number of free double words  ',I10,/,
+     1       '            Ratio                        ',I10)
+C
+      DO  1000 IRPIJK=1,NIRREP
+      IRPABC = DIRPRD(IRREPX,IRPIJK)
+C
+      IF(NDISTS(IRPIJK,1+3*(ISPIN-1)).EQ.0.OR.
+     &   DISTSZ(IRPABC,1+3*(ISPIN-1)).EQ.0) GOTO 1000
+C
+      IJKVAL = 0
+C
+      DO   990   IRPK=1,NIRREP
+      IF(POP(IRPK,ISPIN).EQ.0) GOTO 990
+      DO   980   IRPJ=1,IRPK
+      IRPJK = DIRPRD(IRPJ,IRPK)
+      IRPI  = DIRPRD(IRPJK,IRPIJK)
+      IRPIJ =  DIRPRD(IRPI,IRPJ)
+      IRPIK =  DIRPRD(IRPI,IRPK)
+C
+      IF(IRPI.GT.IRPJ.OR.POP(IRPI,ISPIN).EQ.0.OR.
+     1                   POP(IRPJ,ISPIN).EQ.0) GOTO 980
+C
+      IF(IRPI.EQ.IRPJ.AND.
+     1   IRPI.EQ.IRPK.AND.POP(IRPK,ISPIN).LT.3) GOTO 980
+      IF(IRPJ.EQ.IRPK.AND.POP(IRPK,ISPIN).LT.2) GOTO 980
+      IF(IRPI.EQ.IRPJ.AND.POP(IRPJ,ISPIN).LT.2) GOTO 980
+C
+      IJKEQL = .FALSE.
+      IJEQL  = .FALSE.
+      JKEQL  = .FALSE.
+      NONEQL = .FALSE.
+      IF(IRPI.EQ.IRPJ.AND.IRPI.EQ.IRPK) IJKEQL = .TRUE.
+      IF(IRPJ.EQ.IRPK.AND.IRPI.NE.IRPK)  JKEQL = .TRUE.
+      IF(IRPI.EQ.IRPJ.AND.IRPI.NE.IRPK)  IJEQL = .TRUE.
+      IF(IRPI.NE.IRPJ.AND.IRPI.NE.IRPK.AND.IRPJ.NE.IRPK) NONEQL = .TRUE.
+C
+      IF(IJKEQL)THEN
+      NIJ = (POP(IRPK,ISPIN) * (POP(IRPK,ISPIN)-1))/2
+      NIK = (POP(IRPK,ISPIN) * (POP(IRPK,ISPIN)-1))/2
+      NJK = (POP(IRPK,ISPIN) * (POP(IRPK,ISPIN)-1))/2
+      ENDIF
+C
+      IF(JKEQL)THEN
+      NIJ = POP(IRPI,ISPIN) * POP(IRPJ,ISPIN)
+      NIK = POP(IRPI,ISPIN) * POP(IRPK,ISPIN)
+      NJK = (POP(IRPK,ISPIN) * (POP(IRPK,ISPIN)-1))/2
+      ENDIF
+C
+      IF(IJEQL)THEN
+      NIJ = (POP(IRPJ,ISPIN) * (POP(IRPJ,ISPIN)-1))/2
+      NIK = POP(IRPI,ISPIN) * POP(IRPK,ISPIN)
+      NJK = POP(IRPJ,ISPIN) * POP(IRPK,ISPIN)
+      ENDIF
+C
+      IF(NONEQL)THEN
+      NIJ = POP(IRPI,ISPIN) * POP(IRPJ,ISPIN)
+      NIK = POP(IRPI,ISPIN) * POP(IRPK,ISPIN)
+      NJK = POP(IRPJ,ISPIN) * POP(IRPK,ISPIN)
+      ENDIF
+C
+C     COMPUTE ADDRESSES AND LENGTHS OF ABC SYMMETRY BLOCKS FOR
+C     THIS IJK. THIS LOOP IS EFFECTIVELY OVER IRREPS OF A (IE
+C     COLUMNS OF THE EVENTUAL TARGET).
+C
+      DO  300 IRREP=1,NIRREP
+      IF(IRREP.EQ.1)THEN
+      IADBLK(IRREP) = 1
+      ELSE
+      IADBLK(IRREP) = IADBLK(IRREP-1) + LEN(IRREP-1,IRPIJK)
+      ENDIF
+      LENBLK(IRREP) = LEN(IRREP,IRPIJK)
+  300 CONTINUE
+C
+      LENABC=0
+      DO  310 IRREP=1,NIRREP
+      LENABC = LENABC + LENBLK(IRREP)
+  310 CONTINUE
+C
+
+C     IM50 is t3(a<b<c)
+      I000 = IM50 + DISTSZ(IRPABC,1+3*(ISPIN-1))
+      I010 = I000 + LENABC
+C
+C     SET ADDRESSES FOR T2 VECTORS
+C
+      I020 = I010 + IRPDPD(DIRPRD(IRREPX,IRPIJ),ISPIN) * NIJ
+      I030 = I020 + IRPDPD(DIRPRD(IRREPX,IRPIK),ISPIN) * NIK
+      I040 = I030 + IRPDPD(DIRPRD(IRREPX,IRPJK),ISPIN) * NJK
+C
+C     DETERMINE DISTRIBUTION SIZES FOR EXPANDED T2 VECTORS
+C
+      IRPAB  = DIRPRD(IRREPX,IRPIJ)
+      DSZEIJ = IRPDPD(IRPAB,18+ISPIN)
+      IRPAB  = DIRPRD(IRREPX,IRPIK)
+      DSZEIK = IRPDPD(IRPAB,18+ISPIN)
+      IRPAB  = DIRPRD(IRREPX,IRPJK)
+      DSZEJK = IRPDPD(IRPAB,18+ISPIN)
+      I050 = I040 + DSZEIJ * NIJ
+      I060 = I050 + DSZEIK * NIK
+      I070 = I060 + DSZEJK * NJK
+C
+C     READ T2 VECTORS.
+C
+      CALL GETLST(ICORE(I010),IOFFOO(IRPJ,IRPIJ,ISPIN)+1,
+     1            NIJ,1,IRPIJ,LISTT2(ISPIN))
+      CALL GETLST(ICORE(I020),IOFFOO(IRPK,IRPIK,ISPIN)+1,
+     1            NIK,1,IRPIK,LISTT2(ISPIN))
+      CALL GETLST(ICORE(I030),IOFFOO(IRPK,IRPJK,ISPIN)+1,
+     1            NJK,1,IRPJK,LISTT2(ISPIN))
+
+CSSS      Write(6,*) LISTT2(ISPIN)
+CSSS      call checksum("T2INNT3AAA", ICORE(I010),
+CSSS     &               IRPDPD(DIRPRD(IRREPX,IRPIJ),ISPIN) * NIJ,S)
+CSSS      call checksum("T2INNT3AAA", ICORE(I020),
+CSSS     &               IRPDPD(DIRPRD(IRREPX,IRPIK),ISPIN) * NIK,S)
+CSSS      call checksum("T2INNT3AAA", ICORE(I030),
+CSSS     &               IRPDPD(DIRPRD(IRREPX,IRPJK),ISPIN) * NJK,S)
+C
+C     EXPAND T2 VECTORS
+C
+      IRPAB  = DIRPRD(IRREPX,IRPIJ)
+      CALL SYMEXP2(IRPAB,VRT(1,ISPIN),DSZEIJ,IRPDPD(IRPAB,ISPIN),
+     1             NIJ,ICORE(I040),ICORE(I010))
+      IRPAB  = DIRPRD(IRREPX,IRPIK)
+      CALL SYMEXP2(IRPAB,VRT(1,ISPIN),DSZEIK,IRPDPD(IRPAB,ISPIN),
+     1             NIK,ICORE(I050),ICORE(I020))
+      IRPAB  = DIRPRD(IRREPX,IRPJK)
+      CALL SYMEXP2(IRPAB,VRT(1,ISPIN),DSZEJK,IRPDPD(IRPAB,ISPIN),
+     1             NJK,ICORE(I060),ICORE(I030))
+C
+C     SET ADDRESSES FOR TRANSPOSED BLOCKS OF OOOV INTEGRALS (USED FOR
+C     INCLUSION OF T3 IN T2 (T2T314O).
+C
+      LNVOIJ = IRPDPD(IRPIJ,8+ISPIN)
+      LNVOIK = IRPDPD(IRPIK,8+ISPIN)
+      LNVOJK = IRPDPD(IRPJK,8+ISPIN)
+      I080 = I070 + LNVOIJ * NIJ
+      I090 = I080 + LNVOIK * NIK
+      I100 = I090 + LNVOJK * NJK
+C
+      I110 = I100 + DISTSZ(IRPABC,1+3*(ISPIN-1))
+      I120 = I110 + IRPDPD(IRPJK,ISPIN)
+      I130 = I120 + IRPDPD(IRPIK,ISPIN)
+      I140 = I130 + IRPDPD(IRPIJ,ISPIN)
+C
+C     Add new storage so we can compute R3 on pass 2.
+C
+      I150 = I140 + DISTSZ(IRPABC,1+3*(ISPIN-1))
+      I160 = I150 + LENABC
+C
+      ISTART = I160
+      NLEFT = MCORE - ISTART
+C
+      IF(ISTART.GE.MCORE)THEN
+      WRITE(6,9010)
+      CALL INSMEM('TRPS14',ISTART,MCORE)
+      ENDIF
+C
+C     FORM ABC DENOMINATOR FOR THIS IJK SYMMETRY BLOCK.
+C
+      CALL MKD314(ICORE(I100),EVAL,ISPIN,NO,NV,IRPABC,
+     1            DISTSZ(1,1+3*(ISPIN-1)))
+C
+      IF(NONEQL)THEN
+      KLOW  = 1
+      KHIGH = POP(IRPK,ISPIN)
+      JLOW  = 1
+      JHIGH = POP(IRPJ,ISPIN)
+      ILOW  = 1
+      IHIGH = POP(IRPI,ISPIN)
+      ENDIF
+C
+      IF(IJKEQL)THEN
+      KLOW  = 3
+      KHIGH = POP(IRPK,ISPIN)
+      JLOW  = 2
+      ILOW  = 1
+      ENDIF
+C
+      IF(IJEQL)THEN
+      KLOW  = 1
+      KHIGH = POP(IRPK,ISPIN)
+      JLOW  = 2
+      JHIGH = POP(IRPJ,ISPIN)
+      ILOW  = 1
+      ENDIF
+C
+      IF(JKEQL)THEN
+      KLOW  = 2
+      KHIGH = POP(IRPK,ISPIN)
+      JLOW  = 1
+      ILOW  = 1
+      IHIGH = POP(IRPI,ISPIN)
+      ENDIF
+C
+      DO   430 K=KLOW,KHIGH
+C
+      IF(IJKEQL.OR.JKEQL) JHIGH = K-1
+      DO   420 J=JLOW,JHIGH
+C
+      IF(IJKEQL.OR.IJEQL) IHIGH = J-1
+      DO   410 I=ILOW,IHIGH
+C
+      CALL ZERO(ICORE(I000),LENABC)
+      CALL ZERO(ICORE(IM50),DISTSZ(IRPABC,1+3*(ISPIN-1)))
+C
+C-----------------------------------------------------------------------
+C     Right hand side.
+C-----------------------------------------------------------------------
+      IF(ISIDE.EQ.1)THEN
+        LIST2OFF = 400
+        CALL GT3WT214(ICORE(I000),ICORE(ISTART),ISPIN,IADBLK,
+     &                I,J,K,IRPI,IRPJ,IRPK,IRPIJ,IRPIK,IRPJK,
+     &                IRREPX,LIST2OFF,1,LWIC11-1,LWIC15-1,NLEFT)
+C
+        IF(IFLAGS(2).EQ.22 .AND. IFLAGS2(124).GE.5)THEN
+          LIST2OFF = 43
+          CALL GT3WT214(ICORE(I000),ICORE(ISTART),ISPIN,IADBLK,
+     &                  I,J,K,IRPI,IRPJ,IRPK,IRPIJ,IRPIK,IRPJK,
+     &                  1,LIST2OFF,IRREPX,376,380,NLEFT)
+        ENDIF
+C
+      ENDIF
+C     
+C-----------------------------------------------------------------------
+C     Left hand side.
+C-----------------------------------------------------------------------
+      IF(ISIDE.EQ.2)THEN
+        LIST2OFF = 403
+        CALL GT3WT214(ICORE(I000),ICORE(ISTART),ISPIN,IADBLK,
+     &                I,J,K,IRPI,IRPJ,IRPK,IRPIJ,IRPIK,IRPJK,
+     &                IRREPX,LIST2OFF,1,LWIC21-1,LWIC25-1,NLEFT)
+        CALL E_S1S214(ICORE(ISTART),ICORE(I000),IADBLK,ISPIN,I,J,K,
+     &                IRPI,IRPJ,IRPK,IRPIJ,IRPIK,IRPJK,
+     &                IRPABC,IRREPX,1,4)
+      ENDIF
+C-----------------------------------------------------------------------
+C
+      CALL SYMCONTW(ICORE(IM50),ICORE(I000),IADBLK,ISPIN,IRPABC)
+C
+      DIJK = EVAL(ABSOCC(I,IRPI,ISPIN)) + EVAL(ABSOCC(J,IRPJ,ISPIN))
+     1                                  + EVAL(ABSOCC(K,IRPK,ISPIN))
+     1                                  + ROOT
+CSSS      call checksum("NT3AAA-IM50-1", ICORE(IM50), 
+CSSS     &                DISTSZ(IRPABC,1+3*(ISPIN-1)),S)
+
+      CALL RMD314(ICORE(IM50),ICORE(I100),
+     1            DISTSZ(IRPABC,1+3*(ISPIN-1)),DIJK)
+C
+C-----------------------------------------------------------------------
+C     Also generate R3 on second pass and calculate overlap term.
+C-----------------------------------------------------------------------
+      IF(ISIDE.EQ.2)THEN
+C
+C
+        CALL ZERO(ICORE(I150),LENABC)
+        CALL ZERO(ICORE(I140),DISTSZ(IRPABC,1+3*(ISPIN-1)))
+        CALL GT3WT214(ICORE(I150),ICORE(ISTART),ISPIN,IADBLK,
+     &                I,J,K,IRPI,IRPJ,IRPK,IRPIJ,IRPIK,IRPJK,
+     &                IRREPX,LIST2OFF,1,LWIC11-1,LWIC15-1,NLEFT)
+C
+        IF(IFLAGS(2).EQ.22 .AND. IFLAGS2(124).GE.5)THEN
+c         LIST2OFF = 443
+c         CALL GT3WT214(...)
+        ENDIF
+C
+        CALL SYMCONTW(ICORE(I140),ICORE(I150),IADBLK,ISPIN,IRPABC)
+C
+        DIJK = EVAL(ABSOCC(I,IRPI,ISPIN)) + EVAL(ABSOCC(J,IRPJ,ISPIN))
+     1                                    + EVAL(ABSOCC(K,IRPK,ISPIN))
+     1                                    + ROOT
+        CALL RMD314(ICORE(I140),ICORE(I100),
+     1              DISTSZ(IRPABC,1+3*(ISPIN-1)),DIJK)
+C
+C     R3 is at I140, L3 is at IM50.
+C
+      IF(ISPIN.EQ.1)THEN
+        DO 960 IABC=1,DISTSZ(IRPABC,1+3*(ISPIN-1))
+        AAAL3R3 = AAAL3R3 + ICORE(I140-1+IABC)*ICORE(IM50-1+IABC)
+  960   CONTINUE
+      ELSE
+        DO 961 IABC=1,DISTSZ(IRPABC,1+3*(ISPIN-1))
+        BBBL3R3 = BBBL3R3 + ICORE(I140-1+IABC)*ICORE(IM50-1+IABC)
+  961   CONTINUE
+      ENDIF
+C
+      DIJK = EVAL(ABSOCC(I,IRPI,ISPIN)) + EVAL(ABSOCC(J,IRPJ,ISPIN))
+     1                                  + EVAL(ABSOCC(K,IRPK,ISPIN))
+      DO 962 IABC=1,DISTSZ(IRPABC,1+3*(ISPIN-1))
+      ICORE(I140 - 1 + IABC) = ICORE(I140 - 1 + IABC) * 
+     1                        (ICORE(I100 - 1 + IABC) - DIJK)
+  962 CONTINUE
+C
+      DO 963 IABC=1,DISTSZ(IRPABC,1+3*(ISPIN-1))
+      EL3R3 = EL3R3 + ICORE(IM50 - 1 + IABC) * ICORE(I140 - 1 + IABC)
+  963 CONTINUE
+C
+C
+      ENDIF
+C-----------------------------------------------------------------------
+C
+C     ICORE(IM50)          A<B<C ordered T3(C)
+C     ICORE(I000) A<B,C ordered T3(C) (scaled for QCISD(T)).
+C     ICORE(I140) A<B<C ordered T3(D)
+C
+C     Expand T3(C).
+C
+      IF(INT1.OR.INT2)THEN
+      CALL ZERO(ICORE(I000),LENABC)
+      CALL SYMEXPT3(ICORE(IM50),ICORE(I000),IADBLK,ISPIN,IRPABC)
+CSSS      call checksum("NT3AAAA-IM50", ICORE(IM50), LENABC,S)
+      ENDIF
+C
+C     Include T3 in T1
+C
+      IF(INT1)THEN
+      CALL E_T1T314(ICORE(IM90),ICORE(IM70),ICORE(I000),
+     1              ICORE(I110),ICORE(I120),ICORE(I130),
+     1              IADBLK,IRPI,IRPJ,IRPK,
+     1              IRPIJ,IRPIK,IRPJK,IRPABC,I,J,K,IOFFOO,ISPIN,NONHF,
+     1              IRREPX)
+      ENDIF
+C
+      IF(INT2)THEN
+C
+C     INCLUDE T3 IN T2
+C
+      CALL E_T2T314O(ICORE(I000),ICORE(I070),ICORE(I080),ICORE(I090),
+     1               ICORE(ISTART),
+     1               IADBLK,
+     1               IRPI,IRPJ,IRPK,IRPIJ,IRPIK,IRPJK,
+     1               I,J,K,ISPIN,LNVOIJ,LNVOIK,LNVOJK,IRREPX)
+C
+C     --- D2T2 = F*T3 in non-Hartree-Fock cases ---
+C
+        IF( ((IFLAGS2(124).EQ.1.OR.IFLAGS2(124).EQ.2) .AND. NONHF) .OR.
+     &        IFLAGS2(124).GE.3                                   )THEN
+          IF(IFLAGS2(124).LE.2) LFOFF = 2
+          IF(IFLAGS2(124).GE.3) LFOFF = 0
+          IF(IFLAGS2(124).LE.2)THEN
+            METHOD=13
+          ELSE
+            METHOD=18
+          ENDIF    
+          CALL E_T2FT314(ICORE(I000),ICORE(ISTART),IADBLK,IRPI,IRPJ,
+     &                   IRPK,
+     &                   IRPIJ,IRPIK,IRPJK,I,J,K,ISPIN,METHOD,0,
+     &                   IRREPX)
+        ENDIF
+C
+      CALL  E_T2T314(ICORE(I000),ICORE(ISTART),IADBLK,IRPI,IRPJ,IRPK,
+     1               IRPIJ,IRPIK,IRPJK,IRPABC,I,J,K,
+     1               ISPIN,IRREPX)
+      ENDIF
+  410 CONTINUE
+  420 CONTINUE
+  430 CONTINUE
+C
+  980 CONTINUE
+  990 CONTINUE
+ 1000 CONTINUE
+C
+      IF(INT1)THEN
+       CALL GETLST(ICORE(IM80),1,1,1,4+ISPIN,410)
+       CALL VADD(ICORE(IM80),ICORE(IM80),ICORE(IM90),NT1,1.0D+00)
+       CALL PUTLST(ICORE(IM80),1,1,1,4+ISPIN,410)
+CSSS       call checksum("NT3AAAA-IM80", ICORE(IM80), NT1,S)
+      ENDIF
+C
+      if(iside.eq.2)then
+       if(ispin.eq.1)then
+        write(6,*) ' aaa overlap is ',aaal3r3
+       else
+        write(6,*) ' bbb overlap is ',bbbl3r3
+       endif
+      endif
+C
+      RETURN
+ 9010 FORMAT(' @TRPS14-I, Insufficient memory to continue. ')
+      END

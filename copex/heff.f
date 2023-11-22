@@ -1,0 +1,100 @@
+      SUBROUTINE HEFF(HPP,HPQ,XQP,HEF,F,EIVEL,EIVER,EIVA,WI,WORK,H,
+     &AUX,NIPSH,NIPN,NAO,NOCC,LWORK,LWORKHF,NIP)
+C
+C     HEFF = HPP + HPQ*XQP
+C     TO GET THE IP'S, ADD THE HF ENERGIES AND DIAGONALIZE HEFF
+C
+      IMPLICIT DOUBLE PRECISION (A-H, O-Z) 
+C
+      DIMENSION HPP(NIPN,NIPN)
+      DIMENSION HPQ(NIPN,NIPSH)
+      DIMENSION XQP(NIPSH,NIPN)
+      DIMENSION HEF(NIPN,NIPN)
+      DIMENSION F(NAO)
+      DIMENSION WORK(LWORK)
+      DIMENSION EIVEL(NIPN*NIPN)
+      DIMENSION EIVER(NIPN*NIPN)
+      DIMENSION EIVA(NIPN)
+      DIMENSION WI(NIPN)
+      DIMENSION H(NAO,NAO)
+      DIMENSION AUX(NIPN,NIPN)
+      LOGICAL IP
+C
+      DZERO = 0.D+0 
+      DONE = 1.0D+0
+C
+      IF (NIP.EQ.0) THEN
+         DO 7 I1=1, NAO
+            DO 8 I2=1, NAO
+               H(I1,I2) = DZERO
+ 8          CONTINUE
+ 7       CONTINUE
+      ENDIF
+C
+C     HEF = HPQ*XQP
+C
+      CALL XGEMM('N','N',NIPN,NIPN,NIPSH,DONE,HPQ,NIPN,XQP,NIPSH,
+     &DZERO,HEF,NIPN) 
+C
+C     HEF = HEF + HPP
+C
+      DO 1 I1=1, NIPN
+         DO 2 I2=1, NIPN
+            HEF(I1,I2) = HEF(I1,I2) + HPP(I1,I2)
+ 2       CONTINUE
+ 1    CONTINUE
+C
+      IF (NIP.EQ.1) THEN
+         DO 3 I1=1, NIPN
+            DO 4 I2=1, NIPN
+               H(I1,I2) = - HEF(I1,I2)
+C               IF (I1.EQ.I2) THEN
+C                  H(I1,I1) = -(H(I1,I1) +F(I1))
+C               ENDIF
+ 4          CONTINUE
+ 3       CONTINUE
+      ELSE
+         DO 5 I1=1+NOCC, NAO
+            DO 6 I2=1+NOCC, NAO
+               H(I1,I2)=HEF(I1-NOCC,I2-NOCC)
+C               IF (I1.EQ.I2) THEN
+C                  H(I1,I1) = H(I1,I1) - F(I1)
+C               ENDIF
+ 6          CONTINUE
+ 5       CONTINUE
+      ENDIF
+C
+      WRITE(6,*)
+      WRITE(6,*) 'THE EFFECTIVE HAMILTONIAN IS DIAGONALIZED'
+      CALL DIAGMAT(HEF,WORK,EIVEL,EIVER,EIVA,WI,LWORK,NIPN,.TRUE.)
+C
+      IF (NIP.EQ.1) THEN
+         WRITE(6,*) 
+         WRITE(6,*) 'H IS DIAGONALIZED'
+         CALL DGEEV('V','V',NAO,H,NAO,EIVA,WI,EIVEL,NAO,EIVER,NAO,
+     &WORK,LWORKHF,INFO) 
+C
+         IF (INFO.NE.0) THEN
+            WRITE(6,*) 'ERROR IN DIAGONALIZATION'
+            WRITE(6,*) 'INFO=',INFO
+         ENDIF
+C
+         WRITE(6,*) 
+         WRITE(6,*) 'EIGENVALUES'
+         CALL OUTPUT(EIVA,1,NAO,1,1,NAO,1,1)
+C
+         WRITE(6,*)
+         WRITE(6,*) 'RIGHT EIGENVECTORS'
+         CALL OUTPUT(EIVER,1,NAO,1,NAO,NAO,NAO,1,1)
+C
+C         CALL XGEMM('T','N',NAO,NAO,NAO,DONE,EIVEL,NAO,EIVER,NAO,
+C     &DZERO,AUX,NAO)
+C
+C         WRITE(6,*)
+C         WRITE(6,*) 'AUX'
+C         CALL OUTPUT(AUX,1,NAO,1,NAO,NAO,NAO,1)   
+C
+      ENDIF 
+C
+      RETURN
+      END

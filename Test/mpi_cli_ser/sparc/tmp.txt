@@ -1,0 +1,40 @@
+### -c -DUSE_STDARG -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_UNISTD_H=1 \
+       -DHAVE_STDARG_H=1 -DUSE_STDARG=1 -DMALLOC_RET_VOID=1 \
+      -I/usr/local/include -xO4 -R/usr/local/lib ../client.c
+
+/opt/forte6/SUNWspro/bin/../WS6U2/bin/acomp \
+   -i ../client.c \
+   -o /scr_1/tmp/acompAAAAUay3W \
+   -r /scr_1/tmp/acompBAABUay3W \
+   -N /scr_1/tmp/iroptCAACUay3W \
+   -DUSE_STDARG -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_UNISTD_H=1 \
+   -DHAVE_STDARG_H=1 -DUSE_STDARG=1 -DMALLOC_RET_VOID=1 \
+   -I/usr/local/include -O4 -Qy \
+   -D__SunOS_5_7 -D__SUNPRO_C=0x530 -D__SVR4 -D__unix -D__sun -D__sparc \
+   -D__BUILTIN_VA_ARG_INCR -Xa -D__PRAGMA_REDEFINE_EXTNAME -Dunix -Dsun \
+   -Dsparc -D__RESTRICT \
+   -I/opt/forte6/SUNWspro/WS6U2/include/cc \
+   "-g/opt/forte6/SUNWspro/bin/../WS6U2/bin/cc -xO4 -R/usr/local/lib \
+   -DUSE_STDARG -DHAVE_STDLIB_H='1' -DHAVE_STRING_H='1' -DHAVE_UNISTD_H='1' -DHAVE_STDARG_H='1' -DUSE_STDARG='1' -DMALLOC_RET_VOID='1' -I/usr/local/include -c " -D__SUN_PREFETCH
+
+/opt/forte6/SUNWspro/bin/../WS6U2/bin/iropt -F -o /scr_1/tmp/iroptDAADUay3W \
+   -N/scr_1/tmp/iroptCAACUay3W /scr_1/tmp/acompBAABUay3W \
+   -xarch=generic -xcache=generic -xchip=generic -xprefetch=no -xvector=no \
+   -xbuiltin=%none -O4
+
+/opt/forte6/SUNWspro/bin/../WS6U2/bin/cg -xcode=abs32 -O4 -Qy -xmemalign=4s \
+   -xprefetch=no -xvector=no -xarch=generic -xcache=generic -xchip=generic \
+   -oo client.o -is /scr_1/tmp/acompAAAAUay3W -ir /scr_1/tmp/iroptDAADUay3W \
+   -xbuiltin=%none
+
+/usr/ccs/bin/ld \
+   /opt/forte6/SUNWspro/WS6U2/lib/crti.o \
+   /opt/forte6/SUNWspro/WS6U2/lib/crt1.o \
+   /opt/forte6/SUNWspro/WS6U2/lib/values-xa.o \
+   -o client -R/usr/local/lib -L/usr/local/lib client.o \
+   -lmpich -lsocket -lnsl -lnsl -laio \
+   -Y "P,/opt/forte6/SUNWspro/WS6U2/lib:/usr/ccs/lib:/usr/lib" \
+   -Qy -lc /opt/forte6/SUNWspro/WS6U2/lib/crtn.o
+
+
+

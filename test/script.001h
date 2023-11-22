@@ -1,0 +1,70 @@
+test -n "$USERDIR" || exit 1
+
+cat <<. >ZMAT
+ANALYTICAL GRADIENT VIBRATIONAL FREQUENCIES H2O/3-21G*
+H
+O 1 R
+H 2 R 1 A
+
+R=0.9430518265
+A=105.9676873798
+
+*ACES2
+!restart
+BASIS=3-21G*
+vib=findif,spherical=off
+
+.
+ln -s $GENBAS . || exit 1
+
+# loop over 4 processes
+procs=4
+for rank in 3 2 1 0
+do xj="xjoda -rank $rank -procs $procs"
+   # clean
+   for file in *
+   do case $file in
+      ZMAT|GENBAS|ZMAT.BAS|*.out) ;;
+      *) rm -rf $file ;;
+      esac
+   done
+   last=0
+   while test $last -eq 0
+   do $xj || exit 1
+      xvmol && xvmol2ja && xvscf && xvdint || exit 1
+      last=$(xa2proc jareq i LASTGEOM 1)
+   done
+   xa2proc parfd updump > fd.$rank.out
+done
+cat fd.*.out > fd.out
+xa2proc parfd load fd.out
+$xj
+
+exit 0
+TEST.DAT
+d TOTENERG
+ -0.755846242660E+02   0.1E-08
+d FORCECON
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.117987163933E+00   0.1E-08
+  0.648894655137E+00   0.1E-08
+  0.685514527203E+00   0.1E-08
+d INTR_HES
+  0.633051120547E+00   0.1E-08
+ -0.644848998300E-02   0.1E-08
+  0.494890515710E-01   0.1E-08
+ -0.644848998300E-02   0.1E-08
+  0.633051120547E+00   0.1E-08
+  0.494890515710E-01   0.1E-08
+  0.494890515710E-01   0.1E-08
+  0.494890515710E-01   0.1E-08
+  0.182834345468E+00   0.1E-08
+d NUCREP
+  0.932954302139E+01   0.1E-08
+d SCFENEG
+ -0.755846242660E+02   0.1E-08

@@ -1,0 +1,34 @@
+EOM-CCSD excitation energies and TMs, INCORE option.
+H
+O 1 R
+H 2 R 1 A
+
+R=0.957
+A=104.5
+
+*ACES2
+BASIS=DZP
+CALC=CCSD,INCORE=NOABCD,SPHERICAL=OFF
+EXCITE=EOMEE,ESTATE_SYM=1/1/1/1,ESTATE_PROP=EXPECTATION
+
+To check the incore option: when INCORE flags is set,
+depending on it's level, various lists (distributions)
+are held in file cache. Note that this is implemented
+in  vcc and vee only. The follwoing options for INCORE
+is available.
+
+NONE ALL T NOABIJ NOABCI NOABCD
+
+TEST.DAT
+d TOTENERG
+ -0.762725089278E+02   0.1E-08
+d NUCDIPOL
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.975256412687E+00   0.1E-08
+d NUCREP
+  0.919693438045E+01   0.1E-08
+d SCFENEG
+ -0.760465033211E+02   0.1E-08
+d TOTENER2
+ -0.758637230853E+02   0.1E-08

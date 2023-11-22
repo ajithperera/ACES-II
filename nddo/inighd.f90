@@ -1,0 +1,154 @@
+        SUBROUTINE INIGHD (NI,ns,np,nd,es,ep,ed)
+use tables
+IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+!     *
+!     ONE-CENTER TWO-ELECTRON INTEGRALS FOR SPD-BASIS.
+!     NI IS THE ATOMIC NUMBER OF THE CURRENT ELEMENT.
+!     *
+!interface
+!function rsc(K,NA,EA,NB,EB,NC,EC,ND,ED)
+!integer,intent(in)::k,na,nb,nc,nd
+!      double precision,intent(in)::ea,eb,ec,ed
+!end function rsc
+!end interface
+      
+      PARAMETER (LMZ=86)
+      PARAMETER (S3 =0.17320508075689D+01)
+      PARAMETER (S5 =0.22360679774998D+01)
+      PARAMETER (S15=0.38729833462074D+01)
+      integer,intent(in)::NI,ns,np,nd
+      double precision,intent(in)::es,ep,ed
+!      COMMON
+!     ./CONSTN/ ZERO,ONE,TWO,THREE,FOUR,PT5,PT25
+      DATA ZERO  /  0.0D0/
+      DATA ONE   /  1.0D0/
+      DATA TWO   /  2.0D0/
+      DATA THREE /  3.0D0/
+      DATA FOUR  /  4.0D0/
+      DATA PT5   /  0.5D0/
+      DATA PT25  /  0.25D0/
+!     ./DNBND / III(LMZ),IIID(LMZ)
+!     ./DPARM2/ ZSN(LMZ),ZPN(LMZ),ZDN(LMZ)
+!     ./DPARM3/ F0DD(LMZ),F2DD(LMZ),F4DD(LMZ),F0SD(LMZ),G2SD(LMZ),
+!     .         F0PD(LMZ),F2PD(LMZ),G1PD(LMZ),G3PD(LMZ)
+!     ./DPARM4/ REPD(52,LMZ)
+!     ./DPARM7/ IF0SD(LMZ),IG2SD(LMZ)
+!     ./REP   / GSS(LMZ),GPP(LMZ),GSP(LMZ),GP2(LMZ),HSP(LMZ),
+!     .         HPP(LMZ)
+! *** INITIALIZATION.
+!      IF(LORBS(NI).LT.9) RETURN
+!      NS     = III(NI)
+!      NP     = III(NI)
+!      ND     = IIID(NI)
+!      ES     = ZSN(NI)
+!      EP     = ZPN(NI)
+!      ED     = ZDN(NI)
+! *** SLATER-CONDON PARAMETERS (Rlij).
+!     FIRST  DIGIT (l)  L QUANTUM NUMBER OF SLATER-CONDON PARAMETER.
+!     SECOND DIGIT (i)  SS 1, SP 2, PP 3, SD 4, PD 5, DD 6 - ELECTRON 1.
+!     SECOND DIGIT (j)  SS 1, SP 2, PP 3, SD 4, PD 5, DD 6 - ELECTRON 2.
+      R011   = RSC(0,NS,ES,NS,ES,NS,ES,NS,ES)
+      R013   = RSC(0,NS,ES,NS,ES,NP,EP,NP,EP)
+      R033   = RSC(0,NP,EP,NP,EP,NP,EP,NP,EP)
+      R233   = RSC(2,NP,EP,NP,EP,NP,EP,NP,EP)
+      R122   = RSC(1,NS,ES,NP,EP,NS,ES,NP,EP)
+      R016   = RSC(0,NS,ES,NS,ES,ND,ED,ND,ED)
+      R036   = RSC(0,NS,EP,NS,EP,ND,ED,ND,ED)
+      R066   = RSC(0,ND,ED,ND,ED,ND,ED,ND,ED)
+      R155   = RSC(1,NS,EP,ND,ED,NS,EP,ND,ED)
+      R125   = RSC(1,NS,ES,NS,EP,NS,EP,ND,ED)
+      R244   = RSC(2,NS,ES,ND,ED,NS,ES,ND,ED)
+      R236   = RSC(2,NS,EP,NS,EP,ND,ED,ND,ED)
+      R266   = RSC(2,ND,ED,ND,ED,ND,ED,ND,ED)
+      R234   = RSC(2,NS,EP,NS,EP,NS,ES,ND,ED)
+      R246   = RSC(2,NS,ES,ND,ED,ND,ED,ND,ED)
+      R355   = RSC(3,NS,EP,ND,ED,NS,EP,ND,ED)
+      R466   = RSC(4,ND,ED,ND,ED,ND,ED,ND,ED)
+!     SAVE SLATER-CONDON PARAMETERS.
+      F0DD(NI) = R066
+      F2DD(NI) = R266
+      F4DD(NI) = R466
+      F0PD(NI) = R036
+      F2PD(NI) = R236
+      G1PD(NI) = R155
+      G3PD(NI) = R355
+!     KEEP PREDEFINED SLATER-CONDON PARAMETERS (IF REQUESTED).
+!      IF(IF0SD(NI).GT.0) THEN
+!          R016  = F0SD(NI)
+!       ELSE
+!          F0SD(NI) = R016
+!       ENDIF
+!       IF(IG2SD(NI).GT.0) THEN
+!          R244  = G2SD(NI)
+!       ELSE
+!          G2SD(NI) = R244
+!       ENDIF
+! *** COMPUTE ONE-CENTER TWO-ELECTRON INTEGRALS
+!     FROM THE SLATER-CONDON PARAMETERS.
+! *** INTEGRALS INVOLVING ONLY SP ORBITALS.
+      GSS(NI) = R011
+      GSP(NI) = R013
+      GPP(NI) = R033 + (FOUR/25.0D0)*R233
+      GP2(NI) = R033 - (TWO /25.0D0)*R233
+      HSP(NI) = R122/THREE
+      HPP(NI) = (THREE/25.0D0)*R233
+! *** INTEGRALS INVOLVING ALSO D ORBITALS.
+      REPD( 1,NI) = R016
+      REPD( 2,NI) = (TWO/(THREE*S5))*R125
+      REPD( 3,NI) = (ONE/S15)*R125
+      REPD( 4,NI) = (TWO/(5.D0*S5))*R234
+      REPD( 5,NI) = R036 + (FOUR/35.D0)*R236
+      REPD( 6,NI) = R036 + (TWO /35.D0)*R236
+      REPD( 7,NI) = R036 - (FOUR/35.D0)*R236
+      REPD( 8,NI) = -(ONE/(THREE*S5))*R125
+      REPD( 9,NI) = DSQRT(THREE/125.D0)*R234
+      REPD(10,NI) = (S3   /35.D0)*R236
+      REPD(11,NI) = (THREE/35.D0)*R236
+      REPD(12,NI) = -(0.2D0/S5)*R234
+      REPD(13,NI) = R036 - (TWO/35.D0)*R236
+      REPD(14,NI) = -(TWO*S3/35.D0)*R236
+      REPD(15,NI) = -REPD( 3,NI)
+      REPD(16,NI) = -REPD(11,NI)
+      REPD(17,NI) = -REPD( 9,NI)
+      REPD(18,NI) = -REPD(14,NI)
+      REPD(19,NI) = 0.2D0*R244
+      REPD(20,NI) = (TWO/(7.D0*S5))*R246
+      REPD(21,NI) =  REPD(20,NI)*PT5
+      REPD(22,NI) = -REPD(20,NI)
+      REPD(23,NI) = (FOUR  /15.D0)*R155 + (27.D0  /245.D0)*R355
+      REPD(24,NI) = (TWO*S3/15.D0)*R155 - (9.D0*S3/245.D0)*R355
+      REPD(25,NI) = (ONE/15.D0)*R155 + (18.D0   /245.D0)*R355
+      REPD(26,NI) = -(S3/15.D0)*R155 + (12.D0*S3/245.D0)*R355
+      REPD(27,NI) = -(S3/15.D0)*R155 - (THREE*S3/245.D0)*R355
+      REPD(28,NI) = -REPD(27,NI)
+      REPD(29,NI) = R066 + (FOUR/49.D0)*R266 + (FOUR / 49.D0)*R466
+      REPD(30,NI) = R066 + (TWO /49.D0)*R266 - (24.D0/441.D0)*R466
+      REPD(31,NI) = R066 - (FOUR/49.D0)*R266 + ( 6.D0/441.D0)*R466
+      REPD(32,NI) = DSQRT(THREE/245.D0)*R246
+      REPD(33,NI) = 0.2D0*R155 + (24.D0/245.D0)*R355
+      REPD(34,NI) = 0.2D0*R155 - ( 6.D0/245.D0)*R355
+      REPD(35,NI) = (THREE/49.D0)*R355
+      REPD(36,NI) = (ONE/49.D0)*R266 + (30.D0  /441.D0)*R466
+      REPD(37,NI) = (S3 /49.D0)*R266 - (5.D0*S3/441.D0)*R466
+      REPD(38,NI) = R066 - (TWO/49.D0)*R266 -  (FOUR/441.D0)*R466
+      REPD(39,NI) = -(TWO*S3/49.D0)*R266 + (10.D0*S3/441.D0)*R466
+      REPD(40,NI) = -REPD(32,NI)
+      REPD(41,NI) = -REPD(34,NI)
+      REPD(42,NI) = -REPD(35,NI)
+      REPD(43,NI) = -REPD(37,NI)
+      REPD(44,NI) = (THREE/49.D0)*R266 + (20.D0/441.D0)*R466
+      REPD(45,NI) = -REPD(39,NI)
+      REPD(46,NI) = 0.2D0*R155-(THREE/35.D0)*R355
+      REPD(47,NI) = -REPD(46,NI)
+      REPD(48,NI) = (FOUR /49.D0)*R266 + (15.D0/441.D0)*R466
+      REPD(49,NI) = (THREE/49.D0)*R266 - ( 5.D0/147.D0)*R466
+      REPD(50,NI) = -REPD(49,NI)
+      REPD(51,NI) = R066 + (FOUR/49.D0)*R266 - (34.D0/441.D0)*R466
+      REPD(52,NI) = (35.D0/441.D0)*R466
+     
+
+      RETURN
+      END subroutine inighd
+
+
+

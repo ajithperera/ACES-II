@@ -1,0 +1,25 @@
+      SUBROUTINE VECMAT(A,B,C,NI,NJ,IACC,IFUN)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION A(NI),B(NI,NJ),C(NJ)
+C
+      IF(IFUN.EQ.0)THEN
+      SIGN =  1.0D+00
+      ELSE
+      SIGN = -1.0D+00
+      ENDIF
+C
+      IF(IACC.EQ.0)THEN
+      FACT = 1.0D+00
+      ELSE
+      FACT = 0.0D+00
+      ENDIF
+C
+C     CALL XGEMM('T','N',NJ,1,NI,SIGN,B,NI,A,NJ,FACT,C,NJ)
+      CALL XGEMM('T','N',NJ,1,NI,SIGN,B,NI,A,NI,FACT,C,NJ)
+c      DO   20 J=1,NJ
+c      DO   10 I=1,NI
+c      C(J) = FACT*C(J) + SIGN * A(I) * B(I,J)
+c   10 CONTINUE
+c   20 CONTINUE
+      RETURN
+      END

@@ -1,0 +1,117 @@
+      SUBROUTINE NEWGES(SCR,MAXCOR,IUHF,IRREPX,ISIDE)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      CHARACTER*80 FULNAM
+      LOGICAL DOUBLE,NONSTD,RGUESS_PRESENT
+      LOGICAL DAVID,BLOCK_DAVID,LANCZOS
+      DIMENSION SCR(MAXCOR),IJUNK(100)
+      COMMON/CALCINFO/NROOT(8)
+      COMMON/EXTINF2/ROOT,OVRLAP,RESID
+      COMMON/EXTINF3/IROOT,LROOT,ITROOT
+      COMMON/GUESS/DOUBLE,NONSTD
+      COMMON/GUESS3/ZMAP2(10,100,8),IMAP2(10,100,8)
+      COMMON/SYMPOP/IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON/EXTRAP/MAXEXP,NREDUCE,NTOL,NSIZEC
+      COMMON/ROOTSEARCH/DAVID,BLOCK_DAVID,LANCZOS
+      DATA ONE,TWO /1.0D0,2.0D0/
+C
+      IGET=IROOT+1
+C
+      IOFFC=1
+C
+      NROOT(IRREPX)=MIN(NROOT(IRREPX),NSIZEC)
+
+      CALL GFNAME('RGUESS  ',FULNAM,NAMLEN)
+      INQUIRE(FILE=FULNAM(1:NAMLEN),EXIST=RGUESS_PRESENT)
+
+C If RGUESS file from a previous EE run and non-standard input (using 
+C %excite and EOM_excite file or user input), guess is formed from the 
+C RGUESS vectors. This may help in certain states to converge (espeically
+C if we are doing CCSD(T) correction for multiple state runs). A. Perera, 02/2022.
+
+      IF (RGUESS_PRESENT .AND. NONSTD) THEN
+         Write(6,"(2a)") " The RGUESS file is present. The starting",
+     &                   " vectors are read from it."
+C R guess is dumped to the lists 490-1,2, 446,445 and 444. as required.
+         CALL DRDRGSS(SCR,MAXCOR,IUHF,NONSTD)
+         RETURN
+      ENDIF 
+C
+      IF(.NOT.DOUBLE.AND..NOT.NONSTD)THEN
+       CALL GETLST(SCR,IGET,1,1,IRREPX,94)
+       CALL GETLST(ROOT,IGET,1,1,IRREPX,95)
+       WRITE(6,12)
+12     FORMAT(T3,'@NEWGES-I, Using TDA initial guess.')
+       IF(IUHF.EQ.0)THEN
+        FACT=ONE/SQRT(TWO)
+        CALL SSCAL(IRPDPD(IRREPX,9),FACT,SCR,1)
+       ENDIF
+       DO 10 ISPIN=1,1+IUHF
+        CALL PUTLST(SCR(IOFFC),1,1,1,ISPIN,490)
+        IF (LANCZOS) CALL PUTLST(SCR(IOFFC),1,1,1,ISPIN,493)
+        IOFFC=IOFFC+IRPDPD(IRREPX,8+ISPIN)
+10     CONTINUE
+       DO 11 ISPIN=3,3-2*IUHF,-1
+        CALL ZEROLIST(SCR,MAXCOR,443+ISPIN)
+11     CONTINUE
+C
+      ELSE
+C
+       I000=1
+       I010=I000+NROOT(IRREPX)
+       IF(.NOT.NONSTD)THEN
+        CALL DIAGGUES(IRREPX,SCR(I010),SCR,MAXCOR,IUHF,
+     &                NROOT(IRREPX))
+        WRITE(6,13)
+13      FORMAT(T3,'@NEWGES-I, Using diagonal initial guess.')
+        I010=I000+NSIZEC
+        I020=I010+NSIZEC
+        CALL GETREC(20,'JOBARC','STRTGUES',IGET,IJUNK)
+        CALL ZERO(SCR,NSIZEC)
+        SCR(IJUNK(IGET))=ONE
+       ELSE
+        I010=I000+NSIZEC
+        I020=I010+NSIZEC
+        WRITE(6,14)
+14      FORMAT(T3,'@NEWGES-I, Using user-supplied guess.')
+        CALL ZERO(SCR,NSIZEC)
+        DO 17 I=1,10
+         IF(IMAP2(I,IGET,IRREPX).NE.0)THEN
+          SCR(IMAP2(I,IGET,IRREPX))=ZMAP2(I,IGET,IRREPX)
+         ENDIF
+17      CONTINUE
+       ENDIF 
+       IF(IUHF.EQ.0)THEN
+        CALL SYMT2AB(IRREPX,SCR,SCR(I010),MAXCOR-I010+1)
+        CALL SCOPY(NSIZEC,SCR,1,SCR(I010),1)
+        CALL SPNTSING(IRREPX,SCR,SCR(I020),MAXCOR-I020+1)
+C        IF(X.GT.1.D+08)THEN
+C         WRITE(6,3000)
+C         CALL ERREX
+C        ENDIF
+        X=ONE/SQRT(SDOT(NSIZEC,SCR,1,SCR(I010),1))
+        CALL SSCAL(NSIZEC,X,SCR(I010),1) 
+        CALL SCOPY(NSIZEC,SCR(I010),1,SCR,1)
+       ELSE
+CSSS        Write(6,"(5F10.5)") (SCR(I), I=1, NSIZEC)
+        X=ONE/SQRT(SDOT(NSIZEC,SCR,1,SCR,1))
+        CALL SSCAL(NSIZEC,X,SCR,1) 
+       ENDIF
+C SG 1/22/97
+       IF(X.GT.1.D+08)THEN
+        WRITE(6,3000)
+        CALL ERREX
+       ENDIF
+C
+#ifdef _DEBUG_LVL0
+       CALL CHECKSUM("NEWGUESS", SCR, NSIZEC, S1)
+#endif 
+       CALL UPDATES(IRREPX,SCR,444,0,490,IUHF)
+       IF (LANCZOS) CALL UPDATES(IRREPX,SCR,448,0,493,IUHF)
+C
+      ENDIF
+C
+3000  FORMAT(T3,'@NEWGES-F, Initial guess vector contains no ',
+     &          'non-zero elements.')
+C
+      RETURN
+      END

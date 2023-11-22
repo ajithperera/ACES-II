@@ -1,0 +1,100 @@
+      SUBROUTINE MKDBLAA3(T2, Z2, T, Z, FEA, VRT, NVRTSQ1,NVRTSQ2,
+     &                    DISSYT, DISSYZ, NUMSYT, NUMSYZ, NFSIZ,
+     &                    LISTT, LISTZ, IRREPTL, IRREPTR, IRREPQL,
+     &                    IRREPQR, IRREPX, ISPIN, TMP)
+C     
+      IMPLICIT DOUBLE PRECISION(A-H, O-Z)
+      INTEGER DISSYT,DISSYZ,DIRPRD,VRT
+      CHARACTER*8 SPCASE(2)
+C
+      DIMENSION T2(DISSYT,NUMSYT),Z2(DISSYZ,NUMSYZ),FEA(NFSIZ),
+     &          T(NUMSYT,NVRTSQ1),Z(NUMSYZ,NVRTSQ1), ITOFF(8)
+      DIMENSION TMP(1),VRT(8)
+C     
+      COMMON/SYMINF/ NSTART,NIRREP,IRREPA(255),IRREPB(255),
+     &               DIRPRD(8,8)
+      COMMON/FILES/ LUOUT, MOINTS
+      COMMON/FLAGS/ IFLAGS(100)
+C
+C Common blocks used in the quadratic term
+C
+      COMMON /QADINTI/ INTIMI, INTIAE, INTIME
+      COMMON /QADINTG/ INGMNAA, INGMNBB, INGMNAB, INGABAA,
+     &                 INGABBB, INGABAB, INGMCAA, INGMCBB,
+     &                 INGMCABAB, INGMCBABA, INGMCBAAB,
+     &                 INGMCABBA
+      COMMON /APERTT1/ IAPRT1AA
+      COMMON /BPERTT1/ IBPRT1AA
+      COMMON /APERTT2/ IAPRT2AA1, IAPRT2BB1, IAPRT2AB1, IAPRT2AB2, 
+     &                 IAPRT2AB3, IAPRT2AB4, IAPRT2AA2, IAPRT2BB2,
+     &                 IAPRT2AB5 
+C     
+      DATA AZERO,ONE,ONEM /0.0D0, 1.0D0, -1.0D0/
+      DATA SPCASE /'AAAA =  ', 'BBBB =  '/
+C     
+C Get T2 and amplitudes
+C     
+      CALL GETLST(Z2, 1, NUMSYT, 2, IRREPTR, LISTT)
+      CALL TRANSP(Z2, T, NUMSYT, DISSYT)
+      CALL SYMEXP(IRREPTL, VRT, NUMSYT, T)
+      CALL ZERO(Z, NUMSYZ*NVRTSQ1)
+C     
+C Perform multiplcation
+C     
+      JOFF = 1
+      KOFF = 1
+      ITOFF(1) = 1
+C
+      DO 5000 IRREPE = 2, NIRREP
+C
+         IRREP = IRREPE - 1
+         IRREPAO = DIRPRD(IRREP, IRREPTL)
+         ITOFF(IRREPE) = ITOFF(IRREPE - 1) + VRT(IRREP)*VRT(IRREPAO)
+C
+ 5000 CONTINUE
+C
+      DO 90 IRREPBO = 1, NIRREP
+C
+         IRREPIB = IRREPBO
+         IRREPIE = DIRPRD(IRREPIB, IRREPX)
+         IRREPTE = IRREPIE
+         IRREPTA = DIRPRD(IRREPTE, IRREPTL)
+C     
+         NVRTTA = VRT(IRREPTA)
+         NVRTTE = VRT(IRREPTE)
+         NVRTIE = VRT(IRREPIE)
+         NVRTIB = VRT(IRREPIB)
+C
+         IOFF = ITOFF(IRREPTE)
+C     
+         IF (NVRTIE .GT. 0 .AND. NVRTTA .GT. 0) THEN
+C     
+            CALL XGEMM('N', 'N', NUMSYT*NVRTTA, NVRTIB, NVRTIE, ONE,
+     &                  T(1,IOFF), NVRTTA*NUMSYT, FEA(JOFF), NVRTIE,
+     &                  AZERO, Z(1, KOFF), NVRTTA*NUMSYZ)
+         ENDIF
+C     
+         KOFF = KOFF + NVRTIB*NVRTTA
+         JOFF = JOFF + NVRTIE*NVRTIB
+C
+ 90   CONTINUE
+C     
+      CALL ASSYM(IRREPQL, VRT, NUMSYZ, NUMSYZ, T, Z)
+      CALL TRANSP(T, Z, DISSYZ, NUMSYZ)
+      CALL SCOPY(DISSYZ*NUMSYZ, Z, 1, T, 1)
+C
+      IF (IFLAGS(1) .GE. 20) THEN
+         NSIZE = DISSYZ*NUMSYZ
+         CALL HEADER('Checksum @-IAEINSD Doubles', 0, LUOUT)
+         WRITE(LUOUT, *) SPCASE(ISPIN), SDOT(NSIZE, T, 1,
+     &                      T, 1)
+         ENDIF
+C     
+C Update the doubles list and write back the updated doubles list
+C
+      CALL GETLST(Z2, 1, NUMSYZ, 1, IRREPQR, LISTZ)
+      CALL VADD(Z2, Z2, T, NUMSYZ*DISSYZ, ONE)
+      CALL PUTLST(Z2, 1, NUMSYZ, 1, IRREPQR, LISTZ)
+C
+      RETURN
+      END

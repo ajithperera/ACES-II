@@ -1,0 +1,83 @@
+This file contains the optimization restrictions 
+on routines in ACES II member executables. 
+
+-----------------
+SGI/IRIX/6.5
+
+libr   -  tql2.f (Optimizations will hang the scf
+                  code. This is common to most other
+                  SGI platforms)
+
+Joda   - gtflgs.f  
+
+vcc5t  - trpint.f
+
+vscf   - evcao2.f 
+
+mrcc   - platforms)
+
+Joda   - gtflgs.f  
+
+vcc5t  - trpint.f 
+
+mrcc.src/mbdirect - hqr.F and hqr2.F  (both are similar
+                    tql2.f from old ALOGOL)
+                  - fndmine.F and fndnear.F
+SGI/IRIX/6.5/64BIT 
+
+vscf   - vscf.f 
+
+vcc    - vcc.f 
+
+
+lb     - dorgtr.f, dsyr2k.f, dsytrd.f need to be compiled
+         with -O1 option. Unless you do that joda, vscf 
+         and dens hangs. Strongly recommended to compile
+         the whole source tree at level -O1 optimization. 
+
+-----------------
+DEC Alpha/OSF1/V4.0
+
+libr2   - w5ring.f (This has effect on vcc and lambda)
+
+libr    - aces_malloc.F (unless you do this things can 
+          go wrong in vscf)
+
+ks.src/libra3   - a3getmem.F 
+mrcc.src/mrcca3 - a3getmem.F
+
+vcc5t   - trpint.f (-g at the link stage is needed)
+ 
+joda    - gtflgs.f (May have been fixed after recent clean ups)
+
+-----------------
+Sparc Ultra-Enterprise/SUNOS/SunOS 5.7
+
+joda   -  gtflags.f (May have been fixed after recent clean ups)
+
+inproc -  dgmoi.f and dgmoid.f 
+
+
+-------------------
+IBM RS6000,power3,power2/
+
+dcopy/scopy - 64-bit POWER3 optimization clobbers data when the src and dest
+              vectors overlap. Either compile these two without optimization
+              or unrestrict tools/dcopy to use c_memmove all the time.
+              This affects tests 47a, 47b and 88 with incorrect frequencies.
+
+-------------------
+PC/LINUX/FreeBSD/RedHat
+
+No known optimization problems.
+
+
+-------------------
+HP-UX
+
+vcceh: vcceh
+anti:  g2ab4b
+vea:   initea
+vee:   vee
+
+

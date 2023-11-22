@@ -1,0 +1,82 @@
+test -n "$USERDIR" || exit 1
+FCMINT=$USERDIR/tmp.FCMINT
+
+# Part 1: generate and save FCMINT
+cat <<. >ZMAT
+RHF/3-21G TS SEARCH FOR THE HCN ISOMERIZATION PART A
+C
+N 1 R1
+H 1 R2 2 A
+
+R1=1.15
+R2=1.09
+A=90.
+
+*ACES2
+BASIS=3-21G
+CALC=SCF
+VIB=EXACT,spherical=off
+
+This job requests the calculation of the
+force constant matrix later used for a transition
+state search. Note that the force constant has to
+be saved after completion of the job. Also, note
+that usually only the total symmetric part
+of the FCM is required and therefore the keyword
+FD_IRREP=1 might be used to cut down
+computation costs (This is only true for
+finite difference calculations but not for analytic
+evaluation of second derivatives)
+
+.
+ln -s $GENBAS . || exit 1
+xaces2 || exit 1
+mv FCMINT $FCMINT || exit 1
+
+# clean
+for file in *
+do case $file in
+   GENBAS|ZMAT.BAS) ;;
+   *) rm -rf $file ;;
+   esac
+done
+
+# Part 2: retrieve FCMINT and optimize geometry
+cat <<. >ZMAT
+RHF/3-21G TS SEARCH FOR THE HCN ISOMERIZATION PART B
+C
+N 1 R1*
+H 1 R2* 2 A*
+
+R1=1.15
+R2=1.09
+A=90.
+
+*ACES2
+!restart
+BASIS=3-21G
+CALC=SCF
+OPT_METHOD=MAEVFTS,CONV=6,spherical=off
+
+.
+mv $FCMINT FCMINT || exit 1
+xaces2 || exit 1
+
+exit 0
+TEST.DAT
+d TOTENERG
+ -0.922460426785E+02   0.1E-08
+d COORD
+ -0.105205679754E+01   0.1E-08
+ -0.422008858340E-01   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.118133982872E+01   0.1E-08
+ -0.125413176670E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.551630526362E+00   0.1E-08
+  0.207962699718E+01   0.1E-08
+  0.000000000000E+00   0.1E-08
+d NUCREP
+  0.240407196522E+02   0.1E-08
+d SCFENEG
+ -0.922460426785E+02   0.1E-08

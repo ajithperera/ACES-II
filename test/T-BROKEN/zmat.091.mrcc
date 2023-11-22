@@ -1,0 +1,59 @@
+O3 DIP-STEOM opt, MBPT[2], ANALYTICAL gradient, DROPMO
+O
+O 1 R*
+O 2 R* 1 A*
+
+R=1.42
+A=117.0
+
+*ACES2
+!restart
+BASIS=3-21G*,SPHERICAL=ON
+CHARGE=-2
+DROPMO=1-3,CALC=MBPT(2)
+IP_CALC=IP_EOMCC,IP_SYM=2-2-2-1
+DIP_CALC=STEOM,DIP_SYM=3-3-3-3/3-3-3-3
+
+*mrcc_gen
+ gradient_type=dip
+ igrad_mult=1
+ igrad_state=1 igrad_sym=1
+*end
+
+Ozone is a nice example for a DIP calculation. It has a low lying LUMO
+that we doubly occupy to create an artificial di-anion. Then DIP_STEOM
+is used to calculate the ground state of the neutral.
+
+TEST.DAT
+d TOTENERG
+ -0.223461359140E+03
+d COORD
+     0.000000000000
+    -2.234621696424
+     0.501112795369
+     0.000000000000
+     0.000000000000
+    -1.002225590737
+     0.000000000000
+     2.234621696424
+     0.501112795369
+d E_AVG
+ -0.182643780625E+00
+d E_OPEN
+ -0.360610100254E+00
+d NUCDIPOL
+     0.000000000000
+     0.000000000000
+     0.000000000000
+d NUCREP
+  0.618464353089E+02
+d PARENERG
+ -0.223100749040E+03
+d REFDIPOL
+     0.000000000000
+     0.000000000000
+    -0.397719732391
+d SCFENEG
+ -0.222775092149E+03
+d TOTENER2
+ -0.223461359140E+03

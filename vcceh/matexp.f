@@ -1,0 +1,138 @@
+C
+      SUBROUTINE MATEXP(IRREP,NUM,A,B,IANTI)
+C
+C     THIS ROUTINE EXPANDS THE A COMPRESSED MATRIX A(P,Q)
+C     P >= Q TO AN ARRAY A(PQ) WITH P,Q. NOTE THIS ROUTINE 
+C     EXPECTS THAT THE ARRAY A IS SYMMETRY PACKED
+C
+C     INPUT : IRREP  ...  THE IRREP OF THE CORRESPONDING PART OF A
+C             NUM ......  POPULATION VECTOR FOR I AND J
+C             DISSIZE ..  DISTRIBUTION SIZE OF A
+C             A     ....  THE MATRIX A
+C             IANTI ..... 0 FOR SYMMETRIC AND 1 FOR ANTISYMMETRIC
+C                         MATRICES
+C
+C     OUTPUT : B .......  THE EXPANDED MATRIX A
+C
+CEND
+C
+C  CODED JG JAN/91
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      INTEGER DIRPRD
+      DIMENSION A(100),B(100),NUM(8)
+      DIMENSION IPOLD(8),IPNEW(8)
+C
+      COMMON /SYMINF/NSTART,NIRREP,IRREPA(255),IRREPB(255),
+     &DIRPRD(8,8)
+C
+      IND(J,I)=(J*(J-1))/2+I
+C 
+      DATA ZERO /0.0D0/
+C
+C     TAKE HERE CARE, IF WE ARE HANDLING IRREP=1 (TOTAL SYMMETRIC)
+C     OR IRREP=1 (OTHERWISE)
+C
+      IF(IRREP.EQ.1) THEN
+C
+C     GET FIRST POINTERS FOR OLD AND NEW INDICES
+C
+       IPOLD(1)=0
+       IPNEW(1)=0
+       DO 10 IRREPJ=1,(NIRREP-1)
+        IPOLD(IRREPJ+1)=IPOLD(IRREPJ)+(NUM(IRREPJ)*(NUM(IRREPJ)+1))/2
+        IPNEW(IRREPJ+1)=IPNEW(IRREPJ)+NUM(IRREPJ)**2
+10     CONTINUE
+C
+C     NOW LOOP OVER ALL IRREPS
+C
+       DO 1 IRREPJ=1,NIRREP
+        NUMJ=NUM(IRREPJ)
+        IPO=IPOLD(IRREPJ)
+        IPN=IPNEW(IRREPJ)
+C
+C     LOOP OVER ORBITALS, BUT ALSO IN BACKWARD ORDER
+C
+        IF(IANTI.EQ.0) THEN
+        DO 100 J=1,NUMJ
+         DO 100 I=1,J
+          IND1=IND(J,I)+IPO
+          IND2=(J-1)*NUMJ+I+IPN
+          IND3=(I-1)*NUMJ+J+IPN
+          B(IND2)=A(IND1)
+          B(IND3)=A(IND1)
+100     CONTINUE
+        ELSE
+        DO 101 J=1,NUMJ
+c          write(*,2345) (A(ind(j,i)+ipo),i=1,j)
+c2345      format(8(1x,f12.8))
+         DO 101 I=1,J
+          IND1=IND(J,I)+IPO
+          IND2=(J-1)*NUMJ+I+IPN
+          IND3=(I-1)*NUMJ+J+IPN 
+c          write (*,*) 'i,j,value ',i,j,a(ind1)
+          B(IND2)=A(IND1)
+          B(IND3)=-A(IND1)
+101     CONTINUE
+        ENDIF
+C
+1      CONTINUE
+      ELSE
+C
+C     FILL THE POINTERS OF THE OLD AND NEW ARRAY
+C
+      IPOLD(1)=0
+      IPNEW(1)=0
+      DO 1000 IRREPJ=1,NIRREP-1
+       IRREPI=DIRPRD(IRREP,IRREPJ)
+       NUMJ=NUM(IRREPJ)
+       NUMI=NUM(IRREPI)
+       IPNEW(IRREPJ+1)=IPNEW(IRREPJ)+NUMJ*NUMI
+       IF(IRREPI.LT.IRREPJ) THEN
+        IPOLD(IRREPJ+1)=IPOLD(IRREPJ)+NUMJ*NUMI
+       ELSE
+        IPOLD(IRREPJ+1)=IPOLD(IRREPJ)
+       ENDIF
+1000  CONTINUE
+C
+C     NOW COPY OLD ARRAYS TO NEW LOCATION
+C
+      DO 2000 IRREPJ=1,NIRREP
+       IRREPI=DIRPRD(IRREP,IRREPJ)
+       NUMJ=NUM(IRREPJ)
+       NUMI=NUM(IRREPI)
+       IF(IRREPJ.GT.IRREPI) THEN
+        IPN=IPNEW(IRREPJ)
+        IPO=IPOLD(IRREPJ)
+        DO 2100 IJ=1,NUMJ*NUMI
+        IPNN=IPN+IJ
+        IPOO=IPO+IJ
+         B(IPNN)=A(IPOO)
+c         write (*,*) 'i,j,value ',ij,a(ipoo)
+2100    CONTINUE
+       ELSE
+        IF(IANTI.EQ.0) THEN
+        IPN=IPNEW(IRREPJ)
+        IPO=IPOLD(IRREPI)
+        DO 2200 J=1,NUMJ
+         DO 2200 I=1,NUMI
+          IND1=(I-1)*NUMJ+J+IPO
+          IND2=(J-1)*NUMI+I+IPN
+          B(IND2)=A(IND1)
+2200    CONTINUE
+        ELSE
+        IPN=IPNEW(IRREPJ)
+        IPO=IPOLD(IRREPI)
+        DO 2201 J=1,NUMJ
+         DO 2201 I=1,NUMI
+          IND1=(I-1)*NUMJ+J+IPO
+          IND2=(J-1)*NUMI+I+IPN
+          B(IND2)=-A(IND1)
+c          write (*,*) 'i,j,value ',i,j,a(ind1)
+2201    CONTINUE
+        ENDIF
+       ENDIF
+2000  CONTINUE
+      ENDIF
+      RETURN
+      END

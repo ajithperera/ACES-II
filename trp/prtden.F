@@ -1,0 +1,29 @@
+      SUBROUTINE PRTDEN
+      IMPLICIT INTEGER (A-Z)
+      DOUBLE PRECISION DOOA,DOOB,DVVA,DVVB
+#include "maxbasfn.par"
+      COMMON /INFO/   NOCCO(2),NVRTO(2)
+      COMMON /DENST3/ DOOA(MAXBASFN),DOOB(MAXBASFN),
+     1                DVVA(MAXBASFN),DVVB(MAXBASFN)
+C
+      WRITE(6,1000)
+ 1000 FORMAT(' @PRTDEN-I, Triples density matrix contributions ')
+      DO   10 I=1,NOCCO(1)
+      WRITE(6,1010) DOOA(I)
+   10 CONTINUE
+C
+      DO   20 I=1,NOCCO(2)
+      WRITE(6,1010) DOOB(I)
+   20 CONTINUE
+C
+      DO   30 I=1,NVRTO(1)
+      WRITE(6,1010) DVVA(I)
+   30 CONTINUE
+C
+      DO   40 I=1,NVRTO(2)
+      WRITE(6,1010) DVVB(I)
+   40 CONTINUE
+C
+ 1010 FORMAT(F20.12)
+      RETURN
+      END

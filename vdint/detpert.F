@@ -1,0 +1,257 @@
+      SUBROUTINE DETPERT(ITRANS,NUCIND1,NCOORD)
+C
+C THIS SUBROUTINE ASSIGNS TO EACH  BASIS FUNCTION 
+C A CORRESPONDING PERTURBATION (NUCLEAR COORDINATE)
+C
+CEND
+C
+C CODED JAN/91 JG
+C
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      INTEGER AND,OR,XOR
+      LOGICAL SHARE,DOPERT,DCORD,DCORGD,NOORBT
+      LOGICAL TRAINV,ELECT,MAGNET,GEOM,MAGNET2,GIAO
+      LOGICAL JFC,JSD,JSO
+      INTEGER DIRPRD
+      DIMENSION ITRANS(NUCIND1-1,3)
+C
+#include "baslims.par"
+#include "mxcent.par"
+C
+      COMMON/PERT/NTPERT,NPERT(8),IPERT(8),IXPERT,IYPERT,IZPERT,
+     &            IYZPERT,IXZPERT,IXYPERT,ITRANSX,ITRANSY,
+     &            ITRANSZ,NUCIND2
+      COMMON/INVAR/TRAINV
+      COMMON/JNMR/JSO,JFC,JSD
+      COMMON/PROP/ELECT,MAGNET,GEOM,MAGNET2,GIAO
+      COMMON/FLAGS/IFLAGS(100)
+      COMMON/SYMINF/NSTART,NIRREP,IRREPA(255,2),DIRPRD(8,8)
+      COMMON /SHELLSi/ KMAX,
+     &                NHKT(MXSHEL),   KHKT(MXSHEL), MHKT(MXSHEL),
+     &                ISTBAO(MXSHEL), NUCO(MXSHEL), JSTRT(MXSHEL),
+     &                NSTRT(MXSHEL),  MST(MXSHEL),  NCENT(MXSHEL),
+     &                NRCO(MXSHEL), NUMCF(MXSHEL),
+     &                NBCH(MXSHEL),   KSTRT(MXSHEL)
+      COMMON /SHELLS/ CENT(MXSHEL,3), SHARE(MXSHEL)
+      COMMON /SYMMET/ FMULT(0:7), PT(0:7),
+     &                MAXLOP, MAXLOT, MULT(0:7), ISYTYP(3),
+     &                ITYPE(8,36), NPARSU(8), NPAR(8), NAOS(8),
+     &                NPARNU(8,8), IPTSYM(MXCORB,0:7),
+     &                IPTCNT(3*MXCENT,0:7), NCRREP(0:7),
+     &                IPTCOR(MXCENT*3), NAXREP(0:7), IPTAX(3),
+     &                IPTXYZ(3,0:7)
+      COMMON /NUCLEIi/ NOORBT(MXCENT),
+     &                NUCIND, NUCDEP, NUCPRE(MXCENT), NUCNUM(MXCENT,8),
+     &                NUCDEG(MXCENT), ISTBNU(MXCENT), NDCORD,
+     &                NDCOOR(MXCOOR), NTRACO, NROTCO, ITRACO(3),
+     &                IROTCO(3),
+     &                NATOMS, NFLOAT,
+     &                IPTGDV(3*MXCENT),
+     &                NGDVEC(8), IGDVEC(8)
+      COMMON /NUCLEI/ CHARGE(MXCENT), CORD(MXCENT,3),
+     &                DCORD(MXCENT,3),DCORGD(MXCENT,3),
+     &                DOPERT(0:3*MXCENT)
+      COMMON/IPRI/IPRINT
+C
+      IBTAND(I,J) = AND(I,J)
+      IBTOR(I,J) = OR(I,J)
+      IBTXOR(I,J)= XOR(I,J)
+C
+      IXPERT=ISYTYP(1)+1
+      IYPERT=ISYTYP(2)+1
+      IZPERT=ISYTYP(3)+1
+      IYZPERT=DIRPRD(IYPERT,IZPERT)
+      IXZPERT=DIRPRD(IXPERT,IZPERT)
+      IXYPERT=DIRPRD(IXPERT,IYPERT)
+C
+      NUCIND2=NUCIND1
+C
+      ITRANSX=0
+      ITRANSY=0
+      ITRANSZ=0
+C
+C AS TRANSLATIONAL REDUNDANT COORDINATES, ELIMINATE SYMMETRIC
+C COMBINATIONS OF X, Y, AND Z COORDINATES OF THE FIRST
+C GROUP OF SYMMETRY DISTINCT ATOMS 
+C
+      NCOORD=3*NUCDEP
+      NTPERT=0
+      CALL IZERO(NPERT,8)
+      CALL IZERO(ITRANS,NUCDEP*3)
+      JXCOUNT=0
+      JYCOUNT=0
+      JZCOUNT=0
+C
+      IF(JFC) THEN
+C
+       DO 8 IRREP=1,MAXLOP+1
+        DO 7 ICENT=1,NUCIND
+C
+C INCREMENT NPERT IF THERE IS A CORRESPONDING PERTURBATION
+C
+         IF(IPTCNT(ICENT,IRREP-1).NE.0) THEN 
+          NPERT(IRREP)=NPERT(IRREP)+1
+         ENDIF
+7       CONTINUE
+C
+        NTPERT=NTPERT+NPERT(IRREP)
+C
+8      CONTINUE
+      IPERT(1)=0
+      DO 5 IRREP=1,NIRREP-1 
+       IPERT(IRREP+1)=IPERT(IRREP)+NPERT(IRREP)
+5     CONTINUE   
+C
+       CALL PUTREC(20,'JOBARC','NSYMPERT',27,NTPERT)
+       RETURN
+      ENDIF
+C
+      IF(JSD) THEN
+C
+       DO 18 IRREP=1,MAXLOP+1
+        DO 17 ICENT=1,6*NUCIND
+C
+C INCREMENT NPERT IF THERE IS A CORRESPONDING PERTURBATION
+C
+         IF(IPTCNT(ICENT,IRREP-1).NE.0) THEN 
+          NPERT(IRREP)=NPERT(IRREP)+1
+         ENDIF
+17      CONTINUE
+C
+        NTPERT=NTPERT+NPERT(IRREP)
+C
+18     CONTINUE
+      IPERT(1)=0
+      DO 15 IRREP=1,NIRREP-1 
+       IPERT(IRREP+1)=IPERT(IRREP)+NPERT(IRREP)
+15    CONTINUE   
+C
+       CALL PUTREC(20,'JOBARC','NSYMPERT',27,NTPERT)
+       RETURN
+      ENDIF
+C
+      DO 10 IRREP=1,MAXLOP+1
+       DO 9 ICENT=1,3*NUCIND
+C
+C INCREMENT NPERT IF THERE IS A CORRESPONDING PERTURBATION
+C
+        IF(IPTCNT(ICENT,IRREP-1).NE.0) THEN 
+         NPERT(IRREP)=NPERT(IRREP)+1
+        ENDIF
+C
+C DEFINE TRANLSATIONAL INVARIANCE RELATIONS
+C
+        IF(ICENT.EQ.1.AND.IRREP.EQ.IXPERT) THEN
+C
+C DETERMINE NUMBER OF REDUNDANT X COORDINATE IN IRREPX
+C
+         ITRANSX=NPERT(IRREP)
+C
+        ELSE IF(MOD(ICENT,3).EQ.1.AND.IRREP.EQ.IXPERT) THEN
+C
+C DEFINE CONTRIBUTION TO THE TRANSLATIONAL INVARIANCE CONDITION
+C
+         JXCOUNT=JXCOUNT+1
+         ITRANS(JXCOUNT,1)=NPERT(IRREP)
+C
+        ENDIF
+C
+        IF(ICENT.EQ.2.AND.IRREP.EQ.IYPERT) THEN
+C
+C DETERMINE NUMBER OF REDUNDANT Y COORDINATE IN IRREPX
+C
+         ITRANSY=NPERT(IRREP)
+C
+        ELSE IF(MOD(ICENT,3).EQ.2.AND.IRREP.EQ.IYPERT) THEN
+C
+C DEFINE CONTRIBUTION TO THE TRANSLATIONAL INVARIANCE CONDITION
+C
+         JYCOUNT=JYCOUNT+1
+         ITRANS(JYCOUNT,2)=NPERT(IRREP)
+C
+        ENDIF
+C
+        IF(ICENT.EQ.3.AND.IRREP.EQ.IZPERT) THEN
+C
+C DETERMINE NUMBER OF REDUNDANT Z COORDINATE IN IRREPX
+C
+         ITRANSZ=NPERT(IRREP)
+C
+        ELSE IF(MOD(ICENT,3).EQ.0.AND.IRREP.EQ.IZPERT) THEN
+C
+C DEFINE CONTRIBUTION TO THE TRANSLATIONAL INVARIANCE CONDITION
+C
+         JZCOUNT=JZCOUNT+1
+         ITRANS(JZCOUNT,3)=NPERT(IRREP)
+C
+        ENDIF
+C
+9      CONTINUE
+C
+       NTPERT=NTPERT+NPERT(IRREP)
+C
+10    CONTINUE
+C
+      IF(.NOT.MAGNET.AND..NOT.JFC.AND..NOT.JSD) THEN 
+       if(iprint.ne.0) then
+       write(*,*) ' Translational redundant coordinates are :'
+       write(*,*) ' -----------------------------------------' 
+       write(*,*) '   perturbation ',itransx,' in ',ixpert,
+     &            ' (x-translation)'
+       write(*,*) '   perturbation ',itransy,' in ',iypert,
+     &            ' (y-translation)'
+       write(*,*) '   perturbation ',itransz,' in ',izpert,
+     &            ' (z-translation)'
+       write(*,*)
+       endif
+       IF(IFLAGS(73).EQ.0) THEN
+C
+        TRAINV=.TRUE.
+        if(iprint.ne.0) then
+        write(*,*) ' relation for x-direction :'
+        write(*,*) itransx,' =  - ( ',(itrans(i,1),i=1,jxcount),')'
+        write(*,*) ' relation for y-direction :'
+        write(*,*) itransy,' =  - ( ',(itrans(i,2),i=1,jycount),')'
+        write(*,*) ' relation for z-direction :'
+        write(*,*) itransz,' =  - ( ',(itrans(i,3),i=1,jzcount),')'
+C
+        write(*,*) (npert(i),I=1,nirrep)
+        endif
+        write(*,*) 'Translational invariance is used.'
+        write(*,*)
+       ELSE
+C
+        TRAINV=.FALSE.
+        write(*,*) 'Translational invariance is not used.'
+        write(*,*)
+C
+       ENDIF
+      ENDIF
+C
+C SAVE THIS INFORMATION ON JOBARC
+C
+      IF(TRAINV) THEN
+       NPERT(IXPERT)=NPERT(IXPERT)-1
+       NPERT(IYPERT)=NPERT(IYPERT)-1
+       NPERT(IZPERT)=NPERT(IZPERT)-1
+       NTPERT=NTPERT-3
+      ENDIF 
+      IPERT(1)=0
+      DO 600 IRREP=1,NIRREP-1 
+       IPERT(IRREP+1)=IPERT(IRREP)+NPERT(IRREP)
+600   CONTINUE   
+      CALL PUTREC(20,'JOBARC','NSYMPERT',27,NTPERT)
+      IF(TRAINV) THEN
+       NPERT(IXPERT)=NPERT(IXPERT)+1
+       NPERT(IYPERT)=NPERT(IYPERT)+1
+       NPERT(IZPERT)=NPERT(IZPERT)+1
+       NTPERT=NTPERT+3
+       IPERT(1)=0
+       DO 700 IRREP=1,NIRREP-1 
+        IPERT(IRREP+1)=IPERT(IRREP)+NPERT(IRREP)
+700    CONTINUE
+       CALL PUTREC(20,'JOBARC','TRANSINV',3*(NUCIND1-1),
+     &             ITRANS)   
+      ENDIF 
+      RETURN
+      END

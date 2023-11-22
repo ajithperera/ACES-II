@@ -1,0 +1,29 @@
+      SUBROUTINE TRADIP(SDIPDR,CDIPDR,NCOOR)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DOUBLE PRECISION MATRIX
+#include "mxcent.par"
+#include "baslims.par"
+      PARAMETER (D1 = 1.0D0)
+      DIMENSION SDIPDR(3,MXCOOR), CDIPDR(3,MXCOOR),
+     *          MATRIX(3,MXCOOR), PERDIP(3,3)
+      COMMON /SYMMET/ FMULT(0:7), PT(0:7),
+     *                MAXLOP, MAXLOT, MULT(0:7), ISYTYP(3),
+     *                ITYPE(8,36), NPARSU(8), NPAR(8), NAOS(8),
+     *                NPARNU(8,8), IPTSYM(MXCORB,0:7),
+     *                IPTCNT(3*MXCENT,0:7), NCRREP(0:7),
+     *                IPTCOR(MXCENT*3), NAXREP(0:7), IPTAX(3),
+     *                IPTXYZ(3,0:7)
+      COMMON /TRANUC/ TRCTOS(MXCOOR,MXCOOR), TRSTOC(MXCOOR,MXCOOR)
+C
+      DATA AZERO,ONE /0.D0,1.D0/
+C
+      CALL ZERO(PERDIP,9)
+      DO 100 ICOOR = 1, 3
+         PERDIP(ICOOR,IPTAX(ICOOR)) = D1
+  100 CONTINUE
+      CALL XGEMM('N','N',3,NCOOR,3,ONE,PERDIP,3,
+     *           SDIPDR,3,AZERO,MATRIX,3)
+      CALL XGEMM('N','T',3,NCOOR,NCOOR,ONE,MATRIX,3,
+     *           TRSTOC,MXCOOR,AZERO,CDIPDR,3)
+      RETURN
+      END

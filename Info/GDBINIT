@@ -1,0 +1,197 @@
+path ~aces/2.x-CURRENT/lb
+path ~aces/2.x-CURRENT/eispack
+path ~aces/2.x-CURRENT/linpack
+
+# [default]
+path ~aces/2.x-CURRENT/tools
+path ~aces/2.x-CURRENT/acescore
+path ~aces/2.x-CURRENT/acesutil
+path ~aces/2.x-CURRENT/libr
+
+# ACES2
+#path ~aces/2.x-CURRENT/aces2
+#file ~aces/2.x-CURRENT/aces2/xaces2
+
+# JODA
+#path ~aces/2.x-CURRENT/ecp
+#path ~aces/2.x-CURRENT/joda
+#file ~aces/2.x-CURRENT/joda/xjoda
+#path /scr/WorkDir/Ajith/joda   
+#file /scr/WorkDir/Ajith/joda/xjoda
+
+# VMOL2JA
+#path ~aces/2.x-CURRENT/ecp
+#path ~aces/2.x-CURRENT/vmol2ja
+#file ~aces/2.x-CURRENT/vmol2ja/xvmol2ja
+
+# VTRAN
+#path ~aces/2.x-CURRENT/vtran
+#file ~aces/2.x-CURRENT/vtran/xvtran
+
+# INTPRC
+#path ~aces/2.x-CURRENT/intprc
+#file ~aces/2.x-CURRENT/intprc/xintprc
+
+# VCC
+#path ~aces/2.x-CURRENT/crust
+#path ~aces/2.x-CURRENT/libr2
+#path ~aces/2.x-CURRENT/librt3
+#path ~aces/2.x-CURRENT/trp
+#path ~aces/2.x-CURRENT/vcc 
+#file ~aces/2.x-CURRENT/vcc/xvcc
+
+# LAMBDA
+path ~aces/2.x-CURRENT/libr2
+path ~aces/2.x-CURRENT/librt3
+path ~aces/2.x-CURRENT/lambda
+file ~aces/2.x-CURRENT/lambda/xlambda
+
+# ANTI
+#path ~aces/2.x-CURRENT/anti
+#file ~aces/2.x-CURRENT/anti/xanti
+
+# BCKTRN
+#path ~aces/2.x-CURRENT/bcktrn
+#file ~aces/2.x-CURRENT/bcktrn/xbcktrn
+
+# FNO
+#path ~aces/2.x-CURRENT/fno
+#file ~aces/2.x-CURRENT/fno/xfno
+
+# VCCEH
+#path ~aces/2.x-CURRENT/crust
+#path ~aces/2.x-CURRENT/libr2
+#path ~aces/2.x-CURRENT/vcceh
+#file ~aces/2.x-CURRENT/vcceh/xvcceh
+
+# VEE
+#path ~aces/2.x-CURRENT/crust
+#path ~aces/2.x-CURRENT/libr2
+#path ~aces/2.x-CURRENT/vee
+#file ~aces/2.x-CURRENT/vee/xvee
+
+# VEA
+#path ~aces/2.x-CURRENT/libr2
+#path ~aces/2.x-CURRENT/vea
+#file ~aces/2.x-CURRENT/vea/xvea
+
+# VDINT
+#path ~aces/2.x-CURRENT/ecp
+#path ~aces/2.x-CURRENT/vdint
+#file ~aces/2.x-CURRENT/vdint/xvdint
+
+# CPHF
+#path ~aces/2.x-CURRENT/cphf
+#file ~aces/2.x-CURRENT/cphf/xcphf
+
+# NMR
+#path ~aces/2.x-CURRENT/libr2
+#path ~aces/2.x-CURRENT/nmr
+#file ~aces/2.x-CURRENT/nmr/xnmr
+
+# stop at aces_exit or errex before quitting
+#break errex_
+break aces_exit_
+
+# MRCC???
+#path ~aces/2.x-CURRENT/mrcc.src/apg
+#path ~aces/2.x-CURRENT/mrcc.src/apg2
+#path ~aces/2.x-CURRENT/mrcc.src/eomprocs
+#path ~aces/2.x-CURRENT/mrcc.src/mbdirect
+#path ~aces/2.x-CURRENT/mrcc.src/mbgrad
+#path ~aces/2.x-CURRENT/mrcc.src/mbtest
+#path ~aces/2.x-CURRENT/mrcc.src/mbtools
+#path ~aces/2.x-CURRENT/mrcc.src/mrcca3
+
+##############################################################
+# define commands for examining data in global common blocks #
+##############################################################
+
+# integer      pop(8,2), vrt(8,2), x(2,3)
+# common /sym/ pop,      vrt,      x
+define pop
+   set lang c
+   echo pop(*,1) :\t
+   print *(int(*)[8])&sym_[4*8*(-1+1)]
+   echo pop(*,2) :\t
+   print *(int(*)[8])&sym_[4*8*(-1+2)]
+   set lang fortran
+end
+document pop
+   `pop` prints the number of alpha and beta occupied MOs per irrep
+end
+define vrt
+   set lang c
+   echo vrt(*,1) :\t
+   print *(int(*)[8])&sym_[4*8*(-1+3)]
+   echo vrt(*,2) :\t
+   print *(int(*)[8])&sym_[4*8*(-1+4)]
+   set lang fortran
+end
+document vrt
+   `vrt` prints the number of alpha and beta virtual MOs per irrep
+end
+define orb
+   pop
+   vrt
+end
+document orb
+   `orb` runs both pop and vrt
+end
+
+# integer         x, nirrep, x(255,2), dirprd(8,8)
+# common /syminf/ x, nirrep, x,        dirprd
+define nirrep
+   set lang c
+   echo nirrep :\t
+   print *(int(*))&syminf_[4*1]
+   set lang fortran
+end
+document nirrep
+   `nirrep` prints the number of irreps
+end
+define dirprd
+   set lang c
+   echo dirprd(*,1) :\t
+   print *(int(*)[8])&syminf_[4*(1+1+255+255)+(4*8*(-1+1))]
+   echo dirprd(*,2) :\t
+   print *(int(*)[8])&syminf_[4*(1+1+255+255)+(4*8*(-1+2))]
+   echo dirprd(*,3) :\t
+   print *(int(*)[8])&syminf_[4*(1+1+255+255)+(4*8*(-1+3))]
+   echo dirprd(*,4) :\t
+   print *(int(*)[8])&syminf_[4*(1+1+255+255)+(4*8*(-1+4))]
+   echo dirprd(*,5) :\t
+   print *(int(*)[8])&syminf_[4*(1+1+255+255)+(4*8*(-1+5))]
+   echo dirprd(*,6) :\t
+   print *(int(*)[8])&syminf_[4*(1+1+255+255)+(4*8*(-1+6))]
+   echo dirprd(*,7) :\t
+   print *(int(*)[8])&syminf_[4*(1+1+255+255)+(4*8*(-1+7))]
+   echo dirprd(*,8) :\t
+   print *(int(*)[8])&syminf_[4*(1+1+255+255)+(4*8*(-1+8))]
+   set lang fortran
+end
+document dirprd
+   `dirprd` prints the entire direct product table
+end
+
+# integer         irpdpd(8,22), isytyp(2,500), x(18)
+# common /sympop/ irpdpd,       isytyp,        x
+define irpdpd
+   set lang c
+   echo irpdpd(*,$arg0) :\t
+   print *(int(*)[8])&sympop_[4*8*(-1+$arg0)]
+   set lang fortran
+end
+document irpdpd
+   `irpdpd TYPE` prints the number of doubles per irrep of type TYPE
+end
+define isytyp
+   set lang c
+   echo isytyp(*,$arg0) :\t
+   print *(int(*)[2])&sympop_[(4*8*22)+(4*2*(-1+$arg0))]
+   set lang fortran
+end
+document isytyp
+   `isytyp LIST` prints the distribution types of list LIST
+end
+

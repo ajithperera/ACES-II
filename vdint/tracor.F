@@ -1,0 +1,186 @@
+      SUBROUTINE TRACOR(CSTRA,SCTRA,WORK,IWORK,NCOOR,IPRINT)
+C
+C     SETS UP TRANSFORMATION MATRICES BETWEEN CARTESIAN AND SYMMETRY
+C     NUCLEAR COORDINATES
+C
+CEND
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      INTEGER AND,OR,XOR
+C
+      PARAMETER (LUCMD = 5, LUPRI = 6)
+#include "mxcent.par"
+#include "baslims.par"
+C
+      CHARACTER NAMEX*6
+      LOGICAL DCORD, DCORGD, NOORBT, DOPERT
+      LOGICAL ELECT,GEOM,MAGNET,MAGNET2,GIAO
+      LOGICAL JSO,JFC,JSD 
+C
+      DIMENSION CSTRA(NCOOR,NCOOR), SCTRA(NCOOR,NCOOR), WORK(NCOOR),
+     &          IWORK(NCOOR)
+      DIMENSION ISYTYPO(3)
+C
+      COMMON /NUCLEIi/ NOORBT(MXCENT),
+     &                NUCIND, NUCDEP, NUCPRE(MXCENT), NUCNUM(MXCENT,8),
+     &                NUCDEG(MXCENT), ISTBNU(MXCENT), NDCORD,
+     &                NDCOOR(MXCOOR), NTRACO, NROTCO, ITRACO(3),
+     &                IROTCO(3),
+     &                NATOMS, NFLOAT,
+     &                IPTGDV(3*MXCENT),
+     &                NGDVEC(8), IGDVEC(8)
+      COMMON /NUCLEI/ CHARGE(MXCENT), CORD(MXCENT,3),
+     &                DCORD(MXCENT,3),DCORGD(MXCENT,3),
+     &                DOPERT(0:3*MXCENT)
+      COMMON /NUCLEC/ NAMEX(MXCOOR)
+      COMMON /SYMMET/ FMULT(0:7), PT(0:7),
+     &                MAXLOP, MAXLOT, MULT(0:7), ISYTYP(3),
+     &                ITYPE(8,36), NPARSU(8), NPAR(8), NAOS(8),
+     &                NPARNU(8,8), IPTSYM(MXCORB,0:7),
+     &                IPTCNT(3*MXCENT,0:7), NCRREP(0:7),
+     &                IPTCOR(MXCENT*3), NAXREP(0:7), IPTAX(3),
+     &                IPTXYZ(3,0:7)
+      COMMON /TRANUC/ TRCTOS(MXCOOR,MXCOOR), TRSTOC(MXCOOR,MXCOOR)
+      COMMON/PROP/ELECT,MAGNET,GEOM,MAGNET2,GIAO
+      COMMON/JNMR/JSO,JFC,JSD
+      COMMON/MACHSP/IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+C
+      DATA AZERO/0.D0/
+C
+      IBTAND(I,J) = AND(I,J)
+      IBTOR(I,J)  = OR(I,J)
+      IBTXOR(I,J) = XOR(I,J)
+C
+      CALL ZERO(CSTRA,NCOOR*NCOOR)
+      CALL ZERO(SCTRA,NCOOR*NCOOR)
+C
+C   TRANSFORMATION MATRIX CARTESIAN TO SYMMETRY COORDINATES 
+C
+      IF(.NOT.MAGNET) THEN
+       ISYTYPO(1)=ISYTYP(1)
+       ISYTYPO(2)=ISYTYP(2)
+       ISYTYPO(3)=ISYTYP(3)
+      ELSE 
+       ISYTYPO(1)=IBTXOR(ISYTYP(2),ISYTYP(3))
+       ISYTYPO(2)=IBTXOR(ISYTYP(3),ISYTYP(1))
+       ISYTYPO(3)=IBTXOR(ISYTYP(1),ISYTYP(2))
+      ENDIF
+      IF(JFC) THEN
+       DO 101 IREP = 0, MAXLOP
+        NCRREP(IREP) = 0
+        DO 111 ICENT = 1, NUCIND
+         MULCNT = ISTBNU(ICENT)
+         ISCOOR = IPTCNT(ICENT,IREP)
+         IF (ISCOOR .GT. 0) THEN
+          NCRREP(IREP) = NCRREP(IREP) + 1
+          IVAR = IBTXOR(IREP,0)
+          DO 131 ISYMOP = 0, MAXLOT
+           IF (IBTAND(ISYMOP,MULCNT) .EQ. 0) THEN
+            ICCOOR = NUCNUM(ICENT,ISYMOP+1) 
+            CSTRA(ISCOOR,ICCOOR) = PT(IBTAND(ISYMOP,IVAR))
+           END IF
+131       CONTINUE
+         END IF
+111     CONTINUE
+101    CONTINUE
+      ELSE IF(JSD) THEN
+      DO 102 IREP=0,MAXLOP
+       NCRREP(IREP)=0
+       DO 112 ICENT=1,NUCIND
+        MULCNT=ISTBNU(ICENT)
+        KCOOR=0
+        DO 122 ICOOR=1,3
+        DO 122 JCOOR=ICOOR,3
+         KCOOR=KCOOR+1
+         ISCOOR=IPTCNT(6*(ICENT-1)+KCOOR,IREP)
+         IF(ISCOOR.GT.0)THEN
+          NCRREP(IREP)=NCRREP(IREP) + 1
+          IVAR=IBTXOR(IREP,IBTXOR(ISYTYPO(ICOOR),ISYTYPO(JCOOR)))
+          DO 132 ISYMOP=0,MAXLOT
+           IF(IBTAND(ISYMOP,MULCNT).EQ.0) THEN
+            ICCOOR=6*(NUCNUM(ICENT,ISYMOP+1)-1)+KCOOR
+            CSTRA(ISCOOR,ICCOOR) = PT(IBTAND(ISYMOP,IVAR))
+           END IF
+132        CONTINUE
+          END IF
+122      CONTINUE
+112     CONTINUE
+102    CONTINUE
+      ELSE
+      DO 100 IREP = 0, MAXLOP
+       NCRREP(IREP) = 0
+       DO 110 ICENT = 1, NUCIND
+        MULCNT = ISTBNU(ICENT)
+        DO 120 ICOOR = 1, 3
+         ISCOOR = IPTCNT(3*(ICENT-1)+ICOOR,IREP)
+         IF (ISCOOR .GT. 0) THEN
+          NCRREP(IREP) = NCRREP(IREP) + 1
+          IVAR = IBTXOR(IREP,ISYTYPO(ICOOR))
+          DO 130 ISYMOP = 0, MAXLOT
+           IF (IBTAND(ISYMOP,MULCNT) .EQ. 0) THEN
+            ICCOOR = 3*(NUCNUM(ICENT,ISYMOP+1) - 1) + ICOOR
+            CSTRA(ISCOOR,ICCOOR) = PT(IBTAND(ISYMOP,IVAR))
+           END IF
+ 130      CONTINUE
+         END IF
+ 120    CONTINUE
+ 110   CONTINUE
+ 100  CONTINUE
+      ENDIF
+      IF (IPRINT .GE. 20) THEN
+       WRITE (LUPRI,'(/,1X,A,8I3,/)')
+     *     ' Number of coordinates in each symmetry: ',
+     *      (NCRREP(I),I=0,MAXLOP)
+       CALL HEADER('Transformation from Cartesian to symmetry '
+     *    //'coordinates',-1)
+       DO 200 ISYM = 1, NCOOR
+        WRITE (LUPRI,'(9F6.2)') (CSTRA(ISYM,J),J=1,NCOOR)
+ 200   CONTINUE
+      END IF
+C
+C     Inverted matrix
+C
+      DO 210 I = 1, NCOOR
+       DO 220 J = 1, NCOOR
+        SCTRA(I,J) = CSTRA(J,I)
+  220  CONTINUE
+  210 CONTINUE
+      DO 230 ICOL = 1, NCOOR
+       SUM = AZERO
+       DO 240 IROW = 1, NCOOR
+        SUM = SUM + ABS(SCTRA(IROW,ICOL))
+  240  CONTINUE
+       DO 250 IROW = 1, NCOOR
+        SCTRA(IROW,ICOL) = SCTRA(IROW,ICOL)/SUM
+  250  CONTINUE
+  230 CONTINUE
+C
+C SAVE ON JOBARC 
+C
+      CALL PUTREC(20,'JOBARC','SYMCOORD',IINTFP*NCOOR*NCOOR,
+     &            SCTRA)
+C     Transfer to COMMON /TRANUC/
+C
+      CALL ZERO(TRCTOS,MXCOOR*MXCOOR)
+      CALL ZERO(TRSTOC,MXCOOR*MXCOOR)
+      DO 300 I = 1, NCOOR
+       DO 310 J = 1, NCOOR
+        TRCTOS(I,J) = CSTRA(I,J)
+        TRSTOC(I,J) = SCTRA(I,J)
+  310  CONTINUE
+  300 CONTINUE
+C
+C     Set up IPTCOR - points from symmetry coordinate to generating
+C     Cartesian coordinate
+C
+      IJ = 0
+      DO 400 J = 0, MAXLOP
+       DO 410 I = 1, NCOOR
+        IF (IPTCNT(I,J) .NE. 0) THEN
+         IJ = IJ + 1
+         IPTCOR(IJ) = I
+        END IF
+  410  CONTINUE
+  400 CONTINUE
+      RETURN
+      END

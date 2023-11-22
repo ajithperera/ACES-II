@@ -1,0 +1,58 @@
+c __FILE__ : begin
+c   o add/subtract the <PQ{}EI> contributions
+      start_product = start_scr
+      if (irp_p.lt.irp_q) then
+         itmp = rshift(irp_q*(irp_q-1),1) + irp_p
+         add_s2 = 1 + off_pltp(itmp,off_altb)
+         itmp = max_p*max_q
+         do e = from_e, to_e
+            do q = 0, itmp-1
+               s2pqei(add_s2+q) =
+     &         s2pqei(add_s2+q)
+     &       + dscr(start_product+q)
+            end do
+            start_product = start_product + itmp
+            add_s2 = add_s2 + max_pq
+         end do
+
+      else
+      if (irp_q.lt.irp_p) then
+         itmp = rshift(irp_p*(irp_p-1),1) + irp_q
+         add_s2 = 1 + off_pltp(itmp,off_altb)
+         itmp = max_p*max_q
+         do e = from_e, to_e
+            do p = 0, max_p-1
+            do q = 0, max_q-1
+               s2pqei(add_s2+(max_q*p)+q) =
+     &         s2pqei(add_s2+(max_q*p)+q)
+     &       - dscr(start_product+(max_p*q)+p)
+            end do
+            end do
+            start_product = start_product + itmp
+            add_s2 = add_s2 + max_pq
+         end do
+
+      else
+         itmp = rshift(irp_q*(irp_q+1),1)
+         add_s2 = 1 + off_pltp(itmp,off_altb)
+         itmp = max_p*max_q
+         do e = from_e, to_e
+            m = 0
+            do q = 1, max_q-1
+               do p = 0, q-1
+                  s2pqei(add_s2+m) =
+     &            s2pqei(add_s2+m)
+     &          + dscr(start_product+(max_q*q)+p)
+     &          - dscr(start_product+(max_q*p)+q)
+                  m = m + 1
+               end do
+            end do
+            start_product = start_product + itmp
+            add_s2 = add_s2 + max_pq
+         end do
+
+c     end if (irp_p.gt.irp_q)
+      end if
+c     end if (irp_p.lt.irp_q)
+      end if
+c __FILE__ : end

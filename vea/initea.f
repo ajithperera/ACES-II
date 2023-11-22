@@ -1,0 +1,245 @@
+      SUBROUTINE INITEA(ICORE, MAXCOR, IUHF, ICALC)
+C
+      IMPLICIT INTEGER (A-Z)
+      DIMENSION ICORE(MAXCOR)
+      CHARACTER TITLE*80
+      CHARACTER *5 BOOL(2)
+      LOGICAL LEFTHAND, EXCICORE, EMINFOL, EVECFOL, SINGONLY,
+     $   DROPCORE
+      DOUBLE PRECISION COREIP, TSSTGEN, TEADAVID, TEADIR, ONE, ONEM
+      logical readinp
+      LOGICAL CCSD, TRANABCD, TRANABCI
+C
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPS(255,2),DIRPRD(8,8)
+      COMMON/SYM/POP(8,2),VRT(8,2),NT(2),NFMI(2),NFEA(2)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON/LISTDAV/LISTC, LISTHC, LISTH0
+      COMMON/LISTF/LISTFJA, LISTFAJ, LISTFAB, LISTFIJ,
+     $   LISTF0, NDIMFLST(2,4)
+      COMMON/LISTU/LISTUIJ, LISTUAB, LISTUAI
+      COMMON/SLISTS/LS1IN, LS1OUT, LS2IN(2,2), LS2OUT(2,2)
+      COMMON/LISTDIP/DIPOO(2), DIPOV(2), DIPVV(2)
+      COMMON/LISTDENS/DENSOO(2), DENSOV(2), DENSVV(2)
+      COMMON/EXTRAP/MAXEXP,NREDUCE,NTOL,NSIZEC
+      COMMON/CNVRGE/EMINFOL,EVECFOL
+      COMMON/EACALC/LEFTHAND, EXCICORE, SINGONLY, DROPCORE
+      COMMON/EAINFO/NUMROOT(8,3)
+      COMMON/INFO/NOCCO(2),NVRTO(2)
+      COMMON/MACHSP/IINTLN,IFLTLN, IINTFP, IALONE,IBITWD
+      COMMON/COREINFO/IREPCORE, SPINCORE, IORBCORE, IORBOCC
+      COMMON/IPCORE/COREIP
+      COMMON /TIMSUB/ TSSTGEN, TEADAVID, TEADIR
+      COMMON/STINFO/ITOTALS, STMODE, LISTST, STCALC, NSIZEST
+      COMMON /FLAGS/ IFLAGS(100)
+      COMMON /FLAGS2/ IFLAGS2(500)
+C
+C  THE LAST COMMON BLOCK MONITORS THE TIMES USED IN THE INDICATED
+C  SUBROUTINES
+C
+      ONE = 1.0D0
+      ONEM = -1.0D0
+C
+      IONE = 1
+      TSSTGEN = 0.0D0
+      TEADAVID = 0.0D0
+      TEADIR = 0.0D0
+      DATA BOOL /'FALSE', ' TRUE'/
+      LISTC  = 470
+      LISTHC = 471
+      LISTH0 = 472
+      LISTF0 = 472
+      LISTFAJ = 473
+      LISTFJA = 474
+      LISTFAB = 475
+      LISTFIJ = 476
+      LISTUIJ = 477
+      LISTUAB = 478
+      LISTUAI = 479
+      LISTST  = 469
+C
+      LS1IN  = 420
+      LS1OUT = 430
+C
+      DIPOO(1) = 441
+      DIPOO(2) = 442
+      DIPOV(1) = 443
+      DIPOV(2) = 444
+      DIPVV(1) = 445
+      DIPVV(2) = 446
+C
+      DENSOO(1) = 451
+      DENSOO(2) = 452
+      DENSOV(1) = 453
+      DENSOV(2) = 454
+      DENSVV(1) = 455
+      DENSVV(2) = 456
+C
+      LS2IN(1,1) = 460
+      LS2IN(1,2) = 461
+      LS2IN(2,1) = 462
+      LS2IN(2,2) = 463
+C
+      LS2OUT(1,1) = 480
+      LS2OUT(1,2) = 481
+      LS2OUT(2,1) = 482
+      LS2OUT(2,2) = 483
+C
+      MAXEXP =  30
+      NREDUCE = 12
+      NTOL = 5
+      EMINFOL = .TRUE.
+      EVECFOL = .FALSE.
+      LEFTHAND = .FALSE.
+      SINGONLY = .FALSE.
+      STMODE = 0
+      DROPCORE = .FALSE.
+      EXCICORE = .FALSE.
+C
+      DO 20 ISPIN = 1, 3
+        DO 10 IRREP = 1, NIRREP
+          NUMROOT(IRREP,ISPIN) = 0
+   10   CONTINUE
+   20 CONTINUE
+C
+      ICALC = 2
+      COREIP= 4.0D0
+      title = ' Ne 6+, Core Excitation Spectrum '
+C
+      WRITE(6,1300)
+      WRITE(6,*)'      **********************************************'
+      WRITE(6,*)'      *                                            *'
+      WRITE(6,*)'      *   ELECTRON ATTACHMENT EOM-CC CALCULATION   *'
+      WRITE(6,*)'      *                                            *'
+      WRITE(6,*)'      *            CODED BY M. NOOIJEN             *'
+      WRITE(6,*)'      *               SPRING 1993                  *'
+      WRITE(6,*)'      **********************************************'
+      WRITE(6,1300)
+C
+      readinp =.false.
+      if (readinp) then
+        read(*,'(A)') title
+        READ(*,*) (NUMROOT(I,1), I=1, NIRREP)
+        IF (IUHF.NE.0) THEN
+          READ(*,*) (NUMROOT(I,2), I=1,NIRREP)
+          IF (STMODE .EQ. 2) THEN
+            READ(*,*) (NUMROOT(I,3), I=1,NIRREP)
+          ELSE
+            CALL IZERO(NUMROOT(1,3), NIRREP)
+          ENDIF
+        ELSE
+          CALL IZERO(NUMROOT(1,2), NIRREP)
+          CALL IZERO(NUMROOT(1,3), NIRREP)
+        ENDIF
+C
+        IF (EXCICORE) THEN
+          READ(*,*) COREIP
+        ENDIF
+C
+      ELSE
+C
+C      NUMROOT INFO IS OBTAINED FROM JOBARC
+C
+        CALL GETREC(20,'JOBARC','EASYM_A ',NIRREP,NUMROOT(1,1))
+        IF (IUHF .NE. 0) THEN
+          CALL GETREC(20,'JOBARC','EASYM_B ',NIRREP,NUMROOT(1,2))
+        ENDIF         
+      endif
+C
+      IF  (EXCICORE .AND. SINGONLY) THEN
+        WRITE(6,*) ' SINGONLY AND EXCICORE ARE INCOMPATIBLE'
+        WRITE(6,*) ' SINGONLY IS SWITCHED OFF'
+        SINGONLY = .FALSE.
+      ENDIF
+C
+      IF (SINGONLY) THEN
+        DO 50 IRREP = 1, NIRREP
+          DO 60 ISPIN = 1, 1+IUHF
+            NUMROOT(IRREP,ISPIN) = MIN(VRT(IRREP,ISPIN),
+     $         NUMROOT(IRREP,ISPIN))
+   60     CONTINUE
+   50   CONTINUE
+      ENDIF
+C
+C   IF ALL NUMROOT ARE ZERO, ESTIMATE DESIRED ROOTS FROM SCF EIGENVALUES
+C
+      IROOT = 0
+      DO IRREP = 1, NIRREP
+        DO ISPIN = 1, 1 + IUHF
+          IROOT = IROOT + NUMROOT(IRREP, ISPIN)
+        ENDDO
+      ENDDO
+      IF (IROOT .GT. 0) THEN
+        CALL GETREC(-1,'JOBARC','EA_IRREP',IONE,NIRREP2)         
+        IF (NIRREP2 .NE. NIRREP) THEN
+          WRITE(6,*) ' NUMBER OF IRREPS FROM EA_SYM',
+     $       ' DOES NOT MATCH NIRREP', NIRREP2, NIRREP
+          WRITE(6,*) ' NUMBER OF ROOTS IS ESTIMATED AUTOMATICALLY'
+          CALL IZERO(NUMROOT, 3*8)
+        ENDIF
+      ENDIF
+      CALL INITNUMR(ICORE, MAXCOR/IINTFP, IUHF)
+C
+      WRITE(6,*) ' NUMBER OF ROOTS PER IRREP, SPIN=ALPHA'
+      WRITE(6,1100) (NUMROOT(i,1), i=1,nirrep)
+      IF (IUHF.NE.0) THEN
+        IF (STMODE .EQ. 2) THEN
+          WRITE(6,*) ' NUMBER OF ROOTS PER IRREP ',
+     $       'SPIN = BETA, TRIPLET'
+          write(6,1100) (numroot(i,2), i=1,nirrep)
+          WRITE(6,*) ' NUMBER OF ROOTS PER IRREP ',
+     $       'SPIN = BETA, SINGLET'
+          write(6,1100) (numroot(i,3), i=1,nirrep)
+        ELSE
+          WRITE(6,*) ' NUMBER OF ROOTS PER IRREP ',
+     $       'SPIN = BETA'
+          write(6,1100) (numroot(i,2), i=1,nirrep)
+        ENDIF
+      ENDIF
+ 1100 FORMAT(8x, 8I5)
+      WRITE(6,1300)
+ 1300 FORMAT(/)
+C
+C
+C  NEW 400 LISTS ARE CREATED => DELETE POSSIBLE EXISTING DERGAM
+C
+      CALL ACES_IO_REMOVE(54,'DERGAM')
+      CALL CREALIST(IUHF,ICALC)
+C
+C  INCLUDE THE DIAGONAL PART IN LISTS 91 AND 92
+C
+      CALL MODF(ICORE, MAXCOR, IUHF, 1)
+C
+      IF (IFLAGS(93) .EQ. 2) THEN
+        WRITE(6,*) 'AO-TYPE ABCD INTEGRALS NOT SUPPORTED'
+        CALL ERREX
+      ENDIF
+C
+      IF (ISYTYP(1, 233) .EQ. 5) THEN
+        WRITE(6,*)
+        WRITE(6,*)' COMPRESSED ABCD INTEGRALS'
+        WRITE(6,*)' NOT SUPPORTED IN CURRENT VERSION OF EA-EOMCC'
+        CALL ERREX
+      ENDIF
+c
+      CCSD = IFLAGS2(117) .EQ. 1
+C
+      TRANABCD = (ISYTYP(1, 233) .NE. 5
+     &   .AND. IFLAGS(93) .NE. 2 .AND. IFLAGS2(122) .EQ. 1)
+C
+      TRANABCI = ( CCSD .AND. IFLAGS2(123) .EQ. 1
+     &   .AND. (ISYTYP(1,233) .NE. 5) .AND. IFLAGS(93) .NE. 2)
+C
+      IF (CCSD .AND. IFLAGS2(123) .EQ. 1) THEN
+        write(6,*) ' ABCD contribution to HBARABCI is not included !'
+      ENDIF
+C
+      CALL MODHBAR(ICORE, MAXCOR, IUHF, TRANABCD, TRANABCI)
+C
+C   ABCD INTEGRALS NEED TO BE MODIFIED BEFORE PHPH INTEGRALS !!
+C
+C  INCLUDE DENOMINATORS IN PHPH INTEGRALS
+C
+      CALL MODWPHPH(ICORE(1), MAXCOR, IUHF, 1.0D0, 91, 92)
+C
+      RETURN
+      END

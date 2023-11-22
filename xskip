@@ -1,0 +1,5 @@
+test $# -eq 0 && exit
+for i in $*
+do dir=${i%/}
+   test -d $dir && test ! -d ${dir}.skip && mv -i $dir ${dir}.skip
+done

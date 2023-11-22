@@ -1,0 +1,28 @@
+      Subroutine Tdee_pes_ode(T,Data_in_out,Mubar_dot)
+
+      Implicit Double Precision (A-H,O-Z)
+      Double Precision Mubar_dot
+
+      Dimension Data_in_out(10), Mubar_dot(10)
+
+#include "tdee_vars.com"
+#include "icore.com"
+#include "istart.com"
+#include "machsp.com"
+
+      Irrepx  = Irrepx_dummy
+      Iside   = Iside_dummy
+      Iuhf    = Iuhf_dummy 
+      Nsize   = Nsize_dummy
+      Memleft = Memleft_dummy 
+
+#ifdef _DEBUG_LVL0
+      Write(6,"(a)") "Entered - tdee_pes_ode"
+#endif
+       
+C      Call Tdee_return_mubar_dot(Icore(I0),Memleft,Iuhf,Irrepx,Iside,
+C     +                           Data_in_out,Mubar_dot,Nsize)
+
+      Return 
+      End
+ 

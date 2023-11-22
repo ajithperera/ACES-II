@@ -1,0 +1,81 @@
+test -n "$USERDIR" || exit 1
+JOBARC=$USERDIR/tmp.JOBARC
+JAINDX=$USERDIR/tmp.JAINDX
+OPTARC=$USERDIR/tmp.OPTARC
+
+# Part 1: generate archives
+cat <<. >ZMAT
+% JOBARC=$JOBARC
+% JAINDX=$JAINDX
+% OPTARC=$OPTARC
+
+Use of OPT_MAXCYC and % cards
+H
+O 1 R*
+H 2 R* 1 A*
+
+R=1.00
+A=105.
+
+*ACES2
+!restart
+BASIS=6-31G*
+OPT_MAXCYC=2,spherical=off
+
+.
+ln -s $GENBAS . || exit 1
+xaces2 # this WILL die
+
+# clean
+for file in *
+do case $file in
+   GENBAS|ZMAT.BAS) ;;
+   *) rm -rf $file ;;
+   esac
+done
+
+# Part 2: restart geometry optimization
+cat <<. >ZMAT
+% JOBARC=$JOBARC
+% JAINDX=$JAINDX
+% OPTARC=$OPTARC
+
+restart of a geometry optimization
+H
+O 1 R*
+H 2 R* 1 A*
+
+R=1.00
+A=105.
+
+*ACES2
+!restart
+BASIS=6-31G*
+OPT_MAXCYC=10,spherical=off
+
+.
+xaces2 || exit 1
+
+# move JOBARC so xa2proc can read it
+mv $JOBARC JOBARC || exit 1
+mv $JAINDX JAINDX || exit 1
+rm -f FILES $OPTARC || exit 1
+
+exit 0
+TEST.DAT
+d TOTENERG
+ -0.760107464913E+02   0.1E-08
+d COORD
+  0.000000000000E+00   0.1E-08
+ -0.142490760026E+01   0.1E-08
+  0.962514402836E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+ -0.121294346519E+00   0.1E-08
+  0.000000000000E+00   0.1E-08
+  0.142490760026E+01   0.1E-08
+  0.962514402836E+00   0.1E-08
+d NUCREP
+  0.928818803505E+01   0.1E-08
+d SCFENEG
+ -0.760107464913E+02   0.1E-08

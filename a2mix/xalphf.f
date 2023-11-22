@@ -1,0 +1,14 @@
+      FUNCTION XALPHF(ROA,ROB,GRDAA,GRDAB,GRDBB)
+C     
+C     Determine the value of the xalpha functional.
+C     
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C     
+      COMMON /PAR/ PI,PIX4
+      COMMON /CNST/ X1,X2,X3,X4,X5,X6,X7,X8,X9,X10,X11,X12,X13,X14,X15
+      COMMON /FRAC/ F1,F2,F3,F4,F5,F6,F7,F8,F9,F10,F11,F12,F13,F14,F15
+C
+      XALPHF=X9*(ROA**F1+ROB**F1)
+C     
+      RETURN
+      END

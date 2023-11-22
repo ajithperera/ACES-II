@@ -1,0 +1,9 @@
+cpp -traditional -DF_64BIT -DC_SUFFIX -DCB_SUFFIX -D_INTEL -D_RECL_IS_WORDS_ -D_IA64 -D_ASSERT -D_TAILORED -D_NAMN_THROUGH_CHRTMP -D__CURR__="dip" -I./include -I../../include -I../intgrt/include/ -I../sbtools/include -P -C -D__fortran -D__fortran77 pre_dip_process.F pre_dip_process.f
+
+ifort -c -Wall -O2 -Zp8 -zero -i8 pre_dip_process.f
+
+ifort -O2 -Zp8 -i8 -o xprepdip pre_dip_process.o -L. -L/share/aces/ACESII_2HOT/lib -ldip -lacesutil -llibr -lvscf -laces2 -lacescore -ltools -lscs_i8_mp -L/share/aces/ACESII_2HOT/lib -llinpack -leispack -lmpw -lmpistubs
+
+cp -p xprepdip /share/aces/ACESII_2HOT/bin/
+
+

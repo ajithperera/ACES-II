@@ -1,0 +1,557 @@
+      SUBROUTINE E_T2T32O(T3,W,ICORE,
+     1                    IADT3,IADW,
+     1                    IRPI,IRPJ,IRPK,IRPIJ,IRPIK,IRPJK,IRPIJK,
+     1                    I,J,K,IUHF,
+     1                    SCR1,SCR2,SCR3,IRREPX)
+      IMPLICIT INTEGER (A-Z)
+      DOUBLE PRECISION T3(1),W(1),ICORE(1)
+      DOUBLE PRECISION SCR1(1),SCR2(1),SCR3(1)
+      INTEGER DIRPRD,POP,VRT
+      DIMENSION IADW(8),IADT3(8)
+C
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPA(255),IRREPB(255),
+     1                DIRPRD(8,8)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON /SYM/    POP(8,2),VRT(8,2),NTAA,NTBB,NF1AA,NF2AA,
+     1                NF1BB,NF2BB
+C
+      COMMON /T3OFF/  IOFFVV(8,8,10),IOFFOO(8,8,10),IOFFVO(8,8,4)
+      COMMON /T2ILIS/ LIST2I1,LIST2I2,LIST2I3
+      COMMON /LISWI/  LWIC11,LWIC12,LWIC13,LWIC14,
+     1                LWIC15,LWIC16,LWIC17,LWIC18,
+     1                LWIC21,LWIC22,LWIC23,LWIC24,
+     1                LWIC25,LWIC26,LWIC27,LWIC28,
+     1                LWIC31,LWIC32,LWIC33,
+     1                LWIC34,LWIC35,LWIC36,
+     1                LWIC37,LWIC38,LWIC39,LWIC40,LWIC41,LWIC42
+C
+      INDEX(I) = I*(I-1)/2
+C
+      IF(IUHF.EQ.0) GOTO 500
+C
+C     ROUTINE TO COMPUTE INCLUSION OF T3 AAB T2 AA AND T2 AB
+C
+C      AB  AB                      ABC
+C     D   T    =  - SUM  <JK//MC> T       I<J<K   T3(AB,C) * V(C)
+C      IM  IM       J<K            IJK
+C                    C
+C
+C      AA  AA             AB  AB   AAB
+C      AA  AA                      AAB
+C
+      IOFFV = 1
+      JK = IOFFOO(IRPK,IRPJK,5) + (K-1)*POP(IRPJ,1) + J
+      CALL GETLST(ICORE(IOFFV),JK,1,2,IRPJK,LWIC24)
+C
+      IOFFT2 = IOFFV + IRPDPD(IRPJK,18)
+C
+      DO   50 IRPC=1,NIRREP
+C
+      IRPM = DIRPRD(IRPC,IRPJK)
+C
+      IF(VRT(IRPC,2).EQ.0.OR.POP(IRPM,1).EQ.0) GOTO 50
+C
+      IRPIM = DIRPRD(IRPI,IRPM)
+      IRPAB = DIRPRD(IRREPX,IRPIM)
+c     IRPAB = DIRPRD(IRPC,IRPIJK)
+C
+      IF(IRPM.GT.IRPI)THEN
+C
+      DO   10 M=1,POP(IRPM,1)
+      IM = IOFFOO(IRPM,IRPIM,1) + (M-1)*POP(IRPI,1) + I
+      CALL GETLST(ICORE(IOFFT2+(M-1)*IRPDPD(IRPAB,1)),
+     1            IM,1,1,IRPIM,LIST2I1)
+   10 CONTINUE
+C
+C    D2T2(A<B,M) = T3(A<B,c) * V(c,M)
+C
+      CALL XGEMM('N','T',IRPDPD(IRPAB,1),POP(IRPM,1),VRT(IRPC,2),
+     1          -1.0D+00,
+     1           T3(IADT3(IRPC)),IRPDPD(IRPAB,1),
+     1           ICORE(IOFFV),POP(IRPM,1),
+     1           1.0D+00,ICORE(IOFFT2),IRPDPD(IRPAB,1))
+C
+      DO   20 M=1,POP(IRPM,1)
+      IM = IOFFOO(IRPM,IRPIM,1) + (M-1)*POP(IRPI,1) + I
+      CALL PUTLST(ICORE(IOFFT2+(M-1)*IRPDPD(IRPAB,1)),
+     1            IM,1,1,IRPIM,LIST2I1)
+   20 CONTINUE
+      ENDIF
+C
+      IF(IRPM.LT.IRPI)THEN
+      IM = IOFFOO(IRPI,IRPIM,1) + (I-1)*POP(IRPM,1) + 1
+      CALL GETLST(ICORE(IOFFT2),IM,POP(IRPM,1),1,IRPIM,LIST2I1)
+C
+      CALL XGEMM('N','T',IRPDPD(IRPAB,1),POP(IRPM,1),VRT(IRPC,2),
+     1           1.0D+00,
+     1           T3(IADT3(IRPC)),IRPDPD(IRPAB,1),
+     1           ICORE(IOFFV),POP(IRPM,1),
+     1           1.0D+00,ICORE(IOFFT2),IRPDPD(IRPAB,1))
+C
+      CALL PUTLST(ICORE(IOFFT2),IM,POP(IRPM,1),1,IRPIM,LIST2I1)
+      ENDIF
+C
+      IF(IRPM.EQ.IRPI.AND.POP(IRPM,1).GT.1)THEN
+C
+      DO   30 M=1,POP(IRPM,1)
+      IF(M.GT.I)THEN
+      IM = IOFFOO(IRPM,IRPIM,1) + INDEX(M-1) + I
+      CALL GETLST(ICORE(IOFFT2+(M-1)*IRPDPD(IRPAB,1)),
+     1            IM,1,1,IRPIM,LIST2I1)
+      ENDIF
+      IF(M.LT.I)THEN
+      IM = IOFFOO(IRPI,IRPIM,1) + INDEX(I-1) + M
+      CALL GETLST(ICORE(IOFFT2+(M-1)*IRPDPD(IRPAB,1)),
+     1            IM,1,1,IRPIM,LIST2I1)
+      CALL VMINUS(ICORE(IOFFT2+(M-1)*IRPDPD(IRPAB,1)),IRPDPD(IRPAB,1))
+      ENDIF
+   30 CONTINUE
+C
+      CALL XGEMM('N','T',IRPDPD(IRPAB,1),POP(IRPM,1),VRT(IRPC,2),
+     1          -1.0D+00,
+     1           T3(IADT3(IRPC)),IRPDPD(IRPAB,1),
+     1           ICORE(IOFFV),POP(IRPM,1),
+     1           1.0D+00,ICORE(IOFFT2),IRPDPD(IRPAB,1))
+C
+      DO   40 M=1,POP(IRPM,1)
+      IF(M.GT.I)THEN
+      IM = IOFFOO(IRPM,IRPIM,1) + INDEX(M-1) + I
+      CALL PUTLST(ICORE(IOFFT2+(M-1)*IRPDPD(IRPAB,1)),
+     1            IM,1,1,IRPIM,LIST2I1)
+      ENDIF
+      IF(M.LT.I)THEN
+      IM = IOFFOO(IRPI,IRPIM,1) + INDEX(I-1) + M
+      CALL VMINUS(ICORE(IOFFT2+(M-1)*IRPDPD(IRPAB,1)),IRPDPD(IRPAB,1))
+      CALL PUTLST(ICORE(IOFFT2+(M-1)*IRPDPD(IRPAB,1)),
+     1            IM,1,1,IRPIM,LIST2I1)
+      ENDIF
+   40 CONTINUE
+      ENDIF
+C
+      IOFFV = IOFFV + POP(IRPM,1) * VRT(IRPC,2)
+   50 CONTINUE
+C
+C      AB  AB                      ABC
+C     D   T    =    SUM  <IK//MC> T       I<J<K   T3(AB,C) * V(C)
+C      JM  JM       I<K            IJK
+C                    C
+C
+C      AA  AA             AB  AB   AAB
+C      AA  AA                      AAB
+C
+C
+      IOFFV = 1
+      IK = IOFFOO(IRPK,IRPIK,5) + (K-1)*POP(IRPI,1) + I
+      CALL GETLST(ICORE(IOFFV),IK,1,2,IRPIK,LWIC24)
+C
+      IOFFT2 = IOFFV + IRPDPD(IRPIK,18)
+C
+      DO  100 IRPC=1,NIRREP
+C
+      IRPM = DIRPRD(IRPC,IRPIK)
+C
+      IF(VRT(IRPC,2).EQ.0.OR.POP(IRPM,1).EQ.0) GOTO 100
+C
+      IRPJM = DIRPRD(IRPJ,IRPM)
+      IRPAB = DIRPRD(IRREPX,IRPJM)
+c     IRPAB = DIRPRD(IRPC,IRPIJK)
+C
+      IF(IRPM.GT.IRPJ)THEN
+C
+      DO   60 M=1,POP(IRPM,1)
+      JM = IOFFOO(IRPM,IRPJM,1) + (M-1)*POP(IRPJ,1) + J
+      CALL GETLST(ICORE(IOFFT2+(M-1)*IRPDPD(IRPAB,1)),
+     1            JM,1,1,IRPJM,LIST2I1)
+   60 CONTINUE
+C
+C    D2T2(A<B,M) = T3(A<B,c) * V(c,M)
+C
+      CALL XGEMM('N','T',IRPDPD(IRPAB,1),POP(IRPM,1),VRT(IRPC,2),
+     1           1.0D+00,
+     1           T3(IADT3(IRPC)),IRPDPD(IRPAB,1),
+     1           ICORE(IOFFV),POP(IRPM,1),
+     1           1.0D+00,ICORE(IOFFT2),IRPDPD(IRPAB,1))
+C
+      DO   70 M=1,POP(IRPM,1)
+      JM = IOFFOO(IRPM,IRPJM,1) + (M-1)*POP(IRPJ,1) + J
+      CALL PUTLST(ICORE(IOFFT2+(M-1)*IRPDPD(IRPAB,1)),
+     1            JM,1,1,IRPJM,LIST2I1)
+   70 CONTINUE
+      ENDIF
+C
+      IF(IRPM.LT.IRPJ)THEN
+      JM = IOFFOO(IRPJ,IRPJM,1) + (J-1)*POP(IRPM,1) + 1
+      CALL GETLST(ICORE(IOFFT2),JM,POP(IRPM,1),1,IRPJM,LIST2I1)
+C
+      CALL XGEMM('N','T',IRPDPD(IRPAB,1),POP(IRPM,1),VRT(IRPC,2),
+     1          -1.0D+00,
+     1           T3(IADT3(IRPC)),IRPDPD(IRPAB,1),
+     1           ICORE(IOFFV),POP(IRPM,1),
+     1           1.0D+00,ICORE(IOFFT2),IRPDPD(IRPAB,1))
+C
+      CALL PUTLST(ICORE(IOFFT2),JM,POP(IRPM,1),1,IRPJM,LIST2I1)
+      ENDIF
+C
+      IF(IRPM.EQ.IRPJ.AND.POP(IRPM,1).GT.1)THEN
+C
+      DO   80 M=1,POP(IRPM,1)
+      IF(M.GT.J)THEN
+      JM = IOFFOO(IRPM,IRPJM,1) + INDEX(M-1) + J
+      CALL GETLST(ICORE(IOFFT2+(M-1)*IRPDPD(IRPAB,1)),
+     1            JM,1,1,IRPJM,LIST2I1)
+      ENDIF
+      IF(M.LT.J)THEN
+      JM = IOFFOO(IRPJ,IRPJM,1) + INDEX(J-1) + M
+      CALL GETLST(ICORE(IOFFT2+(M-1)*IRPDPD(IRPAB,1)),
+     1            JM,1,1,IRPJM,LIST2I1)
+      CALL VMINUS(ICORE(IOFFT2+(M-1)*IRPDPD(IRPAB,1)),IRPDPD(IRPAB,1))
+      ENDIF
+   80 CONTINUE
+C
+      CALL XGEMM('N','T',IRPDPD(IRPAB,1),POP(IRPM,1),VRT(IRPC,2),
+     1           1.0D+00,
+     1           T3(IADT3(IRPC)),IRPDPD(IRPAB,1),
+     1           ICORE(IOFFV),POP(IRPM,1),
+     1           1.0D+00,ICORE(IOFFT2),IRPDPD(IRPAB,1))
+C
+      DO   90 M=1,POP(IRPM,1)
+      IF(M.GT.J)THEN
+      JM = IOFFOO(IRPM,IRPJM,1) + INDEX(M-1) + J
+      CALL PUTLST(ICORE(IOFFT2+(M-1)*IRPDPD(IRPAB,1)),
+     1            JM,1,1,IRPJM,LIST2I1)
+      ENDIF
+      IF(M.LT.J)THEN
+      JM = IOFFOO(IRPJ,IRPJM,1) + INDEX(J-1) + M
+      CALL VMINUS(ICORE(IOFFT2+(M-1)*IRPDPD(IRPAB,1)),IRPDPD(IRPAB,1))
+      CALL PUTLST(ICORE(IOFFT2+(M-1)*IRPDPD(IRPAB,1)),
+     1            JM,1,1,IRPJM,LIST2I1)
+      ENDIF
+   90 CONTINUE
+      ENDIF
+C
+      IOFFV = IOFFV + POP(IRPM,1) * VRT(IRPC,2)
+  100 CONTINUE
+C
+C      BC  BC                      ABC
+C     D   T    =    SUM  <IJ//MA> T       I<J<K   W(A,BC) * V(A)
+C      MK  MK       I<J            IJK
+C                    A
+C
+C      AB  AB             AA  AA   AAB
+C      AB  AB                      AAB
+C
+      IOFFV = 1
+      IF(IRPI.EQ.IRPJ)THEN
+      IJ = IOFFOO(IRPJ,IRPIJ,1) + INDEX(J-1) + I
+      ELSE
+      IJ = IOFFOO(IRPJ,IRPIJ,1) + (J-1)*POP(IRPI,1) + I
+      ENDIF
+      CALL GETLST(ICORE(IOFFV),IJ,1,2,IRPIJ,LWIC21)
+C
+      IOFFT2 = IOFFV + IRPDPD(IRPIJ,16)
+C
+      DO  150 IRPA=1,NIRREP
+C
+      IRPM = DIRPRD(IRPA,IRPIJ)
+C
+      IF(VRT(IRPA,1).EQ.0.OR.POP(IRPM,1).EQ.0) GOTO 150
+C
+      IRPMK = DIRPRD(IRPM,IRPK)
+      MK = IOFFOO(IRPK,IRPMK,5) + (K-1)*POP(IRPM,1) + 1
+      CALL GETLST(ICORE(IOFFT2),MK,POP(IRPM,1),1,IRPMK,LIST2I3)
+C
+      IRPBC = DIRPRD(IRREPX,IRPMK)
+c     IRPBC = DIRPRD(IRPA,IRPIJK)
+C
+      CALL XGEMM('N','T',IRPDPD(IRPBC,13),POP(IRPM,1),VRT(IRPA,1),
+     1           1.0D+00,
+     1           W(IADW(IRPA)),IRPDPD(IRPBC,13),
+     1           ICORE(IOFFV),POP(IRPM,1),
+     1           1.0D+00,ICORE(IOFFT2),IRPDPD(IRPBC,13))
+      CALL PUTLST(ICORE(IOFFT2),MK,POP(IRPM,1),1,IRPMK,LIST2I3)
+C
+      IOFFV = IOFFV + POP(IRPM,1) * VRT(IRPA,1)
+  150 CONTINUE
+C
+C      BC  BC                      ABC
+C     D   T    =    SUM  <JK//AM> T       I<J<K   W(A,BC) * V(A)
+C      IM  IM       J<K            IJK
+C                    A
+C
+C      AB  AB             AB  AB   AAB
+C      AB  AB                      AAB
+C
+C
+      IOFFV = 1
+      JK = IOFFOO(IRPK,IRPJK,5) + (K-1)*POP(IRPJ,1) + J
+      CALL GETLST(ICORE(IOFFV),JK,1,2,IRPJK,LWIC23)
+C
+      IOFFT2 = IOFFV + IRPDPD(IRPJK,11)
+C
+      DO  200 IRPM=1,NIRREP
+C
+      IRPA = DIRPRD(IRPM,IRPJK)
+C
+      IF(VRT(IRPA,1).EQ.0.OR.POP(IRPM,2).EQ.0) GOTO 200
+C
+      IRPIM = DIRPRD(IRPI,IRPM)
+      IRPBC = DIRPRD(IRREPX,IRPIM)
+c     IRPBC = DIRPRD(IRPA,IRPIJK)
+C
+      DO  160 M=1,POP(IRPM,2)
+      IM = IOFFOO(IRPM,IRPIM,5) + (M-1)*POP(IRPI,1) + I
+      CALL GETLST(ICORE(IOFFT2+(M-1)*IRPDPD(IRPBC,13)),
+     1            IM,1,1,IRPIM,LIST2I3)
+  160 CONTINUE
+C
+      CALL XGEMM('N','N',IRPDPD(IRPBC,13),POP(IRPM,2),VRT(IRPA,1),
+     1            1.0D+00,
+     1           W(IADW(IRPA)),IRPDPD(IRPBC,13),
+     1           ICORE(IOFFV),VRT(IRPA,1),
+     1            1.0D+00,
+     1           ICORE(IOFFT2),IRPDPD(IRPBC,13)) 
+C
+      DO  170 M=1,POP(IRPM,2)
+      IM = IOFFOO(IRPM,IRPIM,5) + (M-1)*POP(IRPI,1) + I
+      CALL PUTLST(ICORE(IOFFT2+(M-1)*IRPDPD(IRPBC,13)),
+     1            IM,1,1,IRPIM,LIST2I3)
+  170 CONTINUE
+C
+      IOFFV = IOFFV + VRT(IRPA,1) * POP(IRPM,2)
+  200 CONTINUE
+C
+C      BC  BC                      ABC
+C     D   T    =  - SUM  <IK//AM> T       I<J<K   W(A,BC) * V(A)
+C      JM  JM       I<K            IJK
+C                    A
+C
+C      AB  AB             AB  AB   AAB
+C      AB  AB                      AAB
+C
+C
+      IOFFV = 1
+      IK = IOFFOO(IRPK,IRPIK,5) + (K-1)*POP(IRPI,1) + I
+      CALL GETLST(ICORE(IOFFV),IK,1,2,IRPIK,LWIC23)
+C
+      IOFFT2 = IOFFV + IRPDPD(IRPIK,11)
+C
+      DO  250 IRPM=1,NIRREP
+C
+      IRPA  = DIRPRD(IRPM,IRPIK)
+C
+      IF(VRT(IRPA,1).EQ.0.OR.POP(IRPM,2).EQ.0) GOTO 250
+C
+      IRPJM = DIRPRD(IRPJ,IRPM)
+      IRPBC = DIRPRD(IRREPX,IRPJM)
+c     IRPBC = DIRPRD(IRPA,IRPIJK)
+C
+      DO  210 M=1,POP(IRPM,2)
+      JM = IOFFOO(IRPM,IRPJM,5) + (M-1)*POP(IRPJ,1) + J
+      CALL GETLST(ICORE(IOFFT2+(M-1)*IRPDPD(IRPBC,13)),
+     1            JM,1,1,IRPJM,LIST2I3)
+  210 CONTINUE
+C
+      CALL XGEMM('N','N',IRPDPD(IRPBC,13),POP(IRPM,2),VRT(IRPA,1),
+     1           -1.0D+00,
+     1           W(IADW(IRPA)),IRPDPD(IRPBC,13),
+     1           ICORE(IOFFV),VRT(IRPA,1),
+     1            1.0D+00,
+     1           ICORE(IOFFT2),IRPDPD(IRPBC,13)) 
+C
+      DO  230 M=1,POP(IRPM,2)
+      JM = IOFFOO(IRPM,IRPJM,5) + (M-1)*POP(IRPJ,1) + J
+      CALL PUTLST(ICORE(IOFFT2+(M-1)*IRPDPD(IRPBC,13)),
+     1            JM,1,1,IRPJM,LIST2I3)
+  230 CONTINUE
+C
+      IOFFV = IOFFV + VRT(IRPA,1) * POP(IRPM,2)
+  250 CONTINUE
+      RETURN
+C
+  500 CONTINUE
+C
+C     RHF closed-shell specific.
+C
+C
+C      BC  BC                      ABC
+C     D   T    =    SUM  <IJ//MA> T       I<J<K   W(A,BC) * V(A)
+C      MK  MK       I<J            IJK
+C                    A
+C
+C      AB  AB             AA  AA   AAB
+C      AB  AB                      AAB
+C
+c      IOFFV = 1
+c      IF(IRPI.EQ.IRPJ)THEN
+c      IJ = IOFFOO(IRPJ,IRPIJ,1) + INDEX(J-1) + I
+c      ELSE
+c      IJ = IOFFOO(IRPJ,IRPIJ,1) + (J-1)*POP(IRPI,1) + I
+c      ENDIF
+c      CALL GETLST(ICORE(IOFFV),IJ,1,2,IRPIJ,LWIC21)
+C
+c      IADT2  = IOFFV + IRPDPD(IRPIJ,16)
+C
+      IOFFV  = 1
+      IOFFV2 = IOFFV + IRPDPD(IRPIJ,16)
+      IJ = IOFFOO(IRPJ,IRPIJ,5) + (J-1)*POP(IRPI,1) + I
+      JI = IOFFOO(IRPI,IRPIJ,5) + (I-1)*POP(IRPJ,1) + J
+      CALL GETLST(ICORE(IOFFV ),IJ,1,2,IRPIJ,LWIC24)
+      CALL GETLST(ICORE(IOFFV2),JI,1,2,IRPIJ,LWIC24)
+      CALL VADD(ICORE(IOFFV),ICORE(IOFFV),ICORE(IOFFV2),
+     1          IRPDPD(IRPIJ,16),-1.0D+00)
+      IADT2  = IOFFV2 + IRPDPD(IRPIJ,16)
+C
+      DO  550 IRPA=1,NIRREP
+C
+      IRPM = DIRPRD(IRPA,IRPIJ)
+C
+      IF(VRT(IRPA,1).EQ.0.OR.POP(IRPM,1).EQ.0) GOTO 550
+C
+      IRPMK = DIRPRD(IRPM,IRPK)
+      IRPBC = DIRPRD(IRREPX,IRPMK)
+C
+      CALL XGEMM('N','T',IRPDPD(IRPBC,13),POP(IRPM,1),VRT(IRPA,1),
+     1            1.0D+00,
+     1            W(IADW(IRPA)),IRPDPD(IRPBC,13),
+     1            ICORE(IOFFV),POP(IRPM,1),0.0D+00,
+     1            ICORE(IADT2),IRPDPD(IRPBC,13))
+C
+      IADT2I = IADT2        + IRPDPD(IRPBC,13) * POP(IRPM,1)
+      DO  520 M=1,POP(IRPM,1)
+C
+      MK = IOFFOO(IRPK,IRPMK,5) + (K-1)*POP(IRPM,1) + M
+      CALL GETLST(ICORE(IADT2I),MK,1,1,IRPMK,LIST2I3)
+      CALL   VADD(ICORE(IADT2I),ICORE(IADT2I),
+     1            ICORE(IADT2 + (M-1)*IRPDPD(IRPBC,13)),
+     1            IRPDPD(IRPBC,13), 1.0D+00)
+      CALL PUTLST(ICORE(IADT2I),MK,1,1,IRPMK,LIST2I3)
+C
+      CALL SYMTR3(IRPBC,VRT(1,2),VRT(1,1),IRPDPD(IRPBC,13),1,
+     1            ICORE(IADT2 + (M-1)*IRPDPD(IRPBC,13)),
+     1            SCR1,SCR2,SCR3)
+C
+      KM = IOFFOO(IRPM,IRPMK,6) + (M-1)*POP(IRPK,2) + K
+      CALL GETLST(ICORE(IADT2I),KM,1,1,IRPMK,LIST2I3)
+      CALL   VADD(ICORE(IADT2I),ICORE(IADT2I),
+     1            ICORE(IADT2 + (M-1)*IRPDPD(IRPBC,13)),
+     1            IRPDPD(IRPBC,13), 1.0D+00)
+      CALL PUTLST(ICORE(IADT2I),KM,1,1,IRPMK,LIST2I3)
+  520 CONTINUE
+C
+      IOFFV = IOFFV + POP(IRPM,1) * VRT(IRPA,1)
+  550 CONTINUE
+C
+C      BC  BC                      ABC
+C     D   T    =    SUM  <JK//AM> T       I<J<K   W(A,BC) * V(A)
+C      IM  IM       J<K            IJK
+C                    A
+C
+C      AB  AB             AB  AB   AAB
+C      AB  AB                      AAB
+C
+C
+      IOFFV = 1
+      JK = IOFFOO(IRPJ,IRPJK,5) + (J-1)*POP(IRPK,2) + K
+      CALL GETLST(ICORE(IOFFV),JK,1,2,IRPJK,LWIC24)
+C
+      IADT2  = IOFFV + IRPDPD(IRPJK,18)
+C
+      DO  600 IRPA=1,NIRREP
+C
+      IRPM = DIRPRD(IRPA,IRPJK)
+C
+      IF(POP(IRPM,2).EQ.0.OR.VRT(IRPA,1).EQ.0) GOTO 600
+C
+      IRPIM = DIRPRD(IRPI,IRPM)
+      IRPBC = DIRPRD(IRREPX,IRPIM)
+C
+      CALL XGEMM('N','T',IRPDPD(IRPBC,13),POP(IRPM,2),VRT(IRPA,1),
+     1            1.0D+00,
+     1            W(IADW(IRPA)),IRPDPD(IRPBC,13),
+     1            ICORE(IOFFV),POP(IRPM,2), 0.0D+00,
+     1            ICORE(IADT2),IRPDPD(IRPBC,13))
+C
+      IADT2I = IADT2        + IRPDPD(IRPBC,13) * POP(IRPM,2)
+C
+      DO  560 M=1,POP(IRPM,2)
+C
+      IM = IOFFOO(IRPM,IRPIM,5) + (M-1)*POP(IRPI,1) + I
+      CALL GETLST(ICORE(IADT2I),IM,1,1,IRPIM,LIST2I3)
+      CALL   VADD(ICORE(IADT2I),ICORE(IADT2I),
+     1            ICORE(IADT2 + (M-1)*IRPDPD(IRPBC,13)),
+     1            IRPDPD(IRPBC,13), 1.0D+00)
+      CALL PUTLST(ICORE(IADT2I),IM,1,1,IRPIM,LIST2I3)
+C
+      CALL SYMTR3(IRPBC,VRT(1,2),VRT(1,1),IRPDPD(IRPBC,13),1,
+     1            ICORE(IADT2 + (M-1)*IRPDPD(IRPBC,13)),
+     1            SCR1,SCR2,SCR3)
+C
+      MI = IOFFOO(IRPI,IRPIM,6) + (I-1)*POP(IRPM,2) + M
+      CALL GETLST(ICORE(IADT2I),MI,1,1,IRPIM,LIST2I3)
+      CALL   VADD(ICORE(IADT2I),ICORE(IADT2I),
+     1            ICORE(IADT2 + (M-1)*IRPDPD(IRPBC,13)),
+     1            IRPDPD(IRPBC,13), 1.0D+00)
+      CALL PUTLST(ICORE(IADT2I),MI,1,1,IRPIM,LIST2I3)
+  560 CONTINUE
+C
+      IOFFV = IOFFV + POP(IRPM,2) * VRT(IRPA,1)
+  600 CONTINUE
+C
+C      BC  BC                      ABC
+C     D   T    =  - SUM  <IK//AM> T       I<J<K   W(A,BC) * V(A)
+C      JM  JM       I<K            IJK
+C                    A
+C
+C      AB  AB             AB  AB   AAB
+C      AB  AB                      AAB
+C
+      IOFFV = 1
+      IK = IOFFOO(IRPI,IRPIK,5) + (I-1)*POP(IRPK,2) + K
+      CALL GETLST(ICORE(IOFFV),IK,1,2,IRPIK,LWIC24)
+C
+      IADT2  = IOFFV + IRPDPD(IRPIK,18)
+C
+      DO  700 IRPA=1,NIRREP
+C
+      IRPM = DIRPRD(IRPA,IRPIK)
+C
+      IF(POP(IRPM,2).EQ.0.OR.VRT(IRPA,1).EQ.0) GOTO 700
+C
+      IRPJM = DIRPRD(IRPJ,IRPM)
+      IRPBC = DIRPRD(IRREPX,IRPJM)
+C
+      CALL XGEMM('N','T',IRPDPD(IRPBC,13),POP(IRPM,2),VRT(IRPA,1),
+     1            -1.0D+00,
+     1            W(IADW(IRPA)),IRPDPD(IRPBC,13),
+     1            ICORE(IOFFV),POP(IRPM,2), 0.0D+00,
+     1            ICORE(IADT2),IRPDPD(IRPBC,13))
+C
+      IADT2I = IADT2        + IRPDPD(IRPBC,13) * POP(IRPM,2)
+C
+      DO  660 M=1,POP(IRPM,2)
+C
+      JM = IOFFOO(IRPM,IRPJM,5) + (M-1)*POP(IRPJ,1) + J
+      CALL GETLST(ICORE(IADT2I),JM,1,1,IRPJM,LIST2I3)
+      CALL   VADD(ICORE(IADT2I),ICORE(IADT2I),
+     1            ICORE(IADT2 + (M-1)*IRPDPD(IRPBC,13)),
+     1            IRPDPD(IRPBC,13), 1.0D+00)
+      CALL PUTLST(ICORE(IADT2I),JM,1,1,IRPJM,LIST2I3)
+C
+      CALL SYMTR3(IRPBC,VRT(1,2),VRT(1,1),IRPDPD(IRPBC,13),1,
+     1            ICORE(IADT2 + (M-1)*IRPDPD(IRPBC,13)),
+     1            SCR1,SCR2,SCR3)
+C
+      MJ = IOFFOO(IRPJ,IRPJM,6) + (J-1)*POP(IRPM,2) + M
+      CALL GETLST(ICORE(IADT2I),MJ,1,1,IRPJM,LIST2I3)
+      CALL   VADD(ICORE(IADT2I),ICORE(IADT2I),
+     1            ICORE(IADT2 + (M-1)*IRPDPD(IRPBC,13)),
+     1            IRPDPD(IRPBC,13), 1.0D+00)
+      CALL PUTLST(ICORE(IADT2I),MJ,1,1,IRPJM,LIST2I3)
+  660 CONTINUE
+C
+      IOFFV = IOFFV + POP(IRPM,2) * VRT(IRPA,1)
+  700 CONTINUE
+C
+      RETURN
+      END

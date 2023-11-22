@@ -1,0 +1,9 @@
+      SUBROUTINE DEWQ1(T,E,N)
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      DIMENSION T(N),E(N)
+C
+      DO 100 I=1,N
+       T(I)=T(I)/E(I)
+100   CONTINUE
+      RETURN
+      END

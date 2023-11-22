@@ -1,0 +1,15 @@
+subroutine buildEps0(p,V,R0,NSize,NBlock,eps0)
+  integer,intent(in)::NSize,Nblock
+  double precision,intent(in)::p(NSize,NBlock),V(NSize,NSize)
+  double precision,intent(in)::R0(NSize,NSize)
+  double precision,intent(inout)::eps0(Nblock,Nblock)
+
+  double precision:: VR0V(NSize,NSize)
+
+  VR0V=0.0d0
+  VR0V=matmul(matmul(V,R0),V)
+
+  eps0=matmul(matmul(transpose(p(:,:Nblock)),VR0V),p)
+
+  
+end subroutine

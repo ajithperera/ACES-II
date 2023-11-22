@@ -1,0 +1,145 @@
+C
+C ***************************************************************
+C FOLLOWING ARE A LARGE NUMBER OF SUBROUTINES THAT RELATE TO THE DIRECT 
+C DIAGONALIZATION PROCEDURE, BASED ON DAVIDSON'S ALGORITHM
+C ***************************************************************
+C 
+      SUBROUTINE EIGDAV(ICORE, MAXCOR, IUHF)
+C
+C THIS ROUTINE DRIVES THE CALCULATION OF THE ELECTRON AFFINITIES
+C BY DIAGONALIZATION OF THE EA-EOM MATRIX BY THE DAVIDSON PROCEDURE
+C
+      IMPLICIT INTEGER (A-Z)
+      LOGICAL CONVRG, EXCICORE, LEFTHAND, SINGONLY, DROPCORE
+      DOUBLE PRECISION EIGVAL, OSCSTR
+       CHARACTER *5 SPIN(2)
+C
+      DIMENSION ICORE(MAXCOR)
+C
+      COMMON /EXTINF/NDIMR,IOLDEST
+      COMMON /EXTINF2/ROOT
+      COMMON /EXTINF3/IROOT,LOCROOT,ITROOT
+      COMMON/EXTRAP/MAXEXP,NREDUCE,NTOL,NSIZEC
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPS(255,2),DIRPRD(8,8)
+      COMMON /SYM/ POP(8,2),VRT(8,2),NT(2),NFMI(2),NFEA(2)
+      COMMON /SYMPOP/ IRPDPD(8,22),ISYTYP(2,500),ID(18)
+      COMMON /EAINFO/NUMROOT(8,3)
+      COMMON/EACALC/LEFTHAND, EXCICORE, SINGONLY, DROPCORE
+      COMMON/COREINFO/IREPCORE, SPINCORE, IORBCORE, IORBOCC
+      COMMON /SINFO/ NS(8), SIRREP
+      COMMON /ROOTS/EIGVAL(100,8,3), OSCSTR(100,8,3)
+      COMMON/STINFO/ITOTALS, STMODE, LISTST, STCALC, NSIZEST
+C
+      DATA SPIN /'ALPHA', 'BETA '/
+      PARAMETER (MAXORD = 100)
+C
+      DMAXCOR = MAXCOR/IINTFP
+C
+     
+      DO 100 IRREP = 1, NIRREP
+         DO 50 ISPIN = 1, 1 + IUHF
+            ISTART = 1
+            IEND = 1
+            IF ((EXCICORE) .AND. (ISPIN .EQ. SPINCORE) .AND.
+     $         (STMODE .EQ. 2)) THEN
+               ISTART = 0
+            ENDIF
+            DO 25 IS = ISTART, IEND
+                  ITOTALS = IS
+            IF(NUMROOT(IRREP, ISPIN+1-IS) .GT. 0) THEN
+C
+C FIRST FIND THE DIMENSION OF THE VECTORS
+C
+         CALL IZERO(NS, 8)
+         NS(IRREP) = 1
+         SIRREP = IRREP
+         WRITE(6, 1000)
+         write(6,*) '*********************************************'
+         WRITE (6,*) '  SYMMETRY-BLOCK', SIRREP
+         IF (IUHF .EQ. 0) THEN
+            WRITE(6,*) '  SPIN STATE : DOUBLET ', SPIN(ISPIN)
+         ELSEIF (STMODE.EQ.2) THEN
+            IF (ITOTALS .EQ. 0) THEN
+               WRITE(6,*) '  SPIN STATE : SINGLET ', SPIN(ISPIN)
+            ELSEIF (ITOTALS .EQ. 1) THEN
+               WRITE(6,*) '  SPIN STATE : TRIPLET ', SPIN(ISPIN)
+            ENDIF
+         ELSE
+            WRITE(6,*) '  SPIN STATE : UNKNOWN ', SPIN(ISPIN)
+         ENDIF
+         WRITE(6,1000)
+         CALL GETNEA(NEA, SIRREP, ISPIN, IUHF)
+         CALL GETNEA(NSIZEST, SIRREP, 3-ISPIN, IUHF)
+         write(6,1001) nea
+ 1001    format(' DIMENSION OF CURRENT EA VECTOR : ', i10)
+         WRITE(6,1002) NUMROOT(IRREP, ISPIN+1-IS)
+ 1002    FORMAT(I10, ' ROOTS WILL BE SEARCHED FOR')
+         write(6,*) '*********************************************'
+         WRITE(6,1000)
+C
+         IF (NEA.EQ.0) GO TO 50
+C
+C  CONSTRUCT NEW LIST POSITIONS        
+C
+         ITYP = 2
+         CALL NEWLIST(SIRREP, 1, IUHF, ISPIN, ITYP)
+         CALL INITDAV(NEA, SIRREP, ISPIN, IUHF, ICORE, DMAXCOR)
+         ISIDE = 1
+         TOTITER = 0
+         ITER = 1
+         NROOT = MIN(NUMROOT(SIRREP,ISPIN+1-IS), NEA)
+         ITMAX = 30
+         Write(6,"(26x,a,8x,a,4x,a)") "Root", "Max-resid", "RMS-resid"
+C
+ 1       IF ((IROOT.LT. NROOT) .AND. (NDIMR .LE. NEA)) THEN
+C
+C     FORM EAEOM * C 
+C
+            CALL EADIR(ICORE, MAXCOR, IUHF, ISIDE, ISPIN)
+C
+C     CALL DAVIDSON EXTRAPOLATOR
+C            
+            I000 = 1
+            I010 = I000 + IINTFP*(MAXORD * (2*MAXORD + 3) + 5)
+            I020 = I010 + IINTFP * MAXORD * MAXORD
+            CALL EADAVID(ICORE(I000), ICORE(I010), ICORE(I020),
+     $         (MAXCOR - I020 + 1)/IINTFP, CONVRG, NROOT,
+     $         ISIDE, ISPIN, IUHF, ITER)
+C
+            IF (CONVRG) THEN
+               TOTITER = TOTITER + ITER
+               ITER = 0
+            ENDIF
+            ITER = ITER + 1
+            NDIMR = NDIMR + 1
+            IF (ITER .NE. ITMAX) THEN
+                  GO TO 1
+            ELSE
+         WRITE(6,*)'TOO MANY ITERATIONS: GIVING UP ON THIS SYMMETRY'
+            ENDIF
+C
+         ENDIF
+C
+C           WRITE(6,*) 'TOTAL NUMBER OF ITERATIONS REQUIRED : ', TOTITER
+         NUMROOT(SIRREP, ISPIN+1-IS) = IROOT
+C
+C            CALL ANALEA(IUHF, IRREP, ISPIN)
+         ENDIF
+C
+ 25   CONTINUE
+ 50   CONTINUE
+ 100  CONTINUE
+C
+      CALL TABLEA(IUHF)
+      NROOT = 0
+      DO ISPIN = 1, 1+ IUHF
+         DO IRREP = 1, NIRREP
+            NROOT = NROOT + NUMROOT(IRREP, ISPIN)
+         ENDDO
+      ENDDO
+      IF (NROOT .GE. 3) CALL ANALEXCI(IUHF)
+C
+      RETURN
+ 1000 FORMAT(/)
+      END

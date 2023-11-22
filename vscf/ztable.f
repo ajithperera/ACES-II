@@ -1,0 +1,29 @@
+      SUBROUTINE ZTABLE(Z)
+      IMPLICIT NONE
+      DOUBLE PRECISION Z,FACT
+      INTEGER K,NA,NB,I,J
+      DIMENSION Z(0:16,0:8,0:8)
+C
+      CALL ZERO(Z,17*9*9)
+C
+      DO 50 NB=1,8
+      DO 40 NA=1,8
+C
+      DO 30  K=0,NA+NB
+C
+      DO 20  J=0,NB
+      DO 10  I=0,NA
+C
+      IF(I+J .EQ. K)THEN
+C
+       Z(K,NA,NB) = Z(K,NA,NB) + (-1.0D+00**(NB-J)) * FACT(NA)*FACT(NB)/
+     &              (FACT(I)*FACT(NA-I)*FACT(J)*FACT(NB-J))
+      ENDIF
+   10 CONTINUE
+   20 CONTINUE
+   30 CONTINUE
+   40 CONTINUE
+   50 CONTINUE
+C
+      RETURN
+      END

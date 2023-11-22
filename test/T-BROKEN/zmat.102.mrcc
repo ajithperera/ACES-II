@@ -1,0 +1,77 @@
+NO3- c2v optimization + Noreori
+O
+N 1 R1*
+O 2 R2* 1 A*
+O 2 R2* 1 A* 3 D180
+
+R1=1.36
+R2=1.32
+A=120.0
+D180=180.0
+
+*ACES2
+!restart,NOREORI=ON
+BASIS=STO-3G
+CHARGE=-1
+DROPMO=1-4,CALC=MBPT(2)
+IP_CALC=IP_EOMCC
+DIP_CALC=STEOM,DIP_SYM=0-0-0-0/3-3-3-0
+
+*mrcc_gen
+ip_low=-8
+gradient_type=dip igrad_mult=3 igrad_sym=2 igrad_state=2
+*end
+
+Comments: In running optimizations and tracking states in mrcc it is
+often a good idea to switch NOREORI=ON, as it keeps the orientation of
+the molecule fixed. The following job runs as it is supposed to, but
+if you do NOT include the NOREORI keyword the program optimizes a completely
+different state.
+
+In this case the meaning of the symmetry blocks is not changed (as may happen in
+other situations), but the tracking algorithm monitors the AO basis set, and
+this depends on orientation (px, py, pz)
+
+Please note that we start from the wrong geometry (one long and two short
+bonds), while this is reversed in the final optimized geometry. This is the
+origin of the reorientation as the moment of inertia changes acordingly, and
+this defines the definition of the axis (if noreori is not set). In such cases
+it is good to check symmetry once you run vibrations after the optimization, as
+NOREORI orientation depends on the starting geometry.
+
+TEST.DAT
+d TOTENERG
+ -0.275024512473E+03
+d COORD
+     0.000000000000
+     0.000000000000
+     0.000000000000
+     0.000000000000
+     0.000000000000
+     2.381573397954
+     2.404125786796
+     0.000000000000
+     3.812479936266
+    -2.404125786796
+     0.000000000000
+     3.812479936266
+d E_AVG
+  0.232525440422E+00
+d E_OPEN
+  0.115960660445E+00
+d NUCDIPOL
+     0.000000000000
+     0.000000000000
+    77.670692765935
+d NUCREP
+  0.105255744780E+03
+d PARENERG
+ -0.275140473134E+03
+d REFDIPOL
+     0.000000000000
+     0.000000000000
+    -2.900101164994
+d SCFENEG
+ -0.274930015602E+03
+d TOTENER2
+ -0.275024512473E+03

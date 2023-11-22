@@ -1,0 +1,84 @@
+test -n "$USERDIR" || exit 1
+OLDMOS=$USERDIR/tmp.OLDMOS
+
+# Part 1: generate neutral MOs
+cat <<. >ZMAT
+Generation of MOs for water
+H
+O 1 R
+H 2 R 1 A
+
+R=1.
+A=104.
+
+*ACES2
+BASIS=DZP
+CALC=SCF,spherical=off
+
+Create NEWMOS file to be copied to OLDMOS for
+use as an initial guess in a subsequent H2O+ calculation
+
+.
+ln -s $GENBAS . || exit 1
+xaces2 || exit 1
+mv NEWMOS $OLDMOS || exit 1
+
+# clean
+for file in *
+do case $file in
+   GENBAS|ZMAT.BAS) ;;
+   *) rm -rf $file ;;
+   esac
+done
+
+# Part 2: calculate the cation
+cat <<. >ZMAT
+H2O+ from H2O MOs
+H
+O 1 R
+H 2 R 1 A
+
+R=1.
+A=104.
+
+*ACES2
+CHARGE=+1,MULT=2
+BASIS=DZP,spherical=off
+REF=UHF,GUESS=READ_SO_MOS,CALC=SCF
+
+.
+cat <<. >GUESS
+H2O. TEST.
+  3  1  1  0                 alpha occ
+  3  0  1  0                 beta occ
+  0  0  0  0                 alpha pairs to be swapped in each irrep
+  0  0  0  0
+  0  0  0  0
+  0  0  0  0
+  0  0  0  0                 beta pairs to be swapped in each irrep
+  0  0  0  0
+  0  0  0  0
+  0  0  0  0
+  0  0  0  0                 alpha locking within each irrep
+  0  0  0  0                 beta  locking within each irrep
+  0  0  0  0                 alpha printing of initial guess
+  0  0  0  0                 beta printing of initial guess
+  0  0                       stopping parameters
+  1  0                       reading and writing mos
+  1                          nonzero if a uhf wfn is to be got from rhf
+  0                          nonzero if GUESS is always to be read
+
+.
+mv $OLDMOS OLDMOS || exit 1
+xaces2 || exit 1
+
+exit 0
+TEST.DAT
+d TOTENERG
+ -0.756463177802E+02   0.1E-08
+d NUCREP
+  0.880260376799E+01   0.1E-08
+d SCFENEG
+ -0.756463177802E+02   0.1E-08
+d S2SCF
+  0.757125452462E+00   0.1E-08

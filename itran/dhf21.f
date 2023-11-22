@@ -1,0 +1,233 @@
+      SUBROUTINE DHF21(AOINT,BUF,IBUF,ILNBUF,IRREP,NSTART,NEND,
+     &                 NOCC,NMO,IOFF1,IOFF2,IREORD,RHF,ISPIN)
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      INTEGER DIRPRD,AND,OR
+      LOGICAL RHF
+C
+      DIMENSION AOINT(1),BUF(ILNBUF),IBUF(ILNBUF),IREORD(1)
+C
+      COMMON/INTTOL/TOL
+      COMMON/HF2FIL/LUHF2,LUHFA,LUHFB
+      COMMON/MACHSP/IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON/SYMINF/NDUMMY,NIRREP,IRREPA(255,2),DIRPRD(8,8)
+      COMMON/VTINFO/NPASS1,NPASS2,NPASS3,NPASS4,
+     &              NLOAD1,NLOAD2,NLOAD3,NLOAD4,
+     &              NWRIT1,NWRIT2,NWRIT3,NWRIT4,
+     &              NWRIT1A,NWRIT2A,NWRIT3A,NWRIT4A,
+     &              NWRIT1B,NWRIT2B,NWRIT3B,NWRIT4B
+C
+      IPACK(I,J,K,L)=OR(OR(OR(I,ISHFT(J,IBITWD)),ISHFT(K,2*IBITWD)),
+     &               ISHFT(L,3*IBITWD))
+C
+C LOOP OVER ALL INTEGRALS
+C
+      IF(RHF.OR.ISPIN.LE.2) THEN
+C
+       IF(RHF) THEN
+        LHF2=LUHF2
+       ELSE
+        IF(ISPIN.EQ.1) THEN
+         LHF2=LUHFA
+        ELSE IF(ISPIN.EQ.2) THEN
+         LHF2=LUHFB
+        ENDIF
+       ENDIF
+C
+       IND=0
+       ICNT=0
+       NINT=0
+       DO 100 I=NSTART,NEND
+C
+        IX=IREORD(I+IOFF1)
+C
+        DO 200 J=1,NMO
+C
+         JX=IREORD(J+IOFF1)
+C      
+         DO 300 K=1,NMO
+C
+          KX=IREORD(K+IOFF1)
+C
+          DO 400 L=1,K
+C
+           LX=IREORD(L+IOFF1)
+C
+C  WRITE OUT ONLY CANONICAL INTEGRALS
+C         
+           IND=IND+1
+           IF(JX.LT.IX) GO TO 400
+           IF(JX.GT.KX.AND.L.LE.NOCC) GO TO 400
+           IF(JX.EQ.KX.AND.IX.GT.LX) GO TO 400
+           IF(JX.GT.KX) THEN
+            JXT=KX
+            KXT=JX
+            IXT=LX
+            LXT=IX 
+           ELSE
+            JXT=JX
+            KXT=KX
+            IXT=IX
+            LXT=LX 
+           ENDIF
+           VALUE=AOINT(IND)
+           IF(ABS(VALUE).GT.TOL) THEN
+C
+            ICNT=ICNT+1
+            BUF(ICNT)=VALUE
+            IBUF(ICNT)=IPACK(IXT,JXT,LXT,KXT)
+C
+            IF(ICNT.EQ.ILNBUF) THEN
+C
+C FLUSH BUFFERS
+C
+             WRITE(LHF2) BUF,IBUF,ILNBUF
+C
+             NINT=NINT+ILNBUF
+             ICNT=0
+C
+            ENDIF
+C
+           ENDIF
+C
+400       CONTINUE
+300      CONTINUE
+200     CONTINUE
+100    CONTINUE
+C
+C IF THERE ARE STILL INTEGRALS IN THE BUFFER,
+C DUMP THEM TO HF2
+C
+       IF(ICNT.NE.0) WRITE(LHF2) BUF,IBUF,ICNT
+       NINT=NINT+ICNT
+C
+       IF(RHF) THEN
+        NWRIT1=NWRIT1+NINT
+       ELSE
+        IF(ISPIN.EQ.1) THEN
+         NWRIT1A=NWRIT1A+NINT
+        ELSE
+         NWRIT1B=NWRIT1B+NINT
+        ENDIF
+       ENDIF
+C
+      ELSE IF(ISPIN.EQ.3) THEN
+C
+       IND=0
+       ICNT=0
+       NINT=0
+       DO 1100 I=NSTART,NEND
+C
+        IX=IREORD(I+IOFF1)
+C
+        DO 1200 J=1,NMO
+C
+         JX=IREORD(J+IOFF1)
+C      
+         DO 1300 K=1,NMO
+C
+          KX=IREORD(K+IOFF2)
+C
+          DO 1400 L=1,K
+C
+           LX=IREORD(L+IOFF2)
+C
+C  WRITE OUT ONLY CANONICAL INTEGRALS
+C         
+           IND=IND+1
+           IF(JX.LT.IX) GO TO 1400
+           VALUE=AOINT(IND)
+           IF(ABS(VALUE).GT.TOL) THEN
+C
+            ICNT=ICNT+1
+            BUF(ICNT)=VALUE
+            IBUF(ICNT)=IPACK(LX,KX,IX,JX)
+C
+            IF(ICNT.EQ.ILNBUF) THEN
+C
+C FLUSH BUFFERS
+C
+             WRITE(LUHF2) BUF,IBUF,ILNBUF
+C
+             NINT=NINT+ILNBUF
+             ICNT=0
+C
+            ENDIF
+C
+           ENDIF
+C
+1400       CONTINUE
+1300      CONTINUE
+1200     CONTINUE
+1100    CONTINUE
+C
+C IF THERE ARE STILL INTEGRALS IN THE BUFFER,
+C DUMP THEM TO HF2
+C
+       IF(ICNT.NE.0) WRITE(LUHF2) BUF,IBUF,ICNT
+       NINT=NINT+ICNT
+C
+       NWRIT1=NWRIT1+NINT
+C
+      ELSE IF(ISPIN.EQ.4) THEN
+C
+       IND=0
+       ICNT=0
+       NINT=0
+       DO 2100 I=NSTART,NEND
+C
+        IX=IREORD(I+IOFF1)
+C
+        DO 2200 J=1,NMO
+C
+         JX=IREORD(J+IOFF1)
+C      
+         DO 2300 K=1,NMO
+C
+          KX=IREORD(K+IOFF2)
+C
+          DO 2400 L=1,K
+C
+           LX=IREORD(L+IOFF2)
+C
+C  WRITE OUT ONLY CANONICAL INTEGRALS
+C         
+           IND=IND+1
+           IF(L.LE.NOCC.OR.K.LE.NOCC) GO TO 2400
+           IF(JX.LT.IX) GO TO 2400
+           VALUE=AOINT(IND)
+           IF(ABS(VALUE).GT.TOL) THEN
+C
+            ICNT=ICNT+1
+            BUF(ICNT)=VALUE
+            IBUF(ICNT)=IPACK(IX,JX,LX,KX)
+C
+            IF(ICNT.EQ.ILNBUF) THEN
+C
+C FLUSH BUFFERS
+C
+             WRITE(LUHF2) BUF,IBUF,ILNBUF
+C
+             NINT=NINT+ILNBUF
+             ICNT=0
+C
+            ENDIF
+C
+           ENDIF
+C
+2400       CONTINUE
+2300      CONTINUE
+2200     CONTINUE
+2100    CONTINUE
+C
+C IF THERE ARE STILL INTEGRALS IN THE BUFFER,
+C DUMP THEM TO HF2
+C
+       IF(ICNT.NE.0) WRITE(LUHF2) BUF,IBUF,ICNT
+       NINT=NINT+ICNT
+C
+       NWRIT1=NWRIT1+NINT
+C
+      ENDIF
+C
+      RETURN
+      END 

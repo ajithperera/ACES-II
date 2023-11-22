@@ -1,0 +1,929 @@
+      SUBROUTINE PKSORT(IBKNUM,ICHAIN,BUCK,IBUCK,NINBCK,BUF,IBUF,
+     &                  IBKNMOF,LDIM1,IRECL,NBKINT,ILNBUF,IBKDIS,
+     &                  NBUCK,IUHF)
+C
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C
+      PARAMETER(LUINT=10)
+      PARAMETER(LUSRT1=21)
+      PARAMETER(LUSRT2=22)
+      PARAMETER(LUSRT3=23)
+C
+      INTEGER AND,OR
+      CHARACTER*80 FNAME
+C
+      DIMENSION BUCK(NBKINT,3*NBUCK),IBUCK(NBKINT,3*NBUCK)
+      DIMENSION NINBCK(3*NBUCK),ICHAIN(3*NBUCK)
+      DIMENSION BUF(ILNBUF),IBUF(ILNBUF)
+      DIMENSION IBKNMOF(LDIM1),IBKNUM(IBKDIS)
+C
+      DIMENSION IPKOFF(73)
+C
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /FILES/ LUOUT,MOINTS
+      COMMON /FLAGS/ IFLAGS(100)
+#include "symm2.com"
+      COMMON /PKOFF/ IPKOFF
+      COMMON /TIMEINFO/ TIMEIN, TIMENOW, TIMETOT, TIMENEW
+C
+      DATA TWO /2.0/
+C
+      IUPKI(INT)=AND(INT,IALONE)
+      IUPKJ(INT)=AND(ISHFT(INT,-IBITWD),IALONE)
+      IUPKK(INT)=AND(ISHFT(INT,-2*IBITWD),IALONE)
+      IUPKL(INT)=AND(ISHFT(INT,-3*IBITWD),IALONE)
+      IPACK(I,J,K,L)=OR(OR(OR(I,ISHFT(J,IBITWD)),ISHFT(K,2*IBITWD)),
+     &                  ISHFT(L,3*IBITWD))
+      INDX(I,J)=J+(I*(I-1))/2
+      INDX2(I,J,N)=I+(J-1)*N
+C
+      CALL TIMER(1)
+C
+      IF(IUHF.EQ.0) THEN
+        SCALE=0.25
+      ELSE
+        SCALE=0.5
+      ENDIF
+C
+      NREC1=1
+      NREC2=1
+      NREC3=1
+      CALL GFNAME('AOJ     ',FNAME,ILENGTH)
+      OPEN(UNIT=LUSRT1,FILE=FNAME(1:ILENGTH),FORM='UNFORMATTED',
+     &     ACCESS='DIRECT',RECL=IRECL)
+      CALL GFNAME('AOK1    ',FNAME,ILENGTH)
+      OPEN(UNIT=LUSRT2,FILE=FNAME(1:ILENGTH),FORM='UNFORMATTED',
+     &     ACCESS='DIRECT',RECL=IRECL)
+      CALL GFNAME('AOK2     ',FNAME,ILENGTH)
+      OPEN(UNIT=LUSRT3,FILE=FNAME(1:ILENGTH),FORM='UNFORMATTED',
+     &     ACCESS='DIRECT',RECL=IRECL)
+      CALL TIMER(1)
+      CALL ZERO(BUCK,NBKINT*3*NBUCK)
+      CALL IZERO(IBUCK,NBKINT*3*NBUCK)
+      CALL IZERO(NINBCK,3*NBUCK)
+      CALL IZERO(ICHAIN,3*NBUCK)
+      ICNT=0
+      NAOBUF=0
+      NUMINT=0
+C
+C  Read in the AO integrals one buffer at a time.  Make sure that we
+C  have the indices in canonical order, i.e. i>=j, k>=l, and ij>=kl.
+C
+      CALL LOCATE(LUINT,'TWOELSUP')
+    1 READ(LUINT)BUF,IBUF,NUT
+      NAOBUF=NAOBUF+1
+      DO 10 INT=1,NUT
+        IX=IUPKI(IBUF(INT))
+        JX=IUPKJ(IBUF(INT))
+        KX=IUPKK(IBUF(INT))
+        LX=IUPKL(IBUF(INT))
+        I=MAX(IX,JX)
+        J=MIN(IX,JX)
+        K=MAX(KX,LX)
+        L=MIN(KX,LX)
+        IND1=INDX(I,J)
+        IND2=INDX(K,L)
+        IF(IND1.LT.IND2) THEN
+          IX=I
+          JX=J
+          I=K
+          J=L
+          K=IX
+          L=JX
+        ENDIF
+        X=BUF(INT)
+C
+C  Now deal with the integrals based on what symmetry type it is, i.e.,
+C  (aa|aa), (aa|bb), or (ab|ab).
+C
+        IF(IDXVEC(I).EQ.IDXVEC(J).AND.IDXVEC(I).EQ.IDXVEC(K).AND.
+     &     IDXVEC(I).EQ.IDXVEC(L)) THEN
+          IND1=INDX(INEWVC(I),INEWVC(J))
+          IND2=INDX(INEWVC(K),INEWVC(L))
+          IND3=INDX(INEWVC(I),INEWVC(K))
+          IND4=INDX(MAX(INEWVC(J),INEWVC(L)),MIN(INEWVC(J),
+     &              INEWVC(L)))
+          IND5=INDX(INEWVC(I),INEWVC(L))
+          IND6=INDX(MAX(INEWVC(J),INEWVC(K)),MIN(INEWVC(J),
+     &              INEWVC(K)))
+          IF(IND4.GT.IND3) THEN
+            ICRAP=IND3
+            IND3=IND4
+            IND4=ICRAP
+          ENDIF
+          IF(IND6.GT.IND5) THEN
+            ICRAP=IND5
+            IND5=IND6
+            IND6=ICRAP
+          ENDIF
+          IREPOFF=INDX(IDXVEC(I),IDXVEC(I))
+C++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+C
+C  This handles the most general integral, i.e., those where
+C  all four indices are different.
+C
+          IF((I.NE.J).AND.(I.NE.K).AND.(I.NE.L).AND.(J.NE.K).AND.
+     &       (J.NE.L).AND.(K.NE.L)) THEN
+            IBK=IBKNMOF(IREPOFF)+IND2
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND1,IND2,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+C  We also must dump this integral into the location of its transpose
+C  in the P list.
+C
+            IBK=IBKNMOF(IREPOFF)+IND1
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND2,IND1,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+C  We may have to dump the integral into the K files in a different
+C  order.
+C
+            IF((J.LT.K).AND.(J.GT.L)) THEN
+              IBK=IBKNMOF(IREPOFF)+IND4
+              IBKET=2*NBUCK+IBKNUM(IBK)
+              NINBCK(IBKET)=NINBCK(IBKET)+1
+              BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+              IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND3,IND4,IRPDS1(IREPOFF))
+              IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+              IF(NINBCK(IBKET).EQ.NBKINT) THEN
+                CALL PLUNK(LUSRT3,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                     ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC3)
+              ENDIF
+C
+C  The transpose as well.
+C
+              IBK=IBKNMOF(IREPOFF)+IND3
+              IBKET=2*NBUCK+IBKNUM(IBK)
+              NINBCK(IBKET)=NINBCK(IBKET)+1
+              BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+              IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND4,IND3,IRPDS1(IREPOFF))
+              IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+              IF(NINBCK(IBKET).EQ.NBKINT) THEN
+                CALL PLUNK(LUSRT3,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                     ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC3)
+              ENDIF
+C
+              IBK=IBKNMOF(IREPOFF)+IND6
+              IBKET=NBUCK+IBKNUM(IBK)
+              NINBCK(IBKET)=NINBCK(IBKET)+1
+              BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+              IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND5,IND6,IRPDS1(IREPOFF))
+              IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+              IF(NINBCK(IBKET).EQ.NBKINT) THEN
+                CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                     ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+              ENDIF
+C
+              IBK=IBKNMOF(IREPOFF)+IND5
+              IBKET=NBUCK+IBKNUM(IBK)
+              NINBCK(IBKET)=NINBCK(IBKET)+1
+              BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+              IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND6,IND5,IRPDS1(IREPOFF))
+              IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+              IF(NINBCK(IBKET).EQ.NBKINT) THEN
+                CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                     ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+              ENDIF
+C
+            ELSE
+              IBK=IBKNMOF(IREPOFF)+IND4
+              IBKET=NBUCK+IBKNUM(IBK)
+              NINBCK(IBKET)=NINBCK(IBKET)+1
+              BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+              IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND3,IND4,IRPDS1(IREPOFF))
+              IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+              IF(NINBCK(IBKET).EQ.NBKINT) THEN
+                CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                     ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+              ENDIF
+C
+C  The transpose as well.
+C
+              IBK=IBKNMOF(IREPOFF)+IND3
+              IBKET=NBUCK+IBKNUM(IBK)
+              NINBCK(IBKET)=NINBCK(IBKET)+1
+              BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+              IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND4,IND3,IRPDS1(IREPOFF))
+              IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+              IF(NINBCK(IBKET).EQ.NBKINT) THEN
+                CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                     ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+              ENDIF
+C
+              IBK=IBKNMOF(IREPOFF)+IND6
+              IBKET=2*NBUCK+IBKNUM(IBK)
+              NINBCK(IBKET)=NINBCK(IBKET)+1
+              BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+              IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND5,IND6,IRPDS1(IREPOFF))
+              IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+              IF(NINBCK(IBKET).EQ.NBKINT) THEN
+                CALL PLUNK(LUSRT3,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                     ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC3)
+              ENDIF
+C
+              IBK=IBKNMOF(IREPOFF)+IND5
+              IBKET=2*NBUCK+IBKNUM(IBK)
+              NINBCK(IBKET)=NINBCK(IBKET)+1
+              BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+              IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND6,IND5,IRPDS1(IREPOFF))
+              IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+              IF(NINBCK(IBKET).EQ.NBKINT) THEN
+                CALL PLUNK(LUSRT3,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                     ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC3)
+              ENDIF
+C
+            ENDIF
+C
+C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+C
+C  Now deal with the case where all four indices are the same.
+C
+          ELSEIF((I.EQ.J).AND.(I.EQ.K).AND.(I.EQ.L)) THEN
+            IBK=IBKNMOF(IREPOFF)+IND2
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND1,IND2,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+C  Now put the K elements into the files.
+C
+            IBK=IBKNMOF(IREPOFF)+IND4
+            IBKET=NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND3,IND4,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND6
+            IBKET=2*NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND5,IND6,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT3,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC3)
+            ENDIF
+C
+C++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+C
+C  Now deal with the case where j=k, j=l, and i<>j.
+C
+          ELSEIF((J.EQ.K).AND.(J.EQ.L).AND.(I.NE.J)) THEN
+            IBK=IBKNMOF(IREPOFF)+IND2
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND1,IND2,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND4
+            IBKET=NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND3,IND4,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND6
+            IBKET=2*NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND5,IND6,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT3,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC3)
+            ENDIF
+C
+C  Need the transpose of these P element contributions.
+C
+            IBK=IBKNMOF(IREPOFF)+IND1
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND2,IND1,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND3
+            IBKET=NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND4,IND3,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND5
+            IBKET=2*NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND6,IND5,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT3,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC3)
+            ENDIF
+C
+C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+C
+C  Now deal with the case where i=k, j=l, i<>j.
+C
+          ELSEIF((I.EQ.K).AND.(J.EQ.L).AND.(I.NE.J)) THEN
+            IBK=IBKNMOF(IREPOFF)+IND2
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND1,IND2,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND4
+            IBKET=NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*TWO*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND3,IND4,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND6
+            IBKET=2*NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND5,IND6,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT3,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC3)
+            ENDIF
+C
+C  Need the transpose ONLY for the second index interchange.
+C
+            IBK=IBKNMOF(IREPOFF)+IND3
+            IBKET=NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*TWO*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND4,IND3,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+            ENDIF
+C
+C++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+C
+C  Now deal with the case where i=j, k=l, i<>k.
+C
+          ELSEIF((I.EQ.J).AND.(K.EQ.L).AND.(I.NE.K)) THEN
+            IBK=IBKNMOF(IREPOFF)+IND2
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND1,IND2,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND4
+            IBKET=NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND3,IND4,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+            ENDIF
+C
+C  Need the transpose of the necessary pieces.
+C
+            IBK=IBKNMOF(IREPOFF)+IND1
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND2,IND1,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+C++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+C
+C  This section deals with i=j, i=k, i<>l.
+C
+          ELSEIF((I.EQ.J).AND.(I.EQ.K).AND.(I.NE.L)) THEN
+            IBK=IBKNMOF(IREPOFF)+IND2
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND1,IND2,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND4
+            IBKET=NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND3,IND4,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND6
+            IBKET=2*NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND5,IND6,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT3,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC3)
+            ENDIF
+C
+C  Now deal with the transpose.
+C
+            IBK=IBKNMOF(IREPOFF)+IND1
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND2,IND1,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND3
+            IBKET=NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND4,IND3,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND5
+            IBKET=2*NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND6,IND5,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT3,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC3)
+            ENDIF
+C
+C++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+C
+C  Now deal with the case where j=k, i<>j, i<>l, j<>l.
+C
+          ELSEIF((J.EQ.K).AND.(I.NE.J).AND.(I.NE.L).AND.(J.NE.L)) THEN
+            IBK=IBKNMOF(IREPOFF)+IND2
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND1,IND2,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND4
+            IBKET=NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND3,IND4,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND6
+            IBKET=2*NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*TWO*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND5,IND6,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT3,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC3)
+            ENDIF
+C
+C  Now deal with the transpose
+C
+            IBK=IBKNMOF(IREPOFF)+IND1
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND2,IND1,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND3
+            IBKET=NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND4,IND3,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND5
+            IBKET=2*NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*TWO*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND6,IND5,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT3,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC3)
+            ENDIF
+C
+C++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+C
+C   Now deal with the case where i<>k, j=l, i<>j.
+C
+          ELSEIF((I.NE.K).AND.(J.EQ.L).AND.(I.NE.J)) THEN
+            IBK=IBKNMOF(IREPOFF)+IND2
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND1,IND2,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND4
+            IBKET=NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*TWO*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND3,IND4,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND6
+            IBKET=2*NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND5,IND6,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT3,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC3)
+            ENDIF
+C
+C  Now deal with the transpose.
+C
+            IBK=IBKNMOF(IREPOFF)+IND1
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND2,IND1,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND3
+            IBKET=NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*TWO*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND4,IND3,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND5
+            IBKET=2*NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND6,IND5,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT3,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC3)
+            ENDIF
+C
+C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+C
+C  Now deal with the case where i<>j, i<>k, k=l.
+C
+          ELSEIF((I.NE.J).AND.(I.NE.K).AND.(K.EQ.L)) THEN
+            IBK=IBKNMOF(IREPOFF)+IND2
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND1,IND2,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND4
+            IBKET=NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND3,IND4,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+            ENDIF
+C
+C  Now deal with the transpose.
+C
+            IBK=IBKNMOF(IREPOFF)+IND1
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND2,IND1,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND3
+            IBKET=NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND4,IND3,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+            ENDIF
+C
+C++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+C
+C  Now deal with the case where i=k, i<>j, j<>l.
+C
+          ELSEIF((I.EQ.K).AND.(I.NE.J).AND.(J.NE.L)) THEN
+            IBK=IBKNMOF(IREPOFF)+IND2
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND1,IND2,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND4
+            IBKET=NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*TWO*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND3,IND4,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND6
+            IBKET=2*NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND5,IND6,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT3,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC3)
+            ENDIF
+C
+C  Now deal with the transpose.
+C
+            IBK=IBKNMOF(IREPOFF)+IND1
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND2,IND1,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND3
+            IBKET=NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*TWO*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND4,IND3,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND5
+            IBKET=2*NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND6,IND5,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT3,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC3)
+            ENDIF
+C
+C++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+C
+C   Now deal with the case where i=j, i<>k, k<>l.
+C
+          ELSEIF((I.EQ.J).AND.(I.NE.K).AND.(K.NE.L)) THEN
+            IBK=IBKNMOF(IREPOFF)+IND2
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND1,IND2,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND4
+            IBKET=NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND3,IND4,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+            ENDIF
+C
+C  Now deal with the transpose.
+C
+            IBK=IBKNMOF(IREPOFF)+IND1
+            IBKET=IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND2,IND1,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+            ENDIF
+C
+            IBK=IBKNMOF(IREPOFF)+IND3
+            IBKET=NBUCK+IBKNUM(IBK)
+            NINBCK(IBKET)=NINBCK(IBKET)+1
+            BUCK(NINBCK(IBKET),IBKET)=-SCALE*BUF(INT)
+            IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND4,IND3,IRPDS1(IREPOFF))
+            IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+            IF(NINBCK(IBKET).EQ.NBKINT) THEN
+              CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                   ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+            ENDIF
+C
+          ENDIF
+C
+C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+C
+        ELSEIF(IDXVEC(I).EQ.IDXVEC(J).AND.IDXVEC(K).EQ.IDXVEC(L)
+     &         .AND.IDXVEC(I).NE.IDXVEC(K)) THEN
+          IND1=INDX(INEWVC(I),INEWVC(J))
+          IND2=INDX(INEWVC(K),INEWVC(L))
+          IREPOFF=INDX(IDXVEC(I),IDXVEC(K))
+          IJUNK=INDX(IDXVEC(I)-1,IDXVEC(K))
+          IBK=IBKNMOF(IREPOFF)+IND2
+          IBKET=IBKNUM(IBK)
+          NINBCK(IBKET)=NINBCK(IBKET)+1
+          BUCK(NINBCK(IBKET),IBKET)=BUF(INT)
+          IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND1,IND2,IRPDS2(2*IJUNK-1))
+          IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+          IF(NINBCK(IBKET).EQ.NBKINT) THEN
+            CALL PLUNK(LUSRT1,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                 ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC1)
+          ENDIF
+C
+        ELSEIF(IDXVEC(I).EQ.IDXVEC(K).AND.IDXVEC(J).EQ.IDXVEC(L)
+     &         .AND.IDXVEC(I).NE.IDXVEC(J)) THEN
+          IND1=INDX(INEWVC(I),INEWVC(K))
+          IND2=INDX(MAX(INEWVC(J),INEWVC(L)),MIN(INEWVC(J),
+     &              INEWVC(L)))
+          IREPOFF=INDX(IDXVEC(I),IDXVEC(J))
+          IJUNK=INDX(IDXVEC(I)-1,IDXVEC(J))
+          IBK=IBKNMOF(IREPOFF)+IND2
+          IBKET=NBUCK+IBKNUM(IBK)
+          NINBCK(IBKET)=NINBCK(IBKET)+1
+          IF(I.EQ.K.OR.J.EQ.L) THEN
+            X=TWO*X
+          ENDIF
+          BUCK(NINBCK(IBKET),IBKET)=-SCALE*X
+          IBUF(INT)=IPKOFF(IREPOFF)+INDX2(IND1,IND2,IRPDS2(2*IJUNK-1))
+          IBUCK(NINBCK(IBKET),IBKET)=IBUF(INT)
+          IF(NINBCK(IBKET).EQ.NBKINT) THEN
+            CALL PLUNK(LUSRT2,BUCK(1,IBKET),IBUCK(1,IBKET),
+     &                 ICHAIN(IBKET),NINBCK(IBKET),NBKINT,NREC2)
+          ENDIF
+C
+        ENDIF
+C
+   10 CONTINUE
+      NUMINT=NUMINT+NUT
+      IF(NUT.EQ.ILNBUF) GOTO 1
+C          
+      WRITE(LUOUT,5000)NUMINT
+ 5000 FORMAT(T3,'@PKSORT-I, ',I8,' AO integrals sorted as PK ',
+     &          'list elements.')
+C
+C  Flush remaining buffers
+C
+      DO 20 I=1,NBUCK
+        IBK1=I
+        IBK2=NBUCK+I
+        IBK3=2*NBUCK+I
+        CALL PLUNK(LUSRT1,BUCK(1,IBK1),IBUCK(1,IBK1),ICHAIN(IBK1),
+     &             NINBCK(IBK1),NBKINT,NREC1)
+        CALL PLUNK(LUSRT2,BUCK(1,IBK2),IBUCK(1,IBK2),ICHAIN(IBK2),
+     &             NINBCK(IBK2),NBKINT,NREC2)
+        CALL PLUNK(LUSRT3,BUCK(1,IBK3),IBUCK(1,IBK3),ICHAIN(IBK3),
+     &             NINBCK(IBK3),NBKINT,NREC3)
+   20 CONTINUE
+C
+      CALL TIMER(1)
+C
+      NREC1=NREC1-1
+      NREC2=NREC2-1
+      NREC3=NREC3-1
+      WRITE(LUOUT,5010)NREC1,NREC2+NREC3,TIMENEW
+ 5010 FORMAT(T3,'@PKSORT-I, Wrote out ',I8,' records of J integrals.',/,
+     &       T14,'Wrote out ',I8,' records of K integrals.',/,
+     &       T14,'Integral sort required ',F10.3,' seconds.',/)
+C
+c     close(lusrt1,status='keep')
+c     close(lusrt2,status='keep')
+c     close(lusrt3,status='keep')
+      RETURN
+      END

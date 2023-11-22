@@ -1,0 +1,68 @@
+      SUBROUTINE DETBAS(NBAS)
+C
+CEND
+C
+C CODED NOV/91 JG
+C
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      LOGICAL SHARE,DOPERT,DCORD,DCORGD,NOORBT
+      INTEGER DIRPRD
+      INTEGER AND,OR,XOR
+C
+      DIMENSION NBAS(8)
+C
+#include "baslims.par"
+#include "mxcent.par"
+C
+      COMMON /SHELLSi/ KMAX,
+     &                NHKT(MXSHEL),   KHKT(MXSHEL), MHKT(MXSHEL),
+     &                ISTBAO(MXSHEL), NUCO(MXSHEL), JSTRT(MXSHEL),
+     &                NSTRT(MXSHEL),  MST(MXSHEL),  NCENT(MXSHEL),
+     &                NRCO(MXSHEL), NUMCF(MXSHEL),
+     &                NBCH(MXSHEL),   KSTRT(MXSHEL)
+      COMMON /SHELLS/ CENT(MXSHEL,3), SHARE(MXSHEL)
+      COMMON /SYMMET/ FMULT(0:7), PT(0:7),
+     *                MAXLOP, MAXLOT, MULT(0:7), ISYTYP(3),
+     *                ITYPE(8,36), NPARSU(8), NPAR(8), NAOS(8),
+     *                NPARNU(8,8), IPTSYM(MXCORB,0:7),
+     *                IPTCNT(3*MXCENT,0:7), NCRREP(0:7),
+     *                IPTCOR(MXCENT*3), NAXREP(0:7), IPTAX(3),
+     *                IPTXYZ(3,0:7)
+C
+      IBTAND(I,J) = AND(I,J)
+      IBTOR(I,J) = OR(I,J)
+      IBTXOR(I,J)= XOR(I,J)
+C
+C     LOOP OVER ALL IRREPS
+C
+      DO 100 IRREP=0,MAXLOP
+C
+       IND=0
+C
+C      LOOP OVER ALL SHELLS
+C
+       DO 200 ISHELL=1,KMAX
+C
+        KHKTA=KHKT(ISHELL)
+        NHKTA=NHKT(ISHELL)
+        NRCA=NRCO(ISHELL)
+        MULA=ISTBAO(ISHELL)
+        DO 300 NA=1,KHKTA
+
+        IF(IBTAND(MULA,IBTXOR(IRREP,ITYPE(NHKTA,NA))).EQ.0) THEN
+C
+C        THIS BASIS FUNCTION CONTRIBUTES HERE
+C        LOOP OVER ALL CONTRACTIONS
+C
+         DO 400 IRCA=1,NRCA
+C
+          IND=IND+1
+400      CONTINUE
+        ENDIF
+300     CONTINUE
+200    CONTINUE 
+       NBAS(IRREP+1)=IND
+100   CONTINUE
+C
+      RETURN
+      END

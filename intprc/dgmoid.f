@@ -1,0 +1,48 @@
+      SUBROUTINE DGMOID(ICORE,MAXCOR,NSTO,NIRREP,IUHF)
+      IMPLICIT INTEGER (A-Z)
+      DIMENSION ICORE(MAXCOR)
+      COMMON /FLAGS/ IFLAGS(100)
+      COMMON /MACHSP/ IINTLN,IFLTLN,IINTFP,IALONE,IBITWD
+      COMMON /BUFLEN/ ILNBUF
+      COMMON /INFO/ NOCCO(2),NVRTO(2)
+c----------------------------
+      IR0=1
+      call getrec(20,'JOBARC','NUMDROPA',1,NDROP) 
+      if (ndrop.ne.0) then
+       NBSALL = NOCCO(1) + NVRTO(1) + NDROP 
+       IRIPN = IR0
+       IR0 = IRIPN + 2*NBSALL*(IUHF+1) 
+      endif 
+      ITMP=NSTO*(1+IUHF)
+      IR1=IR0+ITMP+MOD(ITMP,IINTFP)
+      IR2=IR1+(7+2*IUHF)*ILNBUF*IINTFP
+      IR3=IR2+(7+2*IUHF)*ILNBUF*IINTFP
+      IR4=IR3+ILNBUF*IINTFP
+      IR5=IR4+ILNBUF 
+      IR6=IR5+ILNBUF
+      IR7=IR6+ILNBUF
+      IF(IFLAGS(1).GE.100)WRITE(6,1003)IR7
+1003  FORMAT('  Initial AA sort requires ',I8,' words of core.')
+      ISPTOP=2*IUHF
+      DO 50 I=1,MAX(ISPTOP,1)
+       NORB=NOCCO(I)+NVRTO(I)
+       ISTART=NSTO*(I-1)+1
+       CALL GMOIDAA(ICORE(ISTART),ICORE(IR1),ICORE(IR2),ICORE(IR3),
+     &             ICORE(IR4),NOCCO(I),ILNBUF,I,NIRREP,NORB,
+     &             ICORE(IR5),ICORE(IR6),
+     &             ICORE(IRIPN),ICORE(IRIPN+NBSALL),NBSALL,IUHF)
+ 50   CONTINUE
+      IF(IUHF.EQ.1)THEN
+       IRX=IR0+NSTO
+       NORB=NOCCO(1)+NVRTO(1)
+       IF(IFLAGS(1).GE.100)WRITE(6,1004)IR7
+1004   FORMAT('  Initial AB sort requires ',I8,' words of core.')
+       CALL GMOIDAB(ICORE(IR0),ICORE(IRX),ICORE(IR1),ICORE(IR2),
+     &             ICORE(IR3),ICORE(IR4),NOCCO(1),NOCCO(2),ILNBUF,
+     &             3,NIRREP,NORB,ICORE(IR5),ICORE(IR6),
+     &             ICORE(IRIPN),ICORE(IRIPN+NBSALL),
+     &             ICORE(IRIPN+2*NBSALL),ICORE(IRIPN+3*NBSALL), 
+     &             NBSALL) 
+      ENDIF
+      RETURN
+      END

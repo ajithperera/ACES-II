@@ -1,0 +1,192 @@
+
+ - removed machsp2 common block and converted /cache/cachdir to /cache/cachrec,
+   the exact physical record index of the data in each cache slot
+ - removed //icore requirement for caching I/O by inserting /cache/icache anchor
+ - renamed getlst_fetch and putlst_dump to getlst_io and putlst_io
+ - cleaned up ??tlst_io a little
+OKAY
+
+ - added aces_fin call before stopping in lambda and anti when they determine
+   the calculation is unnecessary
+ - added assertion in aces_list_touch that quikget is not set
+ - added iprcrl to filspc.com for looking up iprcwd*idaccm
+ - changed acescore/aces_io_fin to putrec MOIO stats only if modified
+ - changed joda/figio measuring scheme (32-128 cachelines in multiples of 512B)
+ - increased maximum number of cache slots to 128
+ - added "JASTATUS" record in aces_ja_init and aces_ja_fin to check for clean
+   unmount/closure
+OKAY <- TDHF does not call aces_fin before stopping in some places
+
+ - destroyed /icdacc/idaccr
+ - removed redundant aces_com_* calls in main programs
+OKAY
+
+ - took icrsiz out of iopos.com and appended to istart.com (the rest of /iopos/
+   was redundant, so the structure was destroyed)
+ - split global filspc.com into /buflen/ilnbuf (only used by intprc) and
+   /filspc/iprcln,iprcwd (only used by acescore)
+ - changed ilnbuf from 1800 to 1536 (3x512)
+OKAY
+
+ - converted /istart/IO (i-oh) to /istart/i0 (i-zero) in fno/fno, lambda/vlamcc,
+   and dens/vdens
+OKAY
+
+ - moved (libr) getall.f, putall.f, getalt.f, trnlst.f, mtran2, mtran3,
+   mvlist.f, and getlst3.f to acesutil
+ - moved vdint memory reduction out of acescore/aces_init to vdint/vdint
+ - removed /filspc/ilnbuf from acescore/aces_cache_init (still in libr/crapsi)
+OKAY
+
+ - converted vea/updlsts2 to wrap acescore/aces_family_danger
+OKAY
+
+ - removed most "if(bwgossip) write(6,*)..." statements
+ - initialized T1 lists to zero in intprc/focklist
+ - initialized F(A,I) intermediate lists to zero in vcc/insing
+OKAY
+
+ - replaced vdint/reduce call to dcopy with call to c_memmove
+FIXES: [most] <- xmrcc still a tad screwy
+
+ - added overlap checking and trapping in tools/icopy and tools/dcopy (dcopy is
+   wrapped with "#ifdef _DEBUG" so compiling standard source will not pre-empt
+   vendor-supplied BLAS)
+BREAKS: [lots]
+
+ - created large 1-D char arrays for reading/writing 2-D char arrays into the
+   job archive with (get|put)crec (most involving FULLSTGP and COMPSTGP)
+   (Fortran has hidden integers that define the length of character arrays.
+    Passing the first address of an array of strings confuses the LEN intrisic
+    to return the length of the first element and not the length of the entire
+    argument.)
+OKAY
+
+ - converted all references to 'call (get|put)rec.*ptgp' to (get|put)crec
+BREAKS: [everything]
+
+ - wrapped 'call sumsym2' in vee/dt1int2a and vee/dt1int2b with dimension check
+   (don't call if there are no elements to increment)
+FIXES: 53, 55
+
+ - wrapped 'call sumsym2' in vcc/yt1int2a and vcc/yt1int2b with dimension check
+   (don't call if there are no elements to increment)
+FIXES: 23
+
+ - converted libr/crapso to acescore/aces_fin
+ - converted libr/filsum to acescore/aces_io_summary
+ - created acesutil library
+ - moved and rewrote libr/gettrn, libr/gettrn2, libr/sumsym, libr/sumsym2,
+   libr/sumsym3, libr/getcrec, and libr/putcrec to acesutil
+ - (Ajith) fixed high-sym/low-orbital dropmo defect in vtran
+BREAKS: 23, 53, 55
+
+ - moved libr/ishell to tools/ishell
+ - converted libr/updmoi to wrap acescore/aces_list_touch
+OKAY
+
+ - converted libr/getlst and libr/putlst to acescore versions
+OKAY
+
+ - removed updmoi options ienter={2,3}
+OKAY
+
+ - moved acescore precursors (initio, termio, etc.) to acescore directory
+ - stripped libr/bwparinit and libr/bwparend
+OKAY
+
+ - converted moiosz assignments to aces_list_resize
+OKAY
+
+ - converted libr/flushcache to acescore/aces_cache_flush
+OKAY
+
+ - converted wrdir/rddir to aces_io_write/aces_io_read
+ - fixed cachmod defect in libr/updmoi
+OKAY
+
+ - converted libr2/newtyp2 and libr/newtyp to acescore/aces_family_redist
+   wrappers
+ - removed redundant lambda/newtyp2 and vcceh/newtyp2
+OKAY
+
+ - fixed various "if (x*iintfp.lt.maxcor) then" conditionals to divide
+ - converted "call izero(moio.*)" to acescore/aces_io_reset in
+   libr/initio and intprc/clmoio
+ - archived (libr) loadmoio, storemoio, and reopenmo
+OKAY
+
+ - converted libr/isrcheq to tools/iieq (but copied isrcheq to symcor)
+ - converted libr/locchr  to tools/iszeq
+OKAY
+
+ - converted moiosz and moiods references to aces_list_rows and aces_list_cols
+ - converted (libr/anti)/trnchr to acescore/aces_list_xpose
+OKAY
+
+ - converted libr/aces_malloc to acescore/aces_malloc
+ - converted */bckdsk to acescore/aces_auxcache_flush
+ - WARNING: aces_auxcache_flush does not zero the quikget array like bckdsk
+OKAY
+
+ - converted kill routines to aces_io_remove
+ - converted kill-like commands in dens/resetscf to aces_io_remove
+OKAY
+
+ - removed redundant vdint/updmoi
+ - converted libr/opnfil to acescore/aces_io_open
+OKAY
+
+ - removed flags and flags2 common blocks from vdint/twoint, vcceh/genrhflst,
+   vcceh/genrspnsden, and vcceh/exciteproj
+ - fixed dimensions of /flags2/iflags2 in vscf/qrhfit2
+ - fixed dimensions of /symloc/isymoff in squint/u2xgix
+ - converted libr/gnsyof to acescore/aces_com_symloc
+ - removed redundant gnsyof in vdint, squint, and vcceh
+OKAY
+
+ - converted libr/getdpt  to acescore/aces_com_syminf
+ - converted libr/filpop  to acescore/aces_com_sympop
+ - converted libr/initpop to acescore/aces_com_sym
+OKAY
+
+ - converted libr/mchprm to acescore/aces_init_rte
+OKAY
+
+ - removed STARTS common block
+ - removed MEMSCF common block (always false)
+ - removed MVDINT1 from MVDINT common block (always true)
+ - separated everything but MACHSP and ICDACC common blocks from libr/mchprm
+ - WARNING: get rid of (or move) boolean controls from crapsi
+OKAY
+
+ - dereferenced isytyp for lists 4?? vee/maklst
+FIXES: 35, 54, 57, 63, 64, 65
+
+ - added isytyp assertions to dtran/inipck4, libr2/newtyp2, vea/updlsts2,
+   lambda/newtyp2, vcceh/inipck, vcceh/inipck3, and vcceh/newtyp2
+BREAKS: 35, 54, 57, 63, 64, 65
+
+ - truncated record names in getrec and putrec to 8 chars
+FIXES: [a lot]
+
+ - dumpja('I') -> aces_ja_init
+ - dumpja('O') -> aces_ja_fin
+ - zeroja      -> aces_ja_truncate
+ - jasmry      -> aces_ja_summary
+ - getrec, putrec, gfname in libr to acescore
+ - errex wraps aces_exit
+BREAKS: [a lot]
+
+ - added isytyp assertions to (libr) sstlst, idsymsz, and isymsz
+OKAY
+
+ - dereferenced isytyp for lists 40, 41, and 42 in vee/maklst
+FIXES: 63, 64
+
+ - added isytyp assertions to (libr) inipck, inipck3, and newtyp
+BREAKS: 63, 64
+
+ - renamed most tools/fortran_* routines to c_*
+OKAY
+

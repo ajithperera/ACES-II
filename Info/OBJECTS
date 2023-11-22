@@ -1,0 +1,201 @@
+This file contains brief descriptions of the files and directories
+that comprise the ACES system.
+
+
+FILES
+-----
+
+README
+   The ACES overview.
+
+FILES
+   This file.
+
+BUILDING
+   This file contains basic instructions on getting started building
+the program system.
+
+PORTING
+   This file contains a list of quirks people have discovered
+while porting the code to new machines. For example, certain files
+will not compile with optimization while others need linker flags
+removed.
+
+makefile -> Makefiles/GNUmakefile.tl
+   This is the top-level makefile (officially named GNUmakefile.tl)
+we use to build the system. It should be a symbolic link to
+Makefiles/GNUmakefile.tl.
+
+
+SUPPORT
+-------
+
+Makefiles
+   This directory contains the real makefiles: GNUmakefile,
+GNUmakefile.src, and GNUmakefile.tl. All other makefiles should be
+symlinks to these unless extreme circumstances are warranted.
+
+*.skip, work, test, tmp
+   Extra directories ignored by a top-level make. These may be used
+by the porter to test code fragments or to omit building selected
+libraries or binaries. The actual patterns skipped are listed in
+the top-level makefile.
+
+archive
+   Before a sweeping change is made, snapshots of source from
+libraries or binaries may be dumped here. This directory is not needed
+for a single port.
+
+include
+   Obviously, this directory contains include files needed to
+build ACES. *.h files should ONLY contain preprocessor defines,
+NO SOURCE (i.e., they may be used by C and/or Fortran routines).
+*.com files should be Fortran common blocks.
+
+
+LIBRARIES
+---------
+
+lb (lapack/blas)
+   This library is a drop-in replacement for vendor-supplied
+numerical libraries. NO CHANGES should be made to any source here.
+If a routine is missing/required, simply download the latest one
+from www.netlib.org/blas or /lapack.
+
+linpack
+   This library is a stripped version of the whole one from netlib.
+It contains a few routines needed for our linear algebra processing.
+Again, NO CHANGES should be made to any source here.
+
+tools
+   This library contains ACES INDEPENDENT routines. It is meant to be
+a repository for utilities. No file in here should link against any
+routine or include file from ACES.
+
+crust
+   This is a special library that contains one file: xgemm. The real
+BLAS/_gemm requires the leading dimensions to be valid regardless of
+rank (i.e., non-zero). The original programmers added a filter to
+their xgemm wrapper that sent max(ld?,1) to gemm. Unfortunately,
+trying to take this OUT of the program was incredibly time-consuming.
+Instead, there is a simple xgemm wrapper in tools that everyone
+should normally link against. For the other binaries that do not check
+bounds internally (vcc, vee, etc.), they must use this xgemm.
+
+molcas(.stubs.skip)
+   If a user does not have a licensed MOLCAS installation, then our
+program must link against empty MOLCAS skeletons. This library will
+create the empty objects needed to link vscf and squint.
+
+libr
+   This is the main ACES library. It contains most, if not all, of
+the low-level routines needed by ACES programs. Any routine, no matter
+how insignificant, must go here if it requires ACES-specific parameters.
+This is contrast to utility routines which would go into the tools
+library.
+   Every binary links against liblibr.a by default unless the makefile
+is instructed to do otherwise. Eventually, libr will be split into
+a set of core functions (get/putrec, get/putlst, etc.) and all the
+other stuff (zclock, eig, etc.).
+
+ecp
+
+libr2
+
+librt3
+
+trp
+
+
+BINARIES
+--------
+
+a2proc
+   This is a generic ACES-environment shell program. Say you want to
+analyze the density after xvcc. Instead of hacking a private copy of
+vcc, you simply add an argument to a2proc that gets the density and
+prints it out. When done, you just run `xa2proc densityarg` after xvcc.
+   This program was created in an attempt to unify lots of random
+little programs like parsers for molden and gennbo. It is not meant to
+be run inside xaces2, but it could if necessary.
+
+aces2
+   This is the main ACES executable. In essence, it is a large script
+that first runs xjoda and then extracts the environment variables from
+JOBARC. Its utility could be replaced by a sophisticated shell script
+since it does little to no numerical work, but compiling it allows
+the program to directly access JOBARC through get/putrec.
+
+anti
+
+bcktrn
+
+cphf
+
+dens
+
+dtran
+
+fsip
+
+intprc
+
+joda
+
+lambda
+
+nmr
+
+props
+
+squint
+
+symcor
+
+tdhf
+
+vcc
+
+vcc5q
+
+vcc5t
+
+vcceh
+
+vdint
+
+vea
+
+vee
+
+vmol
+
+vmol2ja
+
+vprops
+
+vscf
+
+vtran
+
+
+MATURE SUBTREES (*.src)
+-----------------------
+
+ks.src
+
+mrcc.src
+
+
+RETIRED (*.skip)
+----------------
+
+findif.skip
+   This program used to calculate the vibrational frequencies by
+finite differences. Its function has been replaced by joda and symcor.
+
+hfdft.skip
+   This program used to do tack-on density functional analyses
+using the Hartree-Fock density. Its function has been completely
+replaced by the Kohn-Sham subtree.
+

@@ -1,0 +1,76 @@
+      SUBROUTINE RCL_Q2AA(T,W,Z,ISPIN,POP,VRT,NOCCSQ,DISSYW,
+     &                    DISSYT,NUMSYW,NUMSYT,IRREP,TMP,FACT)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      INTEGER DISSYT,DISSYW,DIRPRD,POP,VRT
+      LOGICAL MBPT2,MBPT3,M4DQ,M4SDQ,M4SDTQ,CCD,QCISD,CCSD,UCC,
+     &            CC2,RCCD,DRCCD
+      DIMENSION W(DISSYW,NOCCSQ),T(DISSYT,NOCCSQ),Z(NOCCSQ)
+      DIMENSION TMP(1)
+      DIMENSION POP(8),VRT(8),T1A(1)
+      COMMON /SYMINF/ NSTART,NIRREP,IRREPA(255),IRREPB(255),DIRPRD(8,8)
+      COMMON /FLAGS/  IFLAGS(100)
+      COMMON /FLAGS2/ IFLAGS2(500)
+      COMMON/METH/MBPT2,MBPT3,M4DQ,M4SDQ,M4SDTQ,CCD,QCISD,CCSD,UCC,
+     &            CC2,RCCD,DRCCD
+      DATA ONEM,ONE,HALF,TWO /-1.0D0,1.D0,0.5D0,2.D0/
+C
+      IND(I,J)=((I-2)*(I-1))/2+J
+
+C      PICK UP FIRST THE RELEVANT T2 AND W PIECES
+C
+      IF (DRCCD) THEN
+
+C I don't believe drCCD necessarily calls for antisymmetrized integrals.
+C This term in the lambda equation comes from the lead term (<ab||ij>) in the
+C T2 equation. If Coulomb integrals use ISPIN.
+
+         CALL GETLST(W,1,NUMSYW,2,IRREP,ISPIN+2)
+      ELSE IF (RCCD) THEN
+         CALL GETLST(W,1,NUMSYW,2,IRREP,ISPIN+2)
+      ENDIF 
+      CALL GETLST(T,1,NUMSYT,1,IRREP,ISPIN+43)
+
+#ifdef _DEBUG_LVL0
+      call checksum("@q2a-W:",W,NUMSYW*DISSYW)
+      call checksum("@q2a-T:",T,NUMSYT*DISSYT)
+#endif 
+C
+      JOFF=1
+      IOFF=1
+         DO 90 IRREPJ=1,NIRREP
+C          
+C        GET OCCUPATION NUMBER FOR JRREP     
+C
+           NOCCJ=POP(IRREPJ)
+C
+C
+C        IF ZERO, NOTHING TO COMPUTE
+C
+           IF(NOCCJ.EQ.0) GO TO 90
+C
+C        DETERMINE IRREPI WHOSE DIRECT PRODUCT WITH JRREP GIVES IRREP
+C
+           IRREPI=DIRPRD(IRREP,IRREPJ)
+C
+C        GET OCCUPATION NUMBER FOR IRREPI
+C
+           NOCCI=POP(IRREPI)
+C
+C        IF ZERO, NOTHING TO COMPUTE
+C
+           IF(NOCCI.EQ.0) GO TO 80
+C
+            CALL XGEMM('T','N',NOCCJ,NOCCJ,DISSYW*NOCCI,FACT,
+     &                 W(1,JOFF),NOCCI*DISSYW,T(1,JOFF),      
+     &                 NOCCI*DISSYW,ONE,Z(IOFF),NOCCJ)
+           JOFF=JOFF+NOCCJ*NOCCI 
+C 
+80         CONTINUE
+C
+C         UPDATE THE OFFSET FOR THE INTERMEDIATE Z
+C
+            IOFF=IOFF+POP(IRREPJ)**2
+90        CONTINUE
+C
+      RETURN
+      END
