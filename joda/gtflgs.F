@@ -1795,11 +1795,15 @@ c props need to be first order for cc densities
 C 
       if (ioppar(h_IOPPAR_trunc_orbs).gt.0) then
          call asv_update_kv('save_ints'//achar(0),iASV,szData,0)
+         if (ioppar(h_IOPPAR_calc).eq.22) Then
+             szTmp = 'orbitals=semicanonical'//achar(0)
+               call asv_update_kv(szTmp,iASV,szData,0)
 C I am not sure why properties are turned on here, Ajith Perera, 06/2011.
 C         if (ioppar(h_IOPPAR_calc).gt.1) then
 C            szTmp = 'props=first_order'//achar(0)
 C            call asv_update_kv(szTmp,iASV,szData,0)
 C         end if
+          endif 
       end if
 
 c   o TRAP METHODS WHICH DON'T WORK YET

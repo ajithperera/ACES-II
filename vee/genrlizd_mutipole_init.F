@@ -3,7 +3,7 @@
      +                                   Mq_2,Dm_2)
    
       Implicit Double Precision(A-H,O-Z)
-      Double Precision Mq,Mq_2
+      Double Precision Mq,Mq_2,Mqr,Mql
       Dimension Qmr(6),Omr(10),Amr(3),Dmr(3),Mqr(9)
       Dimension Qml(6),Oml(10),Aml(3),Dml(3),Mql(9)
       Dimension Qm_2(9),Om_2(10),Am_2(3),Dm_2(3),Mq_2(27)

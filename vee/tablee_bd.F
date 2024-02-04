@@ -1,4 +1,4 @@
-#include "aces.h"
+#include "flags.h"
       SUBROUTINE TABLEE(EIGVAL,EIGVAL_T,OSCSTR,NATURE,BGN,BGN_IRP,
      &                  END,END_IRP,METHOD)
 C
@@ -121,6 +121,7 @@ C
  2031    FORMAT(1X,I3,2X,I4,4x,I4,9x,A,1X,F12.4,F12.2,8X,F15.8)
 C
 #endif 
+
       G_TDENS = (IFLAGS2(h_IFLAGS2_genrlizd_tdens) .Gt. 0) 
       CALL GETREC(20,'JOBARC','TOTENERG',IINTFP,ECC)
 

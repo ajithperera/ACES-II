@@ -5,7 +5,7 @@
     
       Implicit Double Precision(A-H,O-Z)
 
-      Double precision Mq,Mq_2,Mq2_t,Mq_t
+      Double precision Mq,Mq_2,Mq2_t,Mq_t,Mq_tl,Mq_tr
       Dimension Work(Maxcor),Qm(4,8,4,8,9),Om(4,8,4,8,10),
      +                       Am(4,8,4,8,3),Mq(4,8,4,8,9),
      +                       Dm(4,8,4,8,3)

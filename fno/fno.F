@@ -206,7 +206,7 @@ c break off here for non-hf natural orbitals
          call trnsfock(icore(iu),icore(iu2),icore(ifvv),icore(ifvv2),
      &      icore(ifnodrp),icore(inext),maxcor,uhf)
       endif
-      if (semi) then
+      if (semi .and. rohf) then
          nmo=nocco(1)+nvrto(1)
          i000=inext
          i010=i000+nmo
