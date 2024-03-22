@@ -25,7 +25,7 @@ C
       DATA ONEM /-1.0D0/
       DATA LISTU0 /91/
 C
-      Write(6,"(a)") "-----------------S1HHS1-------------------"
+CSSS      Write(6,"(a)") "-----------------S1HHS1-------------------"
       LISTS1IN = LS1IN
       LISTS1EX = LS1OUT
       I000 = 1

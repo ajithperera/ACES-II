@@ -29,7 +29,7 @@ C
       DATA ONE  /1.0/
       DATA ZILCH/0.0/
       DATA ONEM/-1.0/
-      Write(6,"(a)") "-----------------S1PHHHS2-----------------"
+CSSS      Write(6,"(a)") "-----------------S1PHHHS2-----------------"
 C
 C Hbar(KA,IJ), lists 107-110, stored as I<J,KA, Hbar(Ak,Ij) Ij,Ak (109),
 C Hbar(Ka,Ij) Ij,K,a (110)

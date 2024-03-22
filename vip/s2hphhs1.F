@@ -27,7 +27,7 @@ C
 C
 C Hbar(NM,EI), lists 7-10;stored as NM,IE
 
-      Write(6,"(a)") "-----------------S2HPHHS1-----------------"
+CSSS      Write(6,"(a)") "-----------------S2HPHHS1-----------------"
       LISTW0(1,1) = 7
       LISTW0(1,2) = 10
       LISTW0(2,1) = 9

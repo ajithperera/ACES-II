@@ -93,5 +93,13 @@ c
          Call Runit("xlambda")
          Call Runit("xvea")
       Endif
+C
+C IP-EOM calculations with "xvip". Can also be done with "xmrcc"
+c
+      If (Iflags2(h_IFLAGS2_ip_calc) .EQ. 5) Then
+         Call Runit("xlambda")
+         Call Runit("xvip")
+      Endif
+
       Return
       End

@@ -24,7 +24,7 @@ C
      $                  ' Calculation'
          WRITE(6,1300)
          WRITE(6, 2015)
- 2015    FORMAT(4X, 'SPIN ','  SYM. BLOCK',4X,' ROOT #',9X, 'EA(eV)',
+ 2015    FORMAT(4X, 'SPIN ','  SYM. BLOCK',4X,' ROOT #',9X, 'IP(eV)',
      $      10X, 'TOTAL ENERGY')
          WRITE(6,*)'  --------------------------------------',
      $      '------------------------------'

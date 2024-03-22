@@ -77,7 +77,6 @@ C introduced in the symmetrization (see above)
          M_iso = M_iso + M_strength(Icomp)
       Enddo
       M_iso = M_fac*M_iso*Root**2
-#ifdef _DEBUG_LVL0
       Write(6,*)
       Write(6,100) "Electric dipole contribution                   :",
      +              D_iso
@@ -90,7 +89,6 @@ C introduced in the symmetrization (see above)
       Write(6,100) "Electric dipole/Magnetic octupole contribution :",
      +             M_iso 
  100  Format(1x,a,1x,es12.4e2)
-#endif
 
       Return
       End

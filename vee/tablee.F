@@ -139,13 +139,14 @@ C
          Call GETREC(20,"JOBARC","GEN_OSCS",Length*Iintfp,Osc)
       ENDIF 
 
+      
       IF (CORE_SEARCH .OR. DOUBLE_EES .OR. G_TDENS) THEN
           Call GETREC(0,"JOBARC","GEN_OSCS",Length,Dummy) 
           Call GETREC(20,"JOBARC","QUADMOMC",Length*Iintfp,Osc_Qm)
           Call GETREC(20,"JOBARC","OCTPMOMC",Length*Iintfp,Osc_Om)
           Call GETREC(20,"JOBARC","ANGLMOMC",Length*Iintfp,Osc_Am)
           Call GETREC(20,"JOBARC","MAGQUADC",Length*Iintfp,Osc_Mq)
-          Call GETREC(20,"JOBARC","MAGQUADC",Length*Iintfp,Osc_Dm)
+          Call GETREC(20,"JOBARC","DIPOLEMC",Length*Iintfp,Osc_Dm)
       ENDIF 
 
       CALL GETREC(20,'JOBARC','TOTENERG',IINTFP,ECC)

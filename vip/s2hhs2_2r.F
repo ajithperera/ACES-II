@@ -27,7 +27,7 @@ C
       DATA ZILCH/0.0/
       DATA ONEM/-1.0/
 
-      Write(6,"(a)") "-----------------S2HHS2_2R-------------------"
+CSSS      Write(6,"(a)") "-----------------S2HHS2_2R-------------------"
 C 
 C S2(M=ISPIN,AJ=MIXSPIN)
 C

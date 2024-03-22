@@ -30,7 +30,7 @@ C
       IF (ISIDE.EQ.2) THEN
          RETURN
       ENDIF
-      Write(6,"(a)") "-----------------S2HPS1-------------------"
+CSSS      Write(6,"(a)") "-----------------S2HPS1-------------------"
 C
       DO 5 XIRREP = 1, NIRREP
          IRREPE = DIRPRD(XIRREP,SIRREP)

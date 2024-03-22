@@ -189,7 +189,7 @@
       Call Putrec(20,"JOBARC","OCTPMOMC",Length*Iintfp,Work(IOsc_Om))
       Call Putrec(20,"JOBARC","ANGLMOMC",Length*Iintfp,Work(IOsc_Am))
       Call Putrec(20,"JOBARC","MAGQUADC",Length*Iintfp,Work(IOsc_Mq))
-      Call Putrec(20,"JOBARC","MAGQUADC",Length*Iintfp,Work(IOsc_Dm))
+      Call Putrec(20,"JOBARC","DIPOLEMC",Length*Iintfp,Work(IOsc_Dm))
 
       Return
       End
